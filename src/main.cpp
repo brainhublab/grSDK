@@ -8,7 +8,8 @@ using namespace std;
 int main()
 {
     GestusConnection connection;
-    string adptName = connection.getAvalibleDevices();
-    cout<<adptName;
+    cout<<"main OK"<<endl;
+    bool flag;
+    flag = connection.setAvalibleDevices();
     return 0;
 }

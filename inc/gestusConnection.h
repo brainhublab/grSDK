@@ -24,7 +24,6 @@ using namespace libconfig;
 struct device_t
 {  
    string name; 
-   string address;
    string path;
 
    map<string, string> interfaces;
@@ -32,7 +31,6 @@ struct device_t
    device_t()
    {
        name.clear();
-       address.clear();
        path.clear();
 
        interfaces.clear();
@@ -54,16 +52,17 @@ class GestusConnection
 
         bool connectAndRead();
         
+        bool setAvalibleDevices();
     private:
         //private variables
         
         device_t adapter; //name of adapter in pc
-        vector<device_t> devices; //names gesture input devices
+        //vector<device_t> devices; //names gesture input devices
         char* message;
         
         //private methods
         bool getReply(DBusMessage* , string*);
-        bool getAvalibleDevices(vector<device_t>*);
+        bool setDeviceInfo(device_t*, string);
         bool iterDevices(DBusMessageIter*, vector<string>*, int, int);
 
 };
