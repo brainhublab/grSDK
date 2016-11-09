@@ -100,6 +100,7 @@ bool GestusConnection::connectAndRead(int devId)
         if(devices[i].id == devId)
         {
             dev = devices[i];
+            cout<<dev.name;
         }
     }
     DBusConnection *conn=NULL;
@@ -110,32 +111,45 @@ bool GestusConnection::connectAndRead(int devId)
 
    
     while(TRUE)
-    {
+   {
         msg = dbus_message_new_method_call(
                 dbusBluez.name.c_str(),
                 dev.fingers.c_str(),
-                "org.bluez.GattCharacteristic",
+                "org.bluez.GattCharacteristic1",
                 "ReadValue"
                 );  
 
         reply = dbus_connection_send_with_reply_and_block(conn, msg, -1, NULL);
-        DBusMessageIter iter;
-        dbus_message_iter_init(reply, &iter);
+        DBusMessageIter rootIter;
+        if(reply == NULL)
+        {
+            cout<<"NO NO NOOOOO"<<endl;
+        }
+        dbus_message_iter_init(reply, &rootIter);
         int currentType;
 
-        while(dbus_message_iter_get_arg_type(&iter) != DBUS_TYPE_INVALID)
+        while(dbus_message_iter_get_arg_type(&rootIter) != DBUS_TYPE_INVALID)
         {
-            currentType = dbus_message_iter_get_arg_type(&iter);
+            currentType = dbus_message_iter_get_arg_type(&rootIter);
             if(currentType == DBUS_TYPE_ARRAY)
             {
+                DBusMessageIter subIter;
+                dbus_message_iter_recurse(&rootIter, &subIter);
+                while(dbus_message_iter_get_arg_type(&subIter) != DBUS_TYPE_INVALID)
+                {
+                    currentType = dbus_message_iter_get_arg_type(&subIter);
+                    if(currentType == DBUS_TYPE_BYTE)
+                    {   
+                        char str;
+                        dbus_message_iter_get_basic(&subIter, &str);
+                        cout<<str;
 
-                //DBusMessageIter subIter;
-                //dbus_message_iter_recurse(&iter, &subIter);
-               // while(dbus_message_iter_get_arg_type(&subIter) != DBUS_TYPE_INVALID)
-               // {
-                    
-               // }
+                    }     
+
+                    dbus_message_iter_next(&subIter);
+                }
             }
+            dbus_message_iter_next(&rootIter);
         }
 
     }
@@ -209,7 +223,7 @@ bool GestusConnection::setAvalibleDevices()
 
     }
  devName.clear();
-//cout<<devices.front().fingers<<endl;
+cout<<devices.front().fingers<<endl;
 return true;
 
 }

@@ -7,12 +7,9 @@ using namespace std;
 
 int main()
 {
-    GestusConnection connection;
-    cout<<"main OK"<<endl;
-    string adaptername;
-    adaptername = connection.getAdapterName();
-    cout<<adaptername<<endl;
-    bool flag;
-    flag = connection.setAvalibleDevices();
+   GestusConnection connection;
+   connection.setAvalibleDevices();
+   connection.connectAndRead(0);    
+
     return 0;
 }
