@@ -4,7 +4,7 @@
 GestusConnection::GestusConnection() //default constructor
 {
     message = NULL;
-    
+
     adapter.name.clear();
     adapter.path = "/org/bluez/hci0";
     adapter.interfaces["adapter1"] = "org.bluez.Adapter1";
@@ -12,10 +12,10 @@ GestusConnection::GestusConnection() //default constructor
     adapter.interfaces["introspectable"] = "org.freedesktop.DBus.Introspectable";
     adapter.interfaces["properties"] = "org.freedesktop.DBus.Properties";
 
-    
 
 
-   
+
+
 
 }
 
@@ -31,7 +31,7 @@ GestusConnection::GestusConnection(const GestusConnection& connection)
 
 GestusConnection& GestusConnection::operator =(const GestusConnection& connection)
 {
-    
+
 }
 
 bool GestusConnection::setAdapterName()
@@ -58,8 +58,8 @@ bool GestusConnection::setAdapterName()
             DBUS_TYPE_INVALID);
 
     reply = dbus_connection_send_with_reply_and_block(conn, msg, -1, NULL);
-    
-    
+
+
     adapterName.clear();
     getReply(reply, &adapterName);
     adapter.name = adapterName;
@@ -94,7 +94,7 @@ bool GestusConnection::connectAndRead(int devId)
     device_t dev;
     string arr;
 
-    
+
     for(int i=0; i < devices.size(); i++)
     {
         if(devices[i].id == devId)
@@ -109,15 +109,15 @@ bool GestusConnection::connectAndRead(int devId)
 
     conn = dbus_bus_get(DBUS_BUS_SYSTEM, NULL);
 
-   
+
     while(TRUE)
    {
         msg = dbus_message_new_method_call(
                 dbusBluez.name.c_str(),
-                dev.fingers.c_str(),
+                dev.gyro.c_str(),
                 "org.bluez.GattCharacteristic1",
                 "ReadValue"
-                );  
+                );
 
         reply = dbus_connection_send_with_reply_and_block(conn, msg, -1, NULL);
         DBusMessageIter rootIter;
@@ -139,15 +139,17 @@ bool GestusConnection::connectAndRead(int devId)
                 {
                     currentType = dbus_message_iter_get_arg_type(&subIter);
                     if(currentType == DBUS_TYPE_BYTE)
-                    {   
+                    {
                         char str;
                         dbus_message_iter_get_basic(&subIter, &str);
                         cout<<str;
 
-                    }     
+                    }
 
                     dbus_message_iter_next(&subIter);
                 }
+
+                cout<<endl;
             }
             dbus_message_iter_next(&rootIter);
         }
@@ -162,11 +164,11 @@ bool GestusConnection::setAvalibleDevices()
     vector<string> allDevicesPaths;
     int pathArbitor = 0;
     int layerArbitor = 0;
-   
+
     string currentPath;
     string devName;
     int devId=0;
-    
+
     DBusConnection *conn=NULL;
     DBusMessage  *msg=NULL, *reply=NULL;
     DBusError *derror=NULL;
@@ -182,7 +184,7 @@ bool GestusConnection::setAvalibleDevices()
     dbus_message_iter_init(reply, &iterIn);
 
     iterDevices(&iterIn, &allDevicesPaths, pathArbitor, layerArbitor);
-    
+
     const char* iface = "org.bluez.Device1";
     const char* prop = "Name";
 
@@ -195,28 +197,28 @@ bool GestusConnection::setAvalibleDevices()
                dbusBluez.properties.c_str(),
                "Get"
                 );
-        
+
                dbus_message_append_args(msg,
                 DBUS_TYPE_STRING, &iface,
                 DBUS_TYPE_STRING, &prop,
                 DBUS_TYPE_INVALID);
         reply = dbus_connection_send_with_reply_and_block(conn, msg, -1, NULL);
-        
+
         getReply(reply, &devName);
-        
+
         if(devName == deviceNames.left || devName == deviceNames.right)
-        {   
+        {
             device_t dev;
             dev.id = devId;
             dev.name = devName;
-            dev.interfaces["device1"] = "org.bluez.Device1";  
+            dev.interfaces["device1"] = "org.bluez.Device1";
             dev.interfaces["introspectable"] = dbusBluez.introspectable;
             dev.interfaces["properties"] = dbusBluez.properties;
 
             setDeviceCharacteristics(&dev, currentPath);
             devices.push_back(dev);
         }
-        
+
         allDevicesPaths.pop_back();
         currentPath.clear();
         devId++;
@@ -230,7 +232,7 @@ return true;
 
 bool GestusConnection::setDeviceCharacteristics(device_t* device, string devicePath)
 {
-    
+
     vector<string> gattServices;
     DBusMessage *reply = NULL;
 
@@ -267,7 +269,15 @@ bool GestusConnection::setDeviceCharacteristics(device_t* device, string deviceP
                        else if(currentUUID == uuids.gyro)
                        {
                             device->gyro = characteristics[j];
-                       } 
+                       }
+                       else if(currentUUID == uuids.accelerometer)
+                       {
+                            device->accelerometer = characteristics[j];
+                       }
+                       else if(currentUUID == uuids.magnet)
+                       {
+                            device->magnet = characteristics[j];
+                       }
                     }
                     else
                     {
@@ -393,14 +403,14 @@ bool GestusConnection::iterDevices(DBusMessageIter* iterIn, vector<string>* devi
         if(currentType == DBUS_TYPE_ARRAY ||
                 currentType == DBUS_TYPE_VARIANT ||
                 currentType == DBUS_TYPE_DICT_ENTRY)
-        {             
+        {
             DBusMessageIter subIterIn;
             dbus_message_iter_recurse(iterIn, &subIterIn);
 
             iterDevices(&subIterIn, devices, pathArbitor, next);
 
         }
-        else if(currentType == DBUS_TYPE_STRING || 
+        else if(currentType == DBUS_TYPE_STRING ||
                 currentType == DBUS_TYPE_OBJECT_PATH)
         {
 
@@ -410,7 +420,7 @@ bool GestusConnection::iterDevices(DBusMessageIter* iterIn, vector<string>* devi
                 //if(pathArbitor == 2)
                 //{
                     char* str = NULL;
-                    dbus_message_iter_get_basic(iterIn, &str); 
+                    dbus_message_iter_get_basic(iterIn, &str);
                     string devicePath;
                     devicePath.assign(str, strlen(str)+1);
                     if(devicePath.length() == 38)
@@ -428,8 +438,8 @@ bool GestusConnection::iterDevices(DBusMessageIter* iterIn, vector<string>* devi
         dbus_message_iter_next(iterIn);
 
     }
-} 
-bool GestusConnection::getReply(DBusMessage* reply, string* value) 
+}
+bool GestusConnection::getReply(DBusMessage* reply, string* value)
 {
     int currentType;
     char* res;
@@ -446,7 +456,7 @@ bool GestusConnection::getReply(DBusMessage* reply, string* value)
             char *str = NULL;
             dbus_message_iter_get_basic(&rootIter, &str);
            res = strdup(str);
-            
+
         }
         else if(currentType == DBUS_TYPE_VARIANT)
         {
@@ -470,7 +480,7 @@ bool GestusConnection::getReply(DBusMessage* reply, string* value)
 
         dbus_message_iter_next(&rootIter);
     }
-    
+
     value->assign(res, strlen(res));
     free(res);
     return TRUE;

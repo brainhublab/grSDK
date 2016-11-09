@@ -16,8 +16,8 @@ using namespace libconfig;
 
 struct dbus_bluez
 {
-    string name; 
-    string path; 
+    string name;
+    string path;
     string properties;
     string introspectable;
     dbus_bluez()
@@ -31,7 +31,7 @@ struct dbus_bluez
 
 };
 struct device_names
-{  
+{
     string left;
     string right;
     device_names()
@@ -54,10 +54,10 @@ struct device_uuids
     string tmp_uuid;
     device_uuids()
     {
-         fingers = "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
-         gyro = "";
-         accelerometer = "";
-         magnet = "";
+         fingers = "fced6409-c015-45ea-b50d-1de32a1c2f6d";
+         gyro = "fced640a-c015-45ea-b50d-1de32a1c2f6d";
+         accelerometer = "fced640b-c015-45ea-b50d-1de32a1c2f6d";
+         magnet = "fced640c-c015-45ea-b50d-1de32a1c2f6d";
 
          rx = "";
          tx = "";
@@ -67,13 +67,13 @@ struct device_uuids
 };
 
 struct device_t
-{ 
-   int id; 
-   string name; 
+{
+   int id;
+   string name;
    string path;
 
    map<string, string> interfaces;
-   
+
    string fingers;
    string gyro;
    string accelerometer;
@@ -92,7 +92,7 @@ struct device_t
 
 
     }
-   
+
 };
 
 class GestusConnection
@@ -102,8 +102,8 @@ class GestusConnection
         ~GestusConnection();
         GestusConnection(const GestusConnection& );
         GestusConnection& operator=(const GestusConnection& );
-        
-        
+
+
         bool setAdapterName(); //gets the pc bluetooth adapter name
         string getAdapterName();
         device_t getAdapter();
@@ -114,15 +114,15 @@ class GestusConnection
 
 
         bool connectAndRead(int );
-        
+
         bool setAvalibleDevices();
     private:
         //private variables
-        
+
         device_t adapter; //name of adapter in pc
         vector<device_t> devices; //names gesture input devices
         char* message;
-         
+
         //private methods
         bool setDeviceCharacteristics(device_t* , string);
         DBusMessage *getProperty(const char*, const char*, const char*);
