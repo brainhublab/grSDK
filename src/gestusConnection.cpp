@@ -89,10 +89,15 @@ vector<device_t> GestusConnection::getConnectedDevices()
     return devices;
 }
 
-bool GestusConnection::connectAndRead(int devId)
+bool GestusConnection::connectAndRead(int devId, string characteristic, deque<string> *buffer)
 {
     device_t dev;
     string arr;
+    if(characteristic == "gyro")
+    {
+        characteristic = dev.gyro;
+        cout<<characteristic;
+    }
 
 
     for(int i=0; i < devices.size(); i++)
@@ -109,7 +114,8 @@ bool GestusConnection::connectAndRead(int devId)
 
     conn = dbus_bus_get(DBUS_BUS_SYSTEM, NULL);
 
-
+    vector<string> vec;
+    string s;
     while(TRUE)
    {
         msg = dbus_message_new_method_call(
@@ -122,7 +128,8 @@ bool GestusConnection::connectAndRead(int devId)
         reply = dbus_connection_send_with_reply_and_block(conn, msg, -1, NULL);
         DBusMessageIter rootIter;
         if(reply == NULL)
-        {
+        {   
+            return FALSE;
             cout<<"NO NO NOOOOO"<<endl;
         }
         dbus_message_iter_init(reply, &rootIter);
@@ -140,17 +147,20 @@ bool GestusConnection::connectAndRead(int devId)
                     currentType = dbus_message_iter_get_arg_type(&subIter);
                     if(currentType == DBUS_TYPE_BYTE)
                     {
-                        char str;
+                        char str, str1;
                         dbus_message_iter_get_basic(&subIter, &str);
-                        cout<<str;
-
+                        s.push_back(str);
+                        //cout<<s;
                     }
-
                     dbus_message_iter_next(&subIter);
+
                 }
 
-                cout<<endl;
+                  buffer->push_back(s);
+                  s.clear();
             }
+            cout<<buffer->front()<<endl;
+            buffer->pop_front();
             dbus_message_iter_next(&rootIter);
         }
 

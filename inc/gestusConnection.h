@@ -10,6 +10,8 @@
 #include <cstdlib>
 #include <vector>
 #include <map>
+#include <deque>
+#include <typeinfo>
 
 using namespace std;
 using namespace libconfig;
@@ -113,7 +115,7 @@ class GestusConnection
         vector<device_t> getConnectedDevices();
 
 
-        bool connectAndRead(int );
+        bool connectAndRead(int, string, deque<string>* );
 
         bool setAvalibleDevices();
     private:
