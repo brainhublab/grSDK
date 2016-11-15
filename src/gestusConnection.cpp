@@ -88,9 +88,24 @@ vector<device_t> GestusConnection::getConnectedDevices()
 {
     return devices;
 }
-
+bool GestusConnection::getData(int devId, string characteristic, deque<string>* buffer)
+{
+    
+    do
+    {
+        if(!buffer->empty())
+        {
+            cout<<buffer->front()<<endl;
+            buffer->pop_front();
+        }
+        else 
+            cout<<"is empty";
+    }while(connectAndRead(devId, characteristic, buffer));
+    return TRUE;
+}
 bool GestusConnection::connectAndRead(int devId, string characteristic, deque<string> *buffer)
 {
+    
     device_t dev;
     string arr;
     if(characteristic == "gyro")
@@ -105,7 +120,7 @@ bool GestusConnection::connectAndRead(int devId, string characteristic, deque<st
         if(devices[i].id == devId)
         {
             dev = devices[i];
-            cout<<dev.name;
+            //cout<<dev.name;
         }
     }
     DBusConnection *conn=NULL;
@@ -114,7 +129,7 @@ bool GestusConnection::connectAndRead(int devId, string characteristic, deque<st
 
     conn = dbus_bus_get(DBUS_BUS_SYSTEM, NULL);
 
-    vector<string> vec;
+    
     string s;
     while(TRUE)
    {
@@ -158,9 +173,11 @@ bool GestusConnection::connectAndRead(int devId, string characteristic, deque<st
 
                   buffer->push_back(s);
                   s.clear();
+                  //return TRUE;
+                  //cout<<"push"<<endl;
             }
-            cout<<buffer->front()<<endl;
-            buffer->pop_front();
+            //cout<<buffer->front()<<"class_data"<<endl;
+            //buffer->pop_front();
             dbus_message_iter_next(&rootIter);
         }
 

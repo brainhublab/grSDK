@@ -114,7 +114,7 @@ class GestusConnection
         string getDeviceName(device_t);
         vector<device_t> getConnectedDevices();
 
-
+        bool getData(int, string, deque<string>*);
         bool connectAndRead(int, string, deque<string>* );
 
         bool setAvalibleDevices();

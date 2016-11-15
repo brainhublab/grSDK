@@ -3,33 +3,32 @@
 #include <deque>
 #include <stdlib.h>
 #include "gestusConnection.h"
+#include <thread>
+#include <time.h>
+#include <unistd.h>
 using namespace std;
-
+//void threadFunction(GestusConnection)
 int main()
 {
-    string characteristic = "gyro";
+    string characteristic = "accelerometer";
 
     deque<string> buffer;
 
     GestusConnection connection;
     connection.setAvalibleDevices();
-    connection.connectAndRead(0, characteristic, &buffer);
-
-    char str;
-   // sleep(50);
-    /*if(!buffer.empty())
+    //connection.getData(0, characteristic, &buffer);
+    thread thr(&GestusConnection::connectAndRead, &connection, 0, characteristic, &buffer);
+    thr.detach();
+    do
     {
-        cout<<"bufer is empty";
-    }
-    while(!buffer.empty())
-    {
-        cout<<"reading";
-        cout<<buffer.front();
-       // cout<<str<<endl;
-        buffer.pop_front();
-
-        } 
-
-*/
-    return 0;
+        if(!buffer.empty())
+        {
+            cout<<buffer.front()<<endl;
+            buffer.pop_front();
+        }
+        //else
+            //cout<<"is empty"<<endl;
+    }while(TRUE);
+       
+      return 0;
 }
