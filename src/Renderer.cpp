@@ -2,7 +2,7 @@
 // Created by vtimofeev on 30/10/16.
 //
 
-#include "visualization/Renderer.h"
+#include "Renderer.h"
 
 // helpers
 void showPoint( float x, float y, float z )

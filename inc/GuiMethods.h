@@ -5,8 +5,8 @@
 #ifndef VISUALIZATION_GUIMETHODS_H
 #define VISUALIZATION_GUIMETHODS_H
 
-#include "visualization/Arm.h"
-#include "visualization/ui/imgui_impl_sdl.h"
+#include "Arm.h"
+#include "ui/imgui_impl_sdl.h"
 
 namespace gui
 {

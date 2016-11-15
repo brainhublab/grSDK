@@ -2,8 +2,8 @@
 #define VISUALIZATION
 
 #include <string>
-#include "visualization/ui/GuiMethods.h"
-#include "visualization/Renderer.h"
+#include "GuiMethods.h"
+#include "Renderer.h"
 
 class Visualization
 {

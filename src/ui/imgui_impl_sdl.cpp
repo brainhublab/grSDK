@@ -2,10 +2,10 @@
 // Created by vtimofeev on 06/11/16.
 //
 
-#include "visualization/ui/imgui_impl_sdl.h"
+#include "ui/imgui_impl_sdl.h"
 
 #include <SDL2/SDL.h>
-#include "visualization/openGL.h"
+#include "openGL.h"
 
 // Data
 static double       g_Time = 0.0f;

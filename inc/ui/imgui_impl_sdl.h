@@ -5,7 +5,7 @@
 #ifndef VISUALIZATION_IMGUI_IMPL_SDL_H
 #define VISUALIZATION_IMGUI_IMPL_SDL_H
 
-#include "visualization/ui/imgui/imgui.h"
+#include "ui/imgui/imgui.h"
 
 struct SDL_Window;
 typedef union SDL_Event SDL_Event;
