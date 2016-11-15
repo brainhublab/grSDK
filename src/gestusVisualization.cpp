@@ -51,7 +51,7 @@ Visualization::~Visualization()
 
 
 
-void Visualization::run()
+bool Visualization::run()
 {
 		Renderer renderer;
 		SDL_Event event;
@@ -166,26 +166,30 @@ void Visualization::run()
 				SDL_GL_SwapWindow( window );
 		}
 		close();
+		return true;
 }
 
 
-void Visualization::stop()
+bool Visualization::stop()
 {
 		quit = true;
+		return quit;
 }
 
 // helpers
-void Visualization::setOpenGLVersion()
+bool Visualization::setOpenGLVersion()
 {
 		SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 2 );
 		SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 1 );
+		return true;
 }
 
-void Visualization::close()
+bool Visualization::close()
 {
 		ImGui_ImplSdl_Shutdown();
 		SDL_DestroyWindow( window );
 		window = NULL;
 
 		SDL_Quit( );
+		return true;
 }

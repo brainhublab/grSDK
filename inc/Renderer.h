@@ -24,32 +24,32 @@ public:
 		~Renderer(){};
 
 public:
-		void drawScene(float, float, float);
+		bool drawScene(float, float, float);
 		// renders arm using last boolean argument "isLeft"
-		void renderArm(struct Node*, float, float, float, bool);
-		void renderTrajectory(Arm*, float, float, float, bool);
+		bool renderArm(struct Node*, float, float, float, bool);
+		bool renderTrajectory(Arm*, float, float, float, bool);
 
 public:
 		int getWidth();
 		int getHeight();
-		void setViewport(int, int);
-		void update();
+		bool setViewport(int, int);
+		bool update();
 
 private:
 		render_data data;
 
 private:
-		void initGL();
-		void drawFinger( Node *hand, float fingerDistance, int fingerIndex);
+		bool initGL();
+		bool drawFinger( Node *hand, float fingerDistance, int fingerIndex);
 
 		// Geometric
-		void createRightHand(float, float, float);
-		void createLeftHand(float, float, float);
+		bool createRightHand(float, float, float);
+		bool createLeftHand(float, float, float);
 
-		void createColorSphere(float, int, int, GLubyte r, GLubyte g, GLubyte b);
-		void createCube(float, float, float);
-		void createSphere(float, int, int);
-		void createCylinder(float, float);
-		void createFrustum(float, float, float);
+		bool createColorSphere(float, int, int, GLubyte r, GLubyte g, GLubyte b);
+		bool createCube(float, float, float);
+		bool createSphere(float, int, int);
+		bool createCylinder(float, float);
+		bool createFrustum(float, float, float);
 };
 #endif

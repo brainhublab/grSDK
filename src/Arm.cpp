@@ -89,7 +89,7 @@ Arm::~Arm()
 }
 
 
-void Arm::bendArm( float angleX, float angleY, float angleZ )
+bool Arm::bendArm( float angleX, float angleY, float angleZ )
 {
 		if(bend(this, angleX, angleY, angleZ))
 		{
@@ -107,19 +107,32 @@ void Arm::bendArm( float angleX, float angleY, float angleZ )
 						// clean last angle
 						this->trajectoryAngles.erase( this->trajectoryAngles.begin( ));
 				}
+				return true;
+		}
+
+		return false;
+}
+
+bool Arm::bendHand( float angleX, float angleY, float angleZ )
+{
+		struct Node *hand = &(this->children[0]);
+
+		if(bend(hand, angleX, angleY, angleZ))
+		{
+			return true;
+		}
+		else
+		{
+			return false;
 		}
 }
 
-void Arm::bendHand( float angleX, float angleY, float angleZ )
-{
-		struct Node *hand = &(this->children[0]);
-		bend(hand, angleX, angleY, angleZ);
-}
 
-
-void Arm::bendFinger( int index, float angleX, float angleY, float angleZ )
+bool Arm::bendFinger( int index, float angleX, float angleY, float angleZ )
 {
 		struct Node *phalange = &this->children[ 0 ].children[ index ];
+		assert(phalange != nullptr);
+
 		while ( phalange )
 		{
 				bend(phalange, angleX, angleY, angleZ);
@@ -132,6 +145,7 @@ void Arm::bendFinger( int index, float angleX, float angleY, float angleZ )
 						phalange = NULL;
 				}
 		}
+		return true;
 }
 
 
@@ -169,7 +183,8 @@ bool Arm::bend( Node *node, float angleX, float angleY, float angleZ )
 }
 
 // todo: maybe for every arm separate motions?
-void Arm::handleInput( SDL_Keysym keysym )
+// changed break; to return true;
+bool Arm::handleInput( SDL_Keysym keysym )
 {
 		switch ( keysym.sym )
 		{
@@ -183,7 +198,7 @@ void Arm::handleInput( SDL_Keysym keysym )
 						{
 								bendFinger(0, 5.f, 0.f, 0.f );
 						}
-						break;
+						return true;
 				case SDLK_2:
 						if ( keysym.mod & KMOD_SHIFT )
 						{
@@ -193,7 +208,7 @@ void Arm::handleInput( SDL_Keysym keysym )
 						{
 								bendFinger( 1, 5.f, 0.f, 0.f );
 						}
-						break;
+						return true;
 				case SDLK_3:
 						if ( keysym.mod & KMOD_SHIFT )
 						{
@@ -203,7 +218,7 @@ void Arm::handleInput( SDL_Keysym keysym )
 						{
 								bendFinger( 2, 5.f, 0.f, 0.f );
 						}
-						break;
+						return true;
 				case SDLK_4:
 						if ( keysym.mod & KMOD_SHIFT )
 						{
@@ -213,7 +228,7 @@ void Arm::handleInput( SDL_Keysym keysym )
 						{
 								bendFinger( 3, 5.f, 0.f, 0.f );
 						}
-						break;
+						return true;
 				case SDLK_5:
 						if ( keysym.mod & KMOD_SHIFT )
 						{
@@ -223,7 +238,7 @@ void Arm::handleInput( SDL_Keysym keysym )
 						{
 								bendFinger( 4, 5.f, 0.f, 0.f );
 						}
-						break;
+						return true;
 				case SDLK_6:
 						if ( keysym.mod & KMOD_SHIFT )
 						{
@@ -233,7 +248,7 @@ void Arm::handleInput( SDL_Keysym keysym )
 						{
 								bendHand( 5.f, 0.f, 0.f );
 						}
-						break;
+						return true;
 
 				case SDLK_0:
 						if ( keysym.mod & KMOD_SHIFT )
@@ -244,7 +259,7 @@ void Arm::handleInput( SDL_Keysym keysym )
 						{
 								bendHand( 0.f, 5.f, 0.f );
 						}
-						break;
+						return true;
 
 				case SDLK_7:
 						if ( keysym.mod & KMOD_SHIFT )
@@ -255,7 +270,7 @@ void Arm::handleInput( SDL_Keysym keysym )
 						{
 								bendArm( 5.f, 0.f, 0.f );
 						}
-						break;
+						return true;
 				case SDLK_8:
 						if ( keysym.mod & KMOD_SHIFT )
 						{
@@ -265,7 +280,7 @@ void Arm::handleInput( SDL_Keysym keysym )
 						{
 								bendArm( 0.f, 5.f, 0.f );
 						}
-						break;
+						return true;
 				case SDLK_9:
 						if ( keysym.mod & KMOD_SHIFT )
 						{
@@ -275,7 +290,9 @@ void Arm::handleInput( SDL_Keysym keysym )
 						{
 								bendArm( 0.f, 0.f, 5.f );
 						}
-						break;
+						return true;
+				default:
+						return false;
 		}
 }
 

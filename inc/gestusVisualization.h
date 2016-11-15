@@ -13,8 +13,8 @@ public:
 		Visualization(const Visualization&) = delete;
 		Visualization&operator=(const Visualization&) = delete;
 public:
-		void run();
-		void stop();
+		bool run();
+		bool stop();
 
 private:
 		// todo: move it to Hand class?
@@ -25,9 +25,9 @@ private:
 		Arm leftArm;
 		Arm rightArm;
 private:
-		void setOpenGLVersion();
+		bool setOpenGLVersion();
 		bool quit = false;
-		void close();
+		bool close();
 private:
 		SDL_Window *window;
 		SDL_GLContext glContext;

@@ -15,17 +15,19 @@ struct Node
 		float maxAngleX = 0, maxAngleY = 0, maxAngleZ = 0;
 		float minAngleX = 0, minAngleY = 0, minAngleZ = 0;
 
-		void setMaxAngles( float angleX, float angleY, float angleZ)
+		bool setMaxAngles( float angleX, float angleY, float angleZ)
 		{
 				maxAngleX = angleX;
 				maxAngleY = angleY;
 				maxAngleZ = angleZ;
+				return true;
 		}
-		void setMinAngles( float angleX, float angleY, float angleZ)
+		bool setMinAngles( float angleX, float angleY, float angleZ)
 		{
 				minAngleX = angleX;
 				minAngleY = angleY;
 				minAngleZ = angleZ;
+				return true;
 		}
 };
 

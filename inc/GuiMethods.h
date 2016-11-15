@@ -10,41 +10,39 @@
 
 namespace gui
 {
-		static void drawChart(const float* data, size_t size, float min, float max)
+		static bool drawChart(const float* data, size_t size, float min, float max)
 		{
-
+				static float arr2[600];
+				for ( int i = 0; i < size; ++i )
 				{
-						static float arr2[600];
-						for ( int i = 0; i < size; ++i )
-						{
-								assert( sizeof( data ) / sizeof( float ) > 1 );
-								arr2[ i ] = data[ i ];
-						}
-						static bool init = false;
-						if ( !init )
-						{
-								init = true;
-								for ( int i = 0; i < sizeof( arr2 ) / sizeof( float ); i++ )
-										arr2[ i ] = ( i & 1 ) ? 1.0f : 0.0f;
-						}
-						int count = size;
-						ImGui::SliderInt( "Trajectory size", &count, 1, size );
-						std::string s = "Plot\nmin:";
-						s.append( std::to_string( roundf( min )));
-						s.append( "\nMax:" );
-						s.append( std::to_string( roundf( max )));
-
-						ImGui::PlotLines( s.c_str( ), arr2, count, 0, NULL, min, max, ImVec2( 0, 80 ));
-						s = "Histogram\nmin:";
-						s.append( std::to_string( roundf( min )));
-						s.append( "\nMax:" );
-						s.append( std::to_string( roundf( max )));
-						ImGui::PlotHistogram( s.c_str( ), arr2, count, 0, std::to_string( max ).c_str( ), min, max,
-																	ImVec2( 0, 80 ));
+						assert( sizeof( data ) / sizeof( float ) > 1 );
+						arr2[ i ] = data[ i ];
 				}
+				static bool init = false;
+				if ( !init )
+				{
+						init = true;
+						for ( int i = 0; i < sizeof( arr2 ) / sizeof( float ); i++ )
+							arr2[ i ] = ( i & 1 ) ? 1.0f : 0.0f;
+				}
+				int count = size;
+				ImGui::SliderInt( "Trajectory size", &count, 1, size );
+				std::string s = "Plot\nmin:";
+				s.append( std::to_string( roundf( min )));
+				s.append( "\nMax:" );
+				s.append( std::to_string( roundf( max )));
 
+				ImGui::PlotLines( s.c_str( ), arr2, count, 0, NULL, min, max, ImVec2( 0, 80 ));
+				s = "Histogram\nmin:";
+				s.append( std::to_string( roundf( min )));
+				s.append( "\nMax:" );
+				s.append( std::to_string( roundf( max )));
+				ImGui::PlotHistogram( s.c_str( ), arr2, count, 0, std::to_string( max ).c_str( ), min, max,
+																	ImVec2( 0, 80 ));
+
+				return true;
 		}
-		static void drawChartByAngleName(char name ,const std::vector<std::map<char, float>>& trajectory, float min, float max)
+		static bool drawChartByAngleName(char name ,const std::vector<std::map<char, float>>& trajectory, float min, float max)
 		{
 
 				std::vector< float > angles;
@@ -62,8 +60,10 @@ namespace gui
 
 				drawChart( arr, angles.size( ), min, max);
 				delete[] arr;
+
+				return true;
 		}
-		static void drawChartWindow(const std::vector<std::map<char, float>>& trajectory, Arm* arm)
+		static bool drawChartWindow(const std::vector<std::map<char, float>>& trajectory, Arm* arm)
 		{
 				ImGui::SetNextTreeNodeOpen(true, ImGuiSetCond_Once);
 				if(ImGui::TreeNode("Plot Trajectory"))
@@ -84,10 +84,12 @@ namespace gui
 						drawChartByAngleName('Z', trajectory, arm->minAngleZ, arm->maxAngleZ);
 						ImGui::Separator();
 						ImGui::TreePop();
+						return true;
 				}
+				return false;
 		}
 		// Menu
-		static void drawMenu(Arm* leftArm, Arm* rightArm ,bool* renderWithHand, bool* renderWithTrajectory, float * angleX, float * angleY, float * angleZ)
+		static bool drawMenu(Arm* leftArm, Arm* rightArm ,bool* renderWithHand, bool* renderWithTrajectory, float * angleX, float * angleY, float * angleZ)
 		{
 				static bool w = true;
 				//ImGui::ShowTestWindow(&w);
@@ -174,6 +176,7 @@ namespace gui
 				ImGui::End();
 				ImGui::PopStyleColor();
 				ImGui::PopStyleColor();
+				return true;
 		}
 // IMGUI end
 

@@ -5,13 +5,15 @@
 #include "Renderer.h"
 
 // helpers
-void showPoint( float x, float y, float z )
+bool showPoint( float x, float y, float z )
 {
 		glPointSize( 5.f );
 		glBegin( GL_POINTS );
 		glColor3ub( 100, 200, 0 );
 		glVertex3f( x, y, z );
 		glEnd( );
+
+		return true;
 }
 
 // class methods
@@ -23,7 +25,7 @@ Renderer::Renderer()
 
 }
 
-void Renderer::initGL()
+bool Renderer::initGL()
 {
 		glShadeModel( GL_SMOOTH );
 		glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
@@ -31,9 +33,11 @@ void Renderer::initGL()
 		glEnable( GL_DEPTH_TEST );
 		glDepthFunc( GL_LEQUAL );
 		glHint( GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST );
+
+		return true;
 }
 
-void Renderer::setViewport( int width, int height )
+bool Renderer::setViewport( int width, int height )
 {
 		GLfloat ratio;
 
@@ -54,6 +58,8 @@ void Renderer::setViewport( int width, int height )
 		glLoadIdentity( );
 		data.screen.width = width;
 		data.screen.height = height;
+
+		return true;
 }
 
 int Renderer::getWidth()
@@ -67,11 +73,12 @@ int Renderer::getHeight()
 }
 ;
 
-void Renderer::update()
+bool Renderer::update()
 {
+	return true;
 }
 
-void Renderer::renderTrajectory( Arm *arm, float angleX, float angleY, float angleZ, bool isLeft )
+bool Renderer::renderTrajectory( Arm *arm, float angleX, float angleY, float angleZ, bool isLeft )
 {
 		const std::vector< std::map< char, float> > & trajectory = arm->getTrajectoryAngles();
 		for ( std::map< char, float > angles : trajectory )
@@ -101,9 +108,11 @@ void Renderer::renderTrajectory( Arm *arm, float angleX, float angleY, float ang
 				createColorSphere( 0.03f, 10, 10, 0, 200, 0 );
 				glTranslatef( 0.f, -data.arm.length, 0.f );
 		}
+
+		return true;
 }
 
-void Renderer::drawScene(float angleX, float angleY, float angleZ)
+bool Renderer::drawScene(float angleX, float angleY, float angleZ)
 {
 		glLoadIdentity( );
 
@@ -161,9 +170,12 @@ void Renderer::drawScene(float angleX, float angleY, float angleZ)
 		glVertex3f(insidePointX, -insidePointY, data.scene_depth);
 		glVertex3f(-insidePointX, -insidePointY, data.scene_depth);
 		glEnd();
+
+
+		return true;
 }
 
-void Renderer::renderArm( Node *arm, float angleX, float angleY, float angleZ, bool isLeft )
+bool Renderer::renderArm( Node *arm, float angleX, float angleY, float angleZ, bool isLeft )
 {
 		glLoadIdentity( );
 
@@ -253,8 +265,11 @@ void Renderer::renderArm( Node *arm, float angleX, float angleY, float angleZ, b
 		}
 
 		drawFinger(hand, fingerDistance, 4);
+
+
+		return true;
 }
-void Renderer::drawFinger( Node *hand, float fingerDistance, int fingerIndex )
+bool Renderer::drawFinger( Node *hand, float fingerDistance, int fingerIndex )
 {
 		struct Node *phalange = &( *hand ).children[ fingerIndex ];
 
@@ -281,9 +296,11 @@ void Renderer::drawFinger( Node *hand, float fingerDistance, int fingerIndex )
 		glPopMatrix( );
 
 		glTranslatef( fingerDistance, 0.f, 0.f );
+
+		return true;
 }
 
-void Renderer::createCube( float x, float y, float z )
+bool Renderer::createCube( float x, float y, float z )
 {
 		float halfX = x / 2, halfZ = z / 2;
 
@@ -359,10 +376,12 @@ void Renderer::createCube( float x, float y, float z )
 		glVertex3f( halfX, y, -halfZ );
 		glVertex3f( halfX, 0.f, -halfZ );
 		glEnd( );
+
+		return true;
 }
 
 
-void Renderer::createRightHand( float x, float y, float z )
+bool Renderer::createRightHand( float x, float y, float z )
 {
 		float halfBase = 0.25f * x; // base is slightly narrower than full hand's width
 		float halfTop = 0.4f * x;
@@ -459,9 +478,11 @@ void Renderer::createRightHand( float x, float y, float z )
 		glVertex3f( halfBase, 0.f, halfDepth );
 		glVertex3f( halfBase, 0.f, -halfDepth );
 		glEnd( );
+
+		return true;
 }
 
-void Renderer::createLeftHand( float x, float y, float z )
+bool Renderer::createLeftHand( float x, float y, float z )
 {
 		float halfBase = 0.25f * x; // base is slightly narrower than full hand's width
 		float halfTop = 0.4f * x;
@@ -566,30 +587,43 @@ void Renderer::createLeftHand( float x, float y, float z )
 		glVertex3f( halfBase, 0.f, -halfDepth );
 		glVertex3f( halfBase, 0.f, halfDepth );
 		glEnd( );
+
+		return true;
 }
 
-void Renderer::createSphere( float radius, int slices, int stacks )
+bool Renderer::createSphere( float radius, int slices, int stacks )
 {
 		GLUquadric *quad = gluNewQuadric( );
 		glColor3ub( 255, 0, 0 );
 		gluSphere( quad, radius, slices, stacks );
 		gluDeleteQuadric( quad );
+
+		return true;
 }
 
-void Renderer::createColorSphere(float radius, int slices, int stacks, GLubyte r, GLubyte g, GLubyte b)
+bool Renderer::createColorSphere(float radius, int slices, int stacks, GLubyte r, GLubyte g, GLubyte b)
 {
 		GLUquadric *quad = gluNewQuadric( );
 		glColor3ub( r, g, b );
 		gluSphere( quad, radius, slices, stacks );
 		gluDeleteQuadric( quad );
+
+		return true;
 }
 
-void Renderer::createCylinder( float radius, float height )
+bool Renderer::createCylinder( float radius, float height )
 {
-		createFrustum( radius, height, 1 );
+		if(createFrustum( radius, height, 1 ))
+		{
+			return true;
+		}
+		else
+		{
+			return true;
+		}
 }
 
-void Renderer::createFrustum( float radius, float height, float ratio = 1 ) // ratio : x,z(top) = ratio*x,z(bottom)
+bool Renderer::createFrustum( float radius, float height, float ratio = 1 ) // ratio : x,z(top) = ratio*x,z(bottom)
 {
 		float angle = 360.f / data.cylinder_sides;
 		float x1, x2, z1, z2, y1, y2;
@@ -657,4 +691,6 @@ void Renderer::createFrustum( float radius, float height, float ratio = 1 ) // r
 				glVertex3f( x1 * ratio, y2, z1 * ratio );
 				glEnd( );
 		}
+
+		return true;
 }

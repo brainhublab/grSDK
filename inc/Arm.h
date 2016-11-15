@@ -6,6 +6,7 @@
 #define VISUALIZATION_ARM_H
 
 #include <SDL2/SDL.h>
+#include <assert.h>
 #include <vector>
 #include <map>
 
@@ -19,11 +20,11 @@ public:
 		~Arm();
 
 		// bending
-		void bendArm( float angleX, float angleY, float angleZ );
-		void bendHand( float angleX, float angleY, float angleZ );
-		void bendFinger( int index, float angleX, float angleY, float angleZ );
+		bool bendArm( float angleX, float angleY, float angleZ );
+		bool bendHand( float angleX, float angleY, float angleZ );
+		bool bendFinger( int index, float angleX, float angleY, float angleZ );
 
-		void handleInput( SDL_Keysym keysym );
+		bool handleInput( SDL_Keysym keysym );
 
 		const std::vector<std::map<char, float>> & getTrajectoryAngles() const;
 private:

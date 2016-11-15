@@ -20,5 +20,6 @@ all : $(OBJS)
 
 clean :
 	rm -v $(OBJ_NAME)
-# made: ok move from visualization/ to inc all my written files;
-# voids to bool
+# done: ok move from visualization/ to inc all my written files;
+# done: voids to bool
+# learn stuff about makefiles
