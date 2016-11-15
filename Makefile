@@ -5,7 +5,7 @@ UI_DIR = ./inc/ui
 
 IMGUI_FILES = $(UI_DIR)/imgui/imgui.cpp $(UI_DIR)/imgui/imgui_draw.cpp $(SRC_DIR)/ui/imgui_impl_sdl.cpp
 
-OBJS = $(IMGUI_FILES) $(SRC_DIR)/Arm.cpp $(SRC_DIR)/Renderer.cpp $(SRC_DIR)/gestusVisualization.cpp $(SRC_DIR)/main.cpp
+OBJS = $(IMGUI_FILES) $(SRC_DIR)/Arm.cpp $(SRC_DIR)/VGui.cpp $(SRC_DIR)/Renderer.cpp $(SRC_DIR)/gestusVisualization.cpp $(SRC_DIR)/main.cpp
 
 CC = g++
 

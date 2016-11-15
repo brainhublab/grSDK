@@ -138,7 +138,7 @@ bool Visualization::run()
 				ImGui_ImplSdl_NewFrame(window);
 				// render gui stuff here
 
-				gui::drawMenu( &leftArm, &rightArm, &renderWithHand, &renderWithTrajectory, &angleX, &angleY, &angleZ);
+				gui.drawMenu( &leftArm, &rightArm, &renderWithHand, &renderWithTrajectory, &angleX, &angleY, &angleZ);
 
 				// clear bg color and depth buffer
 				glClearColor( 0.0f, 0.5f, 0.5f, 0.0f );

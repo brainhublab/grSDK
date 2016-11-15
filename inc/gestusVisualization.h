@@ -2,7 +2,7 @@
 #define VISUALIZATION
 
 #include <string>
-#include "GuiMethods.h"
+#include "VGui.h"
 #include "Renderer.h"
 
 class Visualization
@@ -12,11 +12,11 @@ public:
 		~Visualization();
 		Visualization(const Visualization&) = delete;
 		Visualization&operator=(const Visualization&) = delete;
-public:
 		bool run();
 		bool stop();
 
 private:
+		VGui gui;
 		// todo: move it to Hand class?
 		std::string& _firstHandId;
 		std::string& _firstBuffer;
@@ -24,14 +24,13 @@ private:
 		std::string& _secondBuffer;
 		Arm leftArm;
 		Arm rightArm;
-private:
+		//
 		bool setOpenGLVersion();
 		bool quit = false;
 		bool close();
-private:
+		// SDL stuff
 		SDL_Window *window;
 		SDL_GLContext glContext;
-private:
 		// states
 		bool renderWithTrajectory = false,
 						renderWithHand = true;

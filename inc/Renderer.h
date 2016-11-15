@@ -18,34 +18,28 @@ class Renderer
 {
 public:
 		Renderer();
-		Renderer(const Renderer&) = delete;
-		Renderer& operator=(const Renderer&) = delete;
-
 		~Renderer(){};
 
-public:
+		Renderer(const Renderer&) = delete;
+		Renderer& operator=(const Renderer&) = delete;
 		bool drawScene(float, float, float);
+		bool setViewport(int, int);
+		bool update();
 		// renders arm using last boolean argument "isLeft"
 		bool renderArm(struct Node*, float, float, float, bool);
 		bool renderTrajectory(Arm*, float, float, float, bool);
-
-public:
+		// accessors
 		int getWidth();
 		int getHeight();
-		bool setViewport(int, int);
-		bool update();
-
 private:
 		render_data data;
-
-private:
 		bool initGL();
 		bool drawFinger( Node *hand, float fingerDistance, int fingerIndex);
 
 		// Geometric
 		bool createRightHand(float, float, float);
 		bool createLeftHand(float, float, float);
-
+		
 		bool createColorSphere(float, int, int, GLubyte r, GLubyte g, GLubyte b);
 		bool createCube(float, float, float);
 		bool createSphere(float, int, int);
