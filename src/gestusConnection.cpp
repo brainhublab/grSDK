@@ -39,8 +39,9 @@ bool GestusConnection::setAdapterName()
     DBusConnection *conn;
     DBusMessage *msg, *reply;
 
-    DBusError* error;
+    DBusError* derror;
     string adapterName;
+
     conn = dbus_bus_get(DBUS_BUS_SYSTEM, NULL);
     msg = dbus_message_new_method_call(
             dbusBluez.name.c_str(),
@@ -57,12 +58,23 @@ bool GestusConnection::setAdapterName()
             DBUS_TYPE_STRING, &property,
             DBUS_TYPE_INVALID);
 
-    reply = dbus_connection_send_with_reply_and_block(conn, msg, -1, NULL);
-
+    reply = dbus_connection_send_with_reply_and_block(conn, msg, -1, derror);
+    
+    if(reply == NULL)
+    {
+        cout<<"Can't find any adapters"<<endl;
+        return FALSE;
+    }
 
     adapterName.clear();
     getReply(reply, &adapterName);
     adapter.name = adapterName;
+
+    dbus_message_unref(msg);
+    dbus_message_unref(reply);
+
+    adapterName.clear();
+
     return TRUE;
 }
 string GestusConnection::getAdapterName()
@@ -90,62 +102,75 @@ vector<device_t> GestusConnection::getConnectedDevices()
 }
 bool GestusConnection::getData(int devId, string characteristic, deque<string>* buffer)
 {
-    
-    do
-    {
-        if(!buffer->empty())
-        {
-            cout<<buffer->front()<<endl;
-            buffer->pop_front();
-        }
-        else 
-            cout<<"is empty";
-    }while(connectAndRead(devId, characteristic, buffer));
-    return TRUE;
-}
-bool GestusConnection::connectAndRead(int devId, string characteristic, deque<string> *buffer)
-{
-    
     device_t dev;
-    string arr;
-    if(characteristic == "gyro")
-    {
-        characteristic = dev.gyro;
-        cout<<characteristic;
-    }
-
-
     for(int i=0; i < devices.size(); i++)
     {
         if(devices[i].id == devId)
         {
             dev = devices[i];
+
             //cout<<dev.name;
         }
+        else
+        {
+            cout<<"Can't find devices wit this: "<<devId<< "id"<<endl;
+
+        }
     }
+
+    if(characteristic == "fingers")
+    {
+        characteristic = dev.fingers;
+    }
+    else if(characteristic == "gyro")
+    {
+        characteristic = dev.gyro;
+    }
+    else if(characteristic == "accelerometer")
+    {
+        characteristic = dev.accelerometer;
+    }
+    else if(characteristic == "magnet")
+    {
+        characteristic = dev.magnet;
+    }
+    else
+    {
+        cout<<"Can't find this: "<<characteristic<<"characteristic"<<endl;
+    }
+
+       
+    thread thr(&GestusConnection::connectAndRead, this, dev, characteristic, buffer);
+    thr.detach(); 
+
+   return TRUE;
+}
+bool GestusConnection::connectAndRead(device_t dev, string characteristic, deque<string> *buffer)
+{
+
     DBusConnection *conn=NULL;
     DBusMessage *msg=NULL, *reply=NULL;
     DBusError *derror=NULL;
 
     conn = dbus_bus_get(DBUS_BUS_SYSTEM, NULL);
 
-    
     string s;
+
     while(TRUE)
-   {
+    {
         msg = dbus_message_new_method_call(
                 dbusBluez.name.c_str(),
-                dev.gyro.c_str(),
+                characteristic.c_str(), 
                 "org.bluez.GattCharacteristic1",
                 "ReadValue"
                 );
 
-        reply = dbus_connection_send_with_reply_and_block(conn, msg, -1, NULL);
+        reply = dbus_connection_send_with_reply_and_block(conn, msg, -1, derror);
         DBusMessageIter rootIter;
         if(reply == NULL)
         {   
+            cout<<"Can't read value from device "<<dev.name<<" with characteristic"<<characteristic<<endl;
             return FALSE;
-            cout<<"NO NO NOOOOO"<<endl;
         }
         dbus_message_iter_init(reply, &rootIter);
         int currentType;
@@ -165,19 +190,16 @@ bool GestusConnection::connectAndRead(int devId, string characteristic, deque<st
                         char str, str1;
                         dbus_message_iter_get_basic(&subIter, &str);
                         s.push_back(str);
-                        //cout<<s;
+
                     }
                     dbus_message_iter_next(&subIter);
 
                 }
 
-                  buffer->push_back(s);
-                  s.clear();
-                  //return TRUE;
-                  //cout<<"push"<<endl;
+                buffer->push_back(s);
+                s.clear();
+
             }
-            //cout<<buffer->front()<<"class_data"<<endl;
-            //buffer->pop_front();
             dbus_message_iter_next(&rootIter);
         }
 
@@ -206,7 +228,7 @@ bool GestusConnection::setAvalibleDevices()
             "/",
             "org.freedesktop.DBus.ObjectManager",
             "GetManagedObjects");
-    reply = dbus_connection_send_with_reply_and_block(conn, msg, -1, NULL);
+    reply = dbus_connection_send_with_reply_and_block(conn, msg, -1, derror);
     DBusMessageIter iterIn;
     dbus_message_iter_init(reply, &iterIn);
 
@@ -219,13 +241,13 @@ bool GestusConnection::setAvalibleDevices()
     {
         currentPath = allDevicesPaths.back();
         msg = dbus_message_new_method_call(
-               dbusBluez.name.c_str(),
-               currentPath.c_str(),
-               dbusBluez.properties.c_str(),
-               "Get"
+                dbusBluez.name.c_str(),
+                currentPath.c_str(),
+                dbusBluez.properties.c_str(),
+                "Get"
                 );
 
-               dbus_message_append_args(msg,
+        dbus_message_append_args(msg,
                 DBUS_TYPE_STRING, &iface,
                 DBUS_TYPE_STRING, &prop,
                 DBUS_TYPE_INVALID);
@@ -245,15 +267,20 @@ bool GestusConnection::setAvalibleDevices()
             setDeviceCharacteristics(&dev, currentPath);
             devices.push_back(dev);
         }
+        else 
+        {
+            cout<<"Not found any Gestus Devices :("<<endl;
+            return FALSE;
+        }
 
         allDevicesPaths.pop_back();
         currentPath.clear();
         devId++;
 
     }
- devName.clear();
-cout<<devices.front().fingers<<endl;
-return true;
+    devName.clear();
+    //cout<<devices.front().fingers<<endl;
+    return TRUE;
 
 }
 
@@ -305,15 +332,22 @@ bool GestusConnection::setDeviceCharacteristics(device_t* device, string deviceP
                        {
                             device->magnet = characteristics[j];
                        }
+                       else
+                       {
+                           cout<<"Cant find any characteristic please check yhe device configs"<<endl;
+                           return FALSE;
+                       }
                     }
                     else
                     {
+                        cout<<"Can't parse property string check configs"<<endl;
                         return FALSE;
                     }
                 }
             }
             else
             {
+                cout<<"Cant parse parsePropertyArray check configs"<<endl;
                 return FALSE;
             }
         }

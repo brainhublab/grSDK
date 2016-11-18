@@ -10,15 +10,15 @@ using namespace std;
 //void threadFunction(GestusConnection)
 int main()
 {
-    string characteristic = "accelerometer";
+    string characteristic = "gyro";
 
     deque<string> buffer;
 
     GestusConnection connection;
     connection.setAvalibleDevices();
-    //connection.getData(0, characteristic, &buffer);
-    thread thr(&GestusConnection::connectAndRead, &connection, 0, characteristic, &buffer);
-    thr.detach();
+    connection.getData(0, characteristic, &buffer);
+    //thread thr(&GestusConnection::connectAndRead, &connection, 0, characteristic, &buffer);
+    //thr.detach();
     do
     {
         if(!buffer.empty())
