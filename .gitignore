@@ -1,7 +1,5 @@
-
 .ycm_extra_conf* 
 *swp
-
 lib/externAssets/bluez-5.41/
 *.ini
 
