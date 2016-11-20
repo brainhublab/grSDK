@@ -134,11 +134,11 @@ bool GestusConnection::getData(int devId, string characteristic, deque<string>* 
     {
         characteristic = dev.magnet;
     }
-    else
+   /* else
     {
         cout<<"Can't find this: "<<characteristic<<"characteristic"<<endl;
     }
-
+*/
        
     thread thr(&GestusConnection::connectAndRead, this, dev, characteristic, buffer);
     thr.detach(); 
@@ -267,11 +267,12 @@ bool GestusConnection::setAvalibleDevices()
             setDeviceCharacteristics(&dev, currentPath);
             devices.push_back(dev);
         }
+        /*
         else 
         {
             cout<<"Not found any Gestus Devices :("<<endl;
             return FALSE;
-        }
+        }*/
 
         allDevicesPaths.pop_back();
         currentPath.clear();
@@ -332,11 +333,11 @@ bool GestusConnection::setDeviceCharacteristics(device_t* device, string deviceP
                        {
                             device->magnet = characteristics[j];
                        }
-                       else
+                       /*else
                        {
                            cout<<"Cant find any characteristic please check yhe device configs"<<endl;
                            return FALSE;
-                       }
+                       }*/
                     }
                     else
                     {
@@ -478,8 +479,6 @@ bool GestusConnection::iterDevices(DBusMessageIter* iterIn, vector<string>* devi
             if(currentType == DBUS_TYPE_OBJECT_PATH && layerArbitor == 2)
             {
                 pathArbitor += 1;
-                //if(pathArbitor == 2)
-                //{
                     char* str = NULL;
                     dbus_message_iter_get_basic(iterIn, &str);
                     string devicePath;
@@ -487,12 +486,8 @@ bool GestusConnection::iterDevices(DBusMessageIter* iterIn, vector<string>* devi
                     if(devicePath.length() == 38)
                     {
                         devices->push_back(devicePath);
-                        //cout<<devicePath<<"----"<<devicePath.length()<<endl;
                     }
                     devicePath.clear();
-
-                //}
-
             }
 
         }
