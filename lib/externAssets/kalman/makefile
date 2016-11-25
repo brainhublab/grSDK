@@ -1,8 +1,8 @@
 TARGET := libkalman.a
 DEBUG_FLAG := no
 
-LIB_INSTALL_PATH := /usr/local/lib
-INC_INSTALL_PATH := /usr/local/include
+LIB_INSTALL_PATH := ../../
+INC_INSTALL_PATH := ../../../inc
 
 ARCHIVE_NAME := $(TARGET:.a=.tar.gz)
 INCLUDE_DIR := -I`pwd`

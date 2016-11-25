@@ -3,6 +3,9 @@ INC_DIR=./inc
 LIB_DIR=./lib
 BUILD_DIR=./build
 BIN_DIR=./bin
+EXTERN_ASSETS_DIR=$(LIB_DIR)/externAssets
+
+KALMAN_DIR=$(LIB_DIR)$(EXTERN_ASSETS_DIR)/kalman
 
 CPP=g++
 LIB_FLAGS=-ldbus-1 -lconfig++
@@ -12,12 +15,13 @@ DBUS_INC=-I/usr/include/dbus-1.0 -I/usr/lib64/dbus-1.0/include
 DBUS_LIB=-L/usr/lib64
 INCLUDE=-I$(INC_DIR) $(DBUS_INC)
 
+EXTERN_ASSETS := extern_assets
 
 main: $(BIN_DIR)/main
 
 BINARIES=main
 
-all:$(BINARIES)
+all:$(BINARIES) $(EXTERN_ASSETS)
 
 
 
@@ -27,6 +31,9 @@ $(BIN_DIR)/%: $(BUILD_DIR)/gestusConnection.o $(BUILD_DIR)/%.o
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
 	$(CPP) $(CPP_FLAGS) $(INCLUDE) -c $^ -o $@ $(LIB_FLAGS)
+
+extern_assets:
+	$(MAKE) -f $(EXTERN_ASSETS_DIR)/Makefile	
 #clean rules
 
 #.PHONY: clean cleanobj cleanbin
