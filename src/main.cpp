@@ -1,34 +1,15 @@
-#include <iostream>
-#include <dbus/dbus.h>
-#include <deque>
-#include <stdlib.h>
-#include "gestusConnection.h"
-#include <thread>
-#include <time.h>
-#include <unistd.h>
-using namespace std;
-//void threadFunction(GestusConnection)
+#include "iostream"
+#include "gestusVisualization.h"
+
 int main()
 {
-    string characteristic = "magnet";
+		std::string id1, id2;
+		std::string buffer1, buffer2;
+		// todo: adapt visualisation for buffers and iDs
+		Visualization visualization( id1, buffer1, id2, buffer2 );
 
-    deque<string> buffer;
+		// this should be invoked in new thread
+		visualization.run( );
 
-    GestusConnection connection;
-    connection.setAvalibleDevices();
-    connection.getData(0, characteristic, &buffer);
-    //thread thr(&GestusConnection::connectAndRead, &connection, 0, characteristic, &buffer);
-    //thr.detach();
-    do
-    {
-        if(!buffer.empty())
-        {
-            cout<<buffer.front()<<endl;
-            buffer.pop_front();
-        }
-        //else
-            //cout<<"is empty"<<endl;
-    }while(TRUE);
-       
-      return 0;
+		return EXIT_SUCCESS;
 }
