@@ -6,10 +6,28 @@ VGui::VGui()
     {
 			chartArray[ i ] = ( i & 1 ) ? 1.0f : 0.0f;
 		}
+
 }
 
 VGui::~VGui()
 {
+}
+
+bool VGui::addPlotData(double data[3])
+{
+    std::map<char, float> angles;
+    angles['X'] = data[0];
+    angles['Y'] = data[1];
+    angles['Z'] = data[2];
+
+    dataForPlot.push_back(angles);
+
+    if(dataForPlot.size() > 40)
+    {
+        dataForPlot.erase(dataForPlot.begin());
+    }
+
+    return true;
 }
 
 bool VGui::drawMenu(Arm* leftArm, Arm* rightArm ,bool* renderWithHand, bool* renderWithTrajectory, float * angleX, float * angleY, float * angleZ)
@@ -66,7 +84,10 @@ bool VGui::drawMenu(Arm* leftArm, Arm* rightArm ,bool* renderWithHand, bool* ren
                 ImGui::EndMenuBar( );
             }
 
-
+            if(dataForPlot.size() > 0)
+            {
+                drawDataChart( dataForPlot );
+            }
             drawTrajectoryChart(leftArm->getTrajectoryAngles(), leftArm);
             ImGui::End();
         }
@@ -76,6 +97,33 @@ bool VGui::drawMenu(Arm* leftArm, Arm* rightArm ,bool* renderWithHand, bool* ren
     ImGui::PopStyleColor();
     ImGui::PopStyleColor();
     return true;
+}
+
+bool VGui::drawDataChart(const std::vector<std::map<char, float>>& data)
+{
+    float min = -360, max = 360; // range of data plotting
+    ImGui::SetNextTreeNodeOpen(true, ImGuiSetCond_Once);
+    if(ImGui::TreeNode("Plot Data"))
+    {
+        ImGui::Columns(1);
+        ImGui::Separator();
+
+        ImGui::Text("Angles: ");
+        ImGui::Separator();
+
+        ImGui::Text("X");
+        drawTrajectiiryByAngleName('X', data, min, max);
+        ImGui::Separator();
+        ImGui::Text("Y");
+        drawTrajectiiryByAngleName('Y', data, min, max);
+        ImGui::Separator();
+        ImGui::Text("Z");
+        drawTrajectiiryByAngleName('Z', data, min, max);
+        ImGui::Separator();
+        ImGui::TreePop();
+        return true;
+    }
+    return false;
 }
 
 bool VGui::drawTrajectoryChart(const std::vector<std::map<char, float>>& trajectory, Arm* arm)
@@ -118,6 +166,7 @@ bool VGui::drawTrajectiiryByAngleName(char name ,const std::vector<std::map<char
     for ( int i = 0; i < angles.size( ); ++i )
     {
         arr[ i ] = angles[ i ];
+
     }
 
     drawChart( arr, angles.size( ), min, max);
@@ -146,7 +195,7 @@ bool VGui::drawChart(const float* data, size_t size, float min, float max)
     s.append( std::to_string( roundf( min )));
     s.append( "\nMax:" );
     s.append( std::to_string( roundf( max )));
-    ImGui::PlotHistogram( s.c_str( ), chartArray, count, 0, std::to_string( max ).c_str( ), min, max,
+    ImGui::PlotHistogram( s.c_str( ), chartArray, count, 0, NULL, min, max,
                               ImVec2( 0, 80 ));
 
     return true;

@@ -14,7 +14,7 @@ public:
 		Visualization&operator=(const Visualization&) = delete;
 		bool run();
 		bool stop();
-
+		bool addPlotData(double[3]);
 private:
 		VGui gui;
 		// todo: move it to Hand class?

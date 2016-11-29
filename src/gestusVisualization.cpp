@@ -49,7 +49,10 @@ Visualization::~Visualization()
 }
 
 
-
+bool Visualization::addPlotData(double data[3])
+{
+		gui.addPlotData(data);
+}
 
 bool Visualization::run()
 {

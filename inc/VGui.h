@@ -19,9 +19,12 @@ private:
 		bool drawTrajectiiryByAngleName(char name ,const std::vector<std::map<char, float>>& trajectory, float min, float max);
 		bool drawTrajectoryChart(const std::vector<std::map<char, float>>& trajectory, Arm* arm);
 public:
+		bool addPlotData(double[3]); // custom data plotting
+		bool drawDataChart(const std::vector<std::map<char, float>>& data);
 		bool drawMenu(Arm* leftArm, Arm* rightArm ,bool* renderWithHand, bool* renderWithTrajectory, float * angleX, float * angleY, float * angleZ);
 
 private:
+	std::vector<std::map<char, float>> dataForPlot;
 	bool showChartWindow = false;
 	float chartArray[600];
 };
