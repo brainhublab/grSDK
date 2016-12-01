@@ -42,7 +42,7 @@ int main()
     
    double G[3], A[3], M[3];
 // Declare an instance of the class (e.g. as a member of another class)
-/* AttitudeEstimator Est;
+ AttitudeEstimator Est;
  // Initialise the estimator (e.g. in the class constructor, none of these are actually strictly required for the estimator to work, and can be set at any time)
  Est.setMagCalib(0.68, -1.32, 0.0);         // Recommended: Use if you want absolute yaw information as opposed to just relative yaw (Default: (1.0, 0.0, 0.0))
  Est.setPIGains(2.2, 2.65, 10, 1.25);       // Recommended: Use if the default gains (shown) do not provide optimal estimator performance (Note: Ki = Kp/Ti)
@@ -52,7 +52,7 @@ int main()
  Est.setAttitudeFused(3.14, 0.0, 0.0, 1.0); // Optional: Use if you have prior knowledge about the orientation of the robot (Default: Identity orientation)
  Est.setGyroBias(0.152, 0.041, -0.079);     // Optional: Use if you have prior knowledge about the gyroscope bias (Default: (0.0, 0.0, 0.0))
  Est.setAccMethod(Est.ME_FUSED_YAW);        // Optional: Use if you wish to experiment with varying acc-only resolution methods
- */
+ 
     do
     {
         if(!gyro.empty() )
@@ -66,7 +66,7 @@ int main()
             getSensorData(accelerometer.front(), A);
             accelerometer.pop_front();
         }
-        /*
+
         Est.update(0.20, G[0], G[1], G[2], A[0], A[1], A[2], 0, 0, 0);
 
         double q[4];
@@ -74,7 +74,6 @@ int main()
         cout << "My attitude is (quaternion): (" << q[0] << "," << q[1] << "," << q[2] << "," << q[3] << ")" << endl;
         cout << "My attitude is (ZYX Euler): (" << Est.eulerYaw() << "," << Est.eulerPitch() << "," << Est.eulerRoll() << ")" << endl;
         cout << "My attitude is (fused): (" << Est.fusedYaw() << "," << Est.fusedPitch() << "," << Est.fusedRoll() << "," << (Est.fusedHemi() ? 1 : -1) << ")" << endl;
-        */
     }while(TRUE);
        
       return 0;
