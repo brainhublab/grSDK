@@ -58,7 +58,8 @@ bool VGui::drawMenu(Arm* leftArm, Arm* rightArm ,bool* renderWithHand, bool* ren
         ImGui::Checkbox( "Renrer trajectory", renderWithTrajectory );
         ImGui::Checkbox( "Render infinite trajectory[under constr]", renderWithTrajectory );
         ImGui::Checkbox( "Renrer hand", renderWithHand );
-        ImGui::Checkbox( "Renrer with chart", &showChartWindow );
+        ImGui::Checkbox( "Renrer with trajectory chart", &showChartWindow );
+        ImGui::Checkbox( "Renrer with data chart", &showDataChartWindow );
     }
 
 
@@ -93,6 +94,25 @@ bool VGui::drawMenu(Arm* leftArm, Arm* rightArm ,bool* renderWithHand, bool* ren
         }
 
     }
+    // Data chart
+    if(showDataChartWindow)
+    {
+      ImGui::SetNextTreeNodeOpen(true, ImGuiSetCond_Once);
+        {
+            ImGui::SetNextWindowPos( ImVec2( 550, 330 ), ImGuiSetCond_Once );
+            ImGui::SetNextWindowSize( ImVec2( 500, 400 ), ImGuiSetCond_Once );
+
+            // Plots window
+            ImGui::Begin( "Plot Data", nullptr, ImGuiWindowFlags_MenuBar );
+            if(dataForPlot.size() > 0)
+            {
+            	drawDataChart( dataForPlot );
+            }
+            ImGui::End();
+        }
+
+    }
+
     ImGui::End();
     ImGui::PopStyleColor();
     ImGui::PopStyleColor();

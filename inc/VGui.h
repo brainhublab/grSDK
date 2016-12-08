@@ -26,6 +26,7 @@ public:
 private:
 	std::vector<std::map<char, float>> dataForPlot;
 	bool showChartWindow = false;
+  	bool showDataChartWindow = false;
 	float chartArray[600];
 };
 
