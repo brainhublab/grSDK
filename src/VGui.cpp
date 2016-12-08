@@ -71,7 +71,7 @@ bool VGui::drawMenu(Arm* leftArm, Arm* rightArm ,bool* renderWithHand, bool* ren
             ImGui::SetNextWindowSize( ImVec2( 500, 400 ), ImGuiSetCond_Once );
 
             // Plots window
-            ImGui::Begin( "Plots", nullptr, ImGuiWindowFlags_MenuBar );
+            ImGui::Begin( "Plot Trajectory", nullptr, ImGuiWindowFlags_MenuBar );
             if ( ImGui::BeginMenuBar( ))
             {
                 if ( ImGui::BeginMenu( "Plot" ))
@@ -83,11 +83,6 @@ bool VGui::drawMenu(Arm* leftArm, Arm* rightArm ,bool* renderWithHand, bool* ren
                     ImGui::EndMenu( );
                 }
                 ImGui::EndMenuBar( );
-            }
-
-            if(dataForPlot.size() > 0)
-            {
-                drawDataChart( dataForPlot );
             }
             drawTrajectoryChart(leftArm->getTrajectoryAngles(), leftArm);
             ImGui::End();
