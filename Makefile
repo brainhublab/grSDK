@@ -1,40 +1,26 @@
-SRC_DIR=./src
-INC_DIR=./inc
-LIB_DIR=./lib
-BUILD_DIR=./build
-BIN_DIR=./bin
+BUILD_DIR = ./build
+INC_DIR = ./inc
+SRC_DIR = ./src
+UI_DIR = ./inc/ui
+BIN_DIR = ./bin
 
-CPP=g++
-LIB_FLAGS=-ldbus-1 -lconfig++
-CPP_FLAGS= -g -std=c++11 -pthread #-Wall #-pedantic
+IMGUI_FILES = $(UI_DIR)/imgui/imgui.cpp $(UI_DIR)/imgui/imgui_draw.cpp $(SRC_DIR)/ui/imgui_impl_sdl.cpp
 
-DBUS_INC=-I/usr/include/dbus-1.0 -I/usr/lib64/dbus-1.0/include
-DBUS_LIB=-L/usr/lib64
-INCLUDE=-I$(INC_DIR) $(DBUS_INC)
+OBJS = $(IMGUI_FILES) $(SRC_DIR)/Arm.cpp $(SRC_DIR)/VGui.cpp $(SRC_DIR)/Renderer.cpp $(SRC_DIR)/gestusVisualization.cpp $(SRC_DIR)/visualmain.cpp
 
+CC = g++
 
-main: $(BIN_DIR)/main
+COMPILER_FLAGS = -w -std=c++11
 
-BINARIES=main
+LINKER_FLAGS = -lSDL2 -lGL -lGLU
 
-all:$(BINARIES)
+OBJ_NAME = $(BUILD_DIR)/visualize
 
-$(BIN_DIR)/%: $(BUILD_DIR)/gestusConnection.o $(BUILD_DIR)/%.o 
-	$(CPP) $(CPP_FLAGS) $(INCLUDE) $^ -o $@ $(LIB_FLAGS)
+all : $(OBJS)
+	$(CC) $(OBJS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -o $(OBJ_NAME) -I$(INC_DIR)
 
-
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
-	$(CPP) $(CPP_FLAGS) $(INCLUDE) -c $^ -o $@ $(LIB_FLAGS)
-#clean rules
-
-#.PHONY: clean cleanobj cleanbin
-
-clean:
-	rm -vf $(BIN_DIR)/*
-	rm -vf $(BUILD_DIR)/*
-
-cleanobj:
-	rm -vf $(BUILD_DIR)/*
-	
-cleanbin:
-	rm -vf $(BIN_DIR)/*
+clean :
+	rm -v $(OBJ_NAME)
+# done: ok move from visualization/ to inc all my written files;
+# done: voids to bool
+# learn stuff about makefiles

@@ -1,27 +1,26 @@
 #ifndef VISUALIZATION
 #define VISUALIZATION
 
-#include <string>
 #include "VGui.h"
 #include "Renderer.h"
+
+#include <string>
+#include <deque>
 
 class Visualization
 {
 public:
-		Visualization(std::string& firstId, std::string& firstBuffer, std::string& secondId, std::string& secondBuffer);
+		Visualization();
 		~Visualization();
 		Visualization(const Visualization&) = delete;
 		Visualization&operator=(const Visualization&) = delete;
+		bool init(const int w, const int h);
 		bool run();
 		bool stop();
 		bool addPlotData(double[3]);
+		bool visualizeData(const std::deque<std::string>&);
 private:
 		VGui gui;
-		// todo: move it to Hand class?
-		std::string& _firstHandId;
-		std::string& _firstBuffer;
-		std::string& _secondHandId;
-		std::string& _secondBuffer;
 		Arm leftArm;
 		Arm rightArm;
 		//
