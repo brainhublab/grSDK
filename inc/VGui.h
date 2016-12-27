@@ -19,9 +19,9 @@ private:
 		bool drawChart(const float* data, size_t size, float min, float max);
 		bool drawTrajectiiryByAngleName(char name ,const std::vector<std::map<char, float>>& trajectory, float min, float max);
 		bool drawTrajectoryChart(const std::vector<std::map<char, float>>& trajectory, Arm* arm);
-		bool renderChartFromBuffer(const std::deque< std::string > &buffer, size_t axis);
+		bool renderChartFromBuffer(std::string name, const std::deque< std::string > &buffer, size_t axis);
 public:
-		bool plotData(const std::deque<std::string> & buffer);
+		bool plotData(std::map< std::string, std::deque<std::string>*>& buffers);
 		bool addPlotData(double[3]); // custom data plotting
 		bool drawDataChart(const std::vector<std::map<char, float>>& data);
 		bool drawMenu(Arm* leftArm, Arm* rightArm ,bool* renderWithHand, bool* renderWithTrajectory, float * angleX, float * angleY, float * angleZ);

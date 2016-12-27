@@ -4,12 +4,6 @@ project(gestusSDK)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 set(SOURCE_FILES
-    build/visualization
-    config/adapter.cfg
-    config/bluez.cfg
-    config/config.cfg
-    config/device.cfg
-    docs/README.txt
     inc/ui/imgui/extra_fonts/binary_to_compressed_c.cpp
     inc/ui/imgui/imconfig.h
     inc/ui/imgui/imgui.cpp

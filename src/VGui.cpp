@@ -32,7 +32,7 @@ double getAxisAngle(std::string str, size_t index)
     return NAN;
 }
 
-bool VGui::renderChartFromBuffer(const std::deque< std::string > &buffer, size_t axis)
+bool VGui::renderChartFromBuffer(std::string name, const std::deque< std::string > &buffer, size_t axis)
 {
     float min = 0, max = 0;
     float *arr = new float[buffer.size( )];
@@ -52,68 +52,77 @@ bool VGui::renderChartFromBuffer(const std::deque< std::string > &buffer, size_t
     return true;
 }
 
-
-
-bool VGui::plotData(const std::deque< std::string > &buffer )
+void setPlotColors(int i)
 {
-//    // Config new window
-//    ImGui::PushStyleColor(ImGuiCol_TitleBgActive, ImVec4(0.0f, 0.7f, 0.2f, 1.0f));
-//    ImGui::PushStyleColor(ImGuiCol_TitleBg, ImVec4(0.0f, 0.3f, 0.1f, 1.0f));
-//    ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiSetCond_Once);
-//    ImGui::SetNextWindowSize(ImVec2(280, 300), ImGuiSetCond_Once);
-//
-//    // Begin a new window
-//    ImGui::Begin( "", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs);
-//
-//    static float x, y, z;
-//
-//    ImGui::InputFloat("X", &x);
-//    ImGui::InputFloat("Y", &y);
-//    ImGui::InputFloat("Z", &z);
-//    if(ImGui::Button("add plot data"))
-//    {
-////        printf( "%d, %d, %d", ( int ) x, ( int ) y, ( int ) z );
-//        std::string tmp;
-//        tmp.append(std::to_string(x));
-//        tmp.append(" ");
-//        tmp.append(std::to_string(y));
-//        tmp.append(" ");
-//        tmp.append(std::to_string(z));
-////        buffer.push_back(tmp);
-//    }
 
-    ImGui::SetNextTreeNodeOpen(true, ImGuiSetCond_Once);
+    const ImVec4 pink{1.000, 0.753, 0.796, 1.f};
+    const ImVec4 pink_hovered{1.000, 0.412, 0.706, 1.f};
+    const ImVec4 green{0.000, 0.980, 0.604, 1.f};
+    const ImVec4 green_hovered{0.196, 0.804, 0.196, 1.f};
+
+
+    ImGui::PushStyleColor(ImGuiCol_PlotHistogram, i%2 == 0 ? pink : green);
+    ImGui::PushStyleColor(ImGuiCol_PlotLines, i%2 == 0 ? pink : green);
+    ImGui::PushStyleColor(ImGuiCol_PlotHistogramHovered, i%2 == 0 ? pink_hovered : green_hovered);
+    ImGui::PushStyleColor(ImGuiCol_PlotLinesHovered, i%2 == 0 ? green_hovered : pink_hovered);
+}
+
+void popPlotColors()
+{
+    ImGui::PopStyleColor();
+    ImGui::PopStyleColor();
+    ImGui::PopStyleColor();
+    ImGui::PopStyleColor();
+}
+bool VGui::plotData(std::map< std::string, std::deque<std::string>*>& buffers )
+{
+
+    int i = 0;
+    for ( auto buffer : buffers )
     {
-        ImGui::SetNextWindowPos( ImVec2( 0, 0 ), ImGuiSetCond_Once );
-        ImGui::SetNextWindowSize( ImVec2( 500, 800 ), ImGuiSetCond_Once );
+        setPlotColors(i);
 
-        // Plots window
-        ImGui::Begin( "Plots", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
-        if(buffer.size() > 0)
+
+        ImGui::PushStyleColor(ImGuiCol_TitleBg, ImVec4(0.902, 0.902, 0.980, .3f));
+        ImGui::PushStyleColor(ImGuiCol_TitleBgActive, ImVec4(0.847, 0.749, 0.847, 0.3f));
+
+        // Plot window
+        ImGui::SetNextWindowPos( ImVec2( 200 * i, 0 ), ImGuiSetCond_Once );
+        ImGui::SetNextWindowSize( ImVec2( 500, 800 ), ImGuiSetCond_Once );
+        i++;
+
+        ImGui::Begin( buffer.first.c_str( ), nullptr );
+        if ( buffer.second->size() > 0 )
         {
             // Table
-            ImGui::SetNextTreeNodeOpen(true, ImGuiSetCond_Once);
-            if(ImGui::TreeNode("Plot Data"))
+            ImGui::SetNextTreeNodeOpen( true, ImGuiSetCond_Once );
+            if ( ImGui::TreeNode( "Plot Data" ))
             {
-                ImGui::Columns(1);
-                ImGui::Separator();
+                ImGui::Columns( 1 );
+                ImGui::Separator( );
 
-                ImGui::Text("Angles: ");
-                ImGui::Separator();
+                ImGui::Text( "Angles: " );
+                ImGui::Separator( );
 
-                ImGui::Text("X");
-                renderChartFromBuffer(buffer, 0);
-                ImGui::Separator();
-                ImGui::Text("Y");
-                renderChartFromBuffer(buffer, 1);
-                ImGui::Separator();
-                ImGui::Text("Z");
-                renderChartFromBuffer(buffer, 2);
-                ImGui::Separator();
-                ImGui::TreePop();
+                ImGui::Text( "X" );
+                renderChartFromBuffer( buffer.first, *buffer.second, 0 );
+                ImGui::Separator( );
+                ImGui::Text( "Y" );
+                renderChartFromBuffer( buffer.first, *buffer.second, 1 );
+                ImGui::Separator( );
+                ImGui::Text( "Z" );
+                renderChartFromBuffer( buffer.first, *buffer.second, 2 );
+                ImGui::Separator( );
+                ImGui::TreePop( );
             }
         }
-        ImGui::End();
+        ImGui::End( );
+
+
+        ImGui::PopStyleColor();
+        ImGui::PopStyleColor();
+
+        popPlotColors();
     }
 
 //    // clear IMGui window
@@ -309,7 +318,7 @@ bool VGui::drawChart(const float* data, size_t size, float min, float max)
     }
 
     int count = size;
-    ImGui::SliderInt( "Trajectory size", &count, 1, size );
+    ImGui::SliderInt( "Data size", &count, 1, size );
     std::string s = "Plot\nmin:";
     s.append( std::to_string( roundf( min )));
     s.append( "\nMax:" );

@@ -18,7 +18,7 @@ public:
 		bool run();
 		bool stop();
 		bool addPlotData(double[3]);
-		bool visualizeData(const std::deque<std::string>&);
+		bool visualizeData(std::map< std::string, std::deque<std::string>*>&);
 private:
 		VGui gui;
 		Arm leftArm;

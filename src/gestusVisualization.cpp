@@ -63,9 +63,9 @@ bool Visualization::addPlotData(double data[3])
 		return true;
 }
 
-bool Visualization::visualizeData(const std::deque<std::string> & buffer)
+bool Visualization::visualizeData(std::map< std::string, std::deque<std::string>*>&buffers)
 {
-		init(500, 800);
+		init( 300 * ( const int )buffers.size(), 800);
 		SDL_Event event;
 		while ( !quit )
 		{
@@ -82,7 +82,7 @@ bool Visualization::visualizeData(const std::deque<std::string> & buffer)
 				ImGui_ImplSdl_NewFrame(window);
 				// render gui stuff here
 
-				gui.plotData(buffer);
+				gui.plotData(buffers);
 
 
 				// clear bg color and depth buffer
