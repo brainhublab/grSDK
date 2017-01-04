@@ -5,16 +5,16 @@
 #ifndef VISUALIZATION_GUIMETHODS_H
 #define VISUALIZATION_GUIMETHODS_H
 
-#include "Arm.h"
+#include "arm.h"
 #include "ui/imgui_impl_sdl.h"
 #include <deque>
 
 // todo : move all of this hell to an class
-class VGui
+class VisualGui
 {
 public:
-	VGui();
-	~VGui();
+	VisualGui();
+	~VisualGui();
 private:
 		bool drawChart(const float* data, size_t size, float min, float max);
 		bool drawTrajectiiryByAngleName(char name ,const std::vector<std::map<char, float>>& trajectory, float min, float max);

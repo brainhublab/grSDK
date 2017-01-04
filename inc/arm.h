@@ -10,8 +10,8 @@
 #include <vector>
 #include <map>
 
-#include "Node.h"
-#include "Dimensions.h"
+#include "node.h"
+#include "dimensions.h"
 
 class Arm : public Node
 {

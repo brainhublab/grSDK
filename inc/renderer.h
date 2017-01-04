@@ -6,9 +6,9 @@
 #define VISUALIZATION_RENDERER_H
 
 #include "openGL.h"
-#include "Arm.h"
+#include "arm.h"
 
-#include "Dimensions.h"
+#include "dimensions.h"
 
 // Window size
 const int SCREEN_WIDTH = 1920;

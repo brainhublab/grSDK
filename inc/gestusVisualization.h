@@ -1,8 +1,8 @@
 #ifndef VISUALIZATION
 #define VISUALIZATION
 
-#include "VGui.h"
-#include "Renderer.h"
+#include "visualGui.h"
+#include "renderer.h"
 
 #include <string>
 #include <deque>
@@ -20,7 +20,7 @@ public:
 		bool addPlotData(double[3]);
 		bool visualizeData(std::map< std::string, std::deque<std::string>*>&);
 private:
-		VGui gui;
+		VisualGui gui;
 		Arm leftArm;
 		Arm rightArm;
 		//

@@ -4,7 +4,6 @@
 #include "deque"
 #include "map"
 
-
 void splitSensorData(std::string str, double arr[3])
 {
 		int i = 0;
@@ -19,7 +18,7 @@ void splitSensorData(std::string str, double arr[3])
 
 int main()
 {
-		std::string id1, id2;
+	std::string id1, id2;
 		// todo: adapt visualisation for buffers and iDs
 		Visualization visualization;
 

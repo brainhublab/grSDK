@@ -1,0 +1,4 @@
+/home/vlad/clion-2016.3.2/bin/cmake/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/vlad/projects/gestusSDK
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/vlad/projects/gestusSDK/cmake-build-debug

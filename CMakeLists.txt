@@ -18,27 +18,26 @@ set(SOURCE_FILES
     inc/visualization/ui/imgui_impl_sdl.h
     inc/Arm.h
     inc/Dimensions.h
-    inc/gestusAlgorithm.h
-    inc/gestusConnection.h
-    inc/gestusHand.h
-    inc/gestusUtilites.h
+#    inc/gestusAlgorithm.h
+#    inc/gestusConnection.h
+#    inc/gestusHand.h
+#    inc/gestusUtilites.h
     inc/gestusVisualization.h
     inc/Node.h
     inc/openGL.h
     inc/Renderer.h
-    inc/VGui.h
+        inc/visualGui.h
     src/ui/imgui_impl_sdl.cpp
     src/Arm.cpp
-    src/gestusAlgorithm.cpp
-    src/gestusConnection.cpp
-    src/gestusHand.cpp
-    src/gestusUtilites.cpp
+#    src/gestusAlgorithm.cpp
+#    src/gestusConnection.cpp
+#    src/gestusHand.cpp
+#    src/gestusUtilites.cpp
     src/gestusVisualization.cpp
-    src/main.cpp
+#    src/main.cpp
     src/Renderer.cpp
-    src/VGui.cpp
+        src/visualGui.cpp
     src/visualmain.cpp
-    imgui.ini
     Makefile)
 
 include_directories(./inc)

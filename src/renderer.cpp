@@ -2,7 +2,7 @@
 // Created by vtimofeev on 30/10/16.
 //
 
-#include "Renderer.h"
+#include "renderer.h"
 
 // helpers
 bool showPoint( float x, float y, float z )

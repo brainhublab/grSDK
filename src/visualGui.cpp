@@ -1,7 +1,7 @@
 #include <sstream>
-#include "VGui.h"
+#include "visualGui.h"
 
-VGui::VGui()
+VisualGui::VisualGui()
 {
 		for ( int i = 0; i < sizeof( chartArray ) / sizeof( float ); i++ )
     {
@@ -10,7 +10,7 @@ VGui::VGui()
 
 }
 
-VGui::~VGui()
+VisualGui::~VisualGui()
 {
 
 }
@@ -32,7 +32,7 @@ double getAxisAngle(std::string str, size_t index)
     return NAN;
 }
 
-bool VGui::renderChartFromBuffer(std::string name, const std::deque< std::string > &buffer, size_t axis)
+bool VisualGui::renderChartFromBuffer(std::string name, const std::deque< std::string > &buffer, size_t axis)
 {
     float min = 0, max = 0;
     float *arr = new float[buffer.size( )];
@@ -74,7 +74,9 @@ void popPlotColors()
     ImGui::PopStyleColor();
     ImGui::PopStyleColor();
 }
-bool VGui::plotData(std::map< std::string, std::deque<std::string>*>& buffers )
+
+
+bool VisualGui::plotData(std::map< std::string, std::deque<std::string>*>& buffers )
 {
 
     int i = 0;
@@ -132,7 +134,7 @@ bool VGui::plotData(std::map< std::string, std::deque<std::string>*>& buffers )
     return true;
 }
 
-bool VGui::addPlotData(double data[3])
+bool VisualGui::addPlotData(double data[3])
 {
     std::map<char, float> angles;
     angles['X'] = data[0];
@@ -149,7 +151,7 @@ bool VGui::addPlotData(double data[3])
     return true;
 }
 
-bool VGui::drawMenu(Arm* leftArm, Arm* rightArm ,bool* renderWithHand, bool* renderWithTrajectory, float * angleX, float * angleY, float * angleZ)
+bool VisualGui::drawMenu(Arm* leftArm, Arm* rightArm ,bool* renderWithHand, bool* renderWithTrajectory, float * angleX, float * angleY, float * angleZ)
 {
     ImGui::PushStyleColor(ImGuiCol_TitleBgActive, ImVec4(0.0f, 0.7f, 0.2f, 1.0f));
     ImGui::PushStyleColor(ImGuiCol_TitleBg, ImVec4(0.0f, 0.3f, 0.1f, 1.0f));
@@ -233,7 +235,7 @@ bool VGui::drawMenu(Arm* leftArm, Arm* rightArm ,bool* renderWithHand, bool* ren
     return true;
 }
 
-bool VGui::drawDataChart(const std::vector<std::map<char, float>>& data)
+bool VisualGui::drawDataChart(const std::vector<std::map<char, float>>& data)
 {
     float min = -360, max = 360; // range of data plotting
     ImGui::SetNextTreeNodeOpen(true, ImGuiSetCond_Once);
@@ -260,7 +262,7 @@ bool VGui::drawDataChart(const std::vector<std::map<char, float>>& data)
     return false;
 }
 
-bool VGui::drawTrajectoryChart(const std::vector<std::map<char, float>>& trajectory, Arm* arm)
+bool VisualGui::drawTrajectoryChart(const std::vector<std::map<char, float>>& trajectory, Arm* arm)
 {
     ImGui::SetNextTreeNodeOpen(true, ImGuiSetCond_Once);
     if(ImGui::TreeNode("Plot Trajectory"))
@@ -286,7 +288,7 @@ bool VGui::drawTrajectoryChart(const std::vector<std::map<char, float>>& traject
     return false;
 }
 
-bool VGui::drawTrajectiiryByAngleName(char name ,const std::vector<std::map<char, float>>& trajectory, float min, float max)
+bool VisualGui::drawTrajectiiryByAngleName(char name ,const std::vector<std::map<char, float>>& trajectory, float min, float max)
 {
 
     std::vector< float > angles;
@@ -309,7 +311,7 @@ bool VGui::drawTrajectiiryByAngleName(char name ,const std::vector<std::map<char
     return true;
 }
 
-bool VGui::drawChart(const float* data, size_t size, float min, float max)
+bool VisualGui::drawChart(const float* data, size_t size, float min, float max)
 {
     for ( int i = 0; i < size; ++i )
     {
