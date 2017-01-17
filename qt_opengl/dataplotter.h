@@ -4,18 +4,28 @@
 #include <deque>
 #include <sstream>
 #include "qcustomplot/qcustomplot.h"
+#include "QObject"
 
-class DataPlotter
+class DataPlotter : public QObject
 {
+    Q_OBJECT
+
 public:
     DataPlotter(QCustomPlot*);
+    ~DataPlotter() {}
+
     bool drawPlotByAxis(std::deque<std::string>* buffer, size_t axis, QString label);
 
     bool showPlot();
 
     void drawPlot(std::deque<std::string>* buffer);
+
+public slots:
+    void fetchData();
+
 private:
     QCustomPlot* plot = nullptr;
+    std::deque<std::string> data;
     size_t lines = 2; // refactor it!
     void splitSensorData(std::string str, double arr[3])
     {

@@ -6,7 +6,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    std::deque<std::string> buffer;
+
     buffer.push_back("123 23 94");
     buffer.push_back("154 54 124");
     buffer.push_back("173 74 144");
@@ -47,26 +47,22 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     plotter_x = new DataPlotter(ui->PlotData_X);
-    plotter_x->drawPlotByAxis(&buffer, 0, "buffer 1");
-    plotter_x->drawPlotByAxis(&buffer1, 0, "buffer 2");
-    plotter_x->drawPlotByAxis(&buffer2, 0, "buffer 3");
-    plotter_x->showPlot();
+    //plotter_x->drawPlotByAxis(&buffer, 0, "buffer 1");
+    //plotter_x->drawPlotByAxis(&buffer1, 0, "buffer 2");
+    //plotter_x->drawPlotByAxis(&buffer2, 0, "buffer 3");
+    //plotter_x->showPlot();
 
     plotter_y = new DataPlotter(ui->PlotData_Y);
-    plotter_y->drawPlotByAxis(&buffer, 1, "buffer1");
-    plotter_y->drawPlotByAxis(&buffer1, 1, "buffer2");
-    plotter_y->drawPlotByAxis(&buffer2, 1, "buffer3");
-    plotter_y->showPlot();
+    //plotter_y->drawPlotByAxis(&buffer, 1, "buffer1");
+    //plotter_y->drawPlotByAxis(&buffer1, 1, "buffer2");
+    //plotter_y->drawPlotByAxis(&buffer2, 1, "buffer3");
+    //plotter_y->showPlot();
 
     plotter_z = new DataPlotter(ui->PlotData_Z);
-    plotter_z->drawPlotByAxis(&buffer, 2, "buffer1");
-    plotter_z->drawPlotByAxis(&buffer1, 2, "buffer 2");
-    plotter_z->drawPlotByAxis(&buffer2, 2, "buffer3");
-    plotter_z->showPlot();
-
-    ui->Plots->addTab(new QCustomPlot, "Helo");
-    ui->Plots->setTabText(0, "Data1");
-    ui->Plots->setTabText(1, "Data2");
+    //plotter_z->drawPlotByAxis(&buffer, 2, "buffer1");
+    //plotter_z->drawPlotByAxis(&buffer1, 2, "buffer 2");
+    //plotter_z->drawPlotByAxis(&buffer2, 2, "buffer3");
+    //plotter_z->showPlot();
 }
 
 MainWindow::~MainWindow()
@@ -94,35 +90,6 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     {
         this->ui->GLwidget->getArm()->bendArm( 0.f, 0.f, 5.f );
     }
-
-}
-
-void MainWindow::dataLoop(std::deque<std::string> *buffer)
-{
-    while(true)
-    {
-        buffer->push_back("123 234 333");
-    }
-}
-
-void MainWindow::realTimeDrowData(std::deque<std::string> *buffer)
-{
-    //std::deque<std::string> buffer;
-
-    dataLoop(buffer);
-    plotter_x = new DataPlotter(ui->PlotData_X);
-
-        plotter_x->drawPlotByAxis(buffer, 0, "buffer 1");
-        plotter_x->drawPlotByAxis(buffer, 0, "buffer 2");
-        plotter_x->drawPlotByAxis(buffer, 0, "buffer 3");
-        plotter_x->showPlot();
-        while(!buffer->empty())
-        {
-            buffer->pop_front();
-        }
-
-
-
 
 }
 

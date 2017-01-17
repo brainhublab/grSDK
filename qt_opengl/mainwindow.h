@@ -22,8 +22,6 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     void keyPressEvent(QKeyEvent *event);
-    void dataLoop(std::deque<std::string> *buffer);
-    void realTimeDrowData(std::deque<std::string> *buffer);
 private slots:
 
 

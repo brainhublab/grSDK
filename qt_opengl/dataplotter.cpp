@@ -1,16 +1,74 @@
 #include "dataplotter.h"
+#include <iostream>
 
 DataPlotter::DataPlotter(QCustomPlot *p)
 {
+    data.push_back("123 23 94");
+    data.push_back("154 54 124");
+    data.push_back("173 74 144");
+    data.push_back("193 93 194");
+    data.push_back("123 23 34");
+    data.push_back("3 0 144");
+    data.push_back("173 74 144");
+    data.push_back("154 54 124");
+    data.push_back("123 23 34");
+    data.push_back("193 93 194");
+    data.push_back("123 23 94");
+
     plot = p;
     plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectAxes |
                                     QCP::iSelectLegend | QCP::iSelectPlottables);
-      plot->setInteraction(QCP::iRangeDrag, true);  // Включаем взаимодействие перетаскивания графика
-      plot->axisRect()->setRangeDrag(Qt::Horizontal);   // Включаем перетаскивание только по горизонтальной оси
+    plot->setInteraction(QCP::iRangeDrag, true);  // Включаем взаимодействие перетаскивания графика
+    plot->axisRect()->setRangeDrag(Qt::Horizontal);   // Включаем перетаскивание только по горизонтальной оси
 
-      plot->legend->setVisible(true);
-      plot->legend->setFont(QFont("Helvetica", 9));
+    plot->legend->setVisible(true);
+    plot->legend->setFont(QFont("Helvetica", 9));
 
+    plot->addGraph();  // X axis
+    plot->graph(0)->setPen(QPen(QColor(255, 0, 0)));
+
+    plot->addGraph();  // Y axis
+    plot->graph(1)->setPen(QPen(QColor(0, 255, 0)));
+
+    plot->addGraph();  // Z axis
+    plot->graph(2)->setPen(QPen(QColor(0, 0, 255)));
+
+    plot->axisRect()->setupFullAxesBox();
+
+    std::cout << "asd" << std::endl;
+
+    QTimer *dataTimer = new QTimer();
+    QObject::connect(dataTimer, SIGNAL(timeout()), this, SLOT(fetchData()));
+    dataTimer->start(1000);
+
+    //fetchData();
+
+}
+
+void DataPlotter::fetchData()
+{
+    std::cout << "asd" << std::endl;
+    if(!data.empty())
+    {
+        std::cout << "1" << std::endl;
+        std::cout << data.front() << std::endl;
+        double arr[3];
+        std::cout << "2" << std::endl;
+        splitSensorData(data.front(), arr);
+        std::cout << "3" << std::endl;
+        data.pop_front();
+
+        std::cout << "4" << std::endl;
+
+        plot->graph(0)->addData(plot->graph(0)->dataCount(), arr[0]);
+        plot->graph(0)->rescaleAxes();
+        plot->graph(1)->addData(plot->graph(1)->dataCount(), arr[1]);
+        plot->graph(0)->rescaleAxes();
+        plot->graph(2)->addData(plot->graph(2)->dataCount(), arr[2]);
+        plot->graph(0)->rescaleAxes();
+
+        plot->replot();
+    }
 }
 
 bool DataPlotter::drawPlotByAxis(std::deque<std::string>* buffer, size_t axis, QString label)
