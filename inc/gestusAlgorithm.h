@@ -8,13 +8,27 @@
 #include <deque>
 #include <math>
 
+#include "kalman/ekfilter.hpp"
 using namespace std;
 
-class GestutAlgorithm
+class GestutAlgorithm : Kalman::EKFilter<double, 0>
 {
 
     public:
+        GestutAlgorithm();
+
+        bool imuEKF();
     private:
+        //functions for generating jacobian matrices for kalman filter
+        void makeA();
+        void makeH();
+        void makeV();
+        void makeR();
+        void makeW();
+        void makeQ();
+        void makeProccess();
+        void makeMeasure();
+
 
 };
 
