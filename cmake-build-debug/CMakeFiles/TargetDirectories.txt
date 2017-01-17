@@ -1,0 +1,3 @@
+/home/vlad/projects/gestusSDK/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/vlad/projects/gestusSDK/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/vlad/projects/gestusSDK/cmake-build-debug/CMakeFiles/gestusSDK.dir

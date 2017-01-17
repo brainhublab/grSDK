@@ -7044,6 +7044,36 @@ bool ImGui::DragIntRange2(const char* label, int* v_current_min, int* v_current_
     return value_changed;
 }
 
+
+void ImGui::PlotMultiEx(ImGuiPlotType plot_type, const char* label, float (*values_getter)(void* data, int idx), void** data, int values_count, int values_offset, const char* overlay_text, float scale_min, float scale_max, ImVec2 graph_size)
+{
+    ImGuiWindow* window = GetCurrentWindow();
+    if(window->SkipItems)
+        return;
+
+
+    ImGuiContext& g = *GImGui;
+    const ImGuiStyle& style = g.Style;
+
+    const ImVec2 label_size = CalcTextSize(label, NULL, true);
+    if (graph_size.x == 0.0f)
+        graph_size.x = CalcItemWidth();
+    if (graph_size.y == 0.0f)
+        graph_size.y = label_size.y + (style.FramePadding.y * 2);
+
+    const ImRect frame_bb(window->DC.CursorPos, window->DC.CursorPos + ImVec2(graph_size.x, graph_size.y));
+    const ImRect inner_bb(frame_bb.Min + style.FramePadding, frame_bb.Max - style.FramePadding);
+    const ImRect total_bb(frame_bb.Min, frame_bb.Max + ImVec2(label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f, 0));
+
+    ItemSize(total_bb, style.FramePadding.y);
+    if (!ItemAdd(total_bb, NULL))
+        return;
+
+
+
+
+}
+
 void ImGui::PlotEx(ImGuiPlotType plot_type, const char* label, float (*values_getter)(void* data, int idx), void* data, int values_count, int values_offset, const char* overlay_text, float scale_min, float scale_max, ImVec2 graph_size)
 {
     ImGuiWindow* window = GetCurrentWindow();
@@ -7165,6 +7195,12 @@ static float Plot_ArrayGetter(void* data, int idx)
     const float v = *(float*)(void*)((unsigned char*)plot_data->Values + (size_t)idx * plot_data->Stride);
     return v;
 }
+
+//void ImGui::PlotLines(const char* label, const float** ArrayOfValues, int values_count, int values_offset, const char* overlay_text, float scale_min, float scale_max, ImVec2 graph_size, int stride)
+//{
+//    ImGuiPlotArrayGetterData data(values, stride);
+//    PlotEx(ImGuiPlotType_Lines, label, &Plot_ArrayGetter, (void*)&data, values_count, values_offset, overlay_text, scale_min, scale_max, graph_size);
+//}
 
 void ImGui::PlotLines(const char* label, const float* values, int values_count, int values_offset, const char* overlay_text, float scale_min, float scale_max, ImVec2 graph_size, int stride)
 {

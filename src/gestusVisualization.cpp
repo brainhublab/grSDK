@@ -9,9 +9,15 @@
 
 using namespace std;
 
-Visualization::Visualization(std::string& id1, std::string& buffer1, std::string& id2, std::string& buffer2) : _firstHandId(id1), _firstBuffer(buffer1), _secondHandId(id2), _secondBuffer(buffer2)
+Visualization::Visualization()
 {
-		// initialize sdl
+		init(SCREEN_WIDTH, SCREEN_HEIGHT);
+}
+
+bool Visualization::init(const int w, const int h)
+{
+		close();
+// initialize sdl
 		if ( SDL_Init( SDL_INIT_VIDEO ) < 0 )
 		{
 				printf( "SDL cannot init: %s\n", SDL_GetError( ));
@@ -22,8 +28,8 @@ Visualization::Visualization(std::string& id1, std::string& buffer1, std::string
 		setOpenGLVersion( );
 
 		// create window
-		window = SDL_CreateWindow( "Opengl", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH,
-															 SCREEN_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE );
+		window = SDL_CreateWindow( "Opengl", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w, h,
+															 SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE );
 		if ( window == NULL )
 		{
 				printf( "Cannot create window: %s\n", SDL_GetError( ));
@@ -41,7 +47,9 @@ Visualization::Visualization(std::string& id1, std::string& buffer1, std::string
 				printf( "Cannot create OpenGL: %s\n", SDL_GetError( ));
 				exit(EXIT_FAILURE);
 		}
-}
+
+		return window != nullptr;
+};
 
 Visualization::~Visualization()
 {
@@ -49,7 +57,49 @@ Visualization::~Visualization()
 }
 
 
+bool Visualization::addPlotData(double data[3])
+{
+		gui.addPlotData(data);
+		return true;
+}
 
+bool Visualization::visualizeData(std::map< std::string, std::deque<std::string>*>&buffers)
+{
+		init( 300 * ( const int )buffers.size(), 800);
+		SDL_Event event;
+		while ( !quit )
+		{
+				while ( SDL_PollEvent( &event ) != 0 )
+				{
+						// handle events for gui
+						ImGui_ImplSdl_ProcessEvent( &event );
+						if ( event.type == SDL_QUIT )
+						{
+								quit = true;
+						}
+				}
+
+				ImGui_ImplSdl_NewFrame(window);
+				// render gui stuff here
+
+				gui.plotData(buffers);
+
+
+				// clear bg color and depth buffer
+				glClearColor(0.32f, 0.56f, 0.36f, 0.9f);
+				glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+
+				ImGui::Render();
+
+				// swap window inorder to update openGL
+				SDL_GL_SwapWindow( window );
+		}
+
+// &&&&??
+//
+//		ImGui_ImplSdl_Shutdown();
+		return true;
+}
 
 bool Visualization::run()
 {

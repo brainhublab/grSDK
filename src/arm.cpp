@@ -2,7 +2,7 @@
 // Created by vtimofeev on 29/10/16.
 //
 
-#include "Arm.h"
+#include "arm.h"
 
 // helpers
 bool isAllocated( Node *ptr )
