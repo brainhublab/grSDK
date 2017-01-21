@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "dataplotter.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -7,62 +8,14 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    buffer.push_back("123 23 94");
-    buffer.push_back("154 54 124");
-    buffer.push_back("173 74 144");
-    buffer.push_back("193 93 194");
-    buffer.push_back("123 23 34");
-    buffer.push_back("3 0 144");
-    buffer.push_back("173 74 144");
-    buffer.push_back("154 54 124");
-    buffer.push_back("123 23 34");
-    buffer.push_back("193 93 194");
-    buffer.push_back("123 23 94");
+    plotter_acc = new DataPlotter(ui->PlotData_X);
+    plotter_gyro = new DataPlotter(ui->PlotData_Y);
+    plotter_mag = new DataPlotter(ui->PlotData_Z);
 
-    std::deque<std::string> buffer1;
-    buffer1.push_back("3 0 144");
+    plotter_all_acc = new DataPlotter(ui->accelerometer);
+    plotter_all_gyro = new DataPlotter(ui->gyroscope);
+    plotter_all_mag = new DataPlotter(ui->magnetometer);
 
-    buffer1.push_back("173 74 144");
-    buffer1.push_back("154 54 124");
-    buffer1.push_back("123 23 34");
-    buffer1.push_back("193 93 194");
-    buffer1.push_back("123 23 94");
-    buffer1.push_back("193 3 87");
-    buffer1.push_back("13 200 17");
-    buffer1.push_back("123 23 94");
-
-
-    std::deque<std::string> buffer2;
-    buffer2.push_back("0 9 14");
-    buffer2.push_back("3 7 4");
-    buffer2.push_back("15 54 24");
-    buffer2.push_back("112 24 342");
-    buffer2.push_back("193 3 87");
-    buffer2.push_back("13 200 17");
-    buffer2.push_back("123 23 94");
-    buffer2.push_back("154 54 124");
-    buffer2.push_back("173 74 144");
-    buffer2.push_back("193 93 194");
-    buffer2.push_back("123 23 34");
-
-
-    plotter_x = new DataPlotter(ui->PlotData_X);
-    //plotter_x->drawPlotByAxis(&buffer, 0, "buffer 1");
-    //plotter_x->drawPlotByAxis(&buffer1, 0, "buffer 2");
-    //plotter_x->drawPlotByAxis(&buffer2, 0, "buffer 3");
-    //plotter_x->showPlot();
-
-    plotter_y = new DataPlotter(ui->PlotData_Y);
-    //plotter_y->drawPlotByAxis(&buffer, 1, "buffer1");
-    //plotter_y->drawPlotByAxis(&buffer1, 1, "buffer2");
-    //plotter_y->drawPlotByAxis(&buffer2, 1, "buffer3");
-    //plotter_y->showPlot();
-
-    plotter_z = new DataPlotter(ui->PlotData_Z);
-    //plotter_z->drawPlotByAxis(&buffer, 2, "buffer1");
-    //plotter_z->drawPlotByAxis(&buffer1, 2, "buffer 2");
-    //plotter_z->drawPlotByAxis(&buffer2, 2, "buffer3");
-    //plotter_z->showPlot();
 }
 
 MainWindow::~MainWindow()
@@ -70,6 +23,24 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+bool MainWindow::setupPlotters(std::deque<std::string> *acc, std::deque<std::string> *gyro, std::deque<std::string> *mag)
+{
+    plotter_acc->setupPlot(acc);
+    plotter_gyro->setupPlot(gyro);
+    plotter_mag->setupPlot(mag);
+    plotter_all_acc->setupPlot(acc);
+    plotter_all_gyro->setupPlot(gyro);
+    plotter_all_mag->setupPlot(mag);
+
+    plotter_acc->drawPlotFromBuffer();
+    plotter_gyro->drawPlotFromBuffer();
+    plotter_mag->drawPlotFromBuffer();
+    plotter_all_acc->drawPlotFromBuffer();
+    plotter_all_gyro->drawPlotFromBuffer();
+    plotter_all_mag->drawPlotFromBuffer();
+
+}
+/*
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
     // move it to GVLwidget
@@ -93,5 +64,5 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 
 }
 
-
+*/
 

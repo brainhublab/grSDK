@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created by: Qt User Interface Compiler version 5.7.1
+** Created by: Qt User Interface Compiler version 5.5.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -13,6 +13,7 @@
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
+#include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QSplitter>
@@ -30,10 +31,15 @@ public:
     QAction *actionWhat;
     QAction *actionIs;
     QWidget *centralWidget;
-    QVBoxLayout *verticalLayout_2;
+    QHBoxLayout *horizontalLayout;
     QSplitter *splitter;
     GLWidget *GLwidget;
     QTabWidget *Plots;
+    QWidget *tab_all_data;
+    QHBoxLayout *horizontalLayout_2;
+    QCustomPlot *accelerometer;
+    QCustomPlot *gyroscope;
+    QCustomPlot *magnetometer;
     QWidget *tab_accelerometer;
     QVBoxLayout *verticalLayout_5;
     QCustomPlot *PlotData_X;
@@ -56,10 +62,10 @@ public:
         actionIs->setObjectName(QStringLiteral("actionIs"));
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
-        verticalLayout_2 = new QVBoxLayout(centralWidget);
-        verticalLayout_2->setSpacing(6);
-        verticalLayout_2->setContentsMargins(11, 11, 11, 11);
-        verticalLayout_2->setObjectName(QStringLiteral("verticalLayout_2"));
+        horizontalLayout = new QHBoxLayout(centralWidget);
+        horizontalLayout->setSpacing(6);
+        horizontalLayout->setContentsMargins(11, 11, 11, 11);
+        horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
         splitter = new QSplitter(centralWidget);
         splitter->setObjectName(QStringLiteral("splitter"));
         splitter->setOrientation(Qt::Vertical);
@@ -70,10 +76,33 @@ public:
         sizePolicy.setVerticalStretch(0);
         sizePolicy.setHeightForWidth(GLwidget->sizePolicy().hasHeightForWidth());
         GLwidget->setSizePolicy(sizePolicy);
-        GLwidget->setMaximumSize(QSize(16777215, 199));
+        GLwidget->setMaximumSize(QSize(16777215, 16777215));
         splitter->addWidget(GLwidget);
         Plots = new QTabWidget(splitter);
         Plots->setObjectName(QStringLiteral("Plots"));
+        tab_all_data = new QWidget();
+        tab_all_data->setObjectName(QStringLiteral("tab_all_data"));
+        horizontalLayout_2 = new QHBoxLayout(tab_all_data);
+        horizontalLayout_2->setSpacing(6);
+        horizontalLayout_2->setContentsMargins(11, 11, 11, 11);
+        horizontalLayout_2->setObjectName(QStringLiteral("horizontalLayout_2"));
+        accelerometer = new QCustomPlot(tab_all_data);
+        accelerometer->setObjectName(QStringLiteral("accelerometer"));
+        accelerometer->setMaximumSize(QSize(16777215, 16777215));
+
+        horizontalLayout_2->addWidget(accelerometer);
+
+        gyroscope = new QCustomPlot(tab_all_data);
+        gyroscope->setObjectName(QStringLiteral("gyroscope"));
+
+        horizontalLayout_2->addWidget(gyroscope);
+
+        magnetometer = new QCustomPlot(tab_all_data);
+        magnetometer->setObjectName(QStringLiteral("magnetometer"));
+
+        horizontalLayout_2->addWidget(magnetometer);
+
+        Plots->addTab(tab_all_data, QString());
         tab_accelerometer = new QWidget();
         tab_accelerometer->setObjectName(QStringLiteral("tab_accelerometer"));
         verticalLayout_5 = new QVBoxLayout(tab_accelerometer);
@@ -121,7 +150,7 @@ public:
         Plots->addTab(tab_magnetometer, QString());
         splitter->addWidget(Plots);
 
-        verticalLayout_2->addWidget(splitter);
+        horizontalLayout->addWidget(splitter);
 
         MainWindow->setCentralWidget(centralWidget);
 
@@ -135,12 +164,13 @@ public:
 
     void retranslateUi(QMainWindow *MainWindow)
     {
-        MainWindow->setWindowTitle(QApplication::translate("MainWindow", "QT + OpenGL", Q_NULLPTR));
-        actionWhat->setText(QApplication::translate("MainWindow", "&what?", Q_NULLPTR));
-        actionIs->setText(QApplication::translate("MainWindow", "&is", Q_NULLPTR));
-        Plots->setTabText(Plots->indexOf(tab_accelerometer), QApplication::translate("MainWindow", "Accelerometer", Q_NULLPTR));
-        Plots->setTabText(Plots->indexOf(tab_gyroscope), QApplication::translate("MainWindow", "Gyroscope", Q_NULLPTR));
-        Plots->setTabText(Plots->indexOf(tab_magnetometer), QApplication::translate("MainWindow", "Magnetometer", Q_NULLPTR));
+        MainWindow->setWindowTitle(QApplication::translate("MainWindow", "QT + OpenGL", 0));
+        actionWhat->setText(QApplication::translate("MainWindow", "&what?", 0));
+        actionIs->setText(QApplication::translate("MainWindow", "&is", 0));
+        Plots->setTabText(Plots->indexOf(tab_all_data), QApplication::translate("MainWindow", "All Sensors", 0));
+        Plots->setTabText(Plots->indexOf(tab_accelerometer), QApplication::translate("MainWindow", "Accelerometer", 0));
+        Plots->setTabText(Plots->indexOf(tab_gyroscope), QApplication::translate("MainWindow", "Gyroscope", 0));
+        Plots->setTabText(Plots->indexOf(tab_magnetometer), QApplication::translate("MainWindow", "Magnetometer", 0));
     } // retranslateUi
 
 };

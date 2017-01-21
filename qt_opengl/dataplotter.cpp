@@ -1,25 +1,31 @@
 #include "dataplotter.h"
 #include <iostream>
+#include <stdlib.h>
 
-DataPlotter::DataPlotter(QCustomPlot *p)
+
+DataPlotter::DataPlotter( QCustomPlot *pl)
 {
-    data.push_back("123 23 94");
-    data.push_back("154 54 124");
-    data.push_back("173 74 144");
-    data.push_back("193 93 194");
-    data.push_back("123 23 34");
-    data.push_back("3 0 144");
-    data.push_back("173 74 144");
-    data.push_back("154 54 124");
-    data.push_back("123 23 34");
-    data.push_back("193 93 194");
-    data.push_back("123 23 94");
+    plot = pl;
+}
 
-    plot = p;
+
+bool DataPlotter::drawPlotFromBuffer()
+{
+
+    QTimer *dataTimer = new QTimer();
+    QObject::connect(dataTimer, SIGNAL(timeout()), this, SLOT(fetchData()));
+    dataTimer->start(100);
+}
+
+bool DataPlotter::setupPlot(std::deque<std::string> *buf)
+{
+    buffer = buf;
+
     plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectAxes |
                                     QCP::iSelectLegend | QCP::iSelectPlottables);
     plot->setInteraction(QCP::iRangeDrag, true);  // Включаем взаимодействие перетаскивания графика
     plot->axisRect()->setRangeDrag(Qt::Horizontal);   // Включаем перетаскивание только по горизонтальной оси
+    plot->axisRect()->setRangeDrag(Qt::Vertical);
 
     plot->legend->setVisible(true);
     plot->legend->setFont(QFont("Helvetica", 9));
@@ -35,42 +41,30 @@ DataPlotter::DataPlotter(QCustomPlot *p)
 
     plot->axisRect()->setupFullAxesBox();
 
-    std::cout << "asd" << std::endl;
-
-    QTimer *dataTimer = new QTimer();
-    QObject::connect(dataTimer, SIGNAL(timeout()), this, SLOT(fetchData()));
-    dataTimer->start(1000);
-
-    //fetchData();
-
 }
-
 void DataPlotter::fetchData()
 {
-    std::cout << "asd" << std::endl;
-    if(!data.empty())
+    if(buffer != nullptr && !buffer->empty())
     {
         std::cout << "1" << std::endl;
-        std::cout << data.front() << std::endl;
         double arr[3];
+        std::cout << buffer->front() << std::endl;
+        splitSensorData(buffer->front(), arr);
         std::cout << "2" << std::endl;
-        splitSensorData(data.front(), arr);
+        buffer->pop_front();
         std::cout << "3" << std::endl;
-        data.pop_front();
-
-        std::cout << "4" << std::endl;
 
         plot->graph(0)->addData(plot->graph(0)->dataCount(), arr[0]);
-        plot->graph(0)->rescaleAxes();
+        plot->graph(0)->rescaleValueAxis();
         plot->graph(1)->addData(plot->graph(1)->dataCount(), arr[1]);
-        plot->graph(0)->rescaleAxes();
+        plot->graph(1)->rescaleValueAxis();
         plot->graph(2)->addData(plot->graph(2)->dataCount(), arr[2]);
-        plot->graph(0)->rescaleAxes();
-
+        plot->graph(0)->rescaleValueAxis();
+        plot->xAxis->setRange(plot->graph(0)->dataCount() - 1, 100, Qt::AlignRight);
         plot->replot();
     }
 }
-
+/*
 bool DataPlotter::drawPlotByAxis(std::deque<std::string>* buffer, size_t axis, QString label)
 {
     QVector<double> axisValues;
@@ -166,4 +160,4 @@ bool DataPlotter::plotGyroGraph(QVector<double>* graphData, size_t axis, QString
     plot->graph()->rescaleAxes(true);
     lines += 2;
     return true;
-}
+}*/

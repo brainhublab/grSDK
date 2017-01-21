@@ -20,7 +20,7 @@
    <string>QT + OpenGL</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QVBoxLayout" name="verticalLayout_2">
+   <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
      <widget class="QSplitter" name="splitter">
       <property name="orientation">
@@ -36,7 +36,7 @@
        <property name="maximumSize">
         <size>
          <width>16777215</width>
-         <height>199</height>
+         <height>16777215</height>
         </size>
        </property>
       </widget>
@@ -44,6 +44,29 @@
        <property name="currentIndex">
         <number>0</number>
        </property>
+       <widget class="QWidget" name="tab_all_data">
+        <attribute name="title">
+         <string>All Sensors</string>
+        </attribute>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QCustomPlot" name="accelerometer" native="true">
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>16777215</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCustomPlot" name="gyroscope" native="true"/>
+         </item>
+         <item>
+          <widget class="QCustomPlot" name="magnetometer" native="true"/>
+         </item>
+        </layout>
+       </widget>
        <widget class="QWidget" name="tab_accelerometer">
         <attribute name="title">
          <string>Accelerometer</string>
