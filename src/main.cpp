@@ -7,7 +7,7 @@ int main()
 		std::string buffer1, buffer2;
 		// todo: adapt visualisation for buffers and iDs
 		Visualization visualization( id1, buffer1, id2, buffer2 );
-
+    string characteristic = "gyro";
 		// this should be invoked in new thread
 		visualization.run( );
 
