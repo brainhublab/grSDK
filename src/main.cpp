@@ -1,15 +1,35 @@
-#include "iostream"
-#include "gestusVisualization.h"
-
+#include <iostream>
+//#include </usr/include/dbus-1.0/dbus/dbus.h>
+#include <dbus/dbus.h>
+#include <deque>
+#include <stdlib.h>
+#include "gestusConnection.h"
+#include <thread>
+#include <time.h>
+#include <unistd.h>
+using namespace std;
+//void threadFunction(GestusConnection)
 int main()
 {
-		std::string id1, id2;
-		std::string buffer1, buffer2;
-		// todo: adapt visualisation for buffers and iDs
-		Visualization visualization( id1, buffer1, id2, buffer2 );
-    string characteristic = "gyro";
-		// this should be invoked in new thread
-		visualization.run( );
+    string characteristic = "acc";
 
-		return EXIT_SUCCESS;
+    deque<string> buffer;
+
+    GestusConnection connection;
+    connection.setAvalibleDevices();
+    connection.getData(0, characteristic, &buffer);
+    //thread thr(&GestusConnection::connectAndRead, &connection, 0, characteristic, &buffer);
+    //thr.detach();
+    do
+    {
+        if(!buffer.empty())
+        {
+            cout<<buffer.front()<<endl;
+            buffer.pop_front();
+        }
+        //else
+            //cout<<"is empty"<<endl;
+    }while(TRUE);
+       
+      return 0;
 }

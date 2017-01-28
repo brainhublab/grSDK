@@ -1,39 +1,36 @@
-#ifndef HAND
-#define HAND
 
+#ifndef GESTUS_HAND_H
+#define GESTUS_HAND_H
 
-struct phalange
+#include <assert.h>
+#include <vector>
+#include <map>
+
+#include "./inc/gestusHandNode.h"
+#include "dimensions.h"
+
+class GestusHand : public GestusHandNode
 {
-    int id;
-    double angle;
+public:
+        GestusHand();
+        ~GestusHand();
+
+        // bending
+        bool bendArm( float angleX, float angleY, float angleZ );
+        bool bendHand( float angleX, float angleY, float angleZ );
+        bool bendFinger( int index, float angleX, float angleY, float angleZ );
+
+
+
+        const std::vector<std::map<char, float>> & getTrajectoryAngles() const;
+private:
+        // returns true if node is bended
+        bool bend(GestusHandNode* node, float angleX, float angleY, float angleZ);
+
+        // data for trajectory render
+        std::vector<std::map<char, float> > trajectoryAngles
+                        = { {{'X', angleX}, {'Y', angleY}, {'Z', angleZ}} };
 };
 
-struct finger
-{
-    int id;
-    phanlage* phalanges;
-};
 
-class Hand
-{
-    public:
-        Hand();
-        ~Hand();
-        Hand(const Hand&);
-        Hand&  operator=(const Hand&);
-
-        getId();
-        setId();
-
-        getPosition();
-        setPosition();
-
-        getFingers();
-        setFingers();
-    private:
-        string id;
-        double position[3];
-        finger* fingers;
-};
-
-#endif
+#endif // GESTUS_HAND_H

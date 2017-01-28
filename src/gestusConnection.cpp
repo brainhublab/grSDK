@@ -111,11 +111,12 @@ bool GestusConnection::getData(int devId, string characteristic, deque<string>* 
 
             //cout<<dev.name;
         }
+        /*
         else
         {
             cout<<"Can't find devices wit this: "<<devId<< "id"<<endl;
 
-        }
+        }*/
     }
 
     if(characteristic == "fingers")
@@ -126,7 +127,7 @@ bool GestusConnection::getData(int devId, string characteristic, deque<string>* 
     {
         characteristic = dev.gyro;
     }
-    else if(characteristic == "accelerometer")
+    else if(characteristic == "acc")
     {
         characteristic = dev.accelerometer;
     }
@@ -167,11 +168,11 @@ bool GestusConnection::connectAndRead(device_t dev, string characteristic, deque
 
         reply = dbus_connection_send_with_reply_and_block(conn, msg, -1, derror);
         DBusMessageIter rootIter;
-        if(reply == NULL)
+        /*if(reply == NULL)
         {   
             cout<<"Can't read value from device "<<dev.name<<" with characteristic"<<characteristic<<endl;
             return FALSE;
-        }
+        }*/
         dbus_message_iter_init(reply, &rootIter);
         int currentType;
 

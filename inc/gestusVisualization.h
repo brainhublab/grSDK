@@ -1,39 +1,40 @@
-#ifndef VISUALIZATION
-#define VISUALIZATION
+#ifndef GESTUS_VISUALISATION_H
+#define GESTUS_VISUALISATION_H
 
-#include "visualGui.h"
-#include "renderer.h"
 
-#include <string>
+#include <QMainWindow>
+#include <QKeyEvent>
+
+#include "gestusDataPlotter.h"
+#include <QObject>
+
+#include <thread>
 #include <deque>
 
-class Visualization
+namespace Ui{
+class GestusVisualization;
+}
+
+class GestusVisualization : public QMainWindow
 {
+    Q_OBJECT
+
 public:
-		Visualization();
-		~Visualization();
-		Visualization(const Visualization&) = delete;
-		Visualization&operator=(const Visualization&) = delete;
-		bool init(const int w, const int h);
-		bool run();
-		bool stop();
-		bool addPlotData(double[3]);
-		bool visualizeData(std::map< std::string, std::deque<std::string>*>&);
+	explicit GestusVisualization(QWidget *parent = 0);
+	~GestusVisualization();
+    bool setupPlotters(std::deque<std::string> *, std::deque<std::string> *, std::deque<std::string> *);
+    //void keyPressEvent(QKeyEvent *event);
+
 private:
-		VisualGui gui;
-		Arm leftArm;
-		Arm rightArm;
-		//
-		bool setOpenGLVersion();
-		bool quit = false;
-		bool close();
-		// SDL stuff
-		SDL_Window *window;
-		SDL_GLContext glContext;
-		// states
-		bool renderWithTrajectory = false,
-						renderWithHand = true;
-		float angleX = 0.f, angleY = 0.f, angleZ = 0.f, angleStep = 1.5f;
+	Ui::GestusVisualization *ui;
+    DataPlotter* plotter_acc;
+    DataPlotter* plotter_gyro;
+    DataPlotter* plotter_mag;
+    DataPlotter* plotter_all_acc;
+    DataPlotter* plotter_all_gyro;
+    DataPlotter* plotter_all_mag;
+
+    std::deque<std::string> buffer;
 };
 
-#endif
+#endif // MAINWINDOW_H

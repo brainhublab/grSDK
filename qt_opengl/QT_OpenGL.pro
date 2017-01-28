@@ -13,21 +13,22 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp \
     glwidget.cpp \
     arm.cpp \
     renderer.cpp \
     qcustomplot/qcustomplot.cpp \
-    dataplotter.cpp
+    dataplotter.cpp \
+    mainwindow.cpp
 
-HEADERS  += mainwindow.h \
+HEADERS  += \
     glwidget.h \
     node.h \
     arm.h \
     dimensions.h \
     renderer.h \
     qcustomplot/qcustomplot.h \
-    dataplotter.h
+    dataplotter.h \
+    mainwindow.h
 
 FORMS    += mainwindow.ui
 
