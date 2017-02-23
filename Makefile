@@ -13,9 +13,9 @@ MAKEFILE      = Makefile
 CC            = gcc
 CXX           = g++
 DEFINES       = -DQT_NO_DEBUG -DQT_OPENGL_LIB -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB
-CFLAGS        = -pipe -O2 -Wall -W -D_REENTRANT -fPIC $(DEFINES)
-CXXFLAGS      = -pipe -O2 -Wall -W -D_REENTRANT -fPIC $(DEFINES) -g --std=c++11
-INCPATH       = -I. -I/usr/include/dbus-1.0 -I/usr/lib64/dbus-1.0/include -I./inc -I./externAssets/qcustomplot -isystem /usr/include/qt5 -isystem /usr/include/qt5/QtOpenGL -isystem /usr/include/qt5/QtPrintSupport -isystem /usr/include/qt5/QtWidgets -isystem /usr/include/qt5/QtGui -isystem /usr/include/qt5/QtCore -I. -I. -I/usr/lib64/qt5/mkspecs/linux-g++
+CFLAGS        = -pipe -O2 -D_REENTRANT -Wall -W -fPIC $(DEFINES)
+CXXFLAGS      = -pipe -g -std=c++11 -O2 -D_REENTRANT -Wall -W -fPIC $(DEFINES)
+INCPATH       = -I. -isystem /usr/include/dbus-1.0 -I/usr/lib64/dbus-1.0/include -Iinc -IexternAssets/qcustomplot -isystem /usr/include/qt5 -isystem /usr/include/qt5/QtOpenGL -isystem /usr/include/qt5/QtPrintSupport -isystem /usr/include/qt5/QtWidgets -isystem /usr/include/qt5/QtGui -isystem /usr/include/qt5/QtCore -Igenerated_files -I. -I/usr/lib64/qt5/mkspecs/linux-g++
 QMAKE         = /usr/bin/qmake-qt5
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -33,7 +33,7 @@ MOVE          = mv -f
 TAR           = tar -cf
 COMPRESS      = gzip -9f
 DISTNAME      = gestusVisualization1.0.0
-DISTDIR = /home/h3lgi/code/gestusSDK/.tmp/gestusVisualization1.0.0
+DISTDIR = /home/h3lgi/code/gestusSDK/build/gestusVisualization1.0.0
 LINK          = g++
 LFLAGS        = -Wl,-O1
 LIBS          = $(SUBLIBS) -L/usr/lib64 -ldbus-1 -lglut -lGLU -lQt5OpenGL -lQt5PrintSupport -lQt5Widgets -lQt5Gui -lQt5Core -lGL -lpthread 
@@ -44,7 +44,7 @@ STRIP         =
 
 ####### Output directory
 
-OBJECTS_DIR   = ./
+OBJECTS_DIR   = build/
 
 ####### Files
 
@@ -55,22 +55,22 @@ SOURCES       = src/main.cpp \
 		src/gestusRender.cpp \
 		externAssets/qcustomplot/qcustomplot.cpp \
 		src/gestusDataPlotter.cpp \
-		src/gestusConnection.cpp moc_gestusVisualization.cpp \
-		moc_gestusGLWidget.cpp \
-		moc_qcustomplot.cpp \
-		moc_gestusDataPlotter.cpp
-OBJECTS       = main.o \
-		gestusVisualization.o \
-		gestusGLWidget.o \
-		gestusHand.o \
-		gestusRender.o \
-		qcustomplot.o \
-		gestusDataPlotter.o \
-		gestusConnection.o \
-		moc_gestusVisualization.o \
-		moc_gestusGLWidget.o \
-		moc_qcustomplot.o \
-		moc_gestusDataPlotter.o
+		src/gestusConnection.cpp generated_files/moc_gestusVisualization.cpp \
+		generated_files/moc_gestusGLWidget.cpp \
+		generated_files/moc_qcustomplot.cpp \
+		generated_files/moc_gestusDataPlotter.cpp
+OBJECTS       = build/main.o \
+		build/gestusVisualization.o \
+		build/gestusGLWidget.o \
+		build/gestusHand.o \
+		build/gestusRender.o \
+		build/qcustomplot.o \
+		build/gestusDataPlotter.o \
+		build/gestusConnection.o \
+		build/moc_gestusVisualization.o \
+		build/moc_gestusGLWidget.o \
+		build/moc_qcustomplot.o \
+		build/moc_gestusDataPlotter.o
 DIST          = /usr/lib64/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib64/qt5/mkspecs/common/unix.conf \
 		/usr/lib64/qt5/mkspecs/common/linux.conf \
@@ -141,13 +141,13 @@ DIST          = /usr/lib64/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib64/qt5/mkspecs/features/default_pre.prf \
 		/usr/lib64/qt5/mkspecs/features/resolve_config.prf \
 		/usr/lib64/qt5/mkspecs/features/default_post.prf \
-		/usr/lib64/qt5/mkspecs/features/warn_on.prf \
 		/usr/lib64/qt5/mkspecs/features/qt.prf \
 		/usr/lib64/qt5/mkspecs/features/resources.prf \
 		/usr/lib64/qt5/mkspecs/features/moc.prf \
 		/usr/lib64/qt5/mkspecs/features/unix/opengl.prf \
 		/usr/lib64/qt5/mkspecs/features/uic.prf \
 		/usr/lib64/qt5/mkspecs/features/unix/thread.prf \
+		/usr/lib64/qt5/mkspecs/features/warn_on.prf \
 		/usr/lib64/qt5/mkspecs/features/testcase_targets.prf \
 		/usr/lib64/qt5/mkspecs/features/exceptions.prf \
 		/usr/lib64/qt5/mkspecs/features/yacc.prf \
@@ -270,13 +270,13 @@ Makefile: gestusVisualisation.pro /usr/lib64/qt5/mkspecs/linux-g++/qmake.conf /u
 		/usr/lib64/qt5/mkspecs/features/default_pre.prf \
 		/usr/lib64/qt5/mkspecs/features/resolve_config.prf \
 		/usr/lib64/qt5/mkspecs/features/default_post.prf \
-		/usr/lib64/qt5/mkspecs/features/warn_on.prf \
 		/usr/lib64/qt5/mkspecs/features/qt.prf \
 		/usr/lib64/qt5/mkspecs/features/resources.prf \
 		/usr/lib64/qt5/mkspecs/features/moc.prf \
 		/usr/lib64/qt5/mkspecs/features/unix/opengl.prf \
 		/usr/lib64/qt5/mkspecs/features/uic.prf \
 		/usr/lib64/qt5/mkspecs/features/unix/thread.prf \
+		/usr/lib64/qt5/mkspecs/features/warn_on.prf \
 		/usr/lib64/qt5/mkspecs/features/testcase_targets.prf \
 		/usr/lib64/qt5/mkspecs/features/exceptions.prf \
 		/usr/lib64/qt5/mkspecs/features/yacc.prf \
@@ -358,13 +358,13 @@ Makefile: gestusVisualisation.pro /usr/lib64/qt5/mkspecs/linux-g++/qmake.conf /u
 /usr/lib64/qt5/mkspecs/features/default_pre.prf:
 /usr/lib64/qt5/mkspecs/features/resolve_config.prf:
 /usr/lib64/qt5/mkspecs/features/default_post.prf:
-/usr/lib64/qt5/mkspecs/features/warn_on.prf:
 /usr/lib64/qt5/mkspecs/features/qt.prf:
 /usr/lib64/qt5/mkspecs/features/resources.prf:
 /usr/lib64/qt5/mkspecs/features/moc.prf:
 /usr/lib64/qt5/mkspecs/features/unix/opengl.prf:
 /usr/lib64/qt5/mkspecs/features/uic.prf:
 /usr/lib64/qt5/mkspecs/features/unix/thread.prf:
+/usr/lib64/qt5/mkspecs/features/warn_on.prf:
 /usr/lib64/qt5/mkspecs/features/testcase_targets.prf:
 /usr/lib64/qt5/mkspecs/features/exceptions.prf:
 /usr/lib64/qt5/mkspecs/features/yacc.prf:
@@ -414,27 +414,27 @@ check: first
 
 compiler_rcc_make_all:
 compiler_rcc_clean:
-compiler_moc_header_make_all: moc_gestusVisualization.cpp moc_gestusGLWidget.cpp moc_qcustomplot.cpp moc_gestusDataPlotter.cpp
+compiler_moc_header_make_all: generated_files/moc_gestusVisualization.cpp generated_files/moc_gestusGLWidget.cpp generated_files/moc_qcustomplot.cpp generated_files/moc_gestusDataPlotter.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_gestusVisualization.cpp moc_gestusGLWidget.cpp moc_qcustomplot.cpp moc_gestusDataPlotter.cpp
-moc_gestusVisualization.cpp: inc/gestusDataPlotter.h \
+	-$(DEL_FILE) generated_files/moc_gestusVisualization.cpp generated_files/moc_gestusGLWidget.cpp generated_files/moc_qcustomplot.cpp generated_files/moc_gestusDataPlotter.cpp
+generated_files/moc_gestusVisualization.cpp: inc/gestusDataPlotter.h \
 		externAssets/qcustomplot/qcustomplot.h \
 		inc/gestusVisualization.h
-	/usr/lib64/qt5/bin/moc $(DEFINES) -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/h3lgi/code/gestusSDK -I/usr/include/dbus-1.0 -I/usr/lib64/dbus-1.0/include -I/home/h3lgi/code/gestusSDK/inc -I/home/h3lgi/code/gestusSDK/externAssets/qcustomplot -I/usr/include/qt5 -I/usr/include/qt5/QtOpenGL -I/usr/include/qt5/QtPrintSupport -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtCore -I/usr/include/c++/4.8 -I/usr/include/c++/4.8/x86_64-suse-linux -I/usr/include/c++/4.8/backward -I/usr/lib64/gcc/x86_64-suse-linux/4.8/include -I/usr/local/include -I/usr/lib64/gcc/x86_64-suse-linux/4.8/include-fixed -I/usr/x86_64-suse-linux/include -I/usr/include inc/gestusVisualization.h -o moc_gestusVisualization.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/h3lgi/code/gestusSDK -I/usr/include/dbus-1.0 -I/usr/lib64/dbus-1.0/include -I/home/h3lgi/code/gestusSDK/inc -I/home/h3lgi/code/gestusSDK/externAssets/qcustomplot -I/usr/include/qt5 -I/usr/include/qt5/QtOpenGL -I/usr/include/qt5/QtPrintSupport -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtCore -I/usr/include/c++/4.8 -I/usr/include/c++/4.8/x86_64-suse-linux -I/usr/include/c++/4.8/backward -I/usr/lib64/gcc/x86_64-suse-linux/4.8/include -I/usr/local/include -I/usr/lib64/gcc/x86_64-suse-linux/4.8/include-fixed -I/usr/x86_64-suse-linux/include -I/usr/include inc/gestusVisualization.h -o generated_files/moc_gestusVisualization.cpp
 
-moc_gestusGLWidget.cpp: inc/gestusRender.h \
+generated_files/moc_gestusGLWidget.cpp: inc/gestusRender.h \
 		inc/gestusHand.h \
 		inc/gestusHandNode.h \
 		inc/dimensions.h \
 		inc/gestusGLWidget.h
-	/usr/lib64/qt5/bin/moc $(DEFINES) -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/h3lgi/code/gestusSDK -I/usr/include/dbus-1.0 -I/usr/lib64/dbus-1.0/include -I/home/h3lgi/code/gestusSDK/inc -I/home/h3lgi/code/gestusSDK/externAssets/qcustomplot -I/usr/include/qt5 -I/usr/include/qt5/QtOpenGL -I/usr/include/qt5/QtPrintSupport -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtCore -I/usr/include/c++/4.8 -I/usr/include/c++/4.8/x86_64-suse-linux -I/usr/include/c++/4.8/backward -I/usr/lib64/gcc/x86_64-suse-linux/4.8/include -I/usr/local/include -I/usr/lib64/gcc/x86_64-suse-linux/4.8/include-fixed -I/usr/x86_64-suse-linux/include -I/usr/include inc/gestusGLWidget.h -o moc_gestusGLWidget.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/h3lgi/code/gestusSDK -I/usr/include/dbus-1.0 -I/usr/lib64/dbus-1.0/include -I/home/h3lgi/code/gestusSDK/inc -I/home/h3lgi/code/gestusSDK/externAssets/qcustomplot -I/usr/include/qt5 -I/usr/include/qt5/QtOpenGL -I/usr/include/qt5/QtPrintSupport -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtCore -I/usr/include/c++/4.8 -I/usr/include/c++/4.8/x86_64-suse-linux -I/usr/include/c++/4.8/backward -I/usr/lib64/gcc/x86_64-suse-linux/4.8/include -I/usr/local/include -I/usr/lib64/gcc/x86_64-suse-linux/4.8/include-fixed -I/usr/x86_64-suse-linux/include -I/usr/include inc/gestusGLWidget.h -o generated_files/moc_gestusGLWidget.cpp
 
-moc_qcustomplot.cpp: externAssets/qcustomplot/qcustomplot.h
-	/usr/lib64/qt5/bin/moc $(DEFINES) -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/h3lgi/code/gestusSDK -I/usr/include/dbus-1.0 -I/usr/lib64/dbus-1.0/include -I/home/h3lgi/code/gestusSDK/inc -I/home/h3lgi/code/gestusSDK/externAssets/qcustomplot -I/usr/include/qt5 -I/usr/include/qt5/QtOpenGL -I/usr/include/qt5/QtPrintSupport -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtCore -I/usr/include/c++/4.8 -I/usr/include/c++/4.8/x86_64-suse-linux -I/usr/include/c++/4.8/backward -I/usr/lib64/gcc/x86_64-suse-linux/4.8/include -I/usr/local/include -I/usr/lib64/gcc/x86_64-suse-linux/4.8/include-fixed -I/usr/x86_64-suse-linux/include -I/usr/include externAssets/qcustomplot/qcustomplot.h -o moc_qcustomplot.cpp
+generated_files/moc_qcustomplot.cpp: externAssets/qcustomplot/qcustomplot.h
+	/usr/lib64/qt5/bin/moc $(DEFINES) -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/h3lgi/code/gestusSDK -I/usr/include/dbus-1.0 -I/usr/lib64/dbus-1.0/include -I/home/h3lgi/code/gestusSDK/inc -I/home/h3lgi/code/gestusSDK/externAssets/qcustomplot -I/usr/include/qt5 -I/usr/include/qt5/QtOpenGL -I/usr/include/qt5/QtPrintSupport -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtCore -I/usr/include/c++/4.8 -I/usr/include/c++/4.8/x86_64-suse-linux -I/usr/include/c++/4.8/backward -I/usr/lib64/gcc/x86_64-suse-linux/4.8/include -I/usr/local/include -I/usr/lib64/gcc/x86_64-suse-linux/4.8/include-fixed -I/usr/x86_64-suse-linux/include -I/usr/include externAssets/qcustomplot/qcustomplot.h -o generated_files/moc_qcustomplot.cpp
 
-moc_gestusDataPlotter.cpp: externAssets/qcustomplot/qcustomplot.h \
+generated_files/moc_gestusDataPlotter.cpp: externAssets/qcustomplot/qcustomplot.h \
 		inc/gestusDataPlotter.h
-	/usr/lib64/qt5/bin/moc $(DEFINES) -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/h3lgi/code/gestusSDK -I/usr/include/dbus-1.0 -I/usr/lib64/dbus-1.0/include -I/home/h3lgi/code/gestusSDK/inc -I/home/h3lgi/code/gestusSDK/externAssets/qcustomplot -I/usr/include/qt5 -I/usr/include/qt5/QtOpenGL -I/usr/include/qt5/QtPrintSupport -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtCore -I/usr/include/c++/4.8 -I/usr/include/c++/4.8/x86_64-suse-linux -I/usr/include/c++/4.8/backward -I/usr/lib64/gcc/x86_64-suse-linux/4.8/include -I/usr/local/include -I/usr/lib64/gcc/x86_64-suse-linux/4.8/include-fixed -I/usr/x86_64-suse-linux/include -I/usr/include inc/gestusDataPlotter.h -o moc_gestusDataPlotter.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/h3lgi/code/gestusSDK -I/usr/include/dbus-1.0 -I/usr/lib64/dbus-1.0/include -I/home/h3lgi/code/gestusSDK/inc -I/home/h3lgi/code/gestusSDK/externAssets/qcustomplot -I/usr/include/qt5 -I/usr/include/qt5/QtOpenGL -I/usr/include/qt5/QtPrintSupport -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtCore -I/usr/include/c++/4.8 -I/usr/include/c++/4.8/x86_64-suse-linux -I/usr/include/c++/4.8/backward -I/usr/lib64/gcc/x86_64-suse-linux/4.8/include -I/usr/local/include -I/usr/lib64/gcc/x86_64-suse-linux/4.8/include-fixed -I/usr/x86_64-suse-linux/include -I/usr/include inc/gestusDataPlotter.h -o generated_files/moc_gestusDataPlotter.cpp
 
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
@@ -460,56 +460,54 @@ compiler_clean: compiler_moc_header_clean compiler_uic_clean
 
 ####### Compile
 
-main.o: src/main.cpp inc/gestusConnection.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o src/main.cpp
-
-gestusVisualization.o: src/gestusVisualization.cpp inc/gestusVisualization.h \
+build/main.o: src/main.cpp inc/gestusVisualization.h \
 		inc/gestusDataPlotter.h \
 		externAssets/qcustomplot/qcustomplot.h \
-		ui_gestusVisualisation.h \
-		inc/gestusGLWidget.h \
+		inc/gestusConnection.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/main.o src/main.cpp
+
+build/gestusVisualization.o: src/gestusVisualization.cpp inc/gestusVisualization.h \
+		inc/gestusDataPlotter.h \
+		externAssets/qcustomplot/qcustomplot.h \
+		ui_gestusVisualisation.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/gestusVisualization.o src/gestusVisualization.cpp
+
+build/gestusGLWidget.o: src/gestusGLWidget.cpp inc/gestusGLWidget.h \
 		inc/gestusRender.h \
 		inc/gestusHand.h \
 		inc/gestusHandNode.h \
 		inc/dimensions.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o gestusVisualization.o src/gestusVisualization.cpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/gestusGLWidget.o src/gestusGLWidget.cpp
 
-gestusGLWidget.o: src/gestusGLWidget.cpp inc/gestusGLWidget.h \
-		inc/gestusRender.h \
-		inc/gestusHand.h \
+build/gestusHand.o: src/gestusHand.cpp inc/gestusHand.h \
 		inc/gestusHandNode.h \
 		inc/dimensions.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o gestusGLWidget.o src/gestusGLWidget.cpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/gestusHand.o src/gestusHand.cpp
 
-gestusHand.o: src/gestusHand.cpp inc/gestusHand.h \
-		inc/gestusHandNode.h \
-		inc/dimensions.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o gestusHand.o src/gestusHand.cpp
+build/gestusRender.o: src/gestusRender.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/gestusRender.o src/gestusRender.cpp
 
-gestusRender.o: src/gestusRender.cpp 
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o gestusRender.o src/gestusRender.cpp
+build/qcustomplot.o: externAssets/qcustomplot/qcustomplot.cpp externAssets/qcustomplot/qcustomplot.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/qcustomplot.o externAssets/qcustomplot/qcustomplot.cpp
 
-qcustomplot.o: externAssets/qcustomplot/qcustomplot.cpp externAssets/qcustomplot/qcustomplot.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o qcustomplot.o externAssets/qcustomplot/qcustomplot.cpp
-
-gestusDataPlotter.o: src/gestusDataPlotter.cpp inc/gestusDataPlotter.h \
+build/gestusDataPlotter.o: src/gestusDataPlotter.cpp inc/gestusDataPlotter.h \
 		externAssets/qcustomplot/qcustomplot.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o gestusDataPlotter.o src/gestusDataPlotter.cpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/gestusDataPlotter.o src/gestusDataPlotter.cpp
 
-gestusConnection.o: src/gestusConnection.cpp inc/gestusConnection.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o gestusConnection.o src/gestusConnection.cpp
+build/gestusConnection.o: src/gestusConnection.cpp inc/gestusConnection.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/gestusConnection.o src/gestusConnection.cpp
 
-moc_gestusVisualization.o: moc_gestusVisualization.cpp 
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_gestusVisualization.o moc_gestusVisualization.cpp
+build/moc_gestusVisualization.o: generated_files/moc_gestusVisualization.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/moc_gestusVisualization.o generated_files/moc_gestusVisualization.cpp
 
-moc_gestusGLWidget.o: moc_gestusGLWidget.cpp 
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_gestusGLWidget.o moc_gestusGLWidget.cpp
+build/moc_gestusGLWidget.o: generated_files/moc_gestusGLWidget.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/moc_gestusGLWidget.o generated_files/moc_gestusGLWidget.cpp
 
-moc_qcustomplot.o: moc_qcustomplot.cpp 
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_qcustomplot.o moc_qcustomplot.cpp
+build/moc_qcustomplot.o: generated_files/moc_qcustomplot.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/moc_qcustomplot.o generated_files/moc_qcustomplot.cpp
 
-moc_gestusDataPlotter.o: moc_gestusDataPlotter.cpp 
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_gestusDataPlotter.o moc_gestusDataPlotter.cpp
+build/moc_gestusDataPlotter.o: generated_files/moc_gestusDataPlotter.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/moc_gestusDataPlotter.o generated_files/moc_gestusDataPlotter.cpp
 
 ####### Install
 

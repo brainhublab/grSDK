@@ -14,7 +14,7 @@ bool DataPlotter::drawPlotFromBuffer()
 
     QTimer *dataTimer = new QTimer();
     QObject::connect(dataTimer, SIGNAL(timeout()), this, SLOT(fetchData()));
-    dataTimer->start(110);
+	dataTimer->start(120);
 }
 
 bool DataPlotter::setupPlot(std::deque<std::string> *buf)
@@ -57,9 +57,9 @@ void DataPlotter::fetchData()
         plot->graph(0)->addData(plot->graph(0)->dataCount(), arr[0]);
         plot->graph(0)->rescaleValueAxis();
         plot->graph(1)->addData(plot->graph(1)->dataCount(), arr[1]);
-        plot->graph(1)->rescaleValueAxis();
+		plot->graph(1)->rescaleValueAxis(true);
         plot->graph(2)->addData(plot->graph(2)->dataCount(), arr[2]);
-        plot->graph(0)->rescaleValueAxis();
+		plot->graph(2)->rescaleValueAxis(true);
         plot->xAxis->setRange(plot->graph(0)->dataCount() - 0.1, 100, Qt::AlignRight);
         plot->replot();
     }

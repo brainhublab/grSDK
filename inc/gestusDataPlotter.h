@@ -40,7 +40,7 @@ private:
             std::stringstream ss(str);
             while(ss >> n)
             {
-                    arr[i] = n / 100;
+					arr[i] = n;
                     i++;
             }
     }
