@@ -16,41 +16,16 @@ public:
     void paintGL();
     void resizeGL(int w, int h);
 
-    void setRenderTrajectory(bool b)
-    {
-        renderWithTrajectory = b;
-    }
-    void setRenderHand(bool b)
-    {
-        renderWithHand = b;
-    }
+    void setRenderTrajectory(bool b);
+    void setRenderHand(bool b);
 
-	GestusRenderer* getRenderer()
-    {
-        return &renderer;
-    }
-
-	GestusHand* getArm()
-    {
-        return &leftArm;
-    }
+    GestusRenderer* getRenderer();
+    void keyPressEvent(QKeyEvent* event);
 
     int R;
     float x,y,z;
     bool wired;
     float ang;
-
-    void keyPressEvent(QKeyEvent* event) {
-        switch(event->key()) {
-        case Qt::Key_Escape:
-            leftArm.bendArm(10, 10 , 10);
-            rightArm.bendArm(-10, -10 , -10);
-            break;
-        default:
-            event->ignore();
-            break;
-        }
-    };
 private:
 
 	GestusRenderer renderer;

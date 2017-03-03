@@ -32,7 +32,7 @@ private:
 
     QCustomPlot* plot = nullptr;
     std::deque<std::string> *buffer = nullptr;
-    size_t lines = 2; // refactor it!
+
     void splitSensorData(std::string str, double arr[3])
     {
             int i = 0;
@@ -44,11 +44,6 @@ private:
                     i++;
             }
     }
-
-
-   // bool splitDataInVectors(const std::deque<std::string>* d, QVector<double>* xs,QVector<double>* ys, QVector<double>* zs);
-
-    //bool plotGyroGraph(QVector<double>* graphData, size_t axis, QString label);
 };
 
 #endif // DATAPLOTTER_H

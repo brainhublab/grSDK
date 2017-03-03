@@ -52,12 +52,10 @@ int main(int argc, char *argv[])
 //	connection.getData(0, "gyro", &gyro);
 //	connection.getData(0, "magnet", &mag);
 
-	acc.push_back("123 120 100");
-	acc.push_back("24 34 35");
-	acc.push_back("1 2 3");
-	acc.push_back("134 400 23");
-	gyro.push_back("123 120 100");
-	mag.push_back("123 120 100");
+    acc.push_back("123 120 100");
+    acc.push_back("134 400 23");
+    gyro.push_back("123 120 100");
+    mag.push_back("123 120 100");
 
 
 	glutInit(&argc, argv);
