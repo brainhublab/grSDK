@@ -40,29 +40,11 @@ bool GestusVisualization::setupPlotters(std::deque<std::string> *acc, std::deque
     plotter_all_mag->drawPlotFromBuffer();
 
 }
-/*
-void GestusVisualisation::keyPressEvent(QKeyEvent *event)
+
+
+void GestusVisualization::keyPressEvent(QKeyEvent *event)
 {
-    // move it to GVLwidget
-    if(event->key() == Qt::Key_7)
-    {
-        this->ui->GLwidget->getArm()->bendArm( 5.f, 0.f, 0.f );
-        buffer.clear();
-        plotter_x->drawPlotByAxis(&buffer, 0, "buffer 1e");
-        plotter_x->showPlot();
-    }
-    if(event->key() == Qt::Key_8)
-    {
-        this->ui->GLwidget->getArm()->bendArm( 0.f, 5.f, 0.f );
-
-        buffer.push_back("23 24 45");
-    }
-    if(event->key() == Qt::Key_9)
-    {
-        this->ui->GLwidget->getArm()->bendArm( 0.f, 0.f, 5.f );
-    }
-
+    // transfer control to gestusGLWidget
+    this->ui->GLwidget->keyPressEvent(event);
 }
-
-*/
 

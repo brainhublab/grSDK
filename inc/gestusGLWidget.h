@@ -1,6 +1,7 @@
 #ifndef GESTUS_GL_WIDGET_H
 #define GESTUS_GL_WIDGET_H
 
+#include <QKeyEvent>
 #include <QGLWidget>
 #include <QTimer>
 #include "gestusRender.h"
@@ -39,6 +40,17 @@ public:
     bool wired;
     float ang;
 
+    void keyPressEvent(QKeyEvent* event) {
+        switch(event->key()) {
+        case Qt::Key_Escape:
+            leftArm.bendArm(10, 10 , 10);
+            rightArm.bendArm(-10, -10 , -10);
+            break;
+        default:
+            event->ignore();
+            break;
+        }
+    };
 private:
 
 	GestusRenderer renderer;

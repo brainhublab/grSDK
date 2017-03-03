@@ -4,3 +4,4 @@ lib/externAssets/bluez-5.41/
 *.ini
 .idea/*
 .bin/*
+./config/generated_files/*

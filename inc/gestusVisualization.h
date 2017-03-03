@@ -23,7 +23,7 @@ public:
 	explicit GestusVisualization(QWidget *parent = 0);
 	~GestusVisualization();
     bool setupPlotters(std::deque<std::string> *, std::deque<std::string> *, std::deque<std::string> *);
-    //void keyPressEvent(QKeyEvent *event);
+    void keyPressEvent(QKeyEvent *event);
 
 private:
 	Ui::GestusVisualization *ui;
