@@ -15,6 +15,10 @@ bool DataPlotter::drawPlotFromBuffer()
     QTimer *dataTimer = new QTimer();
     QObject::connect(dataTimer, SIGNAL(timeout()), this, SLOT(fetchData()));
 	dataTimer->start(120);
+
+    delete dataTimer;
+    dataTimer = nullptr;
+    return true;
 }
 
 bool DataPlotter::setupPlot(std::deque<std::string> *buf)
@@ -41,6 +45,7 @@ bool DataPlotter::setupPlot(std::deque<std::string> *buf)
 
     plot->axisRect()->setupFullAxesBox();
 
+    return plot != nullptr;
 }
 void DataPlotter::fetchData()
 {

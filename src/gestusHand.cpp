@@ -42,22 +42,22 @@ GestusHand::GestusHand()
 
                 // initializing of first phalange
 				struct GestusHandNode *firstPhalange = &( *hand ).children[ i ];
-                firstPhalange->setMaxAngles(85.f, 0.f, 0.f);
-                firstPhalange->setMinAngles(-5.f, 0.f, 0.f);
+                firstPhalange->setMaxAngles(maxFingerAngleX, 0.f, 0.f);
+                firstPhalange->setMinAngles(minFingerAngleX, 0.f, 0.f);
 
                 // initializing second phalange
 				firstPhalange->children = new struct GestusHandNode[1];
                 isAllocated( firstPhalange->children );
-                firstPhalange->children->setMaxAngles(85.f, 0.f, 0.f);
-                firstPhalange->children->setMinAngles(-5.f, 0.f, 0.f);
+                firstPhalange->children->setMaxAngles(maxFingerAngleX, 0.f, 0.f);
+                firstPhalange->children->setMinAngles(minFingerAngleX, 0.f, 0.f);
 
                 if(i != 4)
                 {
                     // initializing third phalange
 					firstPhalange->children[ 0 ].children = new struct GestusHandNode[1];
                     isAllocated( firstPhalange->children[ 0 ].children );
-                    firstPhalange->children[0].children->setMaxAngles(85.f, 0.f, 0.f);
-                    firstPhalange->children[0].children->setMinAngles(-5.f, 0.f, 0.f);
+                    firstPhalange->children[0].children->setMaxAngles(maxFingerAngleX, 0.f, 0.f);
+                    firstPhalange->children[0].children->setMinAngles(minFingerAngleX, 0.f, 0.f);
                 }
         }
 
@@ -82,7 +82,7 @@ GestusHand::~GestusHand()
         }
 
         delete [] hand->children;
-        delete hand;
+        delete [] hand;
 }
 
 

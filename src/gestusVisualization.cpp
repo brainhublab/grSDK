@@ -20,6 +20,13 @@ GestusVisualization::GestusVisualization(QWidget *parent) :
 
 GestusVisualization::~GestusVisualization()
 {
+    delete plotter_acc;
+    delete plotter_gyro;
+    delete plotter_mag;
+
+    delete plotter_all_acc;
+    delete plotter_all_gyro;
+    delete plotter_all_mag;
     delete ui;
 }
 
@@ -39,6 +46,7 @@ bool GestusVisualization::setupPlotters(std::deque<std::string> *acc, std::deque
     plotter_all_gyro->drawPlotFromBuffer();
     plotter_all_mag->drawPlotFromBuffer();
 
+    return true;
 }
 
 
