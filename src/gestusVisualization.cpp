@@ -1,4 +1,4 @@
-#include "./inc/gestusVisualization.h"
+#include "gestusVisualization.h"
 #include "ui_gestusVisualisation.h"
 
 
@@ -55,4 +55,3 @@ void GestusVisualization::keyPressEvent(QKeyEvent *event)
     // transfer control to gestusGLWidget
     this->ui->GLwidget->keyPressEvent(event);
 }
-

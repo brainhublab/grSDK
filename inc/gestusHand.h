@@ -6,7 +6,7 @@
 #include <vector>
 #include <map>
 
-#include "./inc/gestusHandNode.h"
+#include "gestusHandNode.h"
 #include "dimensions.h"
 
 class GestusHand : public GestusHandNode

@@ -3,9 +3,10 @@
 
 #include <deque>
 #include <sstream>
+#include <string>
+
 #include "externAssets/qcustomplot/qcustomplot.h"
 #include "QObject"
-#include <string>
 
 class DataPlotter : public QObject
 {

@@ -34,9 +34,10 @@ int main()
       return 0;
 }
 */
-#include "gestusVisualization.h"
 #include <QApplication>
 #include <GL/glut.h>
+
+#include "gestusVisualization.h"
 //#include "gestusConnection.h"
 
 int main(int argc, char *argv[])
@@ -52,26 +53,10 @@ int main(int argc, char *argv[])
 //	connection.getData(0, "gyro", &gyro);
 //	connection.getData(0, "magnet", &mag);
 
-acc.push_back("123 120 100");
-acc.push_back("134 400 23");
-acc.push_back("123 20 100");
-acc.push_back("134 40 23");
-acc.push_back("123 10 0");
-acc.push_back("134 0 3");
-acc.push_back("123 1 100");
-acc.push_back("134 4 2");
-acc.push_back("123 1 100");
-acc.push_back("134 40 23");
-acc.push_back("123 0 100");
-acc.push_back("34 400 23");
-acc.push_back("23 120 100");
-acc.push_back("134 400 23");
-acc.push_back("13 120 100");
-acc.push_back("1 400 23");
-acc.push_back("13 120 100");
-acc.push_back("34 400 23");
-gyro.push_back("123 120 100");
-    mag.push_back("123 120 100");
+	acc.push_back("123 120 100");
+	acc.push_back("134 400 23");
+	gyro.push_back("123 120 100");
+  mag.push_back("123 120 100");
 
 
 	glutInit(&argc, argv);

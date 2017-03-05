@@ -1,10 +1,10 @@
 #ifndef GESTUS_RENDERER_H
 #define GESTUS_RENDERER_H
 
-#include "gestusHand.h"
-#include "cmath"
 #include <GL/glu.h>
 
+#include "gestusHand.h"
+#include "cmath"
 #include "dimensions.h"
 
 // Window size

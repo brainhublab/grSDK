@@ -4,12 +4,12 @@
 
 #include <QMainWindow>
 #include <QKeyEvent>
-
-#include "gestusDataPlotter.h"
 #include <QObject>
 
 #include <thread>
 #include <deque>
+
+#include "gestusDataPlotter.h"
 
 namespace Ui{
 class GestusVisualization;
