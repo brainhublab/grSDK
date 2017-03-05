@@ -2,7 +2,7 @@
 
 
 // helpers
-bool showPoint( float x, float y, float z )
+/*bool showPoint( float x, float y, float z )
 {
         glPointSize( 5.f );
         glBegin( GL_POINTS );
@@ -12,6 +12,7 @@ bool showPoint( float x, float y, float z )
 
         return true;
 }
+*/
 
 // class methods
 GestusRenderer::GestusRenderer()
@@ -493,7 +494,7 @@ bool GestusRenderer::createLeftHand( float x, float y, float z )
 {
         float halfBase = 0.25f * x; // base is slightly narrower than full hand's width
         float halfTop = 0.4f * x;
-        float halfDepth = 0.5 * z;
+        float halfDepth = 0.5f * z;
 
         float leftPointX = -0.45f * x, leftPointY = 0.85f * y;
         float rightPointX = 0.5f * x, rightPointY = 0.5f * y;

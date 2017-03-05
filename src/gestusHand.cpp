@@ -114,14 +114,8 @@ bool GestusHand::bendHand( float angleX, float angleY, float angleZ )
 {
 		struct GestusHandNode *hand = &(this->children[0]);
 
-        if(bend(hand, angleX, angleY, angleZ))
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        bool bended = bend(hand, angleX, angleY, angleZ);
+        return bended;
 }
 
 

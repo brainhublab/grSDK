@@ -1,6 +1,20 @@
-#include "gestusDataPlotter.h"
 #include <iostream>
 #include <stdlib.h>
+
+#include "gestusDataPlotter.h"
+
+// Helpers
+void splitSensorData(std::string str, double arr[3])
+{
+        int i = 0;
+        double n;
+        std::stringstream ss(str);
+        while(ss >> n)
+        {
+			arr[i] = n;
+                i++;
+        }
+}
 
 
 DataPlotter::DataPlotter( QCustomPlot *pl)
@@ -8,16 +22,16 @@ DataPlotter::DataPlotter( QCustomPlot *pl)
     plot = pl;
 }
 
+DataPlotter::~DataPlotter() {
+    delete dataTimer;
+}
 
 bool DataPlotter::drawPlotFromBuffer()
 {
-
-    QTimer *dataTimer = new QTimer();
+    dataTimer = new QTimer();
     QObject::connect(dataTimer, SIGNAL(timeout()), this, SLOT(fetchData()));
-	dataTimer->start(120);
+	  dataTimer->start(120);
 
-    delete dataTimer;
-    dataTimer = nullptr;
     return true;
 }
 
@@ -58,13 +72,12 @@ void DataPlotter::fetchData()
 
         buffer->pop_front();
 
-
         plot->graph(0)->addData(plot->graph(0)->dataCount(), arr[0]);
         plot->graph(0)->rescaleValueAxis();
         plot->graph(1)->addData(plot->graph(1)->dataCount(), arr[1]);
-		plot->graph(1)->rescaleValueAxis(true);
+		    plot->graph(1)->rescaleValueAxis(true);
         plot->graph(2)->addData(plot->graph(2)->dataCount(), arr[2]);
-		plot->graph(2)->rescaleValueAxis(true);
+		    plot->graph(2)->rescaleValueAxis(true);
         plot->xAxis->setRange(plot->graph(0)->dataCount() - 0.1, 100, Qt::AlignRight);
         plot->replot();
     }

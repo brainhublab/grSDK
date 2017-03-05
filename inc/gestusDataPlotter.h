@@ -13,37 +13,22 @@ class DataPlotter : public QObject
 
 public:
     DataPlotter( QCustomPlot *);
-    ~DataPlotter() {}
+    ~DataPlotter();
 
-    bool drawPlotByAxis(std::deque<std::string>* buffer, size_t axis, QString label);
-
+    bool setupPlot(std::deque<std::string>* );
     bool showPlot();
 
+    bool drawPlotByAxis(std::deque<std::string>* buffer, size_t axis, QString label);
     void drawPlot(std::deque<std::string>* buffer);
-
-    //my code
     bool drawPlotFromBuffer();
-    bool setupPlot(std::deque<std::string>* );
-
 public slots:
     void fetchData();
 
 private:
 
     QCustomPlot* plot = nullptr;
+    QTimer *dataTimer = nullptr;
     std::deque<std::string> *buffer = nullptr;
-
-    void splitSensorData(std::string str, double arr[3])
-    {
-            int i = 0;
-            double n;
-            std::stringstream ss(str);
-            while(ss >> n)
-            {
-					arr[i] = n;
-                    i++;
-            }
-    }
 };
 
 #endif // DATAPLOTTER_H
