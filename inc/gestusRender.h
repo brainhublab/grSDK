@@ -23,20 +23,21 @@ public:
         bool setViewport(int, int);
         bool update();
         // renders arm using last boolean argument "isLeft"
-		bool renderArm(struct GestusHandNode*, float, float, float, bool);
-		bool renderTrajectory(GestusHand*, float, float, float, bool);
+		    bool renderArm(struct GestusHandNode*, float, float, float, bool);
+		    bool renderTrajectory(GestusHand*, float, float, float, bool);
         // accessors
         int getWidth();
         int getHeight();
 private:
         render_data data;
         bool initGL();
-        bool drawFinger( GestusHandNode *hand, float fingerDistance, int fingerIndex);
 
         // Geometric
-        bool createRightHand(float, float, float);
-        bool createLeftHand(float, float, float);
-
+        bool drawFinger( GestusHandNode *hand, float fingerDistance, int fingerIndex);
+        bool drawFingers(GestusHandNode *hand, bool isLeft); // draws finders after hand was drawed
+        bool drawRightHand(float, float, float);
+        bool drawLeftHand(float, float, float);
+        // Figures
         bool createColorSphere(float, int, int, GLubyte r, GLubyte g, GLubyte b);
         bool createCube(float, float, float);
         bool createSphere(float, int, int);

@@ -183,8 +183,61 @@ bool GestusRenderer::drawScene(float angleX, float angleY, float angleZ)
         return true;
 }
 
+bool GestusRenderer::drawFingers(GestusHandNode *hand, bool isLeft)
+{
+  if(!hand)
+  {
+    printf("\nError, no data for fingers drawing!");
+    return false;
+  }
+  glTranslatef( -( data.arm.hand_width * 0.4f ) + data.arm.phalange_radiuses[2], 0.f, 0.f );
+
+  float fingerDistance = ( data.arm.hand_width * 0.8f - 4 * 2 * data.arm.phalange_radiuses[2] ) / 3 + 2 * data.arm.phalange_radiuses[2];
+
+  if ( isLeft )
+  {
+          for ( int i = 3; i >= 0; i-- )
+          {
+                  drawFinger( hand, fingerDistance, i );
+          }
+  }
+  else
+  {
+          for ( int i = 0; i < 4; i++ )
+          {
+                  drawFinger( hand, fingerDistance, i );
+          }
+  }
+
+  //
+  // thumb
+  //
+  if ( isLeft )
+  {
+          glTranslatef( -data.arm.hand_width + data.arm.phalange_radiuses[2] - 0.07f, -( data.arm.hand_height / 2 ) + data.arm.phalange_radiuses[2]/2, 0.f );
+          glRotatef( 65.f, 0.f, 0.f, 1.f );
+          glRotatef( 35.f, 0.f, 1.f, 0.f );
+  }
+  else
+  {
+          glTranslatef( -fingerDistance + data.arm.phalange_radiuses[2] + 0.07f, -( data.arm.hand_height / 2 ) + data.arm.phalange_radiuses[2]/2, 0.f );
+          glRotatef( -65.f, 0.f, 0.f, 1.f );
+          glRotatef( -35.f, 0.f, 1.f, 0.f );
+  }
+
+  drawFinger(hand, fingerDistance, 4);
+
+  return true;
+}
+
 bool GestusRenderer::renderArm( GestusHandNode *arm, float angleX, float angleY, float angleZ, bool isLeft )
 {
+        if(!arm)
+        {
+          printf("\nError: no data for drawing arm!");
+          return false;
+        }
+
         glLoadIdentity( );
 
         // pos on screen
@@ -226,54 +279,18 @@ bool GestusRenderer::renderArm( GestusHandNode *arm, float angleX, float angleY,
 
         if ( isLeft )
         {
-                createLeftHand( data.arm.hand_width, data.arm.hand_height, data.arm.hand_depth );
+                drawLeftHand( data.arm.hand_width, data.arm.hand_height, data.arm.hand_depth );
         }
         else
         {
-                createRightHand( data.arm.hand_width, data.arm.hand_height, data.arm.hand_depth );
+                drawRightHand( data.arm.hand_width, data.arm.hand_height, data.arm.hand_depth );
         }
 
         glTranslatef( 0.f, data.arm.hand_height, 0.f );
 
         /** draw fingers  **/
 
-        glTranslatef( -( data.arm.hand_width * 0.4f ) + data.arm.phalange_radiuses[2], 0.f, 0.f );
-
-        float fingerDistance = ( data.arm.hand_width * 0.8f - 4 * 2 * data.arm.phalange_radiuses[2] ) / 3 + 2 * data.arm.phalange_radiuses[2];
-
-        if ( isLeft )
-        {
-                for ( int i = 3; i >= 0; i-- )
-                {
-                        drawFinger( hand, fingerDistance, i );
-                }
-        }
-        else
-        {
-                for ( int i = 0; i < 4; i++ )
-                {
-                        drawFinger( hand, fingerDistance, i );
-                }
-        }
-
-        //
-        // thumb
-        //
-        if ( isLeft )
-        {
-                glTranslatef( -data.arm.hand_width + data.arm.phalange_radiuses[2] - 0.07f, -( data.arm.hand_height / 2 ) + data.arm.phalange_radiuses[2]/2, 0.f );
-                glRotatef( 65.f, 0.f, 0.f, 1.f );
-                glRotatef( 35.f, 0.f, 1.f, 0.f );
-        }
-        else
-        {
-                glTranslatef( -fingerDistance + data.arm.phalange_radiuses[2] + 0.07f, -( data.arm.hand_height / 2 ) + data.arm.phalange_radiuses[2]/2, 0.f );
-                glRotatef( -65.f, 0.f, 0.f, 1.f );
-                glRotatef( -35.f, 0.f, 1.f, 0.f );
-        }
-
-        drawFinger(hand, fingerDistance, 4);
-
+        drawFingers(hand, isLeft);
 
         return true;
 }
@@ -389,7 +406,7 @@ bool GestusRenderer::createCube( float x, float y, float z )
 }
 
 
-bool GestusRenderer::createRightHand( float x, float y, float z )
+bool GestusRenderer::drawRightHand( float x, float y, float z )
 {
         float halfBase = 0.25f * x; // base is slightly narrower than full hand's width
         float halfTop = 0.4f * x;
@@ -490,7 +507,7 @@ bool GestusRenderer::createRightHand( float x, float y, float z )
         return true;
 }
 
-bool GestusRenderer::createLeftHand( float x, float y, float z )
+bool GestusRenderer::drawLeftHand( float x, float y, float z )
 {
         float halfBase = 0.25f * x; // base is slightly narrower than full hand's width
         float halfTop = 0.4f * x;
@@ -621,14 +638,7 @@ bool GestusRenderer::createColorSphere(float radius, int slices, int stacks, GLu
 
 bool GestusRenderer::createCylinder( float radius, float height )
 {
-        if(createFrustum( radius, height, 1 ))
-        {
-            return true;
-        }
-        else
-        {
-            return true;
-        }
+        return createFrustum( radius, height, 1 );
 }
 
 bool GestusRenderer::createFrustum( float radius, float height, float ratio = 1 ) // ratio : x,z(top) = ratio*x,z(bottom)

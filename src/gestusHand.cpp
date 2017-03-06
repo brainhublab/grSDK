@@ -122,11 +122,15 @@ bool GestusHand::bendHand( float angleX, float angleY, float angleZ )
 bool GestusHand::bendFinger( int index, float angleX, float angleY, float angleZ )
 {
 		struct GestusHandNode *phalange = &this->children[ 0 ].children[ index ];
-        assert(phalange != nullptr);
-
+        if(!phalange)
+        {
+          printf("\nUnable to find phanlange with %d index for bending!", index);
+          return false;
+        };
+        bool success = false;
         while ( phalange )
         {
-                bend(phalange, angleX, angleY, angleZ);
+                success = bend(phalange, angleX, angleY, angleZ);
                 if (( *phalange ).children != NULL )
                 {
                         phalange = &( *phalange ).children[ 0 ];
@@ -136,7 +140,7 @@ bool GestusHand::bendFinger( int index, float angleX, float angleY, float angleZ
                         phalange = NULL;
                 }
         }
-        return true;
+        return success;
 }
 
 
