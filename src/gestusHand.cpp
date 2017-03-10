@@ -62,12 +62,13 @@ GestusHand::GestusHand()
         }
 
         // initial hand props
-        bendHand( 35.f, 0.f, 0.f );
+        bendArm(-80.f, 0.f, 0.f);
+        bendHand( 0.f, 180.f, 0.f );
         bendFinger( 0, 10.f, 0.f, 0.f );
-        bendFinger( 1, 55.f, 0.f, 0.f );
-        bendFinger( 2, 55.f, 0.f, 0.f );
+        bendFinger( 1, 10.f, 0.f, 0.f );
+        bendFinger( 2, 10.f, 0.f, 0.f );
         bendFinger( 3, 10.f, 0.f, 0.f );
-        bendFinger( 4, 15.f, 0.f, 0.f );
+        bendFinger( 4, 10.f, 0.f, 0.f );
 }
 
 GestusHand::~GestusHand()
