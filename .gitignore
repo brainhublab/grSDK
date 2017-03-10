@@ -5,6 +5,4 @@ lib/externAssets/bluez-5.41/
 .idea/*
 ./bin/*
 ./build/*
-!./build/qcustomplot.o
-!./build/moc_qcustomplot.o
-./config/generated_files/*
+./build/generated_files/*
