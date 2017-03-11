@@ -22,9 +22,9 @@ public:
         bool drawScene(float, float, float);
         bool setViewport(int, int);
         bool update();
-        // renders arm using last boolean argument "isLeft"
-		    bool renderArm(struct GestusHandNode*, float, float, float, bool);
-		    bool renderTrajectory(GestusHand*, float, float, float, bool);
+        
+		    bool renderArm(struct GestusHandNode*, float, float, float);
+		    bool renderTrajectory(GestusHand*, float, float, float);
         // accessors
         int getWidth();
         int getHeight();
@@ -34,7 +34,7 @@ private:
 
         // Geometric
         bool drawFinger( GestusHandNode *hand, float fingerDistance, int fingerIndex);
-        bool drawFingers(GestusHandNode *hand, bool isLeft); // draws finders after hand was drawed
+        bool drawFingers(GestusHandNode *hand); // draws finders after hand was drawed
         bool drawRightHand(float, float, float);
         bool drawLeftHand(float, float, float);
         // Figures

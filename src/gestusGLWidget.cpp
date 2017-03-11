@@ -8,6 +8,7 @@ GestusGLWidget::GestusGLWidget(QWidget *parent) :
     this->wired = false;
     this->ang = 0.5;
 
+
     connect( &timer, SIGNAL(timeout()), this, SLOT(updateGL()) );
     timer.start(16);
 }
@@ -30,13 +31,13 @@ void GestusGLWidget::paintGL()
     renderer.drawScene( angleX, angleY, angleZ );
     if ( renderWithHand )
     {
-            renderer.renderArm( &rightArm, angleX, angleY, angleZ, false );
-            renderer.renderArm( &leftArm, angleX, angleY, angleZ, true );
+            renderer.renderArm( &rightArm, angleX, angleY, angleZ);
+            renderer.renderArm( &leftArm, angleX, angleY, angleZ );
     }
     if ( renderWithTrajectory )
     {
-            renderer.renderTrajectory( &rightArm, angleX, angleY, angleZ, false );
-            renderer.renderTrajectory( &leftArm, angleX, angleY, angleZ, true );
+            renderer.renderTrajectory( &rightArm, angleX, angleY, angleZ);
+            renderer.renderTrajectory( &leftArm, angleX, angleY, angleZ);
     }
 }
 

@@ -30,8 +30,8 @@ private:
 	GestusRenderer renderer;
   QTimer timer;
 
-	GestusHand leftArm;
-	GestusHand rightArm;
+	GestusHand leftArm = GestusHand(true);
+	GestusHand rightArm = GestusHand(false);
   bool renderWithTrajectory = true,
        renderWithHand = true;
   float angleX = 0.f, angleY = 0.f, angleZ = 0.f;

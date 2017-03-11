@@ -3,7 +3,13 @@
 
 struct GestusHandNode
 {
-		struct GestusHandNode *children = nullptr;
+				explicit GestusHandNode(bool left = true)
+				{
+					isLeft = left;
+				}
+
+				struct GestusHandNode *children = nullptr;
+				bool isLeft;
         float angleX = 0.f;
         float angleY = 0.f;
         float angleZ = 0.f;

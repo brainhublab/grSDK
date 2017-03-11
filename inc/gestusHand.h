@@ -12,13 +12,14 @@
 class GestusHand : public GestusHandNode
 {
 public:
-        GestusHand();
+        explicit GestusHand(bool left);
         ~GestusHand();
 
         // bending
         bool bendArm( float angleX, float angleY, float angleZ );
         bool bendHand( float angleX, float angleY, float angleZ );
         bool bendFinger( int index, float angleX, float angleY, float angleZ );
+        bool bendFirstPhalange(int index, float angleX, float angleY, float angleZ);
 
 
 

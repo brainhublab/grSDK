@@ -86,7 +86,7 @@ bool GestusRenderer::update()
     return true;
 }
 
-bool GestusRenderer::renderTrajectory( GestusHand *arm, float angleX, float angleY, float angleZ, bool isLeft )
+bool GestusRenderer::renderTrajectory( GestusHand *arm, float angleX, float angleY, float angleZ )
 {
         const std::vector< std::map< char, float> > & trajectory = arm->getTrajectoryAngles();
         for ( std::map< char, float > angles : trajectory )
@@ -94,7 +94,7 @@ bool GestusRenderer::renderTrajectory( GestusHand *arm, float angleX, float angl
                 glLoadIdentity( );
 
                 // pos on screen
-                if ( isLeft )
+                if ( arm->isLeft )
                 {
                         glTranslatef( -data.arm.initial_pos.x, data.arm.initial_pos.y, data.arm.initial_pos.z );
                 }
@@ -183,7 +183,7 @@ bool GestusRenderer::drawScene(float angleX, float angleY, float angleZ)
         return true;
 }
 
-bool GestusRenderer::drawFingers(GestusHandNode *hand, bool isLeft)
+bool GestusRenderer::drawFingers(GestusHandNode *hand)
 {
   if(!hand)
   {
@@ -194,7 +194,7 @@ bool GestusRenderer::drawFingers(GestusHandNode *hand, bool isLeft)
 
   float fingerDistance = ( data.arm.hand_width * 0.8f - 4 * 2 * data.arm.phalange_radiuses[2] ) / 3 + 2 * data.arm.phalange_radiuses[2];
 
-  if ( isLeft )
+  if ( hand->isLeft )
   {
           for ( int i = 3; i >= 0; i-- )
           {
@@ -212,7 +212,7 @@ bool GestusRenderer::drawFingers(GestusHandNode *hand, bool isLeft)
   //
   // thumb
   //
-  if ( isLeft )
+  if ( hand->isLeft )
   {
           glTranslatef( -data.arm.hand_width + data.arm.phalange_radiuses[2] - 0.07f, -( data.arm.hand_height / 2 ) + data.arm.phalange_radiuses[2]/2, 0.f );
           glRotatef( 65.f, 0.f, 0.f, 1.f );
@@ -230,7 +230,7 @@ bool GestusRenderer::drawFingers(GestusHandNode *hand, bool isLeft)
   return true;
 }
 
-bool GestusRenderer::renderArm( GestusHandNode *arm, float angleX, float angleY, float angleZ, bool isLeft )
+bool GestusRenderer::renderArm( GestusHandNode *arm, float angleX, float angleY, float angleZ)
 {
         if(!arm)
         {
@@ -241,7 +241,7 @@ bool GestusRenderer::renderArm( GestusHandNode *arm, float angleX, float angleY,
         glLoadIdentity( );
 
         // pos on screen
-        if ( isLeft )
+        if ( arm->isLeft )
         {
                 glTranslatef( -data.arm.initial_pos.x, data.arm.initial_pos.y, data.arm.initial_pos.z );
         }
@@ -277,7 +277,7 @@ bool GestusRenderer::renderArm( GestusHandNode *arm, float angleX, float angleY,
         glRotatef(( *hand ).angleY, 0.f, 1.f, 0.f );
         glRotatef(( *hand ).angleZ, 0.f, 0.f, 1.f );
 
-        if ( isLeft )
+        if ( arm->isLeft )
         {
                 drawLeftHand( data.arm.hand_width, data.arm.hand_height, data.arm.hand_depth );
         }
@@ -290,7 +290,7 @@ bool GestusRenderer::renderArm( GestusHandNode *arm, float angleX, float angleY,
 
         /** draw fingers  **/
 
-        drawFingers(hand, isLeft);
+        drawFingers(hand);
 
         return true;
 }

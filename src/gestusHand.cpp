@@ -15,19 +15,20 @@ bool isAllocated( GestusHandNode *ptr )
 
 // class methods
 
-GestusHand::GestusHand()
+GestusHand::GestusHand(bool left)
 {
         // todo: get mins and maxes from config
         // GestusHand initializing
         this->setMaxAngles(90.f, 180.f, 90.f);
         this->setMinAngles(-120.f, -180.f, -120.f);
+        this->isLeft = left;
 
         // Hand initializing
 		this->children = new GestusHandNode[1];
         isAllocated( this->children );
 
 		struct GestusHandNode *hand = &(this->children[0]);
-
+    hand->isLeft = left;
         hand->setMaxAngles(80.f, 0.f, 80.f);
         hand->setMinAngles(-80.f, 0.f, -40.f);
 
@@ -44,31 +45,44 @@ GestusHand::GestusHand()
 				struct GestusHandNode *firstPhalange = &( *hand ).children[ i ];
                 firstPhalange->setMaxAngles(maxFingerAngleX, 0.f, 0.f);
                 firstPhalange->setMinAngles(minFingerAngleX, 0.f, 0.f);
+                firstPhalange->isLeft = left;
 
                 // initializing second phalange
 				firstPhalange->children = new struct GestusHandNode[1];
                 isAllocated( firstPhalange->children );
-                firstPhalange->children->setMaxAngles(maxFingerAngleX, 0.f, 0.f);
-                firstPhalange->children->setMinAngles(minFingerAngleX, 0.f, 0.f);
-
+                firstPhalange->children->setMaxAngles(maxFingerAngleX, 1.f, 0.f);
+                firstPhalange->children->setMinAngles(minFingerAngleX, 1.f, 0.f);
+                firstPhalange->children->isLeft = left;
                 if(i != 4)
                 {
                     // initializing third phalange
 					firstPhalange->children[ 0 ].children = new struct GestusHandNode[1];
                     isAllocated( firstPhalange->children[ 0 ].children );
-                    firstPhalange->children[0].children->setMaxAngles(maxFingerAngleX, 0.f, 0.f);
-                    firstPhalange->children[0].children->setMinAngles(minFingerAngleX, 0.f, 0.f);
+                    firstPhalange->children[0].children->setMaxAngles(maxFingerAngleX, 1.f, 0.f);
+                    firstPhalange->children[0].children->setMinAngles(minFingerAngleX, 1.f, 0.f);
+                    firstPhalange->children[0].children->isLeft = left;
                 }
         }
 
+
+
+        int parameter = isLeft ? -1 : 1;
+
         // initial hand props
-        bendArm(50.f, 0.f, 0.f);
-        bendHand( 0.f, 180.f, 0.f );
+        bendArm(-60.f, 0.f, parameter*10.f);
+        bendHand( 20.f, 180.f, parameter*10.f );
         bendFinger( 0, 10.f, 0.f, 0.f );
         bendFinger( 1, 10.f, 0.f, 0.f );
         bendFinger( 2, 10.f, 0.f, 0.f );
         bendFinger( 3, 10.f, 0.f, 0.f );
         bendFinger( 4, 10.f, 0.f, 0.f );
+
+        //
+
+        bendFirstPhalange( 0, 10.f, 0.f, parameter*10.f );
+        bendFirstPhalange( 1, 10.f, 0.f, parameter*5.f );
+        bendFirstPhalange( 2, 10.f, 0.f, parameter*0.f );
+        bendFirstPhalange( 3, 10.f, 0.f, parameter*-10.f );
 }
 
 GestusHand::~GestusHand()
@@ -119,6 +133,20 @@ bool GestusHand::bendHand( float angleX, float angleY, float angleZ )
         return bended;
 }
 
+bool GestusHand::bendFirstPhalange(int index, float angleX, float angleY, float angleZ )
+{
+  struct GestusHandNode *phalange = &this->children[ 0 ].children[ index ];
+      if(!phalange)
+      {
+        printf("\nUnable to find phanlange with %d index for bending!", index);
+        return false;
+      };
+      bool success = false;
+
+      success = bend(phalange, angleX, angleY, angleZ);
+
+      return success;
+}
 
 bool GestusHand::bendFinger( int index, float angleX, float angleY, float angleZ )
 {
@@ -129,9 +157,11 @@ bool GestusHand::bendFinger( int index, float angleX, float angleY, float angleZ
           return false;
         };
         bool success = false;
+
         while ( phalange )
         {
                 success = bend(phalange, angleX, angleY, angleZ);
+                // angleY = 0.f;
                 if (( *phalange ).children != NULL )
                 {
                         phalange = &( *phalange ).children[ 0 ];
