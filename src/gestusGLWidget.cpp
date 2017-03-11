@@ -65,38 +65,3 @@ GestusRenderer *GestusGLWidget::getRenderer()
 {
     return &renderer;
 }
-
-
-void GestusGLWidget::keyPressEvent(QKeyEvent *event) {
-    int step = 10;
-    if(event->modifiers() & Qt::ShiftModifier)
-    {
-        step = -step;
-    }
-
-    switch(event->key()) {
-    case Qt::Key_A:
-        if(event->modifiers() & Qt::ControlModifier)
-        {
-            leftArm.bendArm(step, step, step);
-        }
-        else
-        {
-            rightArm.bendArm(step, step, step);
-        }
-        break;
-    case Qt::Key_H:
-        if(event->modifiers() & Qt::ControlModifier)
-        {
-            leftArm.bendHand(0, step, 0);
-        }
-        else
-        {
-            rightArm.bendHand(0, step, 0);
-        }
-        break;
-    default:
-        event->ignore();
-        break;
-    }
-}

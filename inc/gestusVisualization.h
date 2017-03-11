@@ -23,7 +23,6 @@ public:
 	explicit GestusVisualization(QWidget *parent = 0);
 	~GestusVisualization();
     bool setupPlotters(std::deque<std::string> *, std::deque<std::string> *, std::deque<std::string> *);
-    void keyPressEvent(QKeyEvent *event);
 
 private:
 	Ui::GestusVisualization *ui;
@@ -33,8 +32,6 @@ private:
     DataPlotter* plotter_all_acc;
     DataPlotter* plotter_all_gyro;
     DataPlotter* plotter_all_mag;
-
-    std::deque<std::string> buffer;
 };
 
 #endif // MAINWINDOW_H

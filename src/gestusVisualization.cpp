@@ -48,10 +48,3 @@ bool GestusVisualization::setupPlotters(std::deque<std::string> *acc, std::deque
 
     return true;
 }
-
-
-void GestusVisualization::keyPressEvent(QKeyEvent *event)
-{
-    // transfer control to gestusGLWidget
-    this->ui->GLwidget->keyPressEvent(event);
-}

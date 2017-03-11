@@ -20,7 +20,6 @@ public:
     void setRenderHand(bool b);
 
     GestusRenderer* getRenderer();
-    void keyPressEvent(QKeyEvent* event);
 
     int R;
     float x,y,z;
@@ -35,7 +34,7 @@ private:
 	GestusHand rightArm;
   bool renderWithTrajectory = true,
        renderWithHand = true;
-  float angleX = 0.f, angleY = 0.f, angleZ = 0.f, angleStep = 1.5f;
+  float angleX = 0.f, angleY = 0.f, angleZ = 0.f;
 
 };
 

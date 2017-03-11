@@ -7,7 +7,7 @@ bool isAllocated( GestusHandNode *ptr )
         if ( ptr == NULL )
         {
                 printf( "Unable to allocate Node" );
-                exit( 1 );
+                return false;
         }
 
         return true;
@@ -62,7 +62,7 @@ GestusHand::GestusHand()
         }
 
         // initial hand props
-        bendArm(-80.f, 0.f, 0.f);
+        bendArm(50.f, 0.f, 0.f);
         bendHand( 0.f, 180.f, 0.f );
         bendFinger( 0, 10.f, 0.f, 0.f );
         bendFinger( 1, 10.f, 0.f, 0.f );

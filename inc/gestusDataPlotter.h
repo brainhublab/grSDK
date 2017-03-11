@@ -17,11 +17,8 @@ public:
     ~DataPlotter();
 
     bool setupPlot(std::deque<std::string>* );
-    bool showPlot();
-
-    bool drawPlotByAxis(std::deque<std::string>* buffer, size_t axis, QString label);
-    void drawPlot(std::deque<std::string>* buffer);
     bool drawPlotFromBuffer();
+
 public slots:
     void fetchData();
 
