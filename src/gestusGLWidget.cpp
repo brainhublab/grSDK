@@ -29,10 +29,13 @@ void GestusGLWidget::paintGL()
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
     renderer.drawScene( angleX, angleY, angleZ );
-    if ( renderWithHand )
+    if ( renderWithLeftHand )
     {
-            renderer.renderArm( &rightArm, angleX, angleY, angleZ);
-            renderer.renderArm( &leftArm, angleX, angleY, angleZ );
+        renderer.renderArm( &leftArm, angleX, angleY, angleZ );
+    }
+    if( renderWithRightHand )
+    {
+        renderer.renderArm( &rightArm, angleX, angleY, angleZ);
     }
     if ( renderWithTrajectory )
     {
@@ -52,14 +55,19 @@ void GestusGLWidget::resizeGL(int w, int h)
     updateGL();
 }
 
-void GestusGLWidget::setRenderTrajectory(bool b)
+void GestusGLWidget::renderTrajectory(bool b)
 {
     renderWithTrajectory = b;
 }
 
-void GestusGLWidget::setRenderHand(bool b)
+void GestusGLWidget::renderLeftHand(bool b)
 {
-    renderWithHand = b;
+    renderWithLeftHand = b;
+}
+
+void GestusGLWidget::renderRightHand(bool b)
+{
+    renderWithRightHand = b;
 }
 
 GestusRenderer *GestusGLWidget::getRenderer()

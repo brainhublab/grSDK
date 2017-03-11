@@ -16,8 +16,9 @@ public:
     void paintGL();
     void resizeGL(int w, int h);
 
-    void setRenderTrajectory(bool b);
-    void setRenderHand(bool b);
+    void renderTrajectory(bool b);
+    void renderLeftHand(bool b);
+    void renderRightHand(bool b);
 
     GestusRenderer* getRenderer();
 
@@ -32,8 +33,9 @@ private:
 
 	GestusHand leftArm = GestusHand(true);
 	GestusHand rightArm = GestusHand(false);
-  bool renderWithTrajectory = true,
-       renderWithHand = true;
+  bool renderWithTrajectory = false,
+       renderWithLeftHand = true,
+       renderWithRightHand = true;
   float angleX = 0.f, angleY = 0.f, angleZ = 0.f;
 
 };

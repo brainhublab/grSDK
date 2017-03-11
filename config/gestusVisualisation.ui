@@ -39,10 +39,114 @@
          <height>16777215</height>
         </size>
        </property>
+       <widget class="QCheckBox" name="trajectoryCheckBox">
+        <property name="geometry">
+         <rect>
+          <x>30</x>
+          <y>20</y>
+          <width>110</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Trajectory</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="leftHandCheckBox">
+        <property name="geometry">
+         <rect>
+          <x>30</x>
+          <y>50</y>
+          <width>110</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Left Hand</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="rightHandCheckBox">
+        <property name="geometry">
+         <rect>
+          <x>30</x>
+          <y>80</y>
+          <width>110</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="palette">
+         <palette>
+          <active>
+           <colorrole role="Button">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>59</red>
+              <green>2</green>
+              <blue>51</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </active>
+          <inactive>
+           <colorrole role="Button">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>59</red>
+              <green>2</green>
+              <blue>51</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </inactive>
+          <disabled>
+           <colorrole role="Button">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>59</red>
+              <green>2</green>
+              <blue>51</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </disabled>
+         </palette>
+        </property>
+        <property name="autoFillBackground">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>Right Hand</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="hackerModeCheckBox">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>30</x>
+          <y>110</y>
+          <width>110</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Hacker Mode</string>
+        </property>
+       </widget>
       </widget>
       <widget class="QTabWidget" name="Plots">
        <property name="currentIndex">
-        <number>0</number>
+        <number>3</number>
        </property>
        <widget class="QWidget" name="tab_all_data">
         <attribute name="title">
@@ -73,7 +177,7 @@
         </attribute>
         <layout class="QVBoxLayout" name="verticalLayout_5">
          <item>
-          <widget class="QCustomPlot" name="PlotData_X" native="true">
+          <widget class="QCustomPlot" name="only_accelerometer" native="true">
            <property name="minimumSize">
             <size>
              <width>0</width>
@@ -102,7 +206,7 @@
         </attribute>
         <layout class="QVBoxLayout" name="verticalLayout_4">
          <item>
-          <widget class="QCustomPlot" name="PlotData_Y" native="true">
+          <widget class="QCustomPlot" name="only_gyroscope" native="true">
            <property name="minimumSize">
             <size>
              <width>0</width>
@@ -131,7 +235,7 @@
         </attribute>
         <layout class="QVBoxLayout" name="verticalLayout">
          <item>
-          <widget class="QCustomPlot" name="PlotData_Z" native="true">
+          <widget class="QCustomPlot" name="only_magnetometer" native="true">
            <property name="minimumSize">
             <size>
              <width>0</width>
