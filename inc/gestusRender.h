@@ -22,12 +22,14 @@ public:
         bool drawScene(float, float, float);
         bool setViewport(int, int);
         bool update();
-        
+
 		    bool renderArm(struct GestusHandNode*, float, float, float);
 		    bool renderTrajectory(GestusHand*, float, float, float);
         // accessors
         int getWidth();
         int getHeight();
+        bool setLinesColor(int r = 255, int g = 0, int b = 0, int a = 127);
+        bool setPlaneColor(int r = 255, int g = 255, int b = 255, int a = 127);
 private:
         render_data data;
         bool initGL();

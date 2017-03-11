@@ -72,6 +72,8 @@ void GestusVisualization::on_hackerModeCheckBox_toggled(bool checked)
 {
     if(checked)
     {
+        ui->GLwidget->getRenderer()->setPlaneColor(255, 0, 0, 127);
+        ui->GLwidget->getRenderer()->setLinesColor(255, 255, 255, 127);
     ui->hackerModeCheckBox->setStyleSheet("color: white;"
                                           "background: #e67e22;"
                                           "selection-color: #34495e;"
@@ -79,6 +81,9 @@ void GestusVisualization::on_hackerModeCheckBox_toggled(bool checked)
     }
     else
     {
+        // go to default
+        ui->GLwidget->getRenderer()->setLinesColor(255, 0, 0, 255);
+        ui->GLwidget->getRenderer()->setPlaneColor(255, 255, 255 , 255);
         ui->hackerModeCheckBox->setStyleSheet("color: white;"
                                               "background: #008081;"
                                               "selection-color: white;"

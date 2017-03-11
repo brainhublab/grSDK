@@ -5,20 +5,37 @@
 
 static const int TRAJECTORY_LENGTH = 40;
 
+
+struct vec3f
+{
+        float x;
+        float y;
+        float z;
+        vec3f( float new_x = 0, float new_y = 0, float new_z = 0)
+        {
+                x = new_x;
+                y = new_y;
+                z = new_z;
+        }
+};
+
+struct rgba_color
+{
+          unsigned int r;
+          unsigned int g;
+          unsigned int b;
+          unsigned int a;
+          rgba_color( unsigned int new_r = 0, unsigned int new_g = 0, unsigned int new_b = 0, unsigned int alpha = 255)
+          {
+                  r = new_r;
+                  g = new_g;
+                  b = new_b;
+                  a = alpha;
+          }
+};
+
 struct arm_dimensions
 {
-        struct vec3f
-        {
-                float x;
-                float y;
-                float z;
-                vec3f( float new_x = 0, float new_y = 0, float new_z = 0)
-                {
-                        x = new_x;
-                        y = new_y;
-                        z = new_z;
-                }
-        };
 
         float length;
         float radius;
@@ -62,9 +79,13 @@ struct render_data
         screen_size screen;
         const arm_dimensions arm;
         size_t trajectory_length = 40;
-
+        rgba_color linesColor;
+        rgba_color planeColor;
         render_data()
         {
+
+                linesColor = rgba_color(255, 0, 0);
+                planeColor = rgba_color(255, 255, 255);
                 fps = 60;
                 cylinder_sides = 10;
                 initial_depth = arm.initial_pos.z;
