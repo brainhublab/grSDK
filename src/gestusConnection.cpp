@@ -37,7 +37,7 @@ bool GestusConnection::setAdapterName()
     DBusMessage *msg, *reply;
 
     DBusError* derror;
-    string adapterName;
+    std::string adapterName;
 
     conn = dbus_bus_get(DBUS_BUS_SYSTEM, NULL);
     msg = dbus_message_new_method_call(
@@ -59,7 +59,7 @@ bool GestusConnection::setAdapterName()
     
     if(reply == NULL)
     {
-        cout<<"Can't find any adapters"<<endl;
+        std::cout<<"Can't find any adapters"<<std::endl;
         return FALSE;
     }
 
@@ -77,7 +77,7 @@ bool GestusConnection::setAdapterName()
 /*
  * get the adapter name 
  */
-string GestusConnection::getAdapterName()  
+std::string GestusConnection::getAdapterName()  
 {
     return adapter.name;
 }
@@ -98,14 +98,14 @@ int GestusConnection::getDeviceId(device_t dev)
 /*
  * return name of connected device "dev" from parameter
  */
-string GestusConnection::getDeviceName(device_t dev)
+std::string GestusConnection::getDeviceName(device_t dev)
 {
     return dev.name;
 }
 /*
  * returns vectr with objects "device_type" which are now connected
  */
-vector<device_t> GestusConnection::getConnectedDevices()
+std::vector<device_t> GestusConnection::getConnectedDevices()
 {
     return devices;
 }
@@ -113,7 +113,7 @@ vector<device_t> GestusConnection::getConnectedDevices()
  * fill the bufer parameter with data from device identified with "devID" and characteristic from parameters.
  * this method execute filling of buffer in new thread.
  */
-bool GestusConnection::getData(int devId, string characteristic, deque<string>* buffer) //TODO kill the thread
+bool GestusConnection::getData(int devId, std::string characteristic, std::deque<std::string>* buffer) //TODO kill the thread
 {
     device_t dev;
     for(int i=0; i < devices.size(); i++) // iterate devices vector to find needed connected device by ID
@@ -121,11 +121,11 @@ bool GestusConnection::getData(int devId, string characteristic, deque<string>* 
         if(devices[i].id == devId)
         {
             dev = devices[i];
-            //cout<<dev.name;
+            //std::cout<<dev.name;
         }
         else
         {
-            cout<<"Can't find devices wit this: "<<devId<< "id"<<endl;
+            std::cout<<"Can't find devices wit this: "<<devId<< "id"<<std::endl;
         }
     }
     //compare and select needed characteristic form parameter of method
@@ -147,11 +147,11 @@ bool GestusConnection::getData(int devId, string characteristic, deque<string>* 
     }
    /* else
     {
-        cout<<"Can't find this: "<<characteristic<<"characteristic"<<endl;
+        std::cout<<"Can't find this: "<<characteristic<<"characteristic"<<std::endl;
     }
 */
     
-    thread thr(&GestusConnection::connectAndRead, this, dev, characteristic, buffer); // createnew thread
+    std::thread thr(&GestusConnection::connectAndRead, this, dev, characteristic, buffer); // createnew thread
     thr.detach(); // detach thread from main proccess
 
    return TRUE;
@@ -159,7 +159,7 @@ bool GestusConnection::getData(int devId, string characteristic, deque<string>* 
 /*
  *  iterate the DBus tree find needed device connect to them and read data from characteristic
  */
-bool GestusConnection::connectAndRead(device_t dev, string characteristic, deque<string> *buffer)
+bool GestusConnection::connectAndRead(device_t dev, std::string characteristic, std::deque<std::string> *buffer)
 {
 
     DBusConnection *conn=NULL;
@@ -168,7 +168,7 @@ bool GestusConnection::connectAndRead(device_t dev, string characteristic, deque
 
     conn = dbus_bus_get(DBUS_BUS_SYSTEM, NULL);
 
-    string s;
+    std::string s;
 
     while(TRUE) //loop for reading of data from characteristic path TODO set the fucking timer 
     {
@@ -183,7 +183,7 @@ bool GestusConnection::connectAndRead(device_t dev, string characteristic, deque
         DBusMessageIter rootIter;
         if(reply == NULL)
         {   
-            cout<<"Can't read value from device "<<dev.name<<" with characteristic"<<characteristic<<endl;
+            std::cout<<"Can't read value from device "<<dev.name<<" with characteristic"<<characteristic<<std::endl;
             return FALSE;
         }
         dbus_message_iter_init(reply, &rootIter);
@@ -223,12 +223,12 @@ bool GestusConnection::connectAndRead(device_t dev, string characteristic, deque
  */
 bool GestusConnection::setAvalibleDevices()
 {
-    vector<string> allDevicesPaths;
+    std::vector<std::string> allDevicesPaths;
     int pathArbitor = 0;
     int layerArbitor = 0;
 
-    string currentPath;
-    string devName;
+    std::string currentPath;
+    std::string devName;
     int devId=0;
 
     DBusConnection *conn=NULL;
@@ -283,7 +283,7 @@ bool GestusConnection::setAvalibleDevices()
         /*
         else 
         {
-            cout<<"Not found any Gestus Devices :("<<endl;
+            std::cout<<"Not found any Gestus Devices :("<<std::endl;
             return FALSE;
         }*/
 
@@ -293,7 +293,7 @@ bool GestusConnection::setAvalibleDevices()
 
     }
     devName.clear();
-    //cout<<devices.front().fingers<<endl;
+    //std::cout<<devices.front().fingers<<std::endl;
     return TRUE;
 
 }
@@ -301,9 +301,9 @@ bool GestusConnection::setAvalibleDevices()
  * iterate the device tree and set characteristics to device in perameter of method
  * the characteristics are UUID's which are setted in GR for each type of data
  */
-bool GestusConnection::setDeviceCharacteristics(device_t* device, string devicePath)
+bool GestusConnection::setDeviceCharacteristics(device_t* device, std::string devicePath)
 {
-    vector<string> gattServices;
+    std::vector<std::string> gattServices;
     DBusMessage *reply = NULL;
 
     reply = getProperty(devicePath.c_str(), "org.bluez.Device1", "GattServices");
@@ -311,9 +311,9 @@ bool GestusConnection::setDeviceCharacteristics(device_t* device, string deviceP
     {
         for(int i = 0; i < gattServices.size(); i++)
         {
-            //cout<<gattServices[i]<<endl;
+            //std::cout<<gattServices[i]<<std::endl;
 
-            vector<string> characteristics;
+            std::vector<std::string> characteristics;
 
             // TODO: free reply
             reply = NULL;
@@ -322,14 +322,14 @@ bool GestusConnection::setDeviceCharacteristics(device_t* device, string deviceP
             {
                 for(int j = 0; j < characteristics.size(); j++)
                 {
-                    //cout<<characteristics[j]<<endl;
-                    string currentUUID;
+                    //std::cout<<characteristics[j]<<std::endl;
+                    std::string currentUUID;
                     reply = NULL;
                     reply = getProperty(characteristics[j].c_str(), "org.bluez.GattCharacteristic1", "UUID");
 
                     if(parsePropertyString(reply, &currentUUID))// iterate and parse needed characteristic UUID's from uuids struct
                     {
-                        //cout<<currentUUID<<endl;
+                        //std::cout<<currentUUID<<std::endl;
                         if(currentUUID == uuids.fingers)
                         {
                             device->fingers = characteristics[j];
@@ -348,20 +348,20 @@ bool GestusConnection::setDeviceCharacteristics(device_t* device, string deviceP
                        }
                        /*else
                        {
-                           cout<<"Cant find any characteristic please check yhe device configs"<<endl;
+                           std::cout<<"Cant find any characteristic please check yhe device configs"<<std::endl;
                            return FALSE;
                        }*/
                     }
                     else
                     {
-                        cout<<"Can't parse property string check configs"<<endl;
+                        std::cout<<"Can't parse property string check configs"<<std::endl;
                         return FALSE;
                     }
                 }
             }
             else
             {
-                cout<<"Cant parse parsePropertyArray check configs"<<endl;
+                std::cout<<"Cant parse parsePropertyArray check configs"<<std::endl;
                 return FALSE;
             }
         }
@@ -400,7 +400,7 @@ DBusMessage *GestusConnection::getProperty(const char *objectPath, const char *i
  * internal auxiliary method
  * parse property array by rely in ARRAY type
  */
-bool GestusConnection::parsePropertyArray(DBusMessage *reply, vector<string> *res)
+bool GestusConnection::parsePropertyArray(DBusMessage *reply, std::vector<std::string> *res)
 {
     DBusMessageIter rootIter;
     dbus_message_iter_init(reply, &rootIter);
@@ -423,7 +423,7 @@ bool GestusConnection::parsePropertyArray(DBusMessage *reply, vector<string> *re
 
                     dbus_message_iter_get_basic(&objIter, &str);
 
-                    res->push_back(string(str));
+                    res->push_back(std::string(str));
                 }
                 else
                 {
@@ -449,7 +449,7 @@ bool GestusConnection::parsePropertyArray(DBusMessage *reply, vector<string> *re
  * internal auxiliary method 
  * parse property array by rely in STRING type
  */
-bool GestusConnection::parsePropertyString(DBusMessage *reply, string *res)
+bool GestusConnection::parsePropertyString(DBusMessage *reply, std::string *res)
 {
     DBusMessageIter rootIter;
     dbus_message_iter_init(reply, &rootIter);
@@ -478,7 +478,7 @@ bool GestusConnection::parsePropertyString(DBusMessage *reply, string *res)
  * internal auxiliary method
  * iterates all connected devices and store all paths of connected devises in "devices" vector
  */
-bool GestusConnection::iterDevices(DBusMessageIter* iterIn, vector<string>* devices, int pathArbitor, int layerArbitor)
+bool GestusConnection::iterDevices(DBusMessageIter* iterIn, std::vector<std::string>* devices, int pathArbitor, int layerArbitor)
 {
     int next = layerArbitor + 1;
 
@@ -505,7 +505,7 @@ bool GestusConnection::iterDevices(DBusMessageIter* iterIn, vector<string>* devi
                 pathArbitor += 1;
                     char* str = NULL;
                     dbus_message_iter_get_basic(iterIn, &str);
-                    string devicePath;
+                    std::string devicePath;
                     devicePath.assign(str, strlen(str)+1);
                     if(devicePath.length() == 38)
                     {
@@ -521,9 +521,9 @@ bool GestusConnection::iterDevices(DBusMessageIter* iterIn, vector<string>* devi
 }
 /*
  * internal auxility method
- * store the reply data in "value" parameter if it is not a string is iterates reply deeper 
+ * store the reply data in "value" parameter if it is not a std::string is iterates reply deeper 
  */
-bool GestusConnection::getReply(DBusMessage* reply, string* value)
+bool GestusConnection::getReply(DBusMessage* reply, std::string* value)
 {
     int currentType;
     char* res;

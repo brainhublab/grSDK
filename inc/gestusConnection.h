@@ -14,17 +14,15 @@
 #include <typeinfo>
 #include <thread>
 
-using namespace std;
-using namespace libconfig;
 /*
  * structure for default bluezobject and aarameters 
  */
 struct dbus_bluez
 {
-    string name;
-    string path;
-    string properties;
-    string introspectable;
+    std::string name;
+    std::string path;
+    std::string properties;
+    std::string introspectable;
     dbus_bluez()
     {
         name = "org.bluez";
@@ -40,8 +38,8 @@ struct dbus_bluez
  */
 struct device_names
 {
-    string left;
-    string right;
+    std::string left;
+    std::string right;
     device_names()
     {
         left = "Gestus[L]";
@@ -54,15 +52,15 @@ struct device_names
  */
 struct device_uuids
 {
-    string fingers;
-    string gyro;
-    string accelerometer;
-    string magnet;
+    std::string fingers;
+    std::string gyro;
+    std::string accelerometer;
+    std::string magnet;
 
-    string rx;
-    string tx;
+    std::string rx;
+    std::string tx;
 
-    string tmp_uuid;
+    std::string tmp_uuid;
     device_uuids()
     {
          fingers = "fced6409-c015-45ea-b50d-1de32a1c2f6d";
@@ -82,15 +80,15 @@ struct device_uuids
 struct device_t
 {
    int id;
-   string name;
-   string path;
+   std::string name;
+   std::string path;
 
-   map<string, string> interfaces;
+   std::map<std::string, std::string> interfaces;
 
-   string fingers;
-   string gyro;
-   string accelerometer;
-   string magnet;
+   std::string fingers;
+   std::string gyro;
+   std::string accelerometer;
+   std::string magnet;
    device_t()
    {
        id = 0;
@@ -117,30 +115,30 @@ class GestusConnection
 
 
         bool setAdapterName(); //set the nternal pc adapter parameters and stor them in object
-        string getAdapterName(); // return the name of internal adapter
+        std::string getAdapterName(); // return the name of internal adapter
         device_t getAdapter(); // return the object adapter 
 
         int getDeviceId(device_t); // return the ID of device setted inparameter
-        string getDeviceName(device_t); // return the device name setted in parameter
-        vector<device_t> getConnectedDevices(); // returns vector filled with connected device structures
+        std::string getDeviceName(device_t); // return the device name setted in parameter
+        std::vector<device_t> getConnectedDevices(); // returns vector filled with connected device structures
 
-        bool getData(int, string, deque<string>*); // fiil buffer with data taked from device wit ID from parameter and their characteristc 
-        bool connectAndRead(device_t, string, deque<string>* ); // find device in DBUS tree, connect and read data from needed characteristic 
+        bool getData(int, std::string, std::deque<std::string>*); // fiil buffer with data taked from device wit ID from parameter and their characteristc 
+        bool connectAndRead(device_t, std::string, std::deque<std::string>* ); // find device in DBUS tree, connect and read data from needed characteristic 
 
         bool setAvalibleDevices(); // iterate all connected devices select the GR devices and store them 
     private:
         //private variables
         device_t adapter; //name of adapter in pc
-        vector<device_t> devices; //names gesture input devices
+        std::vector<device_t> devices; //names gesture input devices
         char* message;
 
         //private methods
-        bool setDeviceCharacteristics(device_t* , string); // sed default device characteristics
+        bool setDeviceCharacteristics(device_t* , std::string); // sed default device characteristics
         DBusMessage *getProperty(const char*, const char*, const char*); // return properties of device
-        bool parsePropertyArray(DBusMessage*, vector<string>*); // parse properties with needed from aray 
-        bool parsePropertyString(DBusMessage*, string*); // parse proerties with needed from string
-        bool iterDevices(DBusMessageIter*, vector<string>*, int, int); // iterate DBUS tree with devices
-        bool getReply(DBusMessage* , string*); // store reply as string
+        bool parsePropertyArray(DBusMessage*, std::vector<std::string>*); // parse properties with needed from aray 
+        bool parsePropertyString(DBusMessage*, std::string*); // parse proerties with needed from string
+        bool iterDevices(DBusMessageIter*, std::vector<std::string>*, int, int); // iterate DBUS tree with devices
+        bool getReply(DBusMessage* , std::string*); // store reply as string
 
         //constants
         dbus_bluez dbusBluez; // DBUS bluez object
