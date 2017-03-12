@@ -93,7 +93,6 @@ struct device_t
 
        interfaces.clear();
 
-
     }
 
 };
