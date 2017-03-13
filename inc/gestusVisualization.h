@@ -31,6 +31,7 @@ private slots:
     void on_hackerModeCheckBox_toggled(bool checked);
 
 private:
+  bool initUiProps();
 	Ui::GestusVisualization *ui;
   std::deque<std::string> acc;
   std::deque<std::string> gyro;

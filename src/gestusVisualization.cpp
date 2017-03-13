@@ -7,10 +7,7 @@ GestusVisualization::GestusVisualization(QWidget *parent) :
 	ui(new Ui::GestusVisualization)
 {
     ui->setupUi(this);
-    ui->hackerModeCheckBox->setStyleSheet("background-color: #008081;");
-    ui->leftHandCheckBox->setStyleSheet("background-color: #008081;");
-    ui->rightHandCheckBox->setStyleSheet("background-color: #008081;");
-    ui->trajectoryCheckBox->setStyleSheet("background-color: #008081;");
+    initUiProps();
 
     plotter_acc = new DataPlotter(ui->only_accelerometer);
     plotter_gyro = new DataPlotter(ui->only_gyroscope);
@@ -32,6 +29,21 @@ GestusVisualization::~GestusVisualization()
     delete plotter_all_gyro;
     delete plotter_all_mag;
     delete ui;
+}
+
+bool GestusVisualization::initUiProps()
+{
+    // splitter init
+    QList<int> sizes;
+    sizes.push_back(300);
+    sizes.push_back(100);
+    ui->splitter->setSizes(sizes);
+    // checkboxes style init
+    ui->hackerModeCheckBox->setStyleSheet("background-color: #008081;");
+    ui->leftHandCheckBox->setStyleSheet("background-color: #008081;");
+    ui->rightHandCheckBox->setStyleSheet("background-color: #008081;");
+    ui->trajectoryCheckBox->setStyleSheet("background-color: #008081;");
+
 }
 
 bool GestusVisualization::setupPlotters(std::deque<std::string> *acc, std::deque<std::string> *gyro, std::deque<std::string> *mag)
@@ -72,7 +84,7 @@ void GestusVisualization::on_hackerModeCheckBox_toggled(bool checked)
 {
     if(checked)
     {
-        ui->GLwidget->getRenderer()->setPlaneColor(255, 0, 0, 127);
+        ui->GLwidget->getRenderer()->setPlaneColor(255, 0, 0, 2);
         ui->GLwidget->getRenderer()->setLinesColor(255, 255, 255, 127);
     ui->hackerModeCheckBox->setStyleSheet("color: white;"
                                           "background: #e67e22;"
