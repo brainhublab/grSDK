@@ -28,8 +28,8 @@ public:
         // accessors
         int getWidth();
         int getHeight();
-        bool setLinesColor(int r = 255, int g = 0, int b = 0, int a = 127);
-        bool setPlaneColor(int r = 255, int g = 255, int b = 255, int a = 127);
+        bool setLinesColor(int r = 255, int g = 0, int b = 0, int a = 200);
+        bool setPlaneColor(int r = 255, int g = 255, int b = 255, int a = 200);
 private:
         render_data data;
         bool initGL();

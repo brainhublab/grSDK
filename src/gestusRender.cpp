@@ -15,6 +15,8 @@ GestusRenderer::GestusRenderer()
 {
         initGL( );
         setViewport( SCREEN_WIDTH, SCREEN_HEIGHT );
+        setLinesColor(255, 0, 0, 200);
+        setPlaneColor(255, 255, 255, 250);
 }
 bool GestusRenderer::initGL()
 {
@@ -48,6 +50,11 @@ bool GestusRenderer::setViewport( int width, int height )
 //        glLoadIdentity( );
         data.screen.width = width;
         data.screen.height = height;
+
+        // enabling transparency
+        glEnable (GL_BLEND);
+        glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
         return true;
 }
 int GestusRenderer::getWidth()
@@ -93,7 +100,7 @@ bool GestusRenderer::renderTrajectory( GestusHand *arm, float angleX, float angl
 bool GestusRenderer::drawScene(float angleX, float angleY, float angleZ)
 {
         glLoadIdentity( );
-        glColor3ub(0, 200, 0);
+        glColor4ub(0, 200, 0, 255);
         float screenFloatX = 10.3f ,
                         screenFloatY = 5.5f; // todo: where can i receive these things?
         float halfScreenX = screenFloatX/2.f, halfScreenY = screenFloatY/2.f;

@@ -44,6 +44,7 @@ bool GestusVisualization::initUiProps()
     ui->rightHandCheckBox->setStyleSheet("background-color: #008081;");
     ui->trajectoryCheckBox->setStyleSheet("background-color: #008081;");
 
+    return true;
 }
 
 bool GestusVisualization::setupPlotters(std::deque<std::string> *acc, std::deque<std::string> *gyro, std::deque<std::string> *mag)
@@ -84,8 +85,8 @@ void GestusVisualization::on_hackerModeCheckBox_toggled(bool checked)
 {
     if(checked)
     {
-        ui->GLwidget->getRenderer()->setPlaneColor(255, 0, 0, 2);
-        ui->GLwidget->getRenderer()->setLinesColor(255, 255, 255, 127);
+        ui->GLwidget->getRenderer()->setPlaneColor(0, 255, 0, 0);
+        ui->GLwidget->getRenderer()->setLinesColor(255,193,7, 255);
     ui->hackerModeCheckBox->setStyleSheet("color: white;"
                                           "background: #e67e22;"
                                           "selection-color: #34495e;"
@@ -95,7 +96,7 @@ void GestusVisualization::on_hackerModeCheckBox_toggled(bool checked)
     {
         // go to default
         ui->GLwidget->getRenderer()->setLinesColor(255, 0, 0, 255);
-        ui->GLwidget->getRenderer()->setPlaneColor(255, 255, 255 , 255);
+        ui->GLwidget->getRenderer()->setPlaneColor(255, 255, 255, 255);
         ui->hackerModeCheckBox->setStyleSheet("color: white;"
                                               "background: #008081;"
                                               "selection-color: white;"

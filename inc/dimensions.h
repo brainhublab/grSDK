@@ -25,7 +25,7 @@ struct rgba_color
           unsigned int g;
           unsigned int b;
           unsigned int a;
-          rgba_color( unsigned int new_r = 0, unsigned int new_g = 0, unsigned int new_b = 0, unsigned int alpha = 255)
+          rgba_color( unsigned int new_r = 0, unsigned int new_g = 0, unsigned int new_b = 0, unsigned int alpha = 200)
           {
                   r = new_r;
                   g = new_g;
@@ -84,8 +84,8 @@ struct render_data
         render_data()
         {
 
-                linesColor = rgba_color(255, 0, 0);
-                planeColor = rgba_color(255, 255, 255);
+                linesColor = rgba_color(255, 0, 0, 200);
+                planeColor = rgba_color(255, 255, 255, 200);
                 fps = 60;
                 cylinder_sides = 10;
                 initial_depth = arm.initial_pos.z;
