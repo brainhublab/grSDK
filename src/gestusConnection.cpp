@@ -375,6 +375,7 @@ bool GestusConnection::setDeviceCharacteristics(device_t* device, std::string de
 }
 /* 
  * returns the DBus message with properties of device by object path in DBus tree
+ * returns property of selected characteristic.
  */
 DBusMessage *GestusConnection::getProperty(const char *objectPath, const char *iface, const char *prop)
 {
@@ -399,6 +400,7 @@ DBusMessage *GestusConnection::getProperty(const char *objectPath, const char *i
 /*
  * internal auxiliary method
  * parse property array by rely in ARRAY type
+ * if property is array not a basic type
  */
 bool GestusConnection::parsePropertyArray(DBusMessage *reply, std::vector<std::string> *res)
 {
@@ -448,6 +450,7 @@ bool GestusConnection::parsePropertyArray(DBusMessage *reply, std::vector<std::s
 /*
  * internal auxiliary method 
  * parse property array by rely in STRING type
+ * if it's basic type
  */
 bool GestusConnection::parsePropertyString(DBusMessage *reply, std::string *res)
 {
@@ -521,7 +524,7 @@ bool GestusConnection::iterDevices(DBusMessageIter* iterIn, std::vector<std::str
 }
 /*
  * internal auxility method
- * store the reply data in "value" parameter if it is not a std::string is iterates reply deeper 
+ * store the reply data in "value" parameter if it is not a string is iterates reply deeper
  */
 bool GestusConnection::getReply(DBusMessage* reply, std::string* value)
 {
