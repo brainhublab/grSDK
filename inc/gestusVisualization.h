@@ -29,6 +29,8 @@ private slots:
     void on_leftHandCheckBox_toggled(bool checked);
     void on_rightHandCheckBox_toggled(bool checked);
     void on_hackerModeCheckBox_toggled(bool checked);
+    void on_loggingCheckBox_toggled(bool checked);
+    void on_randomData_clicked();
 
 private:
   bool initUiProps();

@@ -20,17 +20,24 @@ void splitSensorData(std::string str, double arr[3])
 DataPlotter::DataPlotter( QCustomPlot *pl)
 {
     plot = pl;
+    plog::init(plog::debug, "some.csv");
 }
 
 DataPlotter::~DataPlotter() {
     delete dataTimer;
 }
 
+bool DataPlotter::logger(bool enabled)
+{
+    isLoggingEnabled = enabled;
+    return isLoggingEnabled;
+}
+
 bool DataPlotter::drawPlotFromBuffer()
 {
     dataTimer = new QTimer();
     QObject::connect(dataTimer, SIGNAL(timeout()), this, SLOT(fetchData()));
-	  dataTimer->start(120);
+    dataTimer->start(1320);
 
     return true;
 }
@@ -65,7 +72,6 @@ void DataPlotter::fetchData()
 {
     if(buffer != nullptr && !buffer->empty())
     {
-
         double arr[3];
 
         splitSensorData(buffer->front(), arr);
@@ -80,5 +86,20 @@ void DataPlotter::fetchData()
 		    plot->graph(2)->rescaleValueAxis(true);
         plot->xAxis->setRange(plot->graph(0)->dataCount() - 0.1, 100, Qt::AlignRight);
         plot->replot();
+
+        if(isLoggingEnabled)
+        {
+            std::cout << arr[0] << " " << arr[1] << " " << arr[2] << std::endl;
+            int i = 0;
+
+                LOG(plog::info) << arr[0] << " " << arr[1] << " " << arr[2] <<" " << i;
+                i++;
+        }
     }
+}
+
+bool DataPlotter::pushData(std::string string)
+{
+    buffer->push_back(string);
+    return true;
 }

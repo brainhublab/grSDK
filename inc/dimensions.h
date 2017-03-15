@@ -84,8 +84,8 @@ struct render_data
         render_data()
         {
 
-                linesColor = rgba_color(255, 0, 0, 200);
-                planeColor = rgba_color(255, 255, 255, 200);
+                linesColor = rgba_color(255, 0, 0, 255);
+                planeColor = rgba_color(255, 255, 255, 255);
                 fps = 60;
                 cylinder_sides = 10;
                 initial_depth = arm.initial_pos.z;

@@ -43,7 +43,10 @@ bool GestusVisualization::initUiProps()
     ui->leftHandCheckBox->setStyleSheet("background-color: #008081;");
     ui->rightHandCheckBox->setStyleSheet("background-color: #008081;");
     ui->trajectoryCheckBox->setStyleSheet("background-color: #008081;");
+    ui->loggingCheckBox->setStyleSheet("background-color: #008081;");
 
+    // disable push random data button
+    ui->randomData->setVisible(false);
     return true;
 }
 
@@ -66,6 +69,10 @@ bool GestusVisualization::setupPlotters(std::deque<std::string> *acc, std::deque
     return true;
 }
 
+//
+// Qt Slots
+//
+
 void GestusVisualization::on_trajectoryCheckBox_toggled(bool checked)
 {
     ui->GLwidget->renderTrajectory(checked);
@@ -86,7 +93,8 @@ void GestusVisualization::on_hackerModeCheckBox_toggled(bool checked)
     if(checked)
     {
         ui->GLwidget->getRenderer()->setPlaneColor(0, 255, 0, 0);
-        ui->GLwidget->getRenderer()->setLinesColor(255,193,7, 255);
+        // ui->GLwidget->getRenderer()->setLinesColor(255,193,7, 255);
+        ui->GLwidget->getRenderer()->setLinesColor(0,255,0, 255);
     ui->hackerModeCheckBox->setStyleSheet("color: white;"
                                           "background: #e67e22;"
                                           "selection-color: #34495e;"
@@ -103,4 +111,29 @@ void GestusVisualization::on_hackerModeCheckBox_toggled(bool checked)
                                               "selection-background-color: white;");
     }
 
+}
+
+void GestusVisualization::on_loggingCheckBox_toggled(bool checked)
+{
+    ui->randomData->setVisible(checked);
+
+    /*
+    plotter_acc->logger(checked);
+    plotter_gyro->logger(checked);
+    plotter_mag->logger(checked);*/
+
+    plotter_all_acc->logger(checked);
+    plotter_all_gyro->logger(checked);
+    plotter_all_mag->logger(checked);
+}
+
+void GestusVisualization::on_randomData_clicked()
+{
+    std::string s;
+    s.append(std::to_string(qrand() % ((377 + 1) - 0) + 0));
+    s.append(" ");
+    s.append(std::to_string(qrand() % ((377 + 1) - 0) + 0));
+    s.append(" ");
+    s.append(std::to_string(qrand() % ((377 + 1) - 0) + 0));
+    plotter_all_acc->pushData(s);
 }

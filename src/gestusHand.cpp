@@ -75,7 +75,8 @@ GestusHand::GestusHand(bool left)
         bendFinger( 1, 10.f, 0.f, 0.f );
         bendFinger( 2, 10.f, 0.f, 0.f );
         bendFinger( 3, 10.f, 0.f, 0.f );
-        bendFinger( 4, 10.f, 0.f, 0.f );
+        bendFinger( 4, 20.f, 20.f, parameter*10.f );
+        // TODO: libconfig
 
         //
 
@@ -83,6 +84,7 @@ GestusHand::GestusHand(bool left)
         bendFirstPhalange( 1, 10.f, 0.f, parameter*5.f );
         bendFirstPhalange( 2, 10.f, 0.f, parameter*0.f );
         bendFirstPhalange( 3, 10.f, 0.f, parameter*-10.f );
+
 }
 
 GestusHand::~GestusHand()

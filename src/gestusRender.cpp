@@ -15,8 +15,6 @@ GestusRenderer::GestusRenderer()
 {
         initGL( );
         setViewport( SCREEN_WIDTH, SCREEN_HEIGHT );
-        setLinesColor(255, 0, 0, 200);
-        setPlaneColor(255, 255, 255, 250);
 }
 bool GestusRenderer::initGL()
 {

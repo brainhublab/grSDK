@@ -143,6 +143,41 @@
          <string>Hacker Mode</string>
         </property>
        </widget>
+       <widget class="QCheckBox" name="loggingCheckBox">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>30</x>
+          <y>140</y>
+          <width>110</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Logging</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="randomData">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>30</x>
+          <y>170</y>
+          <width>80</width>
+          <height>24</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>RandomData</string>
+        </property>
+       </widget>
       </widget>
       <widget class="QTabWidget" name="Plots">
        <property name="currentIndex">

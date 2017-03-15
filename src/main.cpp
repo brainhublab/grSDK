@@ -55,8 +55,8 @@ int main(int argc, char *argv[])
 
 	acc.push_back("123 120 100");
 	acc.push_back("134 400 23");
-	gyro.push_back("123 120 100");
-  mag.push_back("123 120 100");
+	gyro.push_back("13 1220 1030");
+  mag.push_back("1132 10 0");
 
 
 	glutInit(&argc, argv);
