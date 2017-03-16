@@ -50,18 +50,27 @@ bool GestusVisualization::initUiProps()
     return true;
 }
 
-bool GestusVisualization::setupPlotters(std::deque<std::string> *acc, std::deque<std::string> *gyro, std::deque<std::string> *mag)
+bool GestusVisualization::setupPlotters(std::deque<std::string> *acc_src, std::deque<std::string> *gyro_src, std::deque<std::string> *mag_src)
 {
-    //plotter_acc->setupPlot(acc);
-    //plotter_gyro->setupPlot(gyro);
-   //plotter_mag->setupPlot(mag);
-    plotter_all_acc->setupPlot(acc);
-    plotter_all_gyro->setupPlot(gyro);
-    plotter_all_mag->setupPlot(mag);
+    // setup sources
+    acc.setupSource(acc_src);
+    mag.setupSource(mag_src);
+    gyro.setupSource(gyro_src);
 
-    //plotter_acc->drawPlotFromBuffer();
-    //plotter_gyro->drawPlotFromBuffer();
-    //plotter_mag->drawPlotFromBuffer();
+    // setup buffers for separate plotters
+    plotter_acc->setupPlot(acc.firstBuffer);
+    plotter_gyro->setupPlot(gyro.firstBuffer);
+    plotter_mag->setupPlot(mag.firstBuffer);
+
+    plotter_all_acc->setupPlot(acc.secondBuffer);
+    plotter_all_gyro->setupPlot(gyro.secondBuffer);
+    plotter_all_mag->setupPlot(mag.secondBuffer);
+
+    // run drawing
+    plotter_acc->drawPlotFromBuffer();
+    plotter_gyro->drawPlotFromBuffer();
+    plotter_mag->drawPlotFromBuffer();
+
     plotter_all_acc->drawPlotFromBuffer();
     plotter_all_gyro->drawPlotFromBuffer();
     plotter_all_mag->drawPlotFromBuffer();
@@ -117,14 +126,7 @@ void GestusVisualization::on_loggingCheckBox_toggled(bool checked)
 {
     ui->randomData->setVisible(checked);
 
-    /*
-    plotter_acc->logger(checked);
-    plotter_gyro->logger(checked);
-    plotter_mag->logger(checked);*/
-
-    plotter_all_acc->logger(checked);
-    plotter_all_gyro->logger(checked);
-    plotter_all_mag->logger(checked);
+    acc.isLoggingEnabled = checked;
 }
 
 void GestusVisualization::on_randomData_clicked()
@@ -135,5 +137,59 @@ void GestusVisualization::on_randomData_clicked()
     s.append(std::to_string(qrand() % ((377 + 1) - 0) + 0));
     s.append(" ");
     s.append(std::to_string(qrand() % ((377 + 1) - 0) + 0));
-    plotter_all_acc->pushData(s);
+    acc.sourceBuffer->push_back(s);
+}
+
+//
+// BufferManager
+//
+
+
+BufferManager::BufferManager()
+{
+  firstBuffer = new std::deque<std::string>();
+  secondBuffer = new std::deque<std::string>();
+
+
+  plog::init(plog::debug, "log.csv");
+}
+
+BufferManager::~BufferManager()
+{
+  delete fetchTimer;
+  delete firstBuffer;
+  delete secondBuffer;
+}
+
+bool BufferManager::setupSource(std::deque<std::string>* buf)
+{
+    sourceBuffer = buf;
+
+    // start timer for fetching data from source to separate copies
+    fetchTimer = new QTimer();
+    QObject::connect(fetchTimer, SIGNAL(timeout()), this, SLOT(fetchData()));
+    fetchTimer->start(120);
+
+    return true;
+}
+
+void BufferManager::fetchData()
+{
+    if(sourceBuffer != nullptr && !sourceBuffer->empty())
+    {
+        // move front data to different buffers
+
+        firstBuffer->push_back(sourceBuffer->front());
+        secondBuffer->push_back(sourceBuffer->front());
+        sourceBuffer->pop_front();
+
+        if(isLoggingEnabled) // TODO: move it to proper place
+        {
+            std::cout << firstBuffer->back() << std::endl;
+            int i = 0;
+
+                // LOG(plog::info) << firstBuffer->back() << i;
+                i++;
+        }
+    }
 }

@@ -6,7 +6,6 @@
 #include <string>
 
 #include "externAssets/qcustomplot/qcustomplot.h"
-#include "externAssets/plog/Log.h" //Lib for logging in csv format
 #include "QObject"
 
 class DataPlotter : public QObject
@@ -19,8 +18,6 @@ public:
 
     bool setupPlot(std::deque<std::string>* );
     bool drawPlotFromBuffer();
-    bool logger(bool);
-    bool pushData(std::string);
 public slots:
     void fetchData();
 
@@ -29,7 +26,6 @@ private:
     QCustomPlot* plot = nullptr;
     QTimer *dataTimer = nullptr;
     std::deque<std::string> *buffer = nullptr;
-    bool isLoggingEnabled = false;
 };
 
 #endif // DATAPLOTTER_H
