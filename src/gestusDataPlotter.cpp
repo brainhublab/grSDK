@@ -45,6 +45,8 @@ bool DataPlotter::setupPlot(std::deque<std::string> *buf)
     plot->axisRect()->setRangeDrag(Qt::Horizontal);   // Включаем перетаскивание только по горизонтальной оси
     plot->axisRect()->setRangeDrag(Qt::Vertical);
 
+    plot->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignLeft|Qt::AlignTop); // legend position
+
     plot->legend->setVisible(true);
     plot->legend->setFont(QFont("Helvetica", 9));
 
