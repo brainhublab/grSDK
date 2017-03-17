@@ -39,14 +39,20 @@ bool GestusVisualization::initUiProps()
     sizes.push_back(100);
     ui->splitter->setSizes(sizes);
     // checkboxes style init
-    ui->hackerModeCheckBox->setStyleSheet("background-color: #008081;");
-    ui->leftHandCheckBox->setStyleSheet("background-color: #008081;");
-    ui->rightHandCheckBox->setStyleSheet("background-color: #008081;");
-    ui->trajectoryCheckBox->setStyleSheet("background-color: #008081;");
-    ui->loggingCheckBox->setStyleSheet("background-color: #008081;");
+    // ui->hackerModeCheckBox->setStyleSheet("background-color: #008081;");
+    // ui->leftHandCheckBox->setStyleSheet("background-color: #008081;");
+    // ui->rightHandCheckBox->setStyleSheet("background-color: #008081;");
+    // ui->trajectoryCheckBox->setStyleSheet("background-color: #008081;");
+    // ui->loggingCheckBox->setStyleSheet("background-color: #008081;");
+ // QColor backgroundColor = ui->settings->palette().light().color();
+ // backgroundColor.setAlpha(100);
+ // QPainter customPainter(this);
+ // customPainter.fillRect(rect(),backgroundColor);
 
     // disable push random data button
     ui->randomData->setVisible(false);
+
+
     return true;
 }
 
