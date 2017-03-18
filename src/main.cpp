@@ -10,7 +10,7 @@ using namespace std;
 //void threadFunction(GestusConnection)
 int main()
 {
-    string characteristic = "gyro";
+    string characteristic = "pinky_gyro";
 
     deque<string> buffer;
 

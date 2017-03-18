@@ -129,19 +129,76 @@ bool GestusConnection::getData(int devId, std::string characteristic, std::deque
         }
     }
     //compare and select needed characteristic form parameter of method
-    if(characteristic == "fingers")
+
+    if(characteristic == "pinky_gyro")
     {
-        characteristic = dev.fingers;
+        characteristic = dev.fingers[0].gyro;
+    }
+    else if(characteristic == "pinky_acc")
+    {
+        characteristic = dev.fingers[0].accelerometer;
+    }
+    else if(characteristic == "pinky_mag")
+    {
+        characteristic = dev.fingers[0].mag;
+    }
+     if(characteristic == "ring_gyro")
+    {
+        characteristic = dev.fingers[1].gyro;
+    }
+    else if(characteristic == "ring_acc")
+    {
+        characteristic = dev.fingers[1].accelerometer;
+    }
+    else if(characteristic == "ring_mag")
+    {
+        characteristic = dev.fingers[1].mag;
+    }
+    if(characteristic == "middle_gyro")
+    {
+        characteristic = dev.fingers[2].gyro;
+    }
+    else if(characteristic == "middle_acc")
+    {
+        characteristic = dev.fingers[2].accelerometer;
+    }
+    else if(characteristic == "middle_mag")
+    {
+        characteristic = dev.fingers[2].mag;
+    }
+    if(characteristic == "index_gyro")
+    {
+        characteristic = dev.fingers[3].gyro;
+    }
+    else if(characteristic == "index_acc")
+    {
+        characteristic = dev.fingers[3].accelerometer;
+    }
+    else if(characteristic == "index_mag")
+    {
+        characteristic = dev.fingers[3].mag;
+    }
+    if(characteristic == "thumb_gyro")
+    {
+        characteristic = dev.fingers[4].gyro;
+    }
+    else if(characteristic == "thumb_acc")
+    {
+        characteristic = dev.fingers[4].accelerometer;
+    }
+    else if(characteristic == "thumb_mag")
+    {
+        characteristic = dev.fingers[4].mag;
     }
     else if(characteristic == "gyro")
     {
         characteristic = dev.gyro;
     }
-    else if(characteristic == "accelerometer")
+    else if(characteristic == "acc")
     {
         characteristic = dev.accelerometer;
     }
-    else if(characteristic == "magnet")
+    else if(characteristic == "mag")
     {
         characteristic = dev.magnet;
     }
@@ -330,11 +387,22 @@ bool GestusConnection::setDeviceCharacteristics(device_t* device, std::string de
                     if(parsePropertyString(reply, &currentUUID))// iterate and parse needed characteristic UUID's from uuids struct
                     {
                         //std::cout<<currentUUID<<std::endl;
-                        if(currentUUID == uuids.fingers)
+                        for(int k=0; k<6; k++)
                         {
-                            device->fingers = characteristics[j];
+                            if(currentUUID == uuids.fingers[k].gyro)
+                            {
+                                device->fingers[k].gyro = characteristics[j];
+                            }
+                            else if(currentUUID == uuids.fingers[k].accelerometer)
+                            {
+                                device->fingers[k].accelerometer = characteristics[j];
+                            }
+                            else if(currentUUID == uuids.fingers[k].mag)
+                            {
+                                device->fingers[k].mag = characteristics[j];
+                            }
                         }
-                       else if(currentUUID == uuids.gyro)
+                       if(currentUUID == uuids.gyro)
                        {
                             device->gyro = characteristics[j];
                        }
