@@ -59,7 +59,7 @@ bool GestusConnection::setAdapterName()
             DBUS_TYPE_INVALID);
 
     reply = dbus_connection_send_with_reply_and_block(conn, msg, -1, derror);
-    
+
     if(reply == NULL)
     {
         cout<<"Can't find any adapters"<<endl;
@@ -140,9 +140,9 @@ bool GestusConnection::getData(int devId, string characteristic, deque<string>* 
         cout<<"Can't find this: "<<characteristic<<"characteristic"<<endl;
     }
 */
-       
+
     thread thr(&GestusConnection::connectAndRead, this, dev, characteristic, buffer);
-    thr.detach(); 
+    thr.detach();
 
    return TRUE;
 }
@@ -161,7 +161,7 @@ bool GestusConnection::connectAndRead(device_t dev, string characteristic, deque
     {
         msg = dbus_message_new_method_call(
                 dbusBluez.name.c_str(),
-                characteristic.c_str(), 
+                characteristic.c_str(),
                 "org.bluez.GattCharacteristic1",
                 "ReadValue"
                 );
@@ -169,7 +169,7 @@ bool GestusConnection::connectAndRead(device_t dev, string characteristic, deque
         reply = dbus_connection_send_with_reply_and_block(conn, msg, -1, derror);
         DBusMessageIter rootIter;
         /*if(reply == NULL)
-        {   
+        {
             cout<<"Can't read value from device "<<dev.name<<" with characteristic"<<characteristic<<endl;
             return FALSE;
         }*/
@@ -269,7 +269,7 @@ bool GestusConnection::setAvalibleDevices()
             devices.push_back(dev);
         }
         /*
-        else 
+        else
         {
             cout<<"Not found any Gestus Devices :("<<endl;
             return FALSE;

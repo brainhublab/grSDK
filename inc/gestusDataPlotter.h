@@ -18,6 +18,7 @@ public:
 
     bool setupPlot(std::deque<std::string>* );
     bool drawPlotFromBuffer();
+    bool pause = false;
 public slots:
     void fetchData();
 

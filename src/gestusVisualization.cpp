@@ -201,3 +201,14 @@ void BufferManager::fetchData()
         }
     }
 }
+
+void GestusVisualization::on_pausePlotCheckBox_toggled(bool checked)
+{
+    plotter_acc->pause = checked;
+    plotter_mag->pause = checked;
+    plotter_gyro->pause = checked;
+
+    plotter_all_acc->pause = checked;
+    plotter_all_mag->pause = checked;
+    plotter_all_gyro->pause = checked;
+}

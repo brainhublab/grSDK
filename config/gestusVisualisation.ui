@@ -97,7 +97,7 @@
           <property name="maximumSize">
            <size>
             <width>130</width>
-            <height>200</height>
+            <height>250</height>
            </size>
           </property>
           <widget class="QCheckBox" name="trajectoryCheckBox">
@@ -120,7 +120,7 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>160</y>
+             <y>190</y>
              <width>109</width>
              <height>30</height>
             </rect>
@@ -139,7 +139,7 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>70</y>
+             <y>40</y>
              <width>97</width>
              <height>22</height>
             </rect>
@@ -198,7 +198,7 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>130</y>
+             <y>160</y>
              <width>78</width>
              <height>22</height>
             </rect>
@@ -217,7 +217,7 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>100</y>
+             <y>130</y>
              <width>109</width>
              <height>22</height>
             </rect>
@@ -230,7 +230,7 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>40</y>
+             <y>70</y>
              <width>88</width>
              <height>22</height>
             </rect>
@@ -245,13 +245,26 @@
             <bool>true</bool>
            </property>
           </widget>
+          <widget class="QCheckBox" name="pausePlotCheckBox">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>100</y>
+             <width>89</width>
+             <height>22</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Pause Plot</string>
+           </property>
+          </widget>
          </widget>
         </item>
        </layout>
       </widget>
       <widget class="QTabWidget" name="Plots">
        <property name="currentIndex">
-        <number>3</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="tab_all_data">
         <attribute name="title">

@@ -54,7 +54,7 @@ private slots:
     void on_hackerModeCheckBox_toggled(bool checked);
     void on_loggingCheckBox_toggled(bool checked);
     void on_randomData_clicked();
-
+    void on_pausePlotCheckBox_toggled(bool checked);
 
 private:
     bool initUiProps();

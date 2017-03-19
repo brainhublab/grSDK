@@ -38,7 +38,7 @@ int main()
 #include <GL/glut.h>
 
 #include "gestusVisualization.h"
-//#include "gestusConnection.h"
+#include "gestusConnection.h"
 
 int main(int argc, char *argv[])
 {
@@ -47,11 +47,11 @@ int main(int argc, char *argv[])
 	std::deque<std::string> gyro;
 	std::deque<std::string> mag;
 
-//	GestusConnection connection;
-//	connection.setAvalibleDevices();
-//	connection.getData(0, "acc", &acc);
-//	connection.getData(0, "gyro", &gyro);
-//	connection.getData(0, "magnet", &mag);
+	GestusConnection connection;
+	// connection.setAvalibleDevices();
+	// connection.getData(0, "acc", &acc);
+	// connection.getData(0, "gyro", &gyro);
+	// connection.getData(0, "magnet", &mag);
 
 	acc.push_back("123 120 100");
 	acc.push_back("134 400 23");
