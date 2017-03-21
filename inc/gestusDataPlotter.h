@@ -18,6 +18,8 @@ public:
 
     bool setupPlot(std::deque<std::string>* );
     bool drawPlotFromBuffer();
+
+    void splitSensorData(std::string str, double arr[3]);
     bool pause = false;
 public slots:
     void fetchData();

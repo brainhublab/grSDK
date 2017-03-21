@@ -10,13 +10,14 @@
 #include <deque>
 
 #include "gestusDataPlotter.h"
+#include "gestusGLWidget.h"
 #include <iostream>
 #include "externAssets/plog/Log.h" //Lib for logging in csv format
 
 namespace Ui{
 class GestusVisualization;
 }
-
+// TODO:: DataPlotter -> DataManager(in fetchData() to bend hand)
 
     struct BufferManager : public QObject
     {
@@ -24,6 +25,24 @@ class GestusVisualization;
     public:
         BufferManager();
         ~BufferManager();
+        bool setGLWidget(GestusGLWidget* w)
+        {
+            widget = w;
+            return true;
+        };
+
+        void splitSensorData(std::string str, double arr[3])
+        {
+                int i = 0;
+                double n;
+                std::stringstream ss(str);
+                while(ss >> n)
+                {
+        			arr[i] = n;
+                        i++;
+                }
+        }
+        //
         bool setupSource(std::deque<std::string>* buf);
         QTimer* fetchTimer;
 
@@ -36,6 +55,8 @@ class GestusVisualization;
             bool isLoggingEnabled = false;
     public slots:
         void fetchData();
+    private:
+          GestusGLWidget* widget;
     };
 
 class GestusVisualization : public QMainWindow

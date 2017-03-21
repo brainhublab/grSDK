@@ -9,6 +9,10 @@ GestusVisualization::GestusVisualization(QWidget *parent) :
     ui->setupUi(this);
     initUiProps();
 
+    acc.setGLWidget(ui->GLwidget);
+    gyro.setGLWidget(ui->GLwidget);
+    mag.setGLWidget(ui->GLwidget);
+
     plotter_acc = new DataPlotter(ui->only_accelerometer);
     plotter_gyro = new DataPlotter(ui->only_gyroscope);
     plotter_mag = new DataPlotter(ui->only_magnetometer);
@@ -139,12 +143,13 @@ void GestusVisualization::on_loggingCheckBox_toggled(bool checked)
 
 void GestusVisualization::on_randomData_clicked()
 {
+    int max = 256, min = -256;
     std::string s;
-    s.append(std::to_string(qrand() % ((377 + 1) - 0) + 0));
+    s.append(std::to_string(qrand() % ((max + 1) - min) + min));
     s.append(" ");
-    s.append(std::to_string(qrand() % ((377 + 1) - 0) + 0));
+    s.append(std::to_string(0));//qrand() % ((max + 1) - min) + min));
     s.append(" ");
-    s.append(std::to_string(qrand() % ((377 + 1) - 0) + 0));
+    s.append(std::to_string(0));//qrand() % ((max + 1) - min) + min));
     acc.sourceBuffer->push_back(s);
 }
 
@@ -185,6 +190,15 @@ void BufferManager::fetchData()
 {
     if(sourceBuffer != nullptr && !sourceBuffer->empty())
     {
+
+        double grad2rad = 3.141592/180.0;
+
+        double d[3] = {0, 0, 0};
+
+        splitSensorData(sourceBuffer->front(), d);
+        // move hands
+        widget->leftArm.bendFinger(1, d[0]*grad2rad, d[1]*grad2rad, d[2]*grad2rad);
+        widget->rightArm.bendArm(d[0]*grad2rad, -d[1]*grad2rad, d[2]*grad2rad);
         // move front data to different buffers
 
         firstBuffer->push_back(sourceBuffer->front());

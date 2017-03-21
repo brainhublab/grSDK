@@ -26,13 +26,14 @@ public:
     float x,y,z;
     bool wired;
     float ang;
+
+
+    	GestusHand leftArm = GestusHand(true);
+    	GestusHand rightArm = GestusHand(false);
 private:
 
 	GestusRenderer renderer;
   QTimer timer;
-
-	GestusHand leftArm = GestusHand(true);
-	GestusHand rightArm = GestusHand(false);
   bool renderWithTrajectory = false,
        renderWithLeftHand = true,
        renderWithRightHand = true;
