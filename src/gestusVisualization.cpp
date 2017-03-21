@@ -160,6 +160,7 @@ void GestusVisualization::on_randomData_clicked()
 
 BufferManager::BufferManager()
 {
+  ifs.open("/dev/rfcomm0", std::ifstream::in); 
   firstBuffer = new std::deque<std::string>();
   secondBuffer = new std::deque<std::string>();
 
@@ -169,6 +170,7 @@ BufferManager::BufferManager()
 
 BufferManager::~BufferManager()
 {
+    ifs.close();
   delete fetchTimer;
   delete firstBuffer;
   delete secondBuffer;
@@ -188,23 +190,40 @@ bool BufferManager::setupSource(std::deque<std::string>* buf)
 
 void BufferManager::fetchData()
 {
+
+    std::string str;
+    if(!ifs.eof())
+    {
+        std::getline(ifs, str);
+    }
+
+    std::cout << "True: " << str << std::endl;
+    if(!str.empty())
+    {
+        sourceBuffer->push_back(str);
+    }
+
+
     if(sourceBuffer != nullptr && !sourceBuffer->empty())
     {
 
         double grad2rad = 3.141592/180.0;
 
         double d[3] = {0, 0, 0};
-
-        splitSensorData(sourceBuffer->front(), d);
+    while(sourceBuffer->front().empty())
+    {
+        sourceBuffer->pop_front();
+    }
+      splitSensorData(sourceBuffer->front(), d);
+    
         // move hands
-        widget->leftArm.bendFinger(1, d[0]*grad2rad, d[1]*grad2rad, d[2]*grad2rad);
-        widget->rightArm.bendArm(d[0]*grad2rad, -d[1]*grad2rad, d[2]*grad2rad);
+        widget->leftArm.bendHand(d[0]*grad2rad, d[1]*grad2rad, d[2]*grad2rad);
+        widget->rightArm.bendHand(d[0]*grad2rad, -d[1]*grad2rad, d[2]*grad2rad);
         // move front data to different buffers
 
         firstBuffer->push_back(sourceBuffer->front());
         secondBuffer->push_back(sourceBuffer->front());
         sourceBuffer->pop_front();
-
         if(isLoggingEnabled) // TODO: move it to proper place
         {
             std::cout << firstBuffer->back() << std::endl;

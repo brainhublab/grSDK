@@ -13,7 +13,7 @@
 #include "gestusGLWidget.h"
 #include <iostream>
 #include "externAssets/plog/Log.h" //Lib for logging in csv format
-
+#include <fstream>
 namespace Ui{
 class GestusVisualization;
 }
@@ -41,7 +41,8 @@ class GestusVisualization;
         			arr[i] = n;
                         i++;
                 }
-        }
+        };
+        std::ifstream ifs;
         //
         bool setupSource(std::deque<std::string>* buf);
         QTimer* fetchTimer;
