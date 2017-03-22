@@ -110,9 +110,9 @@ bool GestusHand::bendArm( float angleX, float angleY, float angleZ )
                 // add info about trajectory
                 std::map< char, float > angles;
                 std::map< char, float > lastPoint = this->trajectoryAngles.back( );
-                angles[ 'X' ] = angleX + lastPoint[ 'X' ];
-                angles[ 'Y' ] = angleY + lastPoint[ 'Y' ];
-                angles[ 'Z' ] = angleZ + lastPoint[ 'Z' ];
+                angles[ 'X' ] = angleX;// + lastPoint[ 'X' ];
+                angles[ 'Y' ] = angleY;// + lastPoint[ 'Y' ];
+                angles[ 'Z' ] = angleZ;// + lastPoint[ 'Z' ];
 
                 this->trajectoryAngles.push_back( angles );
 
@@ -203,9 +203,9 @@ bool GestusHand::bend( GestusHandNode *node, float angleX, float angleY, float a
 
 
         // todo: if you want to move on new angle every time (without adding last position) change += to =
-        node->angleX += angleX;
-        node->angleY += angleY;
-        node->angleZ += angleZ;
+        node->angleX = angleX;
+        node->angleY = angleY;
+        node->angleZ = angleZ;
 
         return true;
 }

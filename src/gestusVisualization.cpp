@@ -197,7 +197,7 @@ void BufferManager::fetchData()
         std::getline(ifs, str);
     }
 
-    std::cout << "True: " << str << std::endl;
+//    std::cout << "True: " << str << std::endl;
     if(!str.empty())
     {
         sourceBuffer->push_back(str);
