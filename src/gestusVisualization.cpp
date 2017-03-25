@@ -160,7 +160,8 @@ void GestusVisualization::on_randomData_clicked()
 
 BufferManager::BufferManager()
 {
-  ifs.open("/dev/rfcomm0", std::ifstream::in); 
+//  ifs.open("/dev/rfcomm0", std::ifstream::in); 
+  serialD.setup("/dev/rfcomm0");
   firstBuffer = new std::deque<std::string>();
   secondBuffer = new std::deque<std::string>();
 
@@ -170,7 +171,7 @@ BufferManager::BufferManager()
 
 BufferManager::~BufferManager()
 {
-    ifs.close();
+  //  ifs.close();
   delete fetchTimer;
   delete firstBuffer;
   delete secondBuffer;
@@ -183,40 +184,44 @@ bool BufferManager::setupSource(std::deque<std::string>* buf)
     // start timer for fetching data from source to separate copies
     fetchTimer = new QTimer();
     QObject::connect(fetchTimer, SIGNAL(timeout()), this, SLOT(fetchData()));
-    fetchTimer->start(120);
+    fetchTimer->start(100);
 
     return true;
 }
 
 void BufferManager::fetchData()
 {
-
+/*
     std::string str;
     if(!ifs.eof())
     {
         std::getline(ifs, str);
     }
 
-//    std::cout << "True: " << str << std::endl;
+    std::cout << "True: " << str << std::endl;
     if(!str.empty())
     {
         sourceBuffer->push_back(str);
     }
 
-
+*/
+    std::string resp = serialD.getNext();
+    std::cout << resp << std::endl;
+    sourceBuffer->push_back(resp); // this blocks process until line is readed from arduino
     if(sourceBuffer != nullptr && !sourceBuffer->empty())
     {
 
         double grad2rad = 3.141592/180.0;
 
         double d[3] = {0, 0, 0};
-    while(sourceBuffer->front().empty())
-    {
-        sourceBuffer->pop_front();
-    }
-      splitSensorData(sourceBuffer->front(), d);
+        while(sourceBuffer->front().empty())
+        {
+            sourceBuffer->pop_front();
+        }
+        splitSensorData(sourceBuffer->front(), d);
     
         // move hands
+        grad2rad = 1;
         widget->leftArm.bendHand(d[0]*grad2rad, d[1]*grad2rad, d[2]*grad2rad);
         widget->rightArm.bendHand(d[0]*grad2rad, -d[1]*grad2rad, d[2]*grad2rad);
         // move front data to different buffers
@@ -226,7 +231,7 @@ void BufferManager::fetchData()
         sourceBuffer->pop_front();
         if(isLoggingEnabled) // TODO: move it to proper place
         {
-            std::cout << firstBuffer->back() << std::endl;
+//            std::cout << firstBuffer->back() << std::endl;
             int i = 0;
 
                 // LOG(plog::info) << firstBuffer->back() << i;

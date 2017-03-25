@@ -179,6 +179,7 @@ bool GestusHand::bendFinger( int index, float angleX, float angleY, float angleZ
 
 bool GestusHand::bend( GestusHandNode *node, float angleX, float angleY, float angleZ )
 {
+    /*
         // check if bending is possible
         if(node->maxAngleX != 0.f &&
              (node->angleX + angleX >= node->maxAngleX
@@ -200,7 +201,7 @@ bool GestusHand::bend( GestusHandNode *node, float angleX, float angleY, float a
         {
                 return false;
         }
-
+*/
 
         // todo: if you want to move on new angle every time (without adding last position) change += to =
         node->angleX = angleX;

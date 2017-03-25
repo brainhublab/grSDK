@@ -14,6 +14,131 @@
 #include <iostream>
 #include "externAssets/plog/Log.h" //Lib for logging in csv format
 #include <fstream>
+// serial
+//
+// ===
+#include <stdio.h>   /* Standard input/output definitions */
+#include <string.h>  /* String function definitions */
+#include <unistd.h>  /* UNIX standard function definitions */
+#include <fcntl.h>   /* File control definitions */
+#include <errno.h>   /* Error number definitions */
+#include <termios.h> /* POSIX terminal control definitions */
+
+class SerialData
+{
+    public:
+        SerialData()
+        {
+            setup();
+        };
+
+        ~SerialData()
+        {
+            close(fileDescriptor);
+        };
+
+        bool setup(std::string src = "/dev/rfcomm0")
+        {
+            fileDescriptor = openPort(src);
+            setTerm();
+            return fileDescriptor != -1;
+        };
+        void setTerm()
+        {
+          // fcntl(fileDescriptor, F_SETFL, 0);
+            struct termios toptions;
+
+            // baud
+            
+             cfsetispeed(&toptions, B115200);
+              cfsetospeed(&toptions, B115200);
+               /* 8 bits, no parity, no stop bits */
+              toptions.c_cflag &= ~PARENB;
+ //               toptions.c_cflag &= ~CSTOPB;
+              toptions.c_cflag &= ~CSIZE;
+    //             toptions.c_cflag |= CS8;
+                   /* no hardware flow control */
+       //            toptions.c_cflag &= ~CRTSCTS;
+                    /* enable receiver, ignore status lines */
+         //           toptions.c_cflag |= CREAD | CLOCAL;
+                     /* disable input/output flow control, disable restart chars */
+           //          toptions.c_iflag &= ~(IXON | IXOFF | IXANY);
+                      /* disable canonical input, disable echo,
+                       *  disable visually erase chars,
+                       *   disable terminal-generated signals */
+             //         toptions.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG);
+                       /* disable output processing */
+               //        toptions.c_oflag &= ~OPOST;
+                        
+
+
+/* wait for 12 characters to come in before read returns */
+/* WARNING! THIS CAUSES THE read() TO BLOCK UNTIL ALL */
+/* CHARACTERS HAVE COME IN! */
+//toptions.c_cc[VMIN] = 4*3+2;
+ /* no minimum time to wait before read returns */
+                toptions.c_cc[VTIME] = 200;
+            toptions.c_cc[VSTOP] = '\n';
+/* commit the options */
+             tcsetattr(fileDescriptor, TCSANOW, &toptions);
+ // usleep(1000*1000);
+          tcflush(fileDescriptor, TCIFLUSH);
+        }
+
+
+
+        std::string getNext()
+        { 
+  //int n = 1;
+            char buf[2];
+             std::string result;
+             while(true)
+             {
+
+                read(fileDescriptor, buf, 1);
+    //std::cout << buf[0];
+                    if(buf[0] != '\n')
+              {
+                     result += buf[0];
+                }
+    else
+    {
+        return result;
+        
+    }
+ }
+    /* print what's in th:e buffer */
+   // printf("Buffer contains: >%s<\n", result.c_str());
+ }
+
+    
+    private:
+        char *portname="/dev/rfcomm0";
+        char buf[256];
+        int fileDescriptor;
+
+    int openPort(std::string path = "/dev/rfcomm0")
+    {
+       int fd; // file descriptor
+
+       fd = open(path.c_str(), O_RDWR | O_NOCTTY | O_NDELAY);
+       if (fd == -1)
+       {
+            printf("Error opening %s!\n", path.c_str());
+            perror("open_port: Unable to open /dev/rfcomm0 - ");
+       }
+       else
+       {
+           fcntl(fd, F_SETFL, 0);
+       }
+
+       return (fd);
+    };
+
+
+};
+
+
 namespace Ui{
 class GestusVisualization;
 }
@@ -57,6 +182,7 @@ class GestusVisualization;
     public slots:
         void fetchData();
     private:
+          SerialData serialD;
           GestusGLWidget* widget;
     };
 
