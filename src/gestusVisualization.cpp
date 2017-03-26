@@ -184,7 +184,7 @@ bool BufferManager::setupSource(std::deque<std::string>* buf)
     // start timer for fetching data from source to separate copies
     fetchTimer = new QTimer();
     QObject::connect(fetchTimer, SIGNAL(timeout()), this, SLOT(fetchData()));
-    fetchTimer->start(100);
+    fetchTimer->start(50);
 
     return true;
 }
@@ -207,28 +207,32 @@ void BufferManager::fetchData()
 */
     std::string resp = serialD.getNext();
     std::cout << resp << std::endl;
-    sourceBuffer->push_back(resp); // this blocks process until line is readed from arduino
-    if(sourceBuffer != nullptr && !sourceBuffer->empty())
+  //  sourceBuffer->push_back(resp); // this blocks process until line is readed from arduino
+    
+    if(sourceBuffer != nullptr)// && !sourceBuffer->empty())
     {
 
         double grad2rad = 3.141592/180.0;
 
         double d[3] = {0, 0, 0};
-        while(sourceBuffer->front().empty())
-        {
-            sourceBuffer->pop_front();
-        }
-        splitSensorData(sourceBuffer->front(), d);
+        
+       //while(sourceBuffer->front().empty())
+        //{
+          //  std::cout << "\tDeleted empty string\n";
+          //  sourceBuffer->pop_front();
+       // }
+        splitSensorData(resp, d);//sourceBuffer->front(), d);
     
         // move hands
         grad2rad = 1;
-        widget->leftArm.bendHand(d[0]*grad2rad, d[1]*grad2rad, d[2]*grad2rad);
-        widget->rightArm.bendHand(d[0]*grad2rad, -d[1]*grad2rad, d[2]*grad2rad);
+        std::cout << "\nBending hands!";
+        widget->leftArm.bendHand(190-d[1]*grad2rad, d[0], d[2]*grad2rad);
+        widget->rightArm.bendHand(190-d[1]*grad2rad, d[0], d[2]*grad2rad);
         // move front data to different buffers
 
-        firstBuffer->push_back(sourceBuffer->front());
-        secondBuffer->push_back(sourceBuffer->front());
-        sourceBuffer->pop_front();
+        firstBuffer->push_back(resp);//sourceBuffer->front());
+        secondBuffer->push_back(resp);//sourceBuffer->front());
+        //sourceBuffer->pop_front();
         if(isLoggingEnabled) // TODO: move it to proper place
         {
 //            std::cout << firstBuffer->back() << std::endl;

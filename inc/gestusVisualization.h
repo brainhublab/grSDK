@@ -92,20 +92,21 @@ class SerialData
   //int n = 1;
             char buf[2];
              std::string result;
+             std::cout << "\nReading from device...";
              while(true)
              {
 
                 read(fileDescriptor, buf, 1);
     //std::cout << buf[0];
-                    if(buf[0] != '\n')
-              {
+                if(buf[0] != '\n')
+                {
                      result += buf[0];
                 }
-    else
-    {
-        return result;
-        
-    }
+                else
+                {
+                    std::cout << "\nGot data!";
+                    return result;
+                }
  }
     /* print what's in th:e buffer */
    // printf("Buffer contains: >%s<\n", result.c_str());
