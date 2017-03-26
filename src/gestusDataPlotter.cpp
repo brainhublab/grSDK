@@ -33,7 +33,7 @@ bool DataPlotter::drawPlotFromBuffer()
 {
     dataTimer = new QTimer();
     QObject::connect(dataTimer, SIGNAL(timeout()), this, SLOT(fetchData()));
-    dataTimer->start(120);
+    dataTimer->start(50);
 
     return true;
 }
