@@ -6,7 +6,7 @@ GRConnection::GRConnection()
 
 }
 //destructor
-~GRConnection::GRConnection()
+GRConnection::~GRConnection()
 {
     
 }
@@ -28,26 +28,26 @@ bool findDevices()//TODO later maeby we will implement his funkction in lower la
   
 }
 
-vector<device_t> GRConnection::getAvalibleDevices()//TODO need to be implemented later
+std::vector<device_t> GRConnection::getAvalibleDevices()//TODO need to be implemented later
 {
 
 }
 
-int GRConnection::getDeviceId()//TODO need to be implemented later
+int GRConnection::getDeviceId(device_t dev)//TODO need to be implemented later
 {
 
 }
 
 bool connect(std::string addr, std::string  chanel) //TODO add mor rfcomm devices and need to bee imlemented later
 {
-    string command;
+    std::string command;
     command += "sudo rfcomm bind rfcomm0";
     command += " ";
     command += addr;
     command += " ";
     command += chanel;
-    system(command);
-    std::cout<<"succssesfuly bind device: "<<add<<std::endl 
+    system(command.c_str());
+    std::cout<<"succssesfuly bind device: "<<addr<<std::endl; 
 }
 
 bool readData()
