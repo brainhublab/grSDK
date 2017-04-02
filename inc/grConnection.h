@@ -5,6 +5,8 @@
 #include<string>
 #include <vector>
 #include <deque>
+#include <map>
+#include <sstream>
 //bluetooth libs
 #include <stdio.h>
 #include <stdlib.h>
@@ -52,6 +54,16 @@ struct device_t
     imu index;
     imu thumb;
     imu palm;
+    device_t()
+    {
+        pinky.id = 0;
+        ring.id = 1;
+        middle.id = 2;
+        index.id = 3;
+        thumb.id = 4;
+        palm.id = 5;
+
+    }
 };
 class GRConnection
 {
@@ -63,13 +75,14 @@ class GRConnection
 
     bool findDevices();
     std::vector<device_t> getAvalibleDevices();
+    std::vector<device_t> getConnectedDevices();
 
     int getDeviceId(device_t);
 
     bool connect(std::string , std::string);
-    bool readData(int, std::string);
+    bool readData();
 
-
+    private:
     char buf[256];
 
     std::string rfcommPath;
@@ -77,13 +90,12 @@ class GRConnection
     bool setTerm();
     std::string getNext();
     int openPort(std::string);
-    int portDescriptor;
-    
-    //std::vector<>
-    std::deque<std::vector<float> > buffer;
 
+    bool splitData(std::string data, imu*);
+
+    int portDescriptor;
     std::vector<device_t> avalibleDevices;
-    std::vector<device_t> connectedDevices;
+    device_t device;
 
 
 
