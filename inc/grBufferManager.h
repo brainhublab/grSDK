@@ -15,24 +15,8 @@ class GRBufferManager : public QObject
 {
   Q_OBJECT
 public:
-    // GRBufferManager();
-    // GRBufferManagerer();
-    GRBufferManager()
-    {
-      firstBuffer = new std::deque<std::string>();
-      secondBuffer = new std::deque<std::string>();
-
-
-      plog::init(plog::debug, "log.csv");
-    };
-
-    ~GRBufferManager()
-    {
-      delete fetchTimer;
-      delete firstBuffer;
-      delete secondBuffer;
-    };
-
+    GRBufferManager();
+    ~GRBufferManager();
     bool setGLWidget(GRGLWidget* w)
     {
         widget = w;

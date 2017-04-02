@@ -5,21 +5,21 @@
 //
 
 
-// GRBufferManager::GRBufferManager()
-// {
-//   firstBuffer = new std::deque<std::string>();
-//   secondBuffer = new std::deque<std::string>();
-//
-//
-//   plog::init(plog::debug, "log.csv");
-// }
-//
-// GRBufferManager::GRBufferManagerer()
-// {
-//   delete fetchTimer;
-//   delete firstBuffer;
-//   delete secondBuffer;
-// }
+GRBufferManager::GRBufferManager()
+{
+   firstBuffer = new std::deque<std::string>();
+   secondBuffer = new std::deque<std::string>();
+
+
+   plog::init(plog::debug, "log.csv");
+}
+
+GRBufferManager::~GRBufferManager()
+{
+   delete fetchTimer;
+   delete firstBuffer;
+   delete secondBuffer;
+}
 
 bool GRBufferManager::setupSource(std::deque<std::string>* buf)
 {
