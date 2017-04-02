@@ -3,7 +3,8 @@
 //constructor
 GRConnection::GRConnection()
 {
-
+    rfcommPath = "/dev/rfcomm0";
+    setUpRfcomm(rfcommPath);
 }
 //destructor
 GRConnection::~GRConnection()
@@ -54,3 +55,63 @@ bool readData()
 {
 
 }
+//private helper methods
+bool GRConnection::setUpRfcomm(std::string src)
+{
+    portDescriptor = openPort(src);
+    setTerm();
+    return portDescriptor != 1;
+}
+bool GRConnection::setTerm()
+{
+    struct termios tOptions;
+    cfsetispeed(&tOptions, B115200);
+    cfsetospeed(&tOptions, B115200);
+
+    tOptions.c_cflag &= ~PARENB;
+    tOptions.c_cflag &= ~CSIZE;
+
+    tOptions.c_cc[VTIME] = 200;
+    //tOptions.c_cc[VSTOP] = '\n';
+
+    tcsetattr(portDescriptor, TCSANOW, &tOptions);
+    tcflush(portDescriptor, TCIFLUSH);
+
+}
+std::string GRConnection::getNext()
+{
+    char buf[2];
+    std::string res;
+    while(true)
+    {
+        read(portDescriptor, buf, 1);
+        if(buf[0]!= '\n')
+        {
+            res += buf[0];
+        }
+        else
+        {
+            std::cout<<"\n got data";
+            return res;
+        }
+    }
+}
+int GRConnection::openPort(std::string path)
+{
+    int fd;
+    fd = open(path.c_str(), O_RDWR | O_NOCTTY | O_NDELAY);
+    if(fd == -1)
+    {
+        std::cout<<"Error openning: "<<path<<std::endl;
+
+    }
+    else
+    {
+        fcntl(fd, F_SETFL, 0);
+    }
+    return fd;
+
+}
+
+
+

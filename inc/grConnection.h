@@ -35,6 +35,7 @@ struct dev_names
 };
 struct imu
 {
+    int id; 
     std::deque<std::vector<float> > gyro;
     std::deque<std::vector<float> > acc;
     std::deque<std::vector<float> > mag;
@@ -68,9 +69,19 @@ class GRConnection
     bool connect(std::string , std::string);
     bool readData(int, std::string);
 
-    private:
+
+    char buf[256];
+
+    std::string rfcommPath;
     bool setUpRfcomm(std::string);
     bool setTerm();
+    std::string getNext();
+    int openPort(std::string);
+    int portDescriptor;
+    
+    //std::vector<>
+    std::deque<std::vector<float> > buffer;
+
     std::vector<device_t> avalibleDevices;
     std::vector<device_t> connectedDevices;
 
