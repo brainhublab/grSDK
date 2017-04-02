@@ -19,6 +19,7 @@ DESTDIR = ./bin
 MOC_DIR=./build/generated_files
 SOURCES += ./src/main.cpp\
     ./src/gestusVisualization.cpp \
+    ./src/gestusBufferManager.cpp \
     ./src/gestusGLWidget.cpp \
     ./src/gestusHand.cpp \
     ./src/gestusRender.cpp \
@@ -28,6 +29,7 @@ SOURCES += ./src/main.cpp\
 
 HEADERS  += ./inc/gestusVisualization.h \
     ./inc/ui_gestusVisualization.h \
+    ./inc/gestusBufferManager.h \
     ./inc/gestusGLWidget.h \
     ./inc/gestusHandNode.h \
     ./inc/gestusHand.h \
