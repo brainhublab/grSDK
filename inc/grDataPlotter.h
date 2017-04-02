@@ -8,13 +8,13 @@
 #include "externAssets/qcustomplot/qcustomplot.h"
 #include "QObject"
 
-class DataPlotter : public QObject
+class GRDataPlotter : public QObject
 {
     Q_OBJECT
 
 public:
-    DataPlotter( QCustomPlot *);
-    ~DataPlotter();
+    GRDataPlotter( QCustomPlot *);
+    ~GRDataPlotter();
 
     bool setupPlot(std::deque<std::string>* );
     bool drawPlotFromBuffer();

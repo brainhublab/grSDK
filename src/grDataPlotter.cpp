@@ -1,13 +1,13 @@
 #include <iostream>
 #include <stdlib.h>
 
-#include "gestusDataPlotter.h"
+#include "grDataPlotter.h"
 
 #include <math.h>
 
 // Helpers
 
-void DataPlotter::splitSensorData(std::string str, double arr[3])
+void GRDataPlotter::splitSensorData(std::string str, double arr[3])
 {
         int i = 0;
         double n;
@@ -20,16 +20,16 @@ void DataPlotter::splitSensorData(std::string str, double arr[3])
 }
 
 
-DataPlotter::DataPlotter( QCustomPlot *pl)
+GRDataPlotter::GRDataPlotter( QCustomPlot *pl)
 {
     plot = pl;
 }
 
-DataPlotter::~DataPlotter() {
+GRDataPlotter::~GRDataPlotter() {
     delete dataTimer;
 }
 
-bool DataPlotter::drawPlotFromBuffer()
+bool GRDataPlotter::drawPlotFromBuffer()
 {
     dataTimer = new QTimer();
     QObject::connect(dataTimer, SIGNAL(timeout()), this, SLOT(fetchData()));
@@ -38,7 +38,7 @@ bool DataPlotter::drawPlotFromBuffer()
     return true;
 }
 
-bool DataPlotter::setupPlot(std::deque<std::string> *buf)
+bool GRDataPlotter::setupPlot(std::deque<std::string> *buf)
 {
     buffer = buf;
 
@@ -69,7 +69,7 @@ bool DataPlotter::setupPlot(std::deque<std::string> *buf)
 
     return plot != nullptr;
 }
-void DataPlotter::fetchData()
+void GRDataPlotter::fetchData()
 {
     double arr[3] = {0, 0, 0}; // grad
     if(buffer != nullptr && !buffer->empty())

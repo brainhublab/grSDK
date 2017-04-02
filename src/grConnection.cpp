@@ -1,7 +1,7 @@
-#include "gestusConnection.h"
+#include "grConnection.h"
 
 
-GestusConnection::GestusConnection() //default constructor
+GRConnection::GRConnection() //default constructor
 {
     message = NULL;
 
@@ -19,22 +19,22 @@ GestusConnection::GestusConnection() //default constructor
 
 }
 
-GestusConnection::~GestusConnection() //destructor
+GRConnection::~GRConnection() //destructor
 {
 
 }
 
-GestusConnection::GestusConnection(const GestusConnection& connection)
+GRConnection::GRConnection(const GRConnection& connection)
 {
 
 }
 
-GestusConnection& GestusConnection::operator =(const GestusConnection& connection)
+GRConnection& GRConnection::operator =(const GRConnection& connection)
 {
 
 }
 
-bool GestusConnection::setAdapterName()
+bool GRConnection::setAdapterName()
 {
     DBusConnection *conn;
     DBusMessage *msg, *reply;
@@ -77,30 +77,30 @@ bool GestusConnection::setAdapterName()
 
     return TRUE;
 }
-string GestusConnection::getAdapterName()
+string GRConnection::getAdapterName()
 {
     return adapter.name;
 }
 
-device_t GestusConnection::getAdapter()
+device_t GRConnection::getAdapter()
 {
     return adapter;
 }
 
-int GestusConnection::getDeviceId(device_t dev)
+int GRConnection::getDeviceId(device_t dev)
 {
     return dev.id;
 }
 
-string GestusConnection::getDeviceName(device_t dev)
+string GRConnection::getDeviceName(device_t dev)
 {
     return dev.name;
 }
-vector<device_t> GestusConnection::getConnectedDevices()
+vector<device_t> GRConnection::getConnectedDevices()
 {
     return devices;
 }
-bool GestusConnection::getData(int devId, string characteristic, deque<string>* buffer)
+bool GRConnection::getData(int devId, string characteristic, deque<string>* buffer)
 {
     device_t dev;
     for(int i=0; i < devices.size(); i++)
@@ -141,12 +141,12 @@ bool GestusConnection::getData(int devId, string characteristic, deque<string>* 
     }
 */
 
-    thread thr(&GestusConnection::connectAndRead, this, dev, characteristic, buffer);
+    thread thr(&GRConnection::connectAndRead, this, dev, characteristic, buffer);
     thr.detach();
 
    return TRUE;
 }
-bool GestusConnection::connectAndRead(device_t dev, string characteristic, deque<string> *buffer)
+bool GRConnection::connectAndRead(device_t dev, string characteristic, deque<string> *buffer)
 {
 
     DBusConnection *conn=NULL;
@@ -209,7 +209,7 @@ bool GestusConnection::connectAndRead(device_t dev, string characteristic, deque
 }
 
 
-bool GestusConnection::setAvalibleDevices()
+bool GRConnection::setAvalibleDevices()
 {
     vector<string> allDevicesPaths;
     int pathArbitor = 0;
@@ -286,7 +286,7 @@ bool GestusConnection::setAvalibleDevices()
 
 }
 
-bool GestusConnection::setDeviceCharacteristics(device_t* device, string devicePath)
+bool GRConnection::setDeviceCharacteristics(device_t* device, string devicePath)
 {
 
     vector<string> gattServices;
@@ -362,7 +362,7 @@ bool GestusConnection::setDeviceCharacteristics(device_t* device, string deviceP
     return TRUE;
 }
 
-DBusMessage *GestusConnection::getProperty(const char *objectPath, const char *iface, const char *prop)
+DBusMessage *GRConnection::getProperty(const char *objectPath, const char *iface, const char *prop)
 {
     DBusConnection *conn=NULL;
     DBusMessage  *msg=NULL;
@@ -383,7 +383,7 @@ DBusMessage *GestusConnection::getProperty(const char *objectPath, const char *i
     return dbus_connection_send_with_reply_and_block(conn, msg, -1, derror);
 }
 
-bool GestusConnection::parsePropertyArray(DBusMessage *reply, vector<string> *res)
+bool GRConnection::parsePropertyArray(DBusMessage *reply, vector<string> *res)
 {
     DBusMessageIter rootIter;
     dbus_message_iter_init(reply, &rootIter);
@@ -429,7 +429,7 @@ bool GestusConnection::parsePropertyArray(DBusMessage *reply, vector<string> *re
     return TRUE;
 }
 
-bool GestusConnection::parsePropertyString(DBusMessage *reply, string *res)
+bool GRConnection::parsePropertyString(DBusMessage *reply, string *res)
 {
     DBusMessageIter rootIter;
     dbus_message_iter_init(reply, &rootIter);
@@ -455,7 +455,7 @@ bool GestusConnection::parsePropertyString(DBusMessage *reply, string *res)
     return FALSE;
 }
 
-bool GestusConnection::iterDevices(DBusMessageIter* iterIn, vector<string>* devices, int pathArbitor, int layerArbitor)
+bool GRConnection::iterDevices(DBusMessageIter* iterIn, vector<string>* devices, int pathArbitor, int layerArbitor)
 {
     int next = layerArbitor + 1;
 
@@ -496,7 +496,7 @@ bool GestusConnection::iterDevices(DBusMessageIter* iterIn, vector<string>* devi
 
     }
 }
-bool GestusConnection::getReply(DBusMessage* reply, string* value)
+bool GRConnection::getReply(DBusMessage* reply, string* value)
 {
     int currentType;
     char* res;

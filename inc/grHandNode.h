@@ -1,14 +1,14 @@
-#ifndef GESTUS_HAND_NODE_H
-#define GESTUS_HAND_NODE_H
+#ifndef GR_HAND_NODE_H
+#define GR_HAND_NODE_H
 
-struct GestusHandNode
+struct GRHandNode
 {
-				explicit GestusHandNode(bool left = true)
+				explicit GRHandNode(bool left = true)
 				{
 					isLeft = left;
 				}
 
-				struct GestusHandNode *children = nullptr;
+				struct GRHandNode *children = nullptr;
 				bool isLeft;
         float angleX = 0.f;
         float angleY = 0.f;

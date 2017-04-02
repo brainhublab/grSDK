@@ -20,7 +20,7 @@
 #include <QtWidgets/QTabWidget>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
-#include "gestusGLWidget.h"
+#include "GRGLWidget.h"
 #include "qcustomplot.h"
 
 QT_BEGIN_NAMESPACE
@@ -50,17 +50,17 @@ public:
     QVBoxLayout *verticalLayout;
     QCustomPlot *PlotData_Z;
 
-    void setupUi(QMainWindow *GestusVisualization)
+    void setupUi(QMainWindow *GRVisualization)
     {
-        if (GestusVisualization->objectName().isEmpty())
-            GestusVisualization->setObjectName(QStringLiteral("GestusVisualization"));
-        GestusVisualization->resize(800, 600);
-        GestusVisualization->setMinimumSize(QSize(800, 600));
-        actionWhat = new QAction(GestusVisualization);
+        if (GRVisualization->objectName().isEmpty())
+            GRVisualization->setObjectName(QStringLiteral("GRVisualization"));
+        GRVisualization->resize(800, 600);
+        GRVisualization->setMinimumSize(QSize(800, 600));
+        actionWhat = new QAction(GRVisualization);
         actionWhat->setObjectName(QStringLiteral("actionWhat"));
-        actionIs = new QAction(GestusVisualization);
+        actionIs = new QAction(GRVisualization);
         actionIs->setObjectName(QStringLiteral("actionIs"));
-        centralWidget = new QWidget(GestusVisualization);
+        centralWidget = new QWidget(GRVisualization);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         horizontalLayout = new QHBoxLayout(centralWidget);
         horizontalLayout->setSpacing(6);
@@ -152,31 +152,31 @@ public:
 
         horizontalLayout->addWidget(splitter);
 
-        GestusVisualization->setCentralWidget(centralWidget);
+        GRVisualization->setCentralWidget(centralWidget);
 
-        retranslateUi(GestusVisualization);
+        retranslateUi(GRVisualization);
 
         Plots->setCurrentIndex(0);
 
 
-        QMetaObject::connectSlotsByName(GestusVisualization);
+        QMetaObject::connectSlotsByName(GRVisualization);
     } // setupUi
 
-    void retranslateUi(QMainWindow *GestusVisualization)
+    void retranslateUi(QMainWindow *GRVisualization)
     {
-        GestusVisualization->setWindowTitle(QApplication::translate("GestusVisualization", "QT + OpenGL", 0));
-        actionWhat->setText(QApplication::translate("GestusVisualization", "&what?", 0));
-        actionIs->setText(QApplication::translate("GestusVisualization", "&is", 0));
-        Plots->setTabText(Plots->indexOf(tab_all_data), QApplication::translate("GestusVisualization", "All Sensors", 0));
-        Plots->setTabText(Plots->indexOf(tab_accelerometer), QApplication::translate("GestusVisualization", "Accelerometer", 0));
-        Plots->setTabText(Plots->indexOf(tab_gyroscope), QApplication::translate("GestusVisualization", "Gyroscope", 0));
-        Plots->setTabText(Plots->indexOf(tab_magnetometer), QApplication::translate("GestusVisualization", "Magnetometer", 0));
+        GRVisualization->setWindowTitle(QApplication::translate("GRVisualization", "QT + OpenGL", 0));
+        actionWhat->setText(QApplication::translate("GRVisualization", "&what?", 0));
+        actionIs->setText(QApplication::translate("GRVisualization", "&is", 0));
+        Plots->setTabText(Plots->indexOf(tab_all_data), QApplication::translate("GRVisualization", "All Sensors", 0));
+        Plots->setTabText(Plots->indexOf(tab_accelerometer), QApplication::translate("GRVisualization", "Accelerometer", 0));
+        Plots->setTabText(Plots->indexOf(tab_gyroscope), QApplication::translate("GRVisualization", "Gyroscope", 0));
+        Plots->setTabText(Plots->indexOf(tab_magnetometer), QApplication::translate("GRVisualization", "Magnetometer", 0));
     } // retranslateUi
 
 };
 
 namespace Ui {
-    class GestusVisualization: public Ui_MainWindow {};
+    class GRVisualization: public Ui_MainWindow {};
 } // namespace Ui
 
 QT_END_NAMESPACE

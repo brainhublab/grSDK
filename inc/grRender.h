@@ -1,30 +1,30 @@
-#ifndef GESTUS_RENDERER_H
-#define GESTUS_RENDERER_H
+#ifndef GR_RENDERER_H
+#define GR_RENDERER_H
 
 #include <GL/glu.h>
 
-#include "gestusHand.h"
+#include "grHand.h"
 #include "cmath"
-#include "dimensions.h"
+#include "renderConfig.h"
 
 // Window size
 const int SCREEN_WIDTH = 1920;
 const int SCREEN_HEIGHT = 1080;
 
-class GestusRenderer
+class GRRenderer
 {
 public:
-        GestusRenderer();
-        ~GestusRenderer(){};
+        GRRenderer();
+        ~GRRenderer(){};
 
-        GestusRenderer(const GestusRenderer&) = delete;
-        GestusRenderer& operator=(const GestusRenderer&) = delete;
+        GRRenderer(const GRRenderer&) = delete;
+        GRRenderer& operator=(const GRRenderer&) = delete;
         bool drawScene(float, float, float);
         bool setViewport(int, int);
         bool update();
 
-		    bool renderArm(struct GestusHandNode*, float, float, float);
-		    bool renderTrajectory(GestusHand*, float, float, float);
+		    bool renderArm(struct GRHandNode*, float, float, float);
+		    bool renderTrajectory(GRHand*, float, float, float);
         // accessors
         int getWidth();
         int getHeight();
@@ -35,8 +35,8 @@ private:
         bool initGL();
 
         // Geometric
-        bool drawFinger( GestusHandNode *hand, float fingerDistance, int fingerIndex);
-        bool drawFingers(GestusHandNode *hand); // draws finders after hand was drawed
+        bool drawFinger( GRHandNode *hand, float fingerDistance, int fingerIndex);
+        bool drawFingers(GRHandNode *hand); // draws finders after hand was drawed
         bool drawRightHand(float, float, float);
         bool drawLeftHand(float, float, float);
         // Figures
@@ -46,4 +46,4 @@ private:
         bool createCylinder(float, float);
         bool createFrustum(float, float, float);
 };
-#endif // GESTUS_RENDERER_H
+#endif // GR_RENDERER_H

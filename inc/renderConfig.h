@@ -1,5 +1,5 @@
-#ifndef DIMENSIONS_H
-#define DIMENSIONS_H
+#ifndef RENDER_CONFIG_H
+#define RENDER_CONFIG_H
 
 
 
@@ -94,4 +94,4 @@ struct render_data
 };
 
 
-#endif // DIMENSIONS_H
+#endif // RENDER_CONFIG_H

@@ -1,4 +1,4 @@
-﻿#include "gestusRender.h"
+﻿#include "grRender.h"
 // helpers
 /*bool showPoint( float x, float y, float z )
 {
@@ -11,12 +11,12 @@
 }
 */
 // class methods
-GestusRenderer::GestusRenderer()
+GRRenderer::GRRenderer()
 {
         initGL( );
         setViewport( SCREEN_WIDTH, SCREEN_HEIGHT );
 }
-bool GestusRenderer::initGL()
+bool GRRenderer::initGL()
 {
         glShadeModel( GL_SMOOTH );
         glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
@@ -26,7 +26,7 @@ bool GestusRenderer::initGL()
         glHint( GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST );
         return true;
 }
-bool GestusRenderer::setViewport( int width, int height )
+bool GRRenderer::setViewport( int width, int height )
 {
         GLfloat ratio;
         if ( height == 0 )
@@ -55,20 +55,20 @@ bool GestusRenderer::setViewport( int width, int height )
 
         return true;
 }
-int GestusRenderer::getWidth()
+int GRRenderer::getWidth()
 {
         return data.screen.width;
 }
-int GestusRenderer::getHeight()
+int GRRenderer::getHeight()
 {
         return data.screen.height;
 }
 ;
-bool GestusRenderer::update()
+bool GRRenderer::update()
 {
     return true;
 }
-bool GestusRenderer::renderTrajectory( GestusHand *arm, float angleX, float angleY, float angleZ )
+bool GRRenderer::renderTrajectory( GRHand *arm, float angleX, float angleY, float angleZ )
 {
         const std::vector< std::map< char, float> > & trajectory = arm->getTrajectoryAngles();
         for ( std::map< char, float > angles : trajectory )
@@ -95,7 +95,7 @@ bool GestusRenderer::renderTrajectory( GestusHand *arm, float angleX, float angl
         }
         return true;
 }
-bool GestusRenderer::drawScene(float angleX, float angleY, float angleZ)
+bool GRRenderer::drawScene(float angleX, float angleY, float angleZ)
 {
         glLoadIdentity( );
         glColor4ub(0, 200, 0, 255);
@@ -146,7 +146,7 @@ bool GestusRenderer::drawScene(float angleX, float angleY, float angleZ)
         glEnd();
         return true;
 }
-bool GestusRenderer::drawFingers(GestusHandNode *hand)
+bool GRRenderer::drawFingers(GRHandNode *hand)
 {
   if(!hand)
   {
@@ -187,7 +187,7 @@ bool GestusRenderer::drawFingers(GestusHandNode *hand)
   drawFinger(hand, fingerDistance, 4);
   return true;
 }
-bool GestusRenderer::renderArm( GestusHandNode *arm, float angleX, float angleY, float angleZ)
+bool GRRenderer::renderArm( GRHandNode *arm, float angleX, float angleY, float angleZ)
 {
         if(!arm)
         {
@@ -217,7 +217,7 @@ bool GestusRenderer::renderArm( GestusHandNode *arm, float angleX, float angleY,
         // rotating by Y only only for hand
         glRotatef(( *arm ).angleY, 0.f, 1.f, 0.f );
         /** draw hand **/
-        struct GestusHandNode *hand = &( *arm ).children[ 0 ];
+        struct GRHandNode *hand = &( *arm ).children[ 0 ];
         createSphere( 0.3f, 10, 10 );
         glRotatef(( *hand ).angleX, 1.f, 0.f, 0.f );
         glRotatef(( *hand ).angleY, 0.f, 1.f, 0.f );
@@ -235,9 +235,9 @@ bool GestusRenderer::renderArm( GestusHandNode *arm, float angleX, float angleY,
         drawFingers(hand);
         return true;
 }
-bool GestusRenderer::drawFinger( GestusHandNode *hand, float fingerDistance, int fingerIndex )
+bool GRRenderer::drawFinger( GRHandNode *hand, float fingerDistance, int fingerIndex )
 {
-        struct GestusHandNode *phalange = &( *hand ).children[ fingerIndex ];
+        struct GRHandNode *phalange = &( *hand ).children[ fingerIndex ];
         glPushMatrix( );
         float heightRatio = 0.f, radiusRatio = 0.f;
         while ( phalange != NULL )
@@ -256,7 +256,7 @@ bool GestusRenderer::drawFinger( GestusHandNode *hand, float fingerDistance, int
         glTranslatef( fingerDistance, 0.f, 0.f );
         return true;
 }
-bool GestusRenderer::createCube( float x, float y, float z )
+bool GRRenderer::createCube( float x, float y, float z )
 {
         float halfX = x / 2, halfZ = z / 2;
         glBegin( GL_QUADS );
@@ -315,7 +315,7 @@ bool GestusRenderer::createCube( float x, float y, float z )
         glEnd( );
         return true;
 }
-bool GestusRenderer::drawRightHand( float x, float y, float z )
+bool GRRenderer::drawRightHand( float x, float y, float z )
 {
         float halfBase = 0.25f * x; // base is slightly narrower than full hand's width
         float halfTop = 0.4f * x;
@@ -401,7 +401,7 @@ bool GestusRenderer::drawRightHand( float x, float y, float z )
         glEnd( );
         return true;
 }
-bool GestusRenderer::drawLeftHand( float x, float y, float z )
+bool GRRenderer::drawLeftHand( float x, float y, float z )
 {
         float halfBase = 0.25f * x; // base is slightly narrower than full hand's width
         float halfTop = 0.4f * x;
@@ -493,7 +493,7 @@ bool GestusRenderer::drawLeftHand( float x, float y, float z )
         glEnd( );
         return true;
 }
-bool GestusRenderer::createSphere( float radius, int slices, int stacks )
+bool GRRenderer::createSphere( float radius, int slices, int stacks )
 {
         GLUquadric *quad = gluNewQuadric( );
         glColor4ub(data.linesColor.r, data.linesColor.g, data.planeColor.b, data.linesColor.a );
@@ -501,7 +501,7 @@ bool GestusRenderer::createSphere( float radius, int slices, int stacks )
         gluDeleteQuadric( quad );
         return true;
 }
-bool GestusRenderer::createColorSphere(float radius, int slices, int stacks, GLubyte r, GLubyte g, GLubyte b)
+bool GRRenderer::createColorSphere(float radius, int slices, int stacks, GLubyte r, GLubyte g, GLubyte b)
 {
         GLUquadric *quad = gluNewQuadric( );
         glColor3ub( r, g, b );
@@ -509,11 +509,11 @@ bool GestusRenderer::createColorSphere(float radius, int slices, int stacks, GLu
         gluDeleteQuadric( quad );
         return true;
 }
-bool GestusRenderer::createCylinder( float radius, float height )
+bool GRRenderer::createCylinder( float radius, float height )
 {
         return createFrustum( radius, height, 1 );
 }
-bool GestusRenderer::createFrustum( float radius, float height, float ratio = 1 ) // ratio : x,z(top) = ratio*x,z(bottom)
+bool GRRenderer::createFrustum( float radius, float height, float ratio = 1 ) // ratio : x,z(top) = ratio*x,z(bottom)
 {
         float angle = 360.f / data.cylinder_sides;
         float x1, x2, z1, z2, y1, y2;
@@ -573,7 +573,7 @@ bool GestusRenderer::createFrustum( float radius, float height, float ratio = 1 
         return true;
 }
 
-bool GestusRenderer::setLinesColor(int r, int g, int b, int a)
+bool GRRenderer::setLinesColor(int r, int g, int b, int a)
 {
     data.linesColor.r = r;
     data.linesColor.g = g;
@@ -582,7 +582,7 @@ bool GestusRenderer::setLinesColor(int r, int g, int b, int a)
     return true;
 }
 
-bool GestusRenderer::setPlaneColor(int r, int g, int b, int a)
+bool GRRenderer::setPlaneColor(int r, int g, int b, int a)
 {
     data.planeColor.r = r;
     data.planeColor.g = g;

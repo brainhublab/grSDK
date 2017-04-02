@@ -1,5 +1,5 @@
-#ifndef GESTUS_VISUALISATION_H
-#define GESTUS_VISUALISATION_H
+#ifndef GR_VISUALISATION_H
+#define GR_VISUALISATION_H
 
 
 #include <QMainWindow>
@@ -9,24 +9,24 @@
 #include <thread>
 #include <deque>
 
-#include "gestusDataPlotter.h"
-#include "gestusGLWidget.h"
-#include "gestusBufferManager.h"
+#include "grDataPlotter.h"
+#include "GRGLWidget.h"
+#include "grBufferManager.h"
 #include <iostream>
 
 namespace Ui{
-class GestusVisualization;
+class GRVisualization;
 }
 
-// TODO:: DataPlotter -> DataManager(in fetchData() to bend hand)
+// TODO:: GRDataPlotter -> DataManager(in fetchData() to bend hand)
 
-class GestusVisualization : public QMainWindow
+class GRVisualization : public QMainWindow
 {
     Q_OBJECT
 
 public:
-	explicit GestusVisualization(QWidget *parent = 0);
-	~GestusVisualization();
+	explicit GRVisualization(QWidget *parent = 0);
+	~GRVisualization();
     bool setupPlotters(std::deque<std::string> *, std::deque<std::string> *, std::deque<std::string> *);
 
 private slots:
@@ -40,18 +40,18 @@ private slots:
 
 private:
     bool initUiProps();
-  	Ui::GestusVisualization *ui;
+  	Ui::GRVisualization *ui;
 
-    BufferManager acc;
-    BufferManager gyro;
-    BufferManager mag;
+    GRBufferManager acc;
+    GRBufferManager gyro;
+    GRBufferManager mag;
 
-    DataPlotter* plotter_acc;
-    DataPlotter* plotter_gyro;
-    DataPlotter* plotter_mag;
-    DataPlotter* plotter_all_acc;
-    DataPlotter* plotter_all_gyro;
-    DataPlotter* plotter_all_mag;
+    GRDataPlotter* plotter_acc;
+    GRDataPlotter* plotter_gyro;
+    GRDataPlotter* plotter_mag;
+    GRDataPlotter* plotter_all_acc;
+    GRDataPlotter* plotter_all_gyro;
+    GRDataPlotter* plotter_all_mag;
 };
 
 #endif // MAINWINDOW_H

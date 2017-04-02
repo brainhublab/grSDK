@@ -1,10 +1,10 @@
-#include "gestusVisualization.h"
-#include "ui_gestusVisualisation.h"
+#include "grVisualization.h"
+#include "ui_grVisualisation.h"
 
 
-GestusVisualization::GestusVisualization(QWidget *parent) :
+GRVisualization::GRVisualization(QWidget *parent) :
     QMainWindow(parent),
-	ui(new Ui::GestusVisualization)
+	ui(new Ui::GRVisualization)
 {
     ui->setupUi(this);
     initUiProps();
@@ -13,17 +13,17 @@ GestusVisualization::GestusVisualization(QWidget *parent) :
     gyro.setGLWidget(ui->GLwidget);
     mag.setGLWidget(ui->GLwidget);
 
-    plotter_acc = new DataPlotter(ui->only_accelerometer);
-    plotter_gyro = new DataPlotter(ui->only_gyroscope);
-    plotter_mag = new DataPlotter(ui->only_magnetometer);
+    plotter_acc = new GRDataPlotter(ui->only_accelerometer);
+    plotter_gyro = new GRDataPlotter(ui->only_gyroscope);
+    plotter_mag = new GRDataPlotter(ui->only_magnetometer);
 
-    plotter_all_acc = new DataPlotter(ui->accelerometer);
-    plotter_all_gyro = new DataPlotter(ui->gyroscope);
-    plotter_all_mag = new DataPlotter(ui->magnetometer);
+    plotter_all_acc = new GRDataPlotter(ui->accelerometer);
+    plotter_all_gyro = new GRDataPlotter(ui->gyroscope);
+    plotter_all_mag = new GRDataPlotter(ui->magnetometer);
 
 }
 
-GestusVisualization::~GestusVisualization()
+GRVisualization::~GRVisualization()
 {
     delete plotter_acc;
     delete plotter_gyro;
@@ -35,7 +35,7 @@ GestusVisualization::~GestusVisualization()
     delete ui;
 }
 
-bool GestusVisualization::initUiProps()
+bool GRVisualization::initUiProps()
 {
     // splitter init
     QList<int> sizes;
@@ -62,7 +62,7 @@ bool GestusVisualization::initUiProps()
     return true;
 }
 
-bool GestusVisualization::setupPlotters(std::deque<std::string> *acc_src, std::deque<std::string> *gyro_src, std::deque<std::string> *mag_src)
+bool GRVisualization::setupPlotters(std::deque<std::string> *acc_src, std::deque<std::string> *gyro_src, std::deque<std::string> *mag_src)
 {
     // setup sources
     acc.setupSource(acc_src);
@@ -94,22 +94,22 @@ bool GestusVisualization::setupPlotters(std::deque<std::string> *acc_src, std::d
 // Qt Slots
 //
 
-void GestusVisualization::on_trajectoryCheckBox_toggled(bool checked)
+void GRVisualization::on_trajectoryCheckBox_toggled(bool checked)
 {
     ui->GLwidget->renderTrajectory(checked);
 }
 
-void GestusVisualization::on_leftHandCheckBox_toggled(bool checked)
+void GRVisualization::on_leftHandCheckBox_toggled(bool checked)
 {
     ui->GLwidget->renderLeftHand(checked);
 }
 
-void GestusVisualization::on_rightHandCheckBox_toggled(bool checked)
+void GRVisualization::on_rightHandCheckBox_toggled(bool checked)
 {
     ui->GLwidget->renderRightHand(checked);
 }
 
-void GestusVisualization::on_hackerModeCheckBox_toggled(bool checked)
+void GRVisualization::on_hackerModeCheckBox_toggled(bool checked)
 {
     if(checked)
     {
@@ -134,14 +134,14 @@ void GestusVisualization::on_hackerModeCheckBox_toggled(bool checked)
 
 }
 
-void GestusVisualization::on_loggingCheckBox_toggled(bool checked)
+void GRVisualization::on_loggingCheckBox_toggled(bool checked)
 {
     ui->randomData->setVisible(checked);
 
     acc.isLoggingEnabled = checked;
 }
 
-void GestusVisualization::on_randomData_clicked()
+void GRVisualization::on_randomData_clicked()
 {
     int max = 256, min = -256;
     std::string s;
@@ -153,7 +153,7 @@ void GestusVisualization::on_randomData_clicked()
     acc.sourceBuffer->push_back(s);
 }
 
-void GestusVisualization::on_pausePlotCheckBox_toggled(bool checked)
+void GRVisualization::on_pausePlotCheckBox_toggled(bool checked)
 {
     plotter_acc->pause = checked;
     plotter_mag->pause = checked;

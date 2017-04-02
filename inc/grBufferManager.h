@@ -1,5 +1,5 @@
-#ifndef GESTUS_BUFFER_MANAGER_H
-#define GESTUS_BUFFER_MANAGER_H
+#ifndef GR_BUFFER_MANAGER_H
+#define GR_BUFFER_MANAGER_H
 
 #include <QObject>
 #include <QTimer>
@@ -9,15 +9,15 @@
 
 #include "externAssets/plog/Log.h" //Lib for logging in csv format
 
-#include "gestusGLWidget.h"
+#include "GRGLWidget.h"
 
-class BufferManager : public QObject
+class GRBufferManager : public QObject
 {
   Q_OBJECT
 public:
-    // BufferManager();
-    // ~BufferManager();
-    BufferManager()
+    // GRBufferManager();
+    // GRBufferManagerer();
+    GRBufferManager()
     {
       firstBuffer = new std::deque<std::string>();
       secondBuffer = new std::deque<std::string>();
@@ -26,14 +26,14 @@ public:
       plog::init(plog::debug, "log.csv");
     };
 
-    ~BufferManager()
+    ~GRBufferManager()
     {
       delete fetchTimer;
       delete firstBuffer;
       delete secondBuffer;
     };
 
-    bool setGLWidget(GestusGLWidget* w)
+    bool setGLWidget(GRGLWidget* w)
     {
         widget = w;
         return true;
@@ -64,7 +64,7 @@ public:
 public slots:
     void fetchData();
 private:
-      GestusGLWidget* widget;
+      GRGLWidget* widget;
 };
 
-#endif // GESTUS_BUFFER_MANAGER_H
+#endif // GR_BUFFER_MANAGER_H

@@ -1,5 +1,5 @@
-#ifndef GESTUS_CONNECTION
-#define GESTUS_CONNECTION
+#ifndef GR_CONNECTION
+#define GR_CONNECTION
 
 #include <dbus/dbus.h>
 #include <cassert>
@@ -39,8 +39,8 @@ struct device_names
     string right;
     device_names()
     {
-        left = "Gestus[L]";
-        right = "Gestus[R]";
+        left = "GR[L]";
+        right = "GR[R]";
     }
 
 };
@@ -98,13 +98,13 @@ struct device_t
 
 };
 
-class GestusConnection
+class GRConnection
 {
     public:
-        GestusConnection();
-        ~GestusConnection();
-        GestusConnection(const GestusConnection& );
-        GestusConnection& operator=(const GestusConnection& );
+        GRConnection();
+        ~GRConnection();
+        GRConnection(const GRConnection& );
+        GRConnection& operator=(const GRConnection& );
 
 
         bool setAdapterName(); //gets the pc bluetooth adapter name

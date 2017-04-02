@@ -1,19 +1,19 @@
 
-#ifndef GESTUS_HAND_H
-#define GESTUS_HAND_H
+#ifndef GR_HAND_H
+#define GR_HAND_H
 
 #include <assert.h>
 #include <vector>
 #include <map>
 
-#include "gestusHandNode.h"
-#include "dimensions.h"
+#include "grHandNode.h"
+#include "renderConfig.h"
 
-class GestusHand : public GestusHandNode
+class GRHand : public GRHandNode
 {
 public:
-        explicit GestusHand(bool left);
-        ~GestusHand();
+        explicit GRHand(bool left);
+        ~GRHand();
 
         // bending
         bool bendArm( float angleX, float angleY, float angleZ );
@@ -26,7 +26,7 @@ public:
         const std::vector<std::map<char, float>> & getTrajectoryAngles() const;
 private:
         // returns true if node is bended
-        bool bend(GestusHandNode* node, float angleX, float angleY, float angleZ);
+        bool bend(GRHandNode* node, float angleX, float angleY, float angleZ);
 
         // data for trajectory render
         std::vector<std::map<char, float> > trajectoryAngles
@@ -34,4 +34,4 @@ private:
 };
 
 
-#endif // GESTUS_HAND_H
+#endif // GR_HAND_H

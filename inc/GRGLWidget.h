@@ -1,16 +1,16 @@
-#ifndef GESTUS_GL_WIDGET_H
-#define GESTUS_GL_WIDGET_H
+#ifndef GR_GL_WIDGET_H
+#define GR_GL_WIDGET_H
 
 #include <QKeyEvent>
 #include <QGLWidget>
 #include <QTimer>
-#include "gestusRender.h"
+#include "grRender.h"
 
-class GestusGLWidget : public QGLWidget
+class GRGLWidget : public QGLWidget
 {
     Q_OBJECT
 public:
-    explicit GestusGLWidget(QWidget *parent = 0);
+    explicit GRGLWidget(QWidget *parent = 0);
 
     void initializeGL();
     void paintGL();
@@ -20,7 +20,7 @@ public:
     void renderLeftHand(bool b);
     void renderRightHand(bool b);
 
-    GestusRenderer* getRenderer();
+    GRRenderer* getRenderer();
 
     int R;
     float x,y,z;
@@ -28,11 +28,11 @@ public:
     float ang;
 
 
-    	GestusHand leftArm = GestusHand(true);
-    	GestusHand rightArm = GestusHand(false);
+    	GRHand leftArm = GRHand(true);
+    	GRHand rightArm = GRHand(false);
 private:
 
-	GestusRenderer renderer;
+	GRRenderer renderer;
   QTimer timer;
   bool renderWithTrajectory = false,
        renderWithLeftHand = true,
@@ -41,4 +41,4 @@ private:
 
 };
 
-#endif // GestusGLWidget_H
+#endif // GRGLWidget_H

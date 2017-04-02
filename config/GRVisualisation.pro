@@ -8,7 +8,7 @@ QT += widgets core gui opengl printsupport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = gestusVisualization
+TARGET = GRVisualization
 TEMPLATE = app
 LIBS += -L/usr/lib64 -ldbus-1 -lglut -lGLU
 INCLUDEPATH +=  /usr/include/dbus-1.0 /usr/lib64/dbus-1.0/include ./inc ./externAssets/qcustomplot ./externAssets/ ./
@@ -18,27 +18,27 @@ OBJECTS_DIR = ./build
 DESTDIR = ./bin
 MOC_DIR=./build/generated_files
 SOURCES += ./src/main.cpp\
-    ./src/gestusVisualization.cpp \
-    ./src/gestusBufferManager.cpp \
-    ./src/gestusGLWidget.cpp \
-    ./src/gestusHand.cpp \
-    ./src/gestusRender.cpp \
+    ./src/grVisualization.cpp \
+    ./src/grBufferManager.cpp \
+    ./src/GRGLWidget.cpp \
+    ./src/grHand.cpp \
+    ./src/grRender.cpp \
     ./externAssets/qcustomplot/qcustomplot.cpp \
-    ./src/gestusDataPlotter.cpp \
-    ./src/gestusConnection.cpp
+    ./src/grDataPlotter.cpp \
+    ./src/grConnection.cpp
 
-HEADERS  += ./inc/gestusVisualization.h \
-    ./inc/ui_gestusVisualization.h \
-    ./inc/gestusBufferManager.h \
-    ./inc/gestusGLWidget.h \
-    ./inc/gestusHandNode.h \
-    ./inc/gestusHand.h \
-    ./inc/dimensions.h \
-    ./inc/gestusRender.h \
+HEADERS  += ./inc/grVisualization.h \
+    ./inc/ui_grVisualization.h \
+    ./inc/grBufferManager.h \
+    ./inc/GRGLWidget.h \
+    ./inc/grHandNode.h \
+    ./inc/grHand.h \
+    ./inc/renderConfig.h \
+    ./inc/grRender.h \
     ./externAssets/qcustomplot/qcustomplot.h \
-    ./inc/gestusDataPlotter.h \
-    ./inc/gestusConnection.h
+    ./inc/grDataPlotter.h \
+    ./inc/grConnection.h
 
-FORMS    += gestusVisualisation.ui
+FORMS    += grVisualisation.ui
 
 #LIBS

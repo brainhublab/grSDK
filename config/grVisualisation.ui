@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>GestusVisualization</class>
- <widget class="QMainWindow" name="GestusVisualization">
+ <class>GRVisualization</class>
+ <widget class="QMainWindow" name="GRVisualization">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -26,7 +26,7 @@
       <property name="orientation">
        <enum>Qt::Vertical</enum>
       </property>
-      <widget class="GestusGLWidget" name="GLwidget" native="true">
+      <widget class="GRGLWidget" name="GLwidget" native="true">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
          <horstretch>0</horstretch>
@@ -395,9 +395,9 @@
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>GestusGLWidget</class>
+   <class>GRGLWidget</class>
    <extends>QWidget</extends>
-   <header>gestusGLWidget.h</header>
+   <header>GRGLWidget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>

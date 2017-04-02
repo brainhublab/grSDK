@@ -1,8 +1,8 @@
-#include "gestusHand.h"
+#include "grHand.h"
 
 
 // helpers
-bool isAllocated( GestusHandNode *ptr )
+bool isAllocated( GRHandNode *ptr )
 {
         if ( ptr == NULL )
         {
@@ -15,25 +15,25 @@ bool isAllocated( GestusHandNode *ptr )
 
 // class methods
 
-GestusHand::GestusHand(bool left)
+GRHand::GRHand(bool left)
 {
         // todo: get mins and maxes from config
-        // GestusHand initializing
+        // GRHand initializing
         this->setMaxAngles(90.f, 180.f, 90.f);
         this->setMinAngles(-120.f, -180.f, -120.f);
         this->isLeft = left;
 
         // Hand initializing
-		this->children = new GestusHandNode[1];
+		this->children = new GRHandNode[1];
         isAllocated( this->children );
 
-		struct GestusHandNode *hand = &(this->children[0]);
+		struct GRHandNode *hand = &(this->children[0]);
     hand->isLeft = left;
         hand->setMaxAngles(80.f, 0.f, 80.f);
         hand->setMinAngles(-80.f, 0.f, -40.f);
 
         // Fingers initializing
-		hand->children = new struct GestusHandNode[5];
+		hand->children = new struct GRHandNode[5];
         isAllocated( hand->children );
 
         for ( int i = 0; i < 5; i++ )
@@ -42,13 +42,13 @@ GestusHand::GestusHand(bool left)
                 float maxFingerAngleX = 85.f, minFingerAngleX = -5.f;
 
                 // initializing of first phalange
-				struct GestusHandNode *firstPhalange = &( *hand ).children[ i ];
+				struct GRHandNode *firstPhalange = &( *hand ).children[ i ];
                 firstPhalange->setMaxAngles(maxFingerAngleX, 0.f, 0.f);
                 firstPhalange->setMinAngles(minFingerAngleX, 0.f, 0.f);
                 firstPhalange->isLeft = left;
 
                 // initializing second phalange
-				firstPhalange->children = new struct GestusHandNode[1];
+				firstPhalange->children = new struct GRHandNode[1];
                 isAllocated( firstPhalange->children );
                 firstPhalange->children->setMaxAngles(maxFingerAngleX, 1.f, 0.f);
                 firstPhalange->children->setMinAngles(minFingerAngleX, 1.f, 0.f);
@@ -56,7 +56,7 @@ GestusHand::GestusHand(bool left)
                 if(i != 4)
                 {
                     // initializing third phalange
-					firstPhalange->children[ 0 ].children = new struct GestusHandNode[1];
+					firstPhalange->children[ 0 ].children = new struct GRHandNode[1];
                     isAllocated( firstPhalange->children[ 0 ].children );
                     firstPhalange->children[0].children->setMaxAngles(maxFingerAngleX, 1.f, 0.f);
                     firstPhalange->children[0].children->setMinAngles(minFingerAngleX, 1.f, 0.f);
@@ -87,10 +87,10 @@ GestusHand::GestusHand(bool left)
 
 }
 
-GestusHand::~GestusHand()
+GRHand::~GRHand()
 {
         // todo: check correctness of this
-		GestusHandNode *hand = &(this->children[0]);
+		GRHandNode *hand = &(this->children[0]);
 
         for ( int i = 0; i < 5; i++ )
         {
@@ -103,7 +103,7 @@ GestusHand::~GestusHand()
 }
 
 
-bool GestusHand::bendArm( float angleX, float angleY, float angleZ )
+bool GRHand::bendArm( float angleX, float angleY, float angleZ )
 {
         if(bend(this, angleX, angleY, angleZ))
         {
@@ -127,17 +127,17 @@ bool GestusHand::bendArm( float angleX, float angleY, float angleZ )
         return false;
 }
 
-bool GestusHand::bendHand( float angleX, float angleY, float angleZ )
+bool GRHand::bendHand( float angleX, float angleY, float angleZ )
 {
-		struct GestusHandNode *hand = &(this->children[0]);
+		struct GRHandNode *hand = &(this->children[0]);
 
         bool bended = bend(hand, angleX, angleY, angleZ);
         return bended;
 }
 
-bool GestusHand::bendFirstPhalange(int index, float angleX, float angleY, float angleZ )
+bool GRHand::bendFirstPhalange(int index, float angleX, float angleY, float angleZ )
 {
-  struct GestusHandNode *phalange = &this->children[ 0 ].children[ index ];
+  struct GRHandNode *phalange = &this->children[ 0 ].children[ index ];
       if(!phalange)
       {
         printf("\nUnable to find phanlange with %d index for bending!", index);
@@ -150,9 +150,9 @@ bool GestusHand::bendFirstPhalange(int index, float angleX, float angleY, float 
       return success;
 }
 
-bool GestusHand::bendFinger( int index, float angleX, float angleY, float angleZ )
+bool GRHand::bendFinger( int index, float angleX, float angleY, float angleZ )
 {
-		struct GestusHandNode *phalange = &this->children[ 0 ].children[ index ];
+		struct GRHandNode *phalange = &this->children[ 0 ].children[ index ];
         if(!phalange)
         {
           printf("\nUnable to find phanlange with %d index for bending!", index);
@@ -177,7 +177,7 @@ bool GestusHand::bendFinger( int index, float angleX, float angleY, float angleZ
 }
 
 
-bool GestusHand::bend( GestusHandNode *node, float angleX, float angleY, float angleZ )
+bool GRHand::bend( GRHandNode *node, float angleX, float angleY, float angleZ )
 {
     /*
         // check if bending is possible
@@ -211,10 +211,10 @@ bool GestusHand::bend( GestusHandNode *node, float angleX, float angleY, float a
         return true;
 }
 
-// todo: maybe for every GestusHand separate motions?
+// todo: maybe for every GRHand separate motions?
 // changed break; to return true;
 
-const std::vector<std::map<char, float>>& GestusHand::getTrajectoryAngles() const
+const std::vector<std::map<char, float>>& GRHand::getTrajectoryAngles() const
 {
         return trajectoryAngles;
 }

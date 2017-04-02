@@ -1,7 +1,7 @@
-#include "gestusGLWidget.h"
+#include "GRGLWidget.h"
 #include <GL/glut.h>
 
-GestusGLWidget::GestusGLWidget(QWidget *parent) :
+GRGLWidget::GRGLWidget(QWidget *parent) :
     QGLWidget(parent)
 {
     this->R = 1;
@@ -13,7 +13,7 @@ GestusGLWidget::GestusGLWidget(QWidget *parent) :
     timer.start(16);
 }
 
-void GestusGLWidget::initializeGL()
+void GRGLWidget::initializeGL()
 {
 
     glClearColor( 0.0f, 0.5f, 0.5f, 0.0f );
@@ -23,7 +23,7 @@ void GestusGLWidget::initializeGL()
 //    glEnable(GL_COLOR_MATERIAL);
 }
 
-void GestusGLWidget::paintGL()
+void GRGLWidget::paintGL()
 {
 
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
@@ -44,7 +44,7 @@ void GestusGLWidget::paintGL()
     }
 }
 
-void GestusGLWidget::resizeGL(int w, int h)
+void GRGLWidget::resizeGL(int w, int h)
 {
 
     renderer.setViewport(w,h);/*
@@ -55,22 +55,22 @@ void GestusGLWidget::resizeGL(int w, int h)
     updateGL();
 }
 
-void GestusGLWidget::renderTrajectory(bool b)
+void GRGLWidget::renderTrajectory(bool b)
 {
     renderWithTrajectory = b;
 }
 
-void GestusGLWidget::renderLeftHand(bool b)
+void GRGLWidget::renderLeftHand(bool b)
 {
     renderWithLeftHand = b;
 }
 
-void GestusGLWidget::renderRightHand(bool b)
+void GRGLWidget::renderRightHand(bool b)
 {
     renderWithRightHand = b;
 }
 
-GestusRenderer *GestusGLWidget::getRenderer()
+GRRenderer *GRGLWidget::getRenderer()
 {
     return &renderer;
 }

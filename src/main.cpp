@@ -37,8 +37,8 @@ int main()
 #include <QApplication>
 #include <GL/glut.h>
 
-#include "gestusVisualization.h"
-#include "gestusConnection.h"
+#include "grVisualization.h"
+#include "grConnection.h"
 
 int main(int argc, char *argv[])
 {
@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
 	std::deque<std::string> gyro;
 	std::deque<std::string> mag;
 
-	GestusConnection connection;
+	GRConnection connection;
 	// connection.setAvalibleDevices();
 	// connection.getData(0, "acc", &acc);
 	// connection.getData(0, "gyro", &gyro);
@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
 
 	glutInit(&argc, argv);
 	QApplication a(argc, argv);
-	GestusVisualization w;
+	GRVisualization w;
 
 	w.setupPlotters(&acc, &gyro, &mag);
 	w.show();

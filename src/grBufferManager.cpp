@@ -1,11 +1,11 @@
-#include "gestusBufferManager.h"
+#include "grBufferManager.h"
 
 //
-// BufferManager definitions
+// GRBufferManager definitions
 //
 
 
-// BufferManager::BufferManager()
+// GRBufferManager::GRBufferManager()
 // {
 //   firstBuffer = new std::deque<std::string>();
 //   secondBuffer = new std::deque<std::string>();
@@ -14,14 +14,14 @@
 //   plog::init(plog::debug, "log.csv");
 // }
 //
-// BufferManager::~BufferManager()
+// GRBufferManager::GRBufferManagerer()
 // {
 //   delete fetchTimer;
 //   delete firstBuffer;
 //   delete secondBuffer;
 // }
 
-bool BufferManager::setupSource(std::deque<std::string>* buf)
+bool GRBufferManager::setupSource(std::deque<std::string>* buf)
 {
     sourceBuffer = buf;
 
@@ -33,7 +33,7 @@ bool BufferManager::setupSource(std::deque<std::string>* buf)
     return true;
 }
 
-void BufferManager::fetchData()
+void GRBufferManager::fetchData()
 {
     if(sourceBuffer != nullptr && !sourceBuffer->empty())
     {
