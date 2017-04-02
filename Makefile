@@ -21,7 +21,7 @@ all:$(BINARIES)
 
 
 
-$(BIN_DIR)/%: $(BUILD_DIR)/gestusConnection.o $(BUILD_DIR)/%.o 
+$(BIN_DIR)/%: $(BUILD_DIR)/grConnection.o $(BUILD_DIR)/%.o 
 	$(CPP) $(CPP_FLAGS) $(INCLUDE) $^ -o $@ $(LIB_FLAGS)
 
 
