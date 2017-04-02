@@ -1,5 +1,5 @@
 #include <iostream>
-//#include </usr/include/dbus-1.0/dbus/dbus.h>
+#include <sstream>
 #include <dbus/dbus.h>
 #include <deque>
 #include <stdlib.h>
