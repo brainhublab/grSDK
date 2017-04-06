@@ -39,15 +39,18 @@ int GRConnection::getDeviceId(device_t dev)//TODO need to be implemented later
 
 }
 
-bool GRConnection::connect(std::string addr, std::string  chanel) //TODO add mor rfcomm devices and need to bee imlemented later
+bool GRConnection::connect(std::string serial_dev, std::string addr, std::string  chanel) //TODO add mor rfcomm devices and need to bee imlemented later
 {
     std::string command;
-    command += "sudo rfcomm bind rfcomm0";
+    command += "sudo rfcomm bind ";
+    command += " ";
+    command += serial_dev;
     command += " ";
     command += addr;
     command += " ";
     command += chanel;
     system(command.c_str());
+    sleep(3);
     std::cout<<"succssesfuly bind device: "<<addr<<std::endl;
    //temporary
 }

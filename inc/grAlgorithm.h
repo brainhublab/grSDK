@@ -7,20 +7,24 @@
 #include <vector>
 #include <deque>
 #include <cmath>
+#include <thread>
+
 #include <eigen3/Eigen/Dense>
 #include <eigen3/Eigen/Geometry>
 
 
-#include "kalman/ekfilter.hpp"
+//#include "kalman/ekfilter.hpp"
+#include <grDevice.h>
 using namespace std;
 //using namespace Eigen;
+/*
 struct imu
 {
     int id;
     Eigen::Quaterniond quanternion;
 };
-
-struct algDev_t
+*/
+struct alg_device_t
 {
     // to store quaternions
     std::deque<std::vector<float>> pinky;
@@ -32,12 +36,12 @@ struct algDev_t
 };
 
 
-class GRAlgorithm : Kalman::EKFilter<double, 0>
+class GRAlgorithm 
 {
 
     public:
         GRAlgorithm();
-        GRAlgorithm(device_t device);
+        //GRAlgorithm(device_t device);
         ~GRAlgorithm();
         GRAlgorithm(const GRAlgorithm& );
         GRAlgorithm& operator=(const GRAlgorithm&);
@@ -53,21 +57,21 @@ class GRAlgorithm : Kalman::EKFilter<double, 0>
         //matrix multiply, vector dot product, cross product, mult vector by scalar, vector add,  are implemented,
 
         bool imuEKF();
-    private:
+ //   private:
         //helper methods
         double constrain(double , double , double );
         double gravity = 256;
         //functions for generating jacobian matrices for kalman filter
         //DCM variables
-        double kpRollPitch = 0.02;
-        double kiRollPitch = 0.00002;
-        double kpYaw = 1.2;
-        double kiYaw = 0.00002;
+        //double kpRollPitch = 0.02;
+        //double kiRollPitch = 0.00002;
+        //double kpYaw = 1.2;
+        //double kiYaw = 0.00002;
 
-        device_t device;
-        algDev_t result;
+        //device_t device;
+        //algDev_t result;
 
-        double magHeading;
+        //double magHeading;
         /*
         Eigen::Matrix2d DCMMatrix = new Eigen::Matrix2d(3, 3);
 
@@ -102,6 +106,8 @@ class GRAlgorithm : Kalman::EKFilter<double, 0>
         void MadgwickAHRSupdateIMU(float gx, float gy, float gz, float ax, float ay, float az, std::deque<std::vector<float>>*);
 
         void updateBuffer(imu*, std::deque<std::vector<float>>*);
+        void madgwickAHRS(device_t*, alg_device_t*);
+
 };
 
 
