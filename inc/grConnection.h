@@ -31,7 +31,8 @@ class GRConnection
 
     int getDeviceId(device_t);
 
-    bool connect(std::string, std::string , std::string);
+    bool connect(std::string, std::string, std::string);
+    bool release(std::string, std::string, std::string);
     bool getData(device_t*);
 
     private:

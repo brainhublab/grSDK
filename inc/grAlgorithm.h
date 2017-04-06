@@ -26,6 +26,7 @@ struct imu
 */
 struct alg_device_t
 {
+    // q x y z
     // to store quaternions
     std::deque<std::vector<float>> pinky;
     std::deque<std::vector<float>> ring;

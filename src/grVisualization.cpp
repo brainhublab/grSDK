@@ -62,30 +62,31 @@ bool GRVisualization::initUiProps()
     return true;
 }
 
-bool GRVisualization::setupPlotters(std::deque<std::string> *acc_src, std::deque<std::string> *gyro_src, std::deque<std::string> *mag_src)
+bool GRVisualization::setupPlotters(std::deque<std::vector<float>> *src) //, std::deque<std::string> *gyro_src, std::deque<std::string> *mag_src)
 {
     // setup sources
-    acc.setupSource(acc_src);
+    acc.setupSource(src);
+    /*acc.setupSource(acc_src);
     mag.setupSource(mag_src);
     gyro.setupSource(gyro_src);
-
+*/
     // setup buffers for separate plotters
-    plotter_acc->setupPlot(acc.firstBuffer);
-    plotter_gyro->setupPlot(gyro.firstBuffer);
-    plotter_mag->setupPlot(mag.firstBuffer);
+  //  plotter_acc->setupPlot(acc.firstBuffer);
+ //   plotter_gyro->setupPlot(gyro.firstBuffer);
+ //   plotter_mag->setupPlot(mag.firstBuffer);
 
-    plotter_all_acc->setupPlot(acc.secondBuffer);
-    plotter_all_gyro->setupPlot(gyro.secondBuffer);
-    plotter_all_mag->setupPlot(mag.secondBuffer);
+//    plotter_all_acc->setupPlot(acc.secondBuffer);
+//   plotter_all_gyro->setupPlot(gyro.secondBuffer);
+//    plotter_all_mag->setupPlot(mag.secondBuffer);
 
     // run drawing
-    plotter_acc->drawPlotFromBuffer();
-    plotter_gyro->drawPlotFromBuffer();
-    plotter_mag->drawPlotFromBuffer();
+ //   plotter_acc->drawPlotFromBuffer();
+ //   plotter_gyro->drawPlotFromBuffer();
+ //   plotter_mag->drawPlotFromBuffer();
 
-    plotter_all_acc->drawPlotFromBuffer();
-    plotter_all_gyro->drawPlotFromBuffer();
-    plotter_all_mag->drawPlotFromBuffer();
+   // plotter_all_acc->drawPlotFromBuffer();
+ //   plotter_all_gyro->drawPlotFromBuffer();
+ //   plotter_all_mag->drawPlotFromBuffer();
 
     return true;
 }
@@ -144,12 +145,12 @@ void GRVisualization::on_loggingCheckBox_toggled(bool checked)
 void GRVisualization::on_randomData_clicked()
 {
     int max = 256, min = -256;
-    std::string s;
-    s.append(std::to_string(qrand() % ((max + 1) - min) + min));
-    s.append(" ");
-    s.append(std::to_string(0));//qrand() % ((max + 1) - min) + min));
-    s.append(" ");
-    s.append(std::to_string(0));//qrand() % ((max + 1) - min) + min));
+    std::vector<float> s;
+    s.push_back(qrand() % ((max + 1) - min) + min);
+    //s.append(" ");
+    s.push_back(0);//qrand() % ((max + 1) - min) + min));
+    //s.append(" ");
+    s.push_back(0);//qrand() % ((max + 1) - min) + min));
     acc.sourceBuffer->push_back(s);
 }
 

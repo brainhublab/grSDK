@@ -25,7 +25,8 @@ SOURCES += ./src/main.cpp\
     ./src/grRender.cpp \
     ./externAssets/qcustomplot/qcustomplot.cpp \
     ./src/grDataPlotter.cpp \
-    ./src/grConnection.cpp
+    ./src/grConnection.cpp \
+    ./src/grAlgorithm.cpp
 
 HEADERS  += ./inc/grVisualization.h \
     ./inc/ui_grVisualization.h \
@@ -37,7 +38,8 @@ HEADERS  += ./inc/grVisualization.h \
     ./inc/grRender.h \
     ./externAssets/qcustomplot/qcustomplot.h \
     ./inc/grDataPlotter.h \
-    ./inc/grConnection.h
+    ./inc/grConnection.h \
+    ./inc/grAlgorithm.h
 
 FORMS    += grVisualisation.ui
 

@@ -15,6 +15,17 @@ public:
         explicit GRHand(bool left);
         ~GRHand();
 
+        // 
+        bool bendHandWithMatrix(GLfloat mat[16])
+        {
+                struct GRHandNode *hand = &(this->children[0]);
+                for(int i = 0; i < 16; ++i)
+                {
+                        hand->matrix[i] = mat[i];
+                };
+
+                return true;
+        };
         // bending
         bool bendArm( float angleX, float angleY, float angleZ );
         bool bendHand( float angleX, float angleY, float angleZ );

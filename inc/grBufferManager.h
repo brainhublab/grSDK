@@ -11,6 +11,8 @@
 
 #include "GRGLWidget.h"
 
+#include <iostream>
+
 class GRBufferManager : public QObject
 {
   Q_OBJECT
@@ -23,25 +25,27 @@ public:
         return true;
     };
 
-    void splitSensorData(std::string str, double arr[3])
+    /*void splitSensorData(std::vector<float> quat, double arr[4])
     {
-            int i = 0;
-            double n;
-            std::stringstream ss(str);
-            while(ss >> n)
-            {
-    			arr[i] = n;
-                    i++;
-            }
+        arr[0] = data[1];
+       //      int i = 0;
+       //      double n;
+       //      std::stringstream ss(str);
+       //      while(ss >> n)
+       //      {
+    			// arr[i] = n;
+       //              i++;
+       //      }
     };
+    */
     //
-    bool setupSource(std::deque<std::string>* buf);
+    bool setupSource(std::deque<std::vector<float>>* buf);
     QTimer* fetchTimer;
 
-    std::deque<std::string>* sourceBuffer = nullptr;
+    std::deque<std::vector<float>>* sourceBuffer = nullptr;
 
-    std::deque<std::string>* firstBuffer;
-    std::deque<std::string>* secondBuffer;
+    std::deque<std::vector<float>>* firstBuffer;
+    std::deque<std::vector<float>>* secondBuffer;
 
 
         bool isLoggingEnabled = false;

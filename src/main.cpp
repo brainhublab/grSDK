@@ -3,14 +3,15 @@
 #include <dbus/dbus.h>
 #include <deque>
 #include <stdlib.h>
-#include "grConnection.h"
+
 #include <thread>
 #include <time.h>
 #include <unistd.h>
-//#include <QApplication>
-//#include <GL/glut.h>
 
-//#include "grVisualization.h"
+#include <QApplication>
+#include <GL/glut.h>
+#include "grVisualization.h"
+
 #include "grConnection.h"
 #include "grAlgorithm.h"
 using namespace std;
@@ -32,29 +33,35 @@ int main(int argc, char *argv[])
    // while(dev.pinky.gyro)
     algr.madgwickAHRS(&dev, &algDev);
     std::cout<<"MadgwickAHRS is started"<<std::endl; 
-
+/*
     while(true)
     {
-        //cout<<"size: " << dev.pinky.gyro.size()<<endl;
-        if(dev.pinky.gyro.front().size() != 0 && dev.pinky.gyro.front().size() == 3)
-        {
-            if(algDev.pinky.size() != 0 && algDev.pinky.front().size() == 4)
+            if(algDev.palm.size() != 0 && algDev.palm.front().size() == 4)
             {
+               // cout<<algDev.palm.size()<<"palm size"<<endl;
+                cout<<algDev.palm.front().size()<<"front size"<<endl;
+
                 for(int i=0; i<4; i++)
                 {
-                    cout<<algDev.pinky.front()[i]<<" ";
+                   cout<<algDev.palm.front()[i]<<" ";
                 }
                 std::cout<<std::endl;
 
-                algDev.pinky.pop_front();
+                algDev.palm.pop_front();
             }
-            dev.pinky.gyro.pop_front();
-
-        }
 
     }
 
+  */  
+    
+    glutInit(&argc, argv);
+    QApplication a(argc, argv);
+    GRVisualization w;
+    w.setupPlotters(&algDev.palm);
+    w.show();
+    return a.exec();
+        
     //w.realTimeDrowData(&buffer);
 
-	return 0;
+return 0;
 }

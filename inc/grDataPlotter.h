@@ -16,7 +16,7 @@ public:
     GRDataPlotter( QCustomPlot *);
     ~GRDataPlotter();
 
-    bool setupPlot(std::deque<std::string>* );
+    bool setupPlot(std::deque<std::vector<float>>* );
     bool drawPlotFromBuffer();
 
     void splitSensorData(std::string str, double arr[3]);
@@ -28,7 +28,7 @@ private:
 
     QCustomPlot* plot = nullptr;
     QTimer *dataTimer = nullptr;
-    std::deque<std::string> *buffer = nullptr;
+    std::deque<std::vector<float>> *buffer = nullptr;
 };
 
 #endif // DATAPLOTTER_H

@@ -133,12 +133,12 @@ void GRAlgorithm::MadgwickAHRSupdate(float gx, float gy, float gz, float ax, flo
         q3 = results->back()[3];
     }
     else
-    {
-        q0 = 0.f;
-        q1 = 0.f;
-        q2 = 0.f;
-        q3 = 0.f;
-    }*/
+    {*/
+        //q0 = 1.0f;
+        //q1 = 0.0f;
+        //q2 = 0.0f;
+        //q3 = 0.0f;
+    //}
 
     float recipNorm;
     float s0, s1, s2, s3;
@@ -366,8 +366,8 @@ void GRAlgorithm::updateBuffer(imu* imu, std::deque<std::vector<float>>* quatern
     std::vector<float> gyro, accel, mag;
     while(true)
     {
-    //    if(imu->gyro.empty() && imu->acc.empty() && imu->mag.empty())
-      //  {
+        if(!imu->gyro.empty() && !imu->acc.empty() && !imu->mag.empty())
+        {
             gyro = imu->gyro.front();
             imu->gyro.pop_front();
             accel = imu->acc.front();
@@ -376,15 +376,38 @@ void GRAlgorithm::updateBuffer(imu* imu, std::deque<std::vector<float>>* quatern
             imu->mag.pop_front();
 
             MadgwickAHRSupdate(gyro[0], gyro[1], gyro[2], accel[0], accel[1], accel[2], mag[0], mag[1], mag[2], quaternions);
-        //}
+        }
     }
 
 
 }
 void GRAlgorithm::madgwickAHRS(device_t* inDevice, alg_device_t* outDevice)
 {
-    std::thread pinky(&GRAlgorithm::updateBuffer, this, &inDevice->pinky, &outDevice->pinky);
+    std::thread pinky(&GRAlgorithm::updateBuffer, this, &inDevice->pinky,  &outDevice->pinky);
     pinky.detach();
-    std::cout<<"run thread"<<endl;
+    std::cout<<"run MadgwickAHRSupdate thread for pinky"<<endl;
+    
+    std::thread ring(&GRAlgorithm::updateBuffer, this, &inDevice->ring,  &outDevice->ring);
+    ring.detach();
+    std::cout<<"run MadgwickAHRSupdate thread for ring"<<endl;
+
+    std::thread middle(&GRAlgorithm::updateBuffer, this, &inDevice->middle,  &outDevice->middle);
+    middle.detach();
+    std::cout<<"run MadgwickAHRSupdate thread for middle"<<endl;
+
+    std::thread index(&GRAlgorithm::updateBuffer, this, &inDevice->index,  &outDevice->index);
+    index.detach();
+    std::cout<<"run MadgwickAHRSupdate thread for index"<<endl;
+
+    std::thread thumb(&GRAlgorithm::updateBuffer, this, &inDevice->thumb,  &outDevice->thumb);
+    thumb.detach();
+    std::cout<<"run MadgwickAHRSupdate thread for thumb"<<endl;
+
+    std::thread palm(&GRAlgorithm::updateBuffer, this, &inDevice->palm,  &outDevice->palm);
+    palm.detach();
+    std::cout<<"run MadgwickAHRSupdate thread for palm"<<endl;
+
+
+
 
 }

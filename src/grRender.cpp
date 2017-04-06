@@ -219,9 +219,11 @@ bool GRRenderer::renderArm( GRHandNode *arm, float angleX, float angleY, float a
         /** draw hand **/
         struct GRHandNode *hand = &( *arm ).children[ 0 ];
         createSphere( 0.3f, 10, 10 );
-        glRotatef(( *hand ).angleX, 1.f, 0.f, 0.f );
-        glRotatef(( *hand ).angleY, 0.f, 1.f, 0.f );
-        glRotatef(( *hand ).angleZ, 0.f, 0.f, 1.f );
+        // glRotatef(( *hand ).angleX, 1.f, 0.f, 0.f );
+        // glRotatef(( *hand ).angleY, 0.f, 1.f, 0.f );
+        // glRotatef(( *hand ).angleZ, 0.f, 0.f, 1.f );
+        glPushMatrix();
+        glMultMatrixf(hand->matrix);
         if ( arm->isLeft )
         {
                 drawLeftHand( data.arm.hand_width, data.arm.hand_height, data.arm.hand_depth );
@@ -233,6 +235,8 @@ bool GRRenderer::renderArm( GRHandNode *arm, float angleX, float angleY, float a
         glTranslatef( 0.f, data.arm.hand_height, 0.f );
         /** draw fingers  **/
         drawFingers(hand);
+        
+        glPopMatrix();
         return true;
 }
 bool GRRenderer::drawFinger( GRHandNode *hand, float fingerDistance, int fingerIndex )

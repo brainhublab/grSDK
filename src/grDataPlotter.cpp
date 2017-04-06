@@ -38,7 +38,7 @@ bool GRDataPlotter::drawPlotFromBuffer()
     return true;
 }
 
-bool GRDataPlotter::setupPlot(std::deque<std::string> *buf)
+bool GRDataPlotter::setupPlot(std::deque<std::vector<float>> *buf)
 {
     buffer = buf;
 
@@ -74,8 +74,10 @@ void GRDataPlotter::fetchData()
     double arr[3] = {0, 0, 0}; // grad
     if(buffer != nullptr && !buffer->empty())
     {
-        splitSensorData(buffer->front(), arr);
-
+        //splitSensorData(buffer->front(), arr);
+        arr[0] = buffer->front()[0];
+        arr[1] = buffer->front()[1];
+        arr[2] = buffer->front()[2];
         buffer->pop_front();
     }
 

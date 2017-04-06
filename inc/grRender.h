@@ -23,8 +23,8 @@ public:
         bool setViewport(int, int);
         bool update();
 
-		    bool renderArm(struct GRHandNode*, float, float, float);
-		    bool renderTrajectory(GRHand*, float, float, float);
+        bool renderArm(struct GRHandNode*, float, float, float);
+	bool renderTrajectory(GRHand *, float, float, float);
         // accessors
         int getWidth();
         int getHeight();

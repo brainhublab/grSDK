@@ -54,14 +54,30 @@ bool GRConnection::connect(std::string serial_dev, std::string addr, std::string
     std::cout<<"succssesfuly bind device: "<<addr<<std::endl;
    //temporary
 }
+bool GRConnection::release(std::string serial_dev, std::string addr, std::string chanel)
+{
+    std::string command;
+    command += "sudo rfcomm release ";
+    command += " ";
+    command += serial_dev;
+    command += " ";
+    command += addr;
+    command += " ";
+    command += chanel;
+    system(command.c_str());
+    sleep(3);
+    std::cout<<"succssesfuly release device: "<<addr<<std::endl;
+
+}
 bool GRConnection::getData(device_t* device)
 {
     
     std::thread thr(&GRConnection::connectAndRead, this, device);
     std::thread::id thrId;
     thrId = thr.get_id();
-    std::cout<<thrId<<std::endl;
+    //std::cout<<thrId<<std::endl;
     thr.detach();
+    std::cout<<"connection thread is running"<<std::endl;
 
     return true;
     
@@ -73,7 +89,7 @@ bool GRConnection::connectAndRead(device_t* device)
     //setUpRfcomm("/dev/rfcomm0");
     std::string msg;
    // msg = getNext();
-    std::cout<<"before while"<<std::endl;
+    std::cout<<"running read while"<<std::endl;
     int i=0;
     while(true)
     {
@@ -109,6 +125,8 @@ bool GRConnection::connectAndRead(device_t* device)
         else if(id = 5)
         {
             splitData(msg, &(device->palm));
+            //std::cout<<"front: " << device->palm.gyro.back().front()<<std::endl;
+
         }
        msg.clear();
        i++;

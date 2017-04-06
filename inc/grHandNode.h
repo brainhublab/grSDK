@@ -1,6 +1,8 @@
 #ifndef GR_HAND_NODE_H
 #define GR_HAND_NODE_H
 
+#include <GL/gl.h>
+
 struct GRHandNode
 {
 				explicit GRHandNode(bool left = true)
@@ -13,6 +15,9 @@ struct GRHandNode
         float angleX = 0.f;
         float angleY = 0.f;
         float angleZ = 0.f;
+
+
+        GLfloat matrix[16];
 
         float maxAngleX = 0, maxAngleY = 0, maxAngleZ = 0;
         float minAngleX = 0, minAngleY = 0, minAngleZ = 0;
