@@ -7,6 +7,7 @@
 #include <deque>
 #include <map>
 #include <sstream>
+#include <thread>
 //bluetooth libs
 #include <stdio.h>
 #include <stdlib.h>
@@ -80,8 +81,9 @@ class GRConnection
     int getDeviceId(device_t);
 
     bool connect(std::string , std::string);
-    bool readData();
+    bool getData(device_t*);
 
+    //device_t device;
     private:
     char buf[256];
 
@@ -91,11 +93,12 @@ class GRConnection
     std::string getNext();
     int openPort(std::string);
 
+    bool connectAndRead(device_t*);
+
     bool splitData(std::string data, imu*);
 
     int portDescriptor;
     std::vector<device_t> avalibleDevices;
-    device_t device;
 
 
 

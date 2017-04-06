@@ -9,7 +9,7 @@ GRConnection::GRConnection()
 //destructor
 GRConnection::~GRConnection()
 {
-    
+    close(portDescriptor);    
 }
 //copy constructor
 GRConnection::GRConnection(const GRConnection& t)
@@ -51,52 +51,67 @@ bool GRConnection::connect(std::string addr, std::string  chanel) //TODO add mor
     std::cout<<"succssesfuly bind device: "<<addr<<std::endl;
    //temporary
 }
-
-bool GRConnection::readData()
+bool GRConnection::getData(device_t* device)
 {
-    float id;
-    setUpRfcomm("/dev/rfcomm0");
-    std::string str;
-    //str = getNext();
+    
+    std::thread thr(&GRConnection::connectAndRead, this, device);
+    std::thread::id thrId;
+    thrId = thr.get_id();
+    std::cout<<thrId<<std::endl;
+    thr.detach();
+
+    return true;
+    
+   //  connectAndRead(device);
+}
+bool GRConnection::connectAndRead(device_t* device)
+{
+    int id;
+    //setUpRfcomm("/dev/rfcomm0");
+    std::string msg;
+   // msg = getNext();
     std::cout<<"before while"<<std::endl;
+    int i=0;
     while(true)
     {
-        str = getNext();
-        std::stringstream ss(str);
+        //std::cout<<"1"<<std::endl;
+        msg = getNext();
+        //std::cout<<msg;
+       
+        std::stringstream ss(msg);
         ss >> id;
         //std::cout<<"ID :"<<id<<std::endl;
         if(id == 0)
         {
-            //std::cout<<"in IF"<<std::endl;
-            splitData(str, &device.pinky);
-            //std::cout<<device.pinky.gyro.front().front()<<std::endl;
+            splitData(msg, &device->pinky);
+            // std::cout<<msg<<std::endl;
+            //std::cout<<"front: " << device->pinky.gyro.back().front()<<std::endl;
         }
         else if(id == 1)
         {
-            splitData(str, &device.ring);
-            std::cout<<device.ring.gyro.front().front()<<std::endl;
-
+            splitData(msg, &device->ring);
         }
         else if(id == 2)
         {
-            splitData(str, &device.middle);
+            splitData(msg, &device->middle);
         }
         else if(id == 3)
         {
-            splitData(str, &device.index);
+            splitData(msg, &device->index);
         }
         else if(id == 4)
         {
-            splitData(str, &device.thumb);
+            splitData(msg, &device->thumb);
         }
         else if(id = 5)
         {
-            splitData(str, &device.palm);
+            splitData(msg, &(device->palm));
         }
-        
+       msg.clear();
+       i++;
     }
-         
-       
+       //exit(1); 
+       return true;
 }
 //private helper methods
 bool GRConnection::setUpRfcomm(std::string src)
@@ -111,30 +126,32 @@ bool GRConnection::setTerm()
     cfsetispeed(&tOptions, B115200);
     cfsetospeed(&tOptions, B115200);
 
-    tOptions.c_cflag &= ~PARENB;
-    tOptions.c_cflag &= ~CSIZE;
+    //tOptions.c_cflag &= ~PARENB;
+    //tOptions.c_cflag &= ~CSIZE;
 
-    tOptions.c_cc[VTIME] = 200;
+    //tOptions.c_cc[VTIME] = 100;
     //tOptions.c_cc[VSTOP] = '\n';
 
-    tcsetattr(portDescriptor, TCSANOW, &tOptions);
-    tcflush(portDescriptor, TCIFLUSH);
+    //tcsetattr(portDescriptor, TCSANOW, &tOptions);
+    //tcflush(portDescriptor, TCIFLUSH);
 
 }
 std::string GRConnection::getNext()
 {
     char buf[2];
     std::string res;
+
     while(true)
     {
         read(portDescriptor, buf, 1);
         if(buf[0]!= '\n')
         {
             res += buf[0];
+            //std::cout<<buf[0]<<std::endl;
         }
         else
         {
-            //std::cout<<"\n got data";
+            //std::cout<<res<<std::endl;
             return res;
         }
     }
@@ -168,18 +185,18 @@ bool GRConnection::splitData(std::string data, imu* sensor)
         arr[i] = n;
         i++; 
     }
-    for(int i=0;i<9;i++)
+    for(int i=1;i<10;i++)
     {
-        if(i < 3)
+        if(i < 4)
         {
             gyro.push_back(arr[i]);
             //std::cout<<arr[i];
         }
-        else if(i > 2 && i < 6)
+        else if(i > 3 && i < 7)
         {
             acc.push_back(arr[i]);
         }
-        else if(i > 5 )
+        else if(i > 6 )
         {
             mag.push_back(arr[i]);
         }

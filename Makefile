@@ -29,13 +29,10 @@ BINARIES=main
 all:$(BINARIES) 
 
 
-<<<<<<< HEAD
 $(BIN_DIR)/%: $(BUILD_DIR)/grConnection.o $(BUILD_DIR)/%.o 
 	$(CPP) $(CPP_FLAGS) $(INCLUDE) $^ -o $@ $(LIB_FLAGS)
-=======
 $(BIN_DIR)/%: $(BUILD_DIR)/gestusAlgorithm.o  $(BUILD_DIR)/gestusAlgorithm.o $(BUILD_DIR)/%.o 
 	$(CPP) $(CPP_FLAGS) $(DBUS_LIB) $(INCLUDE) $^ -o $@ $(LIB_FLAGS)
->>>>>>> algorithm
 
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp

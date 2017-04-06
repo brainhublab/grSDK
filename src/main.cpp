@@ -7,38 +7,39 @@
 #include <thread>
 #include <time.h>
 #include <unistd.h>
-#include <QApplication>
-#include <GL/glut.h>
+//#include <QApplication>
+//#include <GL/glut.h>
 
-#include "grVisualization.h"
+//#include "grVisualization.h"
 #include "grConnection.h"
-
+using namespace std;
 int main(int argc, char *argv[])
 {
-
-	std::deque<std::string> acc;
-	std::deque<std::string> gyro;
-	std::deque<std::string> mag;
+    
+    device_t dev;
 
 	GRConnection connection;
-	// connection.setAvalibleDevices();
-	// connection.getData(0, "acc", &acc);
-	// connection.getData(0, "gyro", &gyro);
-	// connection.getData(0, "magnet", &mag);
+    cout<<endl;
+    connection.getData(&dev);
+    cout<<"asd"<<endl;
 
-	// acc.push_back("123 120 100");
-	// acc.push_back("134 400 23");
-	// gyro.push_back("13 1220 1030");
-  // mag.push_back("1132 10 0");
+    while(true)
+    {
+        //cout<<"size: " << dev.pinky.gyro.size()<<endl;
 
+        if(dev.pinky.gyro.size() != 0 && dev.pinky.gyro.front().size() == 3)
+        {
+            for(int i=0; i<3; i++)
+            {
+                cout<<dev.pinky.gyro.front()[i];
+            }
+            std::cout<<std::endl;
 
-	glutInit(&argc, argv);
-	QApplication a(argc, argv);
-	GRVisualization w;
+            dev.pinky.gyro.pop_front();
+        }
+    }
+	
+    //w.realTimeDrowData(&buffer);
 
-	w.setupPlotters(&acc, &gyro, &mag);
-	w.show();
-	//w.realTimeDrowData(&buffer);
-
-	return a.exec();
+	return 0;
 }
