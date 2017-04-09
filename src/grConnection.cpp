@@ -125,12 +125,14 @@ bool GRConnection::connectAndRead(device_t* device)
         else if(id = 5)
         {
             splitData(msg, &(device->palm));
-            //std::cout<<"front: " << device->palm.gyro.back().front()<<std::endl;
+            //std::cout<<"front palm: " << device->palm.gyro.back().front()<<std::endl;
 
         }
        msg.clear();
-       i++;
+      i++;
+      //sleep(1);
     }
+    
        //exit(1); 
        return true;
 }

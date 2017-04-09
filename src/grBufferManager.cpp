@@ -29,7 +29,7 @@ bool GRBufferManager::setupSource(std::deque<std::vector<float>>* buf)
     // start timer for fetching data from source to separate copies
     fetchTimer = new QTimer();
     QObject::connect(fetchTimer, SIGNAL(timeout()), this, SLOT(fetchData()));
-    fetchTimer->start(50);
+	fetchTimer->start(50);
 
     return true;
 }
@@ -80,26 +80,26 @@ void GRBufferManager::fetchData()
     if(sourceBuffer != nullptr && !sourceBuffer->empty())
     {
 
-        double grad2rad = 3.141592/180.0;
+		//double grad2rad = 3.141592/180.0;
 
         //double d[3] = {0, 0, 0};
 
         //splitSensorData(sourceBuffer->front(), d);
         std::vector<float> d = sourceBuffer->front();
-
-        std::cout << "READED DATA from source buffer: ";
+/*
+		std::cout << "READED DATA from source buffer: ";
         for(int i = 0; i < 4; i++)
         {
             std::cout << d[i];
             std::cout << " ";
         }
         std::cout << std::endl;
- 
+ */
         GLfloat mat[16];
         quaternionToRotation(d, mat);
 
         // bend hands
-        grad2rad = 1;
+		//grad2rad = 1;
   //widget->leftArm.bendHand(190-d[1]*grad2rad, d[0], d[2]*grad2rad);
         widget->rightArm.bendHandWithMatrix(mat);
 

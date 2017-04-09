@@ -87,12 +87,12 @@ class GRAlgorithm
         Eigen::Vector3d errorYaw = new Eigen::Vector3d(0, 0, 0);
         */
         //Magwick variables
-        float sampleFreq = 512;
+        float sampleFreq = 512.0;
         float betaDef = 0.1;
-        float beta = betaDef;
+        float beta;
         float invSqrt(float x);            // algorithm gain
                                       // 2 * proportional gain (Kp)
-        float q0 = 1.0f, q1 = 0.0f, q2 = 0.0f, q3 = 0.0f;  // quaternion of sensor frame relative to auxiliary frame
+        float q0 , q1, q2, q3;  // quaternion of sensor frame relative to auxiliary frame
         /*void makeA();
         void makeH();
         void makeV();

@@ -1,15 +1,16 @@
 #include <grAlgorithm.h>
 
-//float sampleFreq  512.0f      // sample frequency in Hz
-//float betaDef     0.1f        // 2 * proportional gain
 
-//float invSqrt(float x);
-
-//beta = betaDef;
-
+//#define sampleFreq = 512.0f
+//#define betaDef = 0.1f
 GRAlgorithm::GRAlgorithm()
 {
-
+    beta = betaDef;
+    q0 = 1.0f;
+    q1 = 0.0f;
+    q2 = 0.0f;
+    q3 = 0.0f;
+    //invSampleFreq = 1.0f / sampleFreqDef;
 }
 /*
 GRAlgorithm::GRAlgorithm(std::vector<device_t> dev)
@@ -134,22 +135,22 @@ void GRAlgorithm::MadgwickAHRSupdate(float gx, float gy, float gz, float ax, flo
     }
     else
     {*/
-        //q0 = 1.0f;
-        //q1 = 0.0f;
-        //q2 = 0.0f;
-        //q3 = 0.0f;
+      //  q0 = 1.0f;
+      //  q1 = 0.0f;
+      //  q2 = 0.0f;
+      //  q3 = 0.0f;
     //}
-
+    std::cout<<gx<<" "<<gy<<" "<<gz<<std::endl;
     float recipNorm;
     float s0, s1, s2, s3;
     float qDot1, qDot2, qDot3, qDot4;
     float hx, hy;
     float _2q0mx, _2q0my, _2q0mz, _2q1mx, _2bx, _2bz, _4bx, _4bz, _2q0, _2q1, _2q2, _2q3, _2q0q2, _2q2q3, q0q0, q0q1, q0q2, q0q3, q1q1, q1q2, q1q3, q2q2, q2q3, q3q3;
     // Use IMU algorithm if magnetometer measurement invalid (avoids NaN in magnetometer normalisation)
-    if((mx == 0.0f) && (my == 0.0f) && (mz == 0.0f)) {
+   /* if((mx == 0.0f) && (my == 0.0f) && (mz == 0.0f)) {
         MadgwickAHRSupdateIMU(gx, gy, gz, ax, ay, az, results);
         return;
-    }
+    }*/
 
     // Rate of change of quaternion from gyroscope
     qDot1 = 0.5f * (-q1 * gx - q2 * gy - q3 * gz);
@@ -245,9 +246,9 @@ void GRAlgorithm::MadgwickAHRSupdate(float gx, float gy, float gz, float ax, flo
     results->push_back(new_result);
  }
  void GRAlgorithm::MadgwickAHRSupdateIMU(float gx, float gy, float gz, float ax, float ay, float az, std::deque<std::vector<float>>* results) {
-    float q0, q1, q2, q3;
+    //float q0, q1, q2, q3;
 
-    if(results->size() == 4)
+   /* if(results->size() == 4)
     {
         q0 = results->back()[0];
         q1 = results->back()[1];
@@ -260,7 +261,7 @@ void GRAlgorithm::MadgwickAHRSupdate(float gx, float gy, float gz, float ax, flo
         q1 = 0.f;
         q2 = 0.f;
         q3 = 0.f;
-    }
+    }*/
 
     float recipNorm;
     float s0, s1, s2, s3;
@@ -366,7 +367,7 @@ void GRAlgorithm::updateBuffer(imu* imu, std::deque<std::vector<float>>* quatern
     std::vector<float> gyro, accel, mag;
     while(true)
     {
-        if(!imu->gyro.empty() && !imu->acc.empty() && !imu->mag.empty())
+        if(!imu->gyro.empty() && imu->gyro.front().size() == 3 && !imu->acc.empty() && imu->acc.front().size() == 3&& !imu->mag.empty() && imu->mag.front().size() == 3)
         {
             gyro = imu->gyro.front();
             imu->gyro.pop_front();
@@ -383,7 +384,7 @@ void GRAlgorithm::updateBuffer(imu* imu, std::deque<std::vector<float>>* quatern
 }
 void GRAlgorithm::madgwickAHRS(device_t* inDevice, alg_device_t* outDevice)
 {
-    std::thread pinky(&GRAlgorithm::updateBuffer, this, &inDevice->pinky,  &outDevice->pinky);
+    /*std::thread pinky(&GRAlgorithm::updateBuffer, this, &inDevice->pinky,  &outDevice->pinky);
     pinky.detach();
     std::cout<<"run MadgwickAHRSupdate thread for pinky"<<endl;
     
@@ -402,7 +403,7 @@ void GRAlgorithm::madgwickAHRS(device_t* inDevice, alg_device_t* outDevice)
     std::thread thumb(&GRAlgorithm::updateBuffer, this, &inDevice->thumb,  &outDevice->thumb);
     thumb.detach();
     std::cout<<"run MadgwickAHRSupdate thread for thumb"<<endl;
-
+*/
     std::thread palm(&GRAlgorithm::updateBuffer, this, &inDevice->palm,  &outDevice->palm);
     palm.detach();
     std::cout<<"run MadgwickAHRSupdate thread for palm"<<endl;

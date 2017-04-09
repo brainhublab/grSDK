@@ -17,7 +17,7 @@
 using namespace std;
 int main(int argc, char *argv[])
 {
-    
+  
     device_t dev;
 
 	GRConnection connection;
@@ -32,10 +32,12 @@ int main(int argc, char *argv[])
     GRAlgorithm algr;
    // while(dev.pinky.gyro)
     algr.madgwickAHRS(&dev, &algDev);
-    std::cout<<"MadgwickAHRS is started"<<std::endl; 
+    std::cout<<"MadgwickAHRS is started"<<std::endl;
+   sleep(10); 
 /*
     while(true)
     {
+       // cout<<"while"<<endl;
             if(algDev.palm.size() != 0 && algDev.palm.front().size() == 4)
             {
                // cout<<algDev.palm.size()<<"palm size"<<endl;
@@ -52,8 +54,8 @@ int main(int argc, char *argv[])
 
     }
 
-  */  
-    
+*/
+    sleep(5);
     glutInit(&argc, argv);
     QApplication a(argc, argv);
     GRVisualization w;
@@ -63,5 +65,5 @@ int main(int argc, char *argv[])
         
     //w.realTimeDrowData(&buffer);
 
-return 0;
+//return 0;
 }
