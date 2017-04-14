@@ -2,6 +2,8 @@
 *.swp
 *.ini
 .idea/*
-./bin/*
-./build/*
-./build/generated_files/*
+*/bin/*
+*/build/*
+*/build/generated_files/*
+
+

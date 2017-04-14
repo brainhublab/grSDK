@@ -7,7 +7,7 @@
 #include <deque>
 #include <string>
 
-#include "externAssets/plog/Log.h" //Lib for logging in csv format
+#include "plog/Log.h" //Lib for logging in csv format
 
 #include "GRGLWidget.h"
 
