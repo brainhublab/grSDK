@@ -1,8 +1,6 @@
 #include <grAlgorithm.h>
 
 
-//#define sampleFreq = 512.0f
-//#define betaDef = 0.1f
 GRAlgorithm::GRAlgorithm()
 {
     beta = betaDef;
@@ -12,12 +10,7 @@ GRAlgorithm::GRAlgorithm()
     q3 = 0.0f;
     //invSampleFreq = 1.0f / sampleFreqDef;
 }
-/*
-GRAlgorithm::GRAlgorithm(std::vector<device_t> dev)
-{
-    this->device = dev;
-}
-*/
+
 GRAlgorithm::~GRAlgorithm()
 {
 
@@ -35,95 +28,8 @@ GRAlgorithm& GRAlgorithm::operator=(const GRAlgorithm& t)
 
 void grInitAlgorithms()
 {
-    /*
-    //todo: each goes in a thread of it's own
-    updateBuffer(&device.pinky, &result.pinky);
-    updateBuffer(&device.ring, &result.ring);
-    updateBuffer(&device.middle, &result.middle);
-    updateBuffer(&device.index, &result.index);
-    updateBuffer(&device.palm, &result.palm);
-    */
 }
 
-/*
-void GRAlgorithm::grDCMNomalize()
-{
-    double error = 0.0;
-    Eigen::Matrix2d tmp[3][3];
-    double renorm = 0.0;
-
-    error = -(DCMMatrix.row(0).dot(DCMMatrix.row(1)) * 0.5);
-    //vector scale
-    tmp.row(0) = DCMMatrix.row(1) * error;
-    tmp.row(1) = DCMMatrix.row(0) * error;
-    //vector add
-    tmp.row(0) = tmp.row(0) + DCMMatrix(0);
-    tmp.row(1) = tmp.row(1) + DCMMatrix(1);
-    //vector cross prouct
-    tmp.row(2) = tmp.row(0) * tmp.row(1);
-
-    renorm = 0.5 * (3 - tmp.row(0).dot(tmp.row(0)));
-    DCMMatrix(0) = tmp(0) * renorm;
-
-    renorm = 0.5 * (3 - tmp.row(1).dot(tmp.row(1)));
-    DCMMatrix(1) = tmp(1) * renorm;
-
-    renorm = 0.5 * (3 - tmp.row(2).dot(tmp.row(2)));
-    DCMMatrix(2) = tmp(2) * renorm;
-
-}
-void GRAlgorithm::grDCMDriftCorrection()
-{
-    double magHeadingX;
-    double magHeadingY;
-    double errorCourse;
-    //compensation the roll pitch yaw
-    double scaledOmegaP[3];
-    double scaledOmegaI[3];
-    double accelMagnitutde;
-    double accelWeight;
-
-    //roll and pitch
-    accelMagnitutde = sqrt(accelVector(0) * accelVector(0) +
-            accelVector(1) * accelVector(1) +
-            accelVector(2) * accelVector(2));
-
-    accelMagnitutde = accelMagnitutde / gravity;//scale to gravity
-    // Dynamic weighting of accelerometer info (reliability filter)
-    // Weight for accelerometer info (<0.5G = 0.0, 1G = 1.0 , >1.5G = 0.0)
-    accelWeight = constrain(1 - 2 * abs(1 - accelMagnitutde), 0, 1);
-
-    errorRollPitch = accelVector * DCMMatrix(2);
-    omegaP = errorRollPitch * (kpRollPitch * accelWeight);
-
-    scaledOmegaI = errorRollPitch * (kiRollPitch * accelWeight);
-    omegaI = omeI + scaledOmegaI;
-
-    //yaw
-    // We make the gyro YAW drift correction based on compass magnetic heading
-    magHeadingX = cos(magHeading);
-    magHeadingY = sin(magHeading);
-
-    errorCourse = (DCMMatrix(0, 0) * magHeadingY) - (DCMMatrix(0, 1) * magHeadingX);//calculating yaw error
-    errorYaw = DCMMatrix.row(2) * errorCourse; // upply yaw correction
-
-    scaledOmegaP = errorYaw * kpYaw;
-    omegaP = omegaP + scaledOmegaP;
-
-    scaledOmegaI = errorYaw * kiYaw;
-    omegaI = omegaI + scaledOmegaI;
-
-
-}
-void GRAlgorithm::grDCMMatrixUpdate()
-{
-
-}
-void GRAlgorithm::grDCMEulerAngels()
-{
-
-}
-*/
 void GRAlgorithm::MadgwickAHRSupdate(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz, std::deque<std::vector<float>>* results) {
 
     /*if(results->size() != 0)
@@ -147,10 +53,10 @@ void GRAlgorithm::MadgwickAHRSupdate(float gx, float gy, float gz, float ax, flo
     float hx, hy;
     float _2q0mx, _2q0my, _2q0mz, _2q1mx, _2bx, _2bz, _4bx, _4bz, _2q0, _2q1, _2q2, _2q3, _2q0q2, _2q2q3, q0q0, q0q1, q0q2, q0q3, q1q1, q1q2, q1q3, q2q2, q2q3, q3q3;
     // Use IMU algorithm if magnetometer measurement invalid (avoids NaN in magnetometer normalisation)
-   /* if((mx == 0.0f) && (my == 0.0f) && (mz == 0.0f)) {
+    if((mx == 0.0f) && (my == 0.0f) && (mz == 0.0f)) {
         MadgwickAHRSupdateIMU(gx, gy, gz, ax, ay, az, results);
         return;
-    }*/
+    }
 
     // Rate of change of quaternion from gyroscope
     qDot1 = 0.5f * (-q1 * gx - q2 * gy - q3 * gz);
@@ -362,7 +268,7 @@ double GRAlgorithm::constrain(double x, double a, double b)
         return x;
 }
 
-void GRAlgorithm::updateBuffer(imu* imu, std::deque<std::vector<float>>* quaternions)
+void GRAlgorithm::madgwickUpdateBuffer(imu* imu, std::deque<std::vector<float>>* quaternions)
 {
     std::vector<float> gyro, accel, mag;
     while(true)
@@ -382,9 +288,9 @@ void GRAlgorithm::updateBuffer(imu* imu, std::deque<std::vector<float>>* quatern
 
 
 }
-void GRAlgorithm::madgwickAHRS(device_t* inDevice, alg_device_t* outDevice)
+void GRAlgorithm::madgwickUpdateThr(device_t* inDevice, alg_device_t* outDevice)
 {
-    /*std::thread pinky(&GRAlgorithm::updateBuffer, this, &inDevice->pinky,  &outDevice->pinky);
+    std::thread pinky(&GRAlgorithm::updateBuffer, this, &inDevice->pinky,  &outDevice->pinky);
     pinky.detach();
     std::cout<<"run MadgwickAHRSupdate thread for pinky"<<endl;
     
@@ -403,7 +309,7 @@ void GRAlgorithm::madgwickAHRS(device_t* inDevice, alg_device_t* outDevice)
     std::thread thumb(&GRAlgorithm::updateBuffer, this, &inDevice->thumb,  &outDevice->thumb);
     thumb.detach();
     std::cout<<"run MadgwickAHRSupdate thread for thumb"<<endl;
-*/
+
     std::thread palm(&GRAlgorithm::updateBuffer, this, &inDevice->palm,  &outDevice->palm);
     palm.detach();
     std::cout<<"run MadgwickAHRSupdate thread for palm"<<endl;
