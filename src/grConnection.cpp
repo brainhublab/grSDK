@@ -121,8 +121,9 @@ bool GRConnection::connectAndRead(device_t* device)
 
     int id, i = 0;
     std::string msg;
-
-    while(true)
+    bool f0, f1, f2, f3, f4, f5;
+    f0 = f1 = f2 = f3 = f4 = f5 = false;
+    while(!(f0 && f1 && f2 && f3 && f4 && f5))
     {
         std::stringstream ss(msg);
 
@@ -133,22 +134,46 @@ bool GRConnection::connectAndRead(device_t* device)
         switch(id)
         {
             case 0:
-                splitData(msg, &device->pinky);
+                if(!f0)
+                {
+                    splitData(msg, &device->pinky);
+                    f0 = true;
+                }
                 break;
             case 1:
-                splitData(msg, &device->ring);
+                if(!f1)
+                {
+                    splitData(msg, &device->ring);
+                    f1 = true;
+                }
                 break;
             case 2:
-                splitData(msg, &device->middle);
+                if(!f2)
+                {
+                    splitData(msg, &device->middle);
+                    f2 = true;
+                }
                 break;
             case 3:
-                splitData(msg, &device->index);
+                if(!f3)
+                {
+                    splitData(msg, &device->index);
+                    f3 = true;
+                }
                 break;
             case 4:
-                splitData(msg, &device->thumb);
+                if(!f4)
+                {
+                    splitData(msg, &device->thumb);
+                    f4 = true;
+                }
                 break;
             case 5:
-                splitData(msg, &(device->palm));
+                if(!f5)
+                {
+                    splitData(msg, &(device->palm));
+                    f5 = true;
+                }
                 break;
         }
 
