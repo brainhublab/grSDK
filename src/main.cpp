@@ -7,11 +7,11 @@
 #include <thread>
 #include <time.h>
 #include <unistd.h>
-
+/*
 #include <QApplication>
 #include <GL/glut.h>
 #include "grVisualization.h"
-
+*/
 #include "grConnection.h"
 #include "grAlgorithm.h"
 using namespace std;
@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
     algr.madgwickAHRS(&dev, &algDev);
     std::cout<<"MadgwickAHRS is started"<<std::endl;
    sleep(10); 
-/*
+
     while(true)
     {
        // cout<<"while"<<endl;
@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
 
     }
 
-*/
+/*
     sleep(5);
     glutInit(&argc, argv);
     QApplication a(argc, argv);
@@ -64,6 +64,6 @@ int main(int argc, char *argv[])
     return a.exec();
         
     //w.realTimeDrowData(&buffer);
-
-//return 0;
+*/
+return 0;
 }
