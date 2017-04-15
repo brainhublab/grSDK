@@ -22,14 +22,16 @@ GRBufferManager::~GRBufferManager()
    delete secondBuffer;
 }
 
-bool GRBufferManager::setupSource(std::deque<std::vector<float>>* buf)
+bool GRBufferManager::setupSource()
 {
-    sourceBuffer = buf;
+
+
+	sourceBuffer = &algDev.palm;
 
     // start timer for fetching data from source to separate copies
     fetchTimer = new QTimer();
     QObject::connect(fetchTimer, SIGNAL(timeout()), this, SLOT(fetchData()));
-	fetchTimer->start(50);
+	fetchTimer->start(20);
 
     return true;
 }
@@ -77,7 +79,16 @@ void quaternionToRotation(std::vector<float> quaternion, GLfloat *rotation)//iz 
 
 void GRBufferManager::fetchData()
 {
-    if(sourceBuffer != nullptr && !sourceBuffer->empty())
+	conn.connectAndRead(&dev);
+	//sleep(1);
+	alg.madgwickUpdateBuffer(&dev.palm, &algDev.palm);
+	alg1.madgwickUpdateBuffer(&dev.pinky, &algDev.pinky);
+	alg2.madgwickUpdateBuffer(&dev.ring, &algDev.ring);
+	alg3.madgwickUpdateBuffer(&dev.middle, &algDev.middle);
+	alg4.madgwickUpdateBuffer(&dev.index, &algDev.index);
+	alg5.madgwickUpdateBuffer(&dev.thumb, &algDev.thumb);
+
+	if(sourceBuffer != nullptr && !sourceBuffer->empty() )
     {
 
 		//double grad2rad = 3.141592/180.0;
@@ -96,13 +107,12 @@ void GRBufferManager::fetchData()
         std::cout << std::endl;
  */
         GLfloat mat[16];
-        quaternionToRotation(d, mat);
+		quaternionToRotation(d, mat);
 
         // bend hands
 		//grad2rad = 1;
   //widget->leftArm.bendHand(190-d[1]*grad2rad, d[0], d[2]*grad2rad);
         widget->rightArm.bendHandWithMatrix(mat);
-
         // move front data to different buffers
         firstBuffer->push_back(sourceBuffer->front());
         secondBuffer->push_back(sourceBuffer->front());
@@ -114,4 +124,46 @@ void GRBufferManager::fetchData()
             // LOG(plog::info) << firstBuffer->back() << i;
         }
     }
+	if( !algDev.pinky.empty())
+	{
+		std::vector<float> d = algDev.pinky.front();
+		GLfloat mat[16];
+		quaternionToRotation(d, mat);
+		widget->rightArm.bendFingerWithMatrix(0, mat);
+		algDev.pinky.pop_front();
+
+
+	}
+	if( !algDev.ring.empty())
+	{
+		std::vector<float> d = algDev.ring.front();
+		GLfloat mat[16];
+		quaternionToRotation(d, mat);
+		widget->rightArm.bendFingerWithMatrix(1, mat);
+		algDev.ring.pop_front();
+	}
+	if( !algDev.middle.empty())
+	{
+		std::vector<float> d = algDev.middle.front();
+		GLfloat mat[16];
+		quaternionToRotation(d, mat);
+		widget->rightArm.bendFingerWithMatrix(2, mat);
+		algDev.middle.pop_front();
+	}
+	if(!algDev.index.empty())
+	{
+		std::vector<float> d = algDev.index.front();
+		GLfloat mat[16];
+		quaternionToRotation(d, mat);
+		widget->rightArm.bendFingerWithMatrix(3, mat);
+		algDev.index.pop_front();
+	}
+	if(!algDev.thumb.empty())
+	{
+		std::vector<float> d = algDev.thumb.front();
+		GLfloat mat[16];
+		quaternionToRotation(d, mat);
+		widget->rightArm.bendFingerWithMatrix(4, mat);
+		algDev.thumb.pop_front();
+	}
 }

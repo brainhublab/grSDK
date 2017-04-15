@@ -27,7 +27,7 @@ class GRVisualization : public QMainWindow
 public:
 	explicit GRVisualization(QWidget *parent = 0);
 	~GRVisualization();
-    bool setupPlotters(std::deque<std::vector<float>> *);//, std::deque<std::string> *, std::deque<std::string> *);
+	bool setupPlotters();//, std::deque<std::string> *, std::deque<std::string> *);
 
 private slots:
     void on_trajectoryCheckBox_toggled(bool checked);

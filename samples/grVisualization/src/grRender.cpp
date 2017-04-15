@@ -243,12 +243,15 @@ bool GRRenderer::drawFinger( GRHandNode *hand, float fingerDistance, int fingerI
 {
         struct GRHandNode *phalange = &( *hand ).children[ fingerIndex ];
         glPushMatrix( );
+		glMultMatrixf(phalange->matrix);
         float heightRatio = 0.f, radiusRatio = 0.f;
         while ( phalange != NULL )
         {
-                glRotatef(( *phalange ).angleX, 1.f, 0.f, 0.f );
-                glRotatef(( *phalange ).angleY, 0.f, 1.f, 0.f );
-                glRotatef(( *phalange ).angleZ, 0.f, 0.f, 1.f );
+
+
+				glRotatef(( *phalange ).angleX, 1.f, 0.f, 0.f );
+				glRotatef(( *phalange ).angleY, 0.f, 1.f, 0.f );
+				glRotatef(( *phalange ).angleZ, 0.f, 0.f, 1.f );
                 createFrustum( data.arm.phalange_radiuses[fingerIndex] - radiusRatio, data.arm.phalange_heights[fingerIndex] - heightRatio, 0.8 );
                 createSphere( data.arm.phalange_radiuses[fingerIndex] - radiusRatio + 0.02f, 10, 10 );
                 glTranslatef( 0.f, data.arm.phalange_heights[fingerIndex] - heightRatio, 0.f );

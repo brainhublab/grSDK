@@ -62,10 +62,10 @@ bool GRVisualization::initUiProps()
     return true;
 }
 
-bool GRVisualization::setupPlotters(std::deque<std::vector<float>> *src) //, std::deque<std::string> *gyro_src, std::deque<std::string> *mag_src)
+bool GRVisualization::setupPlotters() //, std::deque<std::string> *gyro_src, std::deque<std::string> *mag_src)
 {
     // setup sources
-    acc.setupSource(src);
+	acc.setupSource();
     /*acc.setupSource(acc_src);
     mag.setupSource(mag_src);
     gyro.setupSource(gyro_src);

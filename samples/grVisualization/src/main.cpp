@@ -17,6 +17,7 @@
 using namespace std;
 int main(int argc, char *argv[])
 {
+	/*
   
     device_t dev;
 
@@ -33,7 +34,7 @@ int main(int argc, char *argv[])
    // while(dev.pinky.gyro)
     algr.madgwickAHRS(&dev, &algDev);
     std::cout<<"MadgwickAHRS is started"<<std::endl;
-   sleep(10); 
+   sleep(10); */
 /*
     while(true)
     {
@@ -59,7 +60,7 @@ int main(int argc, char *argv[])
     glutInit(&argc, argv);
     QApplication a(argc, argv);
     GRVisualization w;
-    w.setupPlotters(&algDev.palm);
+	w.setupPlotters();
     w.show();
     return a.exec();
         

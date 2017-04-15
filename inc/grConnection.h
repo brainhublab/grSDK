@@ -36,7 +36,7 @@ class GRConnection
 
         bool getData(device_t*);
 
-    private:
+//    private:
         char buf[256];
         int portDescriptor;
         std::string rfcommPath;

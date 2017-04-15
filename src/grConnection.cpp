@@ -117,19 +117,23 @@ bool GRConnection::getData(device_t* device)
 
 bool GRConnection::connectAndRead(device_t* device)
 {
-    std::cout<<"running read while"<<std::endl;
+   // std::cout<<"running read while"<<std::endl;
 
     int id, i = 0;
     std::string msg;
     bool f0, f1, f2, f3, f4, f5;
     f0 = f1 = f2 = f3 = f4 = f5 = false;
-    while(!(f0 && f1 && f2 && f3 && f4 && f5))
+    while(!f5)//!(f0==true && f1==true && f2==true && f3==true && f4==true && f5==true))
     {
-        std::stringstream ss(msg);
+       // std::cout<<"in read while"<<std::endl;
+
+     
 
         msg = getNext();
+        std::stringstream ss(msg);
 
         ss >> id;
+        std::cout<<"ID: "<<" "<<id<<"MSG :"<<msg<<std::endl;
 
         switch(id)
         {
@@ -172,6 +176,7 @@ bool GRConnection::connectAndRead(device_t* device)
                 if(!f5)
                 {
                     splitData(msg, &(device->palm));
+                    //std::cout<<msg;
                     f5 = true;
                 }
                 break;
@@ -180,6 +185,7 @@ bool GRConnection::connectAndRead(device_t* device)
         msg.clear();
         i++;
     }
+//    std::cout<<"reading is OK"<<std::endl;
 
     return true;
 }

@@ -13,6 +13,9 @@
 
 #include <iostream>
 
+#include "grConnection.h"
+#include "grAlgorithm.h"
+
 class GRBufferManager : public QObject
 {
   Q_OBJECT
@@ -39,10 +42,10 @@ public:
     };
     */
     //
-    bool setupSource(std::deque<std::vector<float>>* buf);
+	bool setupSource();
     QTimer* fetchTimer;
 
-    std::deque<std::vector<float>>* sourceBuffer = nullptr;
+	std::deque<std::vector<float>>* sourceBuffer;
 
     std::deque<std::vector<float>>* firstBuffer;
     std::deque<std::vector<float>>* secondBuffer;
@@ -53,6 +56,15 @@ public slots:
     void fetchData();
 private:
       GRGLWidget* widget;
+	  device_t dev;
+	  alg_device_t algDev;
+	  GRConnection conn;
+	  GRAlgorithm alg;
+	   GRAlgorithm alg1;
+		GRAlgorithm alg2;
+		 GRAlgorithm alg3;
+		  GRAlgorithm alg4;
+		   GRAlgorithm alg5;
 };
 
 #endif // GR_BUFFER_MANAGER_H

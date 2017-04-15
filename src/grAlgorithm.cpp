@@ -1,5 +1,7 @@
 #include <grAlgorithm.h>
 
+#define sampleFreq 212.0f
+#define betaDef 0.1f
 
 GRAlgorithm::GRAlgorithm()
 {
@@ -46,7 +48,7 @@ void GRAlgorithm::MadgwickAHRSupdate(float gx, float gy, float gz, float ax, flo
       //  q2 = 0.0f;
       //  q3 = 0.0f;
     //}
-    std::cout<<gx<<" "<<gy<<" "<<gz<<std::endl;
+    //std::cout<<gx<<" "<<gy<<" "<<gz<<std::endl;
     float recipNorm;
     float s0, s1, s2, s3;
     float qDot1, qDot2, qDot3, qDot4;
@@ -58,7 +60,12 @@ void GRAlgorithm::MadgwickAHRSupdate(float gx, float gy, float gz, float ax, flo
         return;
     }
 
+    gx *= 0.0174533f;
+    gy *= 0.0174533f;
+    gz *= 0.0174533f;
+
     // Rate of change of quaternion from gyroscope
+        // Rate of change of quaternion from gyroscope
     qDot1 = 0.5f * (-q1 * gx - q2 * gy - q3 * gz);
     qDot2 = 0.5f * (q0 * gx + q2 * gz - q3 * gy);
     qDot3 = 0.5f * (q0 * gy - q1 * gz + q3 * gx);
@@ -104,24 +111,16 @@ void GRAlgorithm::MadgwickAHRSupdate(float gx, float gy, float gz, float ax, flo
         // Reference direction of Earth's magnetic field
         hx = mx * q0q0 - _2q0my * q3 + _2q0mz * q2 + mx * q1q1 + _2q1 * my * q2 + _2q1 * mz * q3 - mx * q2q2 - mx * q3q3;
         hy = _2q0mx * q3 + my * q0q0 - _2q0mz * q1 + _2q1mx * q2 - my * q1q1 + my * q2q2 + _2q2 * mz * q3 - my * q3q3;
-        _2bx = sqrt(hx * hx + hy * hy);
+        _2bx = sqrtf(hx * hx + hy * hy);
         _2bz = -_2q0mx * q2 + _2q0my * q1 + mz * q0q0 + _2q1mx * q3 - mz * q1q1 + _2q2 * my * q3 - mz * q2q2 + mz * q3q3;
         _4bx = 2.0f * _2bx;
         _4bz = 2.0f * _2bz;
 
         // Gradient decent algorithm corrective step
-        // old with error
         s0 = -_2q2 * (2.0f * q1q3 - _2q0q2 - ax) + _2q1 * (2.0f * q0q1 + _2q2q3 - ay) - _2bz * q2 * (_2bx * (0.5f - q2q2 - q3q3) + _2bz * (q1q3 - q0q2) - mx) + (-_2bx * q3 + _2bz * q1) * (_2bx * (q1q2 - q0q3) + _2bz * (q0q1 + q2q3) - my) + _2bx * q2 * (_2bx * (q0q2 + q1q3) + _2bz * (0.5f - q1q1 - q2q2) - mz);
         s1 = _2q3 * (2.0f * q1q3 - _2q0q2 - ax) + _2q0 * (2.0f * q0q1 + _2q2q3 - ay) - 4.0f * q1 * (1 - 2.0f * q1q1 - 2.0f * q2q2 - az) + _2bz * q3 * (_2bx * (0.5f - q2q2 - q3q3) + _2bz * (q1q3 - q0q2) - mx) + (_2bx * q2 + _2bz * q0) * (_2bx * (q1q2 - q0q3) + _2bz * (q0q1 + q2q3) - my) + (_2bx * q3 - _4bz * q1) * (_2bx * (q0q2 + q1q3) + _2bz * (0.5f - q1q1 - q2q2) - mz);
         s2 = -_2q0 * (2.0f * q1q3 - _2q0q2 - ax) + _2q3 * (2.0f * q0q1 + _2q2q3 - ay) - 4.0f * q2 * (1 - 2.0f * q1q1 - 2.0f * q2q2 - az) + (-_4bx * q2 - _2bz * q0) * (_2bx * (0.5f - q2q2 - q3q3) + _2bz * (q1q3 - q0q2) - mx) + (_2bx * q1 + _2bz * q3) * (_2bx * (q1q2 - q0q3) + _2bz * (q0q1 + q2q3) - my) + (_2bx * q0 - _4bz * q2) * (_2bx * (q0q2 + q1q3) + _2bz * (0.5f - q1q1 - q2q2) - mz);
         s3 = _2q1 * (2.0f * q1q3 - _2q0q2 - ax) + _2q2 * (2.0f * q0q1 + _2q2q3 - ay) + (-_4bx * q3 + _2bz * q1) * (_2bx * (0.5f - q2q2 - q3q3) + _2bz * (q1q3 - q0q2) - mx) + (-_2bx * q0 + _2bz * q2) * (_2bx * (q1q2 - q0q3) + _2bz * (q0q1 + q2q3) - my) + _2bx * q1 * (_2bx * (q0q2 + q1q3) + _2bz * (0.5f - q1q1 - q2q2) - mz);
-        /*
-        // new fixed
-        s0= -_2q2*(2*(q1q3 - q0q2) - ax) + _2q1*(2*(q0q1 + q2q3) - ay) + -_4bz*q2*(_4bx*(0.5 - q2q2 - q3q3) + _4bz*(q1q3 - q0q2) - mx) + (-_4bx*q3+_4bz*q1)*(_4bx*(q1q2 - q0q3) + _4bz*(q0q1 + q2q3) - my) + _4bx*q2*(_4bx*(q0q2 + q1q3) + _4bz*(0.5 - q1q1 - q2q2) - mz);
-        s1= _2q3*(2*(q1q3 - q0q2) - ax) + _2q0*(2*(q0q1 + q2q3) - ay) + -4*q1*(2*(0.5 - q1q1 - q2q2) - az) + _4bz*q3*(_4bx*(0.5 - q2q2 - q3q3) + _4bz*(q1q3 - q0q2) - mx) + (_4bx*q2+_4bz*q0)*(_4bx*(q1q2 - q0q3) + _4bz*(q0q1 + q2q3) - my) + (_4bx*q3-_8bz*q1)*(_4bx*(q0q2 + q1q3) + _4bz*(0.5 - q1q1 - q2q2) - mz);
-        s2= -_2q0*(2*(q1q3 - q0q2) - ax) + _2q3*(2*(q0q1 + q2q3) - ay) + (-4*q2)*(2*(0.5 - q1q1 - q2q2) - az) + (-_8bx*q2-_4bz*q0)*(_4bx*(0.5 - q2q2 - q3q3) + _4bz*(q1q3 - q0q2) - mx)+(_4bx*q1+_4bz*q3)*(_4bx*(q1q2 - q0q3) + _4bz*(q0q1 + q2q3) - my)+(_4bx*q0-_8bz*q2)*(_4bx*(q0q2 + q1q3) + _4bz*(0.5 - q1q1 - q2q2) - mz);
-        s3= _2q1*(2*(q1q3 - q0q2) - ax) + _2q2*(2*(q0q1 + q2q3) - ay)+(-_8bx*q3+_4bz*q1)*(_4bx*(0.5 - q2q2 - q3q3) + _4bz*(q1q3 - q0q2) - mx)+(-_4bx*q0+_4bz*q2)*(_4bx*(q1q2 - q0q3) + _4bz*(q0q1 + q2q3) - my)+(_4bx*q1)*(_4bx*(q0q2 + q1q3) + _4bz*(0.5 - q1q1 - q2q2) - mz);
-*/
         recipNorm = invSqrt(s0 * s0 + s1 * s1 + s2 * s2 + s3 * s3); // normalise step magnitude
         s0 *= recipNorm;
         s1 *= recipNorm;
@@ -147,7 +146,7 @@ void GRAlgorithm::MadgwickAHRSupdate(float gx, float gy, float gz, float ax, flo
     q1 *= recipNorm;
     q2 *= recipNorm;
     q3 *= recipNorm;
-
+     std::cout<<"Q :"<<q0<<" "<<q1<<" "<<q2<<" "<<q3<<std::endl;
     std::vector<float> new_result = {q0, q1, q2, q3};
     results->push_back(new_result);
  }
@@ -235,6 +234,8 @@ void GRAlgorithm::MadgwickAHRSupdate(float gx, float gy, float gz, float ax, flo
     q2 *= recipNorm;
     q3 *= recipNorm;
 
+    std::cout<<"Q :"<<q0<<q1<<q2<<q3<<std::endl;
+
     std::vector<float> new_result = {q0, q1, q2, q3};
     results->push_back(new_result);
 }
@@ -271,10 +272,13 @@ double GRAlgorithm::constrain(double x, double a, double b)
 void GRAlgorithm::madgwickUpdateBuffer(imu* imu, std::deque<std::vector<float>>* quaternions)
 {
     std::vector<float> gyro, accel, mag;
-    while(true)
-    {
-        if(!imu->gyro.empty() && imu->gyro.front().size() == 3 && !imu->acc.empty() && imu->acc.front().size() == 3&& !imu->mag.empty() && imu->mag.front().size() == 3)
+    //while(true)
+    //{
+    //std::cout<<"before alg while"<<endl;
+
+        while(!imu->gyro.empty() && imu->gyro.front().size() == 3 && !imu->acc.empty() && imu->acc.front().size() == 3&& !imu->mag.empty() && imu->mag.front().size() == 3)
         {
+           // std::cout<<"in alg while"<<endl;
             gyro = imu->gyro.front();
             imu->gyro.pop_front();
             accel = imu->acc.front();
@@ -284,33 +288,33 @@ void GRAlgorithm::madgwickUpdateBuffer(imu* imu, std::deque<std::vector<float>>*
 
             MadgwickAHRSupdate(gyro[0], gyro[1], gyro[2], accel[0], accel[1], accel[2], mag[0], mag[1], mag[2], quaternions);
         }
-    }
+   // }
 
 
 }
 void GRAlgorithm::madgwickUpdateThr(device_t* inDevice, alg_device_t* outDevice)
 {
-    std::thread pinky(&GRAlgorithm::updateBuffer, this, &inDevice->pinky,  &outDevice->pinky);
+    std::thread pinky(&GRAlgorithm::madgwickUpdateBuffer, this, &inDevice->pinky,  &outDevice->pinky);
     pinky.detach();
     std::cout<<"run MadgwickAHRSupdate thread for pinky"<<endl;
     
-    std::thread ring(&GRAlgorithm::updateBuffer, this, &inDevice->ring,  &outDevice->ring);
+    std::thread ring(&GRAlgorithm::madgwickUpdateBuffer, this, &inDevice->ring,  &outDevice->ring);
     ring.detach();
     std::cout<<"run MadgwickAHRSupdate thread for ring"<<endl;
 
-    std::thread middle(&GRAlgorithm::updateBuffer, this, &inDevice->middle,  &outDevice->middle);
+    std::thread middle(&GRAlgorithm::madgwickUpdateBuffer, this, &inDevice->middle,  &outDevice->middle);
     middle.detach();
     std::cout<<"run MadgwickAHRSupdate thread for middle"<<endl;
 
-    std::thread index(&GRAlgorithm::updateBuffer, this, &inDevice->index,  &outDevice->index);
+    std::thread index(&GRAlgorithm::madgwickUpdateBuffer, this, &inDevice->index,  &outDevice->index);
     index.detach();
     std::cout<<"run MadgwickAHRSupdate thread for index"<<endl;
 
-    std::thread thumb(&GRAlgorithm::updateBuffer, this, &inDevice->thumb,  &outDevice->thumb);
+    std::thread thumb(&GRAlgorithm::madgwickUpdateBuffer, this, &inDevice->thumb,  &outDevice->thumb);
     thumb.detach();
     std::cout<<"run MadgwickAHRSupdate thread for thumb"<<endl;
 
-    std::thread palm(&GRAlgorithm::updateBuffer, this, &inDevice->palm,  &outDevice->palm);
+    std::thread palm(&GRAlgorithm::madgwickUpdateBuffer, this, &inDevice->palm,  &outDevice->palm);
     palm.detach();
     std::cout<<"run MadgwickAHRSupdate thread for palm"<<endl;
 
