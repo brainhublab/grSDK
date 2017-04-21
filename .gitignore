@@ -5,5 +5,5 @@
 **/bin/*
 **/build/*
 **/build/generated_files/*
-
+externAssets/*.zip
 

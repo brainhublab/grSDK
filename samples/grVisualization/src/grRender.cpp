@@ -234,9 +234,10 @@ bool GRRenderer::renderArm( GRHandNode *arm, float angleX, float angleY, float a
         }
         glTranslatef( 0.f, data.arm.hand_height, 0.f );
         /** draw fingers  **/
+
         drawFingers(hand);
         
-        glPopMatrix();
+		glPopMatrix();
         return true;
 }
 bool GRRenderer::drawFinger( GRHandNode *hand, float fingerDistance, int fingerIndex )

@@ -70,7 +70,7 @@ GRHand::GRHand(bool left)
 
         // initial hand props
         bendArm(-60.f, 0.f, parameter*10.f);
-        bendHand( 20.f, 180.f, parameter*10.f );
+		bendHand( 20.f, 180.f, parameter*10.f );
         bendFinger( 0, 10.f, 0.f, 0.f );
         bendFinger( 1, 10.f, 0.f, 0.f );
         bendFinger( 2, 10.f, 0.f, 0.f );

@@ -1,6 +1,6 @@
 #include <grAlgorithm.h>
 
-#define sampleFreq 212.0f
+#define sampleFreq 140.0f
 #define betaDef 0.1f
 
 GRAlgorithm::GRAlgorithm()
