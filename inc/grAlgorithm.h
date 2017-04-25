@@ -12,6 +12,7 @@
 #include <eigen3/Eigen/Dense>
 #include <eigen3/Eigen/Geometry>
 
+#include "GRT/GRT.h"
 
 #include <grDevice.h>
 using namespace std;
