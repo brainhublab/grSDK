@@ -221,7 +221,6 @@ bool GRRenderer::renderArm( GRHandNode *arm, float angleX, float angleY, float a
         createSphere( 0.3f, 10, 10 );
 
 		// rotate with euler angles
-		printf("\n\n Here are my euler angles: %f, %f, %f ! \n====\n", hand->angleX, hand->angleY, hand->angleZ);
 		glRotatef(( *hand ).angleX, 1.f, 0.f, 0.f );
 		glRotatef(( *hand ).angleY, 0.f, 1.f, 0.f );
 		glRotatef(( *hand ).angleZ, 0.f, 0.f, 1.f );
@@ -252,24 +251,7 @@ bool GRRenderer::drawFinger( GRHandNode *hand, float fingerDistance, int fingerI
 		//glMultMatrixf(phalange->matrix);
 		float heightRatio = 0.f, radiusRatio = 0.f;
 
-
-//		if(phalange->matrix[5] > - 0.95f)
-//			phalange->matrix[5] = - 0.95f;
-//		if(phalange->matrix[6] > - 0.4f)
-//			phalange->matrix[6] = - 0.4f;
-
-
-
 		glMultMatrixf(phalange->matrix);
-
-//		if(fingerIndex == 4)
-//		{
-//			printf("\n");
-//			for(auto &u : phalange->matrix)
-//			{
-//				printf(": %f :", u);
-//			}
-//		}
 
 		// rotate with euler angles just first phalange!
 		glRotatef(( *phalange ).angleX-180, 1.f, 0.f, 0.f );

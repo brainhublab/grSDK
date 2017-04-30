@@ -9,49 +9,57 @@
 #include <thread>
 #include <deque>
 
-#include "grDataPlotter.h"
 #include "GRGLWidget.h"
-#include "grBufferManager.h"
+#include "grDataPlotter.h"
+#include "grDataApplier.h"
 #include <iostream>
 
-namespace Ui{
-class GRVisualization;
+namespace Ui
+{
+	class GRVisualization;
 }
-
-// TODO:: GRDataPlotter -> DataManager(in fetchData() to bend hand)
 
 class GRVisualization : public QMainWindow
 {
-    Q_OBJECT
+Q_OBJECT
 
 public:
 	explicit GRVisualization(QWidget *parent = 0);
+
 	~GRVisualization();
-	bool setupPlotters();//, std::deque<std::string> *, std::deque<std::string> *);
+
+	bool runDataReading();//, std::deque<std::string> *, std::deque<std::string> *);
 
 private slots:
-    void on_trajectoryCheckBox_toggled(bool checked);
-    void on_leftHandCheckBox_toggled(bool checked);
-    void on_rightHandCheckBox_toggled(bool checked);
-    void on_hackerModeCheckBox_toggled(bool checked);
-    void on_loggingCheckBox_toggled(bool checked);
-    void on_randomData_clicked();
-    void on_pausePlotCheckBox_toggled(bool checked);
+
+	void on_trajectoryCheckBox_toggled(bool checked);
+
+	void on_leftHandCheckBox_toggled(bool checked);
+
+	void on_rightHandCheckBox_toggled(bool checked);
+
+	void on_hackerModeCheckBox_toggled(bool checked);
+
+	void on_loggingCheckBox_toggled(bool checked);
+
+	void on_randomData_clicked();
+
+	void on_pausePlotCheckBox_toggled(bool checked);
 
 private:
-    bool initUiProps();
-  	Ui::GRVisualization *ui;
+	bool initUiProps();
 
-    GRBufferManager acc;
-    GRBufferManager gyro;
-    GRBufferManager mag;
+	Ui::GRVisualization *ui;
 
-    GRDataPlotter* plotter_acc;
-    GRDataPlotter* plotter_gyro;
-    GRDataPlotter* plotter_mag;
-    GRDataPlotter* plotter_all_acc;
-    GRDataPlotter* plotter_all_gyro;
-    GRDataPlotter* plotter_all_mag;
+	GRDataApplier rightArmApplier;
+
+	// TODO : Maybe move it to GRDataApplier, because it manages all data, not grVisualization
+	GRDataPlotter *plotter_acc;
+	GRDataPlotter *plotter_gyro;
+	GRDataPlotter *plotter_mag;
+	GRDataPlotter *plotter_all_acc;
+	GRDataPlotter *plotter_all_gyro;
+	GRDataPlotter *plotter_all_mag;
 };
 
 #endif // MAINWINDOW_H

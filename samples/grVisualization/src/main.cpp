@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
     glutInit(&argc, argv);
     QApplication a(argc, argv);
     GRVisualization w;
-	w.setupPlotters();
+	w.runDataReading();
     w.show();
     return a.exec();
         
