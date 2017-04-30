@@ -52,7 +52,7 @@ bool GRDataApplier::run()
 }
 
 // Quaternion (x, y, z, w)
-void quaternionToRotation(std::vector<float> quaternion,
+void quaternionToRotation(std::vector<float>& quaternion,
                           GLfloat *rotation)//iz kvanteriona delaet matricu rotacii GOVNO glMultMatrixf(matrix)
 {
 	// Normalize quaternion
@@ -97,21 +97,30 @@ void quaternionToRotation(std::vector<float> quaternion,
 void GRDataApplier::fetchData()
 {
 	conn.connectAndRead(&dev);
-	//sleep(1);
-	alg1.madgwickUpdateBuffer(&dev.pinky, &algDev.pinky, 120);
+	//usleep(100);
+	alg1.madgwickUpdateBuffer(&dev.pinky, &algDev.pinky, 140);
 	alg2.madgwickUpdateBuffer(&dev.ring, &algDev.ring, 140);
 	alg3.madgwickUpdateBuffer(&dev.middle, &algDev.middle, 160);
 	alg4.madgwickUpdateBuffer(&dev.index, &algDev.index, 180);
 	alg5.madgwickUpdateBuffer(&dev.thumb, &algDev.thumb, 120);
 	alg.madgwickUpdateBuffer(&dev.palm, &algDev.palm, 40);
 
+
+	applyToFinger(algDev.pinky, 0);
+	applyToFinger(algDev.ring, 1);
+	applyToFinger(algDev.middle, 2);
+	applyToFinger(algDev.index, 3);
+	applyToFinger(algDev.thumb, 4);
+
+	applyToHand(algDev.palm);
+
+/*
 	if (!algDev.pinky.empty())
 	{
 		std::vector<float>& d = algDev.pinky.front();
 		// TODO: limits
 
 
-		printf("Pinky quant: %f %f %f %f\n", d[0], d[1], d[2], d[3]);
 
 //		if(d[0] < 0.97f)
 //			d[0] = 0.97f;
@@ -205,14 +214,50 @@ void GRDataApplier::fetchData()
 		arm->bendFingerWithMatrix(4, mat);
 		algDev.thumb.pop_front();
 	}
+*/
+}
 
-	if (!algDev.palm.empty())
+bool GRDataApplier::applyToHand(std::deque<std::vector<float>> &node)
+{
+	if (!node.empty())
 	{
-		std::vector<float>& palmQuant = algDev.palm.front();
+		nodeQuanternion = &node.front();
 
 		GLfloat mat[16];
-		quaternionToRotation(palmQuant, mat);
+		quaternionToRotation(*nodeQuanternion, mat);
 		arm->bendHandWithMatrix(mat);
-		algDev.palm.pop_front();
+		node.pop_front();
+		nodeQuanternion->clear();
+		return true;
 	}
+
+	return false;
+};
+
+bool GRDataApplier::applyToFinger(std::deque<std::vector<float>> &node, int index)
+{
+	if (!node.empty())
+	{
+		nodeQuanternion = &node.front();
+
+		//printf("%d quant: %f %f %f %f\n",index,  (*nodeQuanternion)[0], (*nodeQuanternion)[1], (*nodeQuanternion)[2], (*nodeQuanternion)[3]);
+
+		// limit
+		if ((*nodeQuanternion)[0] < 0.97f)
+			(*nodeQuanternion)[0] = 0.97f;
+
+		if ((*nodeQuanternion)[3] < -0.205f)
+			(*nodeQuanternion)[3] = -0.205f;
+		if ((*nodeQuanternion)[3] > 0.750f)
+			(*nodeQuanternion)[3] = 0.750f;
+
+		GLfloat mat[16];
+		quaternionToRotation(*nodeQuanternion, mat);
+		arm->bendFingerWithMatrix(index, mat);
+
+		node.pop_front();
+		nodeQuanternion->clear();
+		return true;
+	}
+	return false;
 }

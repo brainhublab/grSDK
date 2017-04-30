@@ -40,7 +40,7 @@ private:
 	alg_device_t algDev; // filtered data
 	GRConnection conn;
 
-	int fetchFrequency = 20;
+	int fetchFrequency = 30;
 	// algorithms for each finger and hand
 	GRAlgorithm alg;
 	GRAlgorithm alg1;
@@ -48,6 +48,11 @@ private:
 	GRAlgorithm alg3;
 	GRAlgorithm alg4;
 	GRAlgorithm alg5;
+
+	// for applying data
+	bool applyToFinger(std::deque<std::vector<float>>&, int);
+	bool applyToHand(std::deque<std::vector<float>>&);
+	std::vector<float>* nodeQuanternion;
 };
 
 #endif // GR_BUFFER_MANAGER_H
