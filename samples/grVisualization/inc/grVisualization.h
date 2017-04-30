@@ -30,7 +30,7 @@ public:
 
 	~GRVisualization();
 
-	bool runDataReading();//, std::deque<std::string> *, std::deque<std::string> *);
+	bool runDataReading(); // runs dataAppliers for hands
 
 private slots:
 
