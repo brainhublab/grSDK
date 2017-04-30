@@ -2,6 +2,8 @@
 #define GR_VISUALISATION_H
 
 
+#define GR_VISUALIZATION_LOGGING_ENABLED
+
 #include <QMainWindow>
 #include <QKeyEvent>
 #include <QObject>

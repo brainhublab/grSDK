@@ -7,6 +7,11 @@ GRVisualization::GRVisualization(QWidget *parent) :
 		QMainWindow(parent),
 		ui(new Ui::GRVisualization)
 {
+
+#ifdef GR_VISUALIZATION_LOGGING_ENABLED
+	printf("GR visualization: setting up UI...\n");
+#endif
+
 	ui->setupUi(this);
 	initUiProps();
 
@@ -32,6 +37,11 @@ GRVisualization::~GRVisualization()
 	delete plotter_all_gyro;
 	delete plotter_all_mag;
 	delete ui;
+
+
+#ifdef GR_VISUALIZATION_LOGGING_ENABLED
+	printf("GR visualization was ended successful\n");
+#endif
 }
 
 bool GRVisualization::initUiProps()
@@ -63,6 +73,10 @@ bool GRVisualization::initUiProps()
 
 bool GRVisualization::runDataReading()
 {
+
+#ifdef GR_VISUALIZATION_LOGGING_ENABLED
+	printf("GRVisualization: running data reading...\n");
+#endif
 	rightArmApplier.run();
 	return true;
 }

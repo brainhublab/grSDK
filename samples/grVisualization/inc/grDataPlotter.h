@@ -17,14 +17,15 @@ public:
     ~GRDataPlotter();
 
     bool setupPlot(std::deque<std::vector<float>>* );
-    bool drawPlotFromBuffer();
+    bool runPlotting();
 
-    void splitSensorData(std::string str, double arr[3]);
     bool pause = false;
 public slots:
     void fetchData();
 
 private:
+
+	void splitSensorData(std::string str, double arr[3]);
 
     QCustomPlot* plot = nullptr;
     QTimer *dataTimer = nullptr;

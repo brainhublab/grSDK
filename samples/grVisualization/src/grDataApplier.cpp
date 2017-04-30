@@ -39,6 +39,10 @@ bool GRDataApplier::setArm(GRHand *oArm)
 
 bool GRDataApplier::run()
 {
+
+#ifdef GR_VISUALIZATION_LOGGING_ENABLED
+	printf("DataApplier: setting up fetchtimer...\n");
+#endif
 	// start timer for fetching data from source to separate copies
 	fetchTimer = new QTimer();
 	QObject::connect(fetchTimer, SIGNAL(timeout()), this, SLOT(fetchData()));

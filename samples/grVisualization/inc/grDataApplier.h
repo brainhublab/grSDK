@@ -24,16 +24,16 @@ public:
 
 	~GRDataApplier();
 
-	bool setArm(GRHand *arm);
-	bool run();
-
-	QTimer *fetchTimer;
+	bool setArm(GRHand *arm); // set the arm for applying data
+	bool run(); // runs fetchdata every {fetchFrequency)
 
 	bool isLoggingEnabled = false; // bool for logging to a file
 public slots:
 	void fetchData(); // gets data from algdev and applies it for hand
 
 private:
+
+	QTimer *fetchTimer; // a timer for fetchdata
 
 	GRHand* arm; // for moving arm
 	device_t dev;

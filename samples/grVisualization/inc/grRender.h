@@ -24,7 +24,7 @@ public:
         bool update();
 
         bool renderArm(struct GRHandNode*, float, float, float);
-	bool renderTrajectory(GRHand *, float, float, float);
+		bool renderTrajectory(GRHand *, float, float, float);
         // accessors
         int getWidth();
         int getHeight();
