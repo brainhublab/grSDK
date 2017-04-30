@@ -98,31 +98,24 @@ void GRDataApplier::fetchData()
 {
 	conn.connectAndRead(&dev);
 	//sleep(1);
-	alg.madgwickUpdateBuffer(&dev.palm, &algDev.palm, 40);
 	alg1.madgwickUpdateBuffer(&dev.pinky, &algDev.pinky, 120);
 	alg2.madgwickUpdateBuffer(&dev.ring, &algDev.ring, 140);
 	alg3.madgwickUpdateBuffer(&dev.middle, &algDev.middle, 160);
 	alg4.madgwickUpdateBuffer(&dev.index, &algDev.index, 180);
 	alg5.madgwickUpdateBuffer(&dev.thumb, &algDev.thumb, 120);
+	alg.madgwickUpdateBuffer(&dev.palm, &algDev.palm, 40);
 
-
-	std::vector<float>& palmQuant = algDev.palm.front();
-	if (!algDev.palm.empty())
-	{
-		GLfloat mat[16];
-		quaternionToRotation(palmQuant, mat);
-		arm->bendHandWithMatrix(mat);
-		algDev.palm.pop_front();
-	}
 	if (!algDev.pinky.empty())
 	{
 		std::vector<float>& d = algDev.pinky.front();
 		// TODO: limits
 
 
+		printf("Pinky quant: %f %f %f %f\n", d[0], d[1], d[2], d[3]);
+
 //		if(d[0] < 0.97f)
 //			d[0] = 0.97f;
-
+//
 //		if(d[3] < -0.205f)
 //			d[3] = -0.205f;
 //		if(d[3] > 0.750f)
@@ -138,14 +131,17 @@ void GRDataApplier::fetchData()
 	{
 		std::vector<float>& d = algDev.ring.front();
 
-		// TODO: limits
-//		if(d[0] < 0.97f)
-//			d[0] = 0.97f;
 
-//		if(d[3] < -0.205f)
-//			d[3] = -0.205f;
-//		if(d[3] > 0.750f)
-//			d[3] = 0.750f;
+		printf("Ring quant: %f %f %f %f\n", d[0], d[1], d[2], d[3]);
+
+		// TODO: limits
+		if(d[0] < 0.97f)
+			d[0] = 0.97f;
+
+		if(d[3] < -0.205f)
+			d[3] = -0.205f;
+		if(d[3] > 0.750f)
+			d[3] = 0.750f;
 
 		GLfloat mat[16];
 		quaternionToRotation(d, mat);
@@ -155,6 +151,9 @@ void GRDataApplier::fetchData()
 	if (!algDev.middle.empty())
 	{
 		std::vector<float>& d = algDev.middle.front();
+
+
+		printf("Middle quant: %f %f %f %f\n", d[0], d[1], d[2], d[3]);
 
 		if (d[0] < 0.97f)
 			d[0] = 0.97f;
@@ -173,6 +172,7 @@ void GRDataApplier::fetchData()
 	{
 		std::vector<float>& d = algDev.index.front();
 
+		printf("Index quant: %f %f %f %f\n", d[0], d[1], d[2], d[3]);
 		if (d[0] < 0.97f)
 			d[0] = 0.97f;
 		if (d[3] < -0.205f)
@@ -189,6 +189,8 @@ void GRDataApplier::fetchData()
 	{
 		std::vector<float>& d = algDev.thumb.front();
 
+
+		printf("Thumb quant: %f %f %f %f\n", d[0], d[1], d[2], d[3]);
 		if (d[0] < 0.97f)
 			d[0] = 0.97f;
 
@@ -202,5 +204,15 @@ void GRDataApplier::fetchData()
 		quaternionToRotation(d, mat);
 		arm->bendFingerWithMatrix(4, mat);
 		algDev.thumb.pop_front();
+	}
+
+	if (!algDev.palm.empty())
+	{
+		std::vector<float>& palmQuant = algDev.palm.front();
+
+		GLfloat mat[16];
+		quaternionToRotation(palmQuant, mat);
+		arm->bendHandWithMatrix(mat);
+		algDev.palm.pop_front();
 	}
 }

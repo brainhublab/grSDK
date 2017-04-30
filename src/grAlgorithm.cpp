@@ -276,8 +276,9 @@ void GRAlgorithm::madgwickUpdateBuffer(imu* imu, std::deque<std::vector<float>>*
     //{
     //std::cout<<"before alg while"<<endl;
 
-        while(!imu->gyro.empty() && imu->gyro.front().size() == 3 && !imu->acc.empty() && imu->acc.front().size() == 3&& !imu->mag.empty() && imu->mag.front().size() == 3)
+        while(!imu->gyro.empty() && imu->gyro.front().size() == 3 && !imu->acc.empty() && imu->acc.front().size() == 3 && !imu->mag.empty() && imu->mag.front().size() == 3)
         {
+            usleep(20);
            // std::cout<<"in alg while"<<endl;
             gyro = imu->gyro.front();
             imu->gyro.pop_front();
