@@ -8,6 +8,10 @@ struct GRHandNode
 		explicit GRHandNode(bool left = true)
 		{
 			isLeft = left;
+			for(int i = 0; i < 16; i++)
+			{
+				matrix[i] = 0;
+			}
 		}
 
 		struct GRHandNode *children = nullptr;
@@ -18,7 +22,7 @@ struct GRHandNode
         float angleZ = 0.f;
 
 
-        GLfloat matrix[16];
+		GLfloat matrix[16];
 
         float maxAngleX = 0, maxAngleY = 0, maxAngleZ = 0;
         float minAngleX = 0, minAngleY = 0, minAngleZ = 0;

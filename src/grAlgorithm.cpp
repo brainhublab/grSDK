@@ -1,6 +1,6 @@
 #include <grAlgorithm.h>
 
-#define sampleFreq 140.0f
+#define sampleFreq 100.0f
 #define betaDef 0.1f
 
 GRAlgorithm::GRAlgorithm()
@@ -32,7 +32,7 @@ void grInitAlgorithms()
 {
 }
 
-void GRAlgorithm::MadgwickAHRSupdate(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz, std::deque<std::vector<float>>* results) {
+void GRAlgorithm::MadgwickAHRSupdate(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz, std::deque<std::vector<float>>* results, int freqCallibration) {
 
     /*if(results->size() != 0)
     {
@@ -56,7 +56,7 @@ void GRAlgorithm::MadgwickAHRSupdate(float gx, float gy, float gz, float ax, flo
     float _2q0mx, _2q0my, _2q0mz, _2q1mx, _2bx, _2bz, _4bx, _4bz, _2q0, _2q1, _2q2, _2q3, _2q0q2, _2q2q3, q0q0, q0q1, q0q2, q0q3, q1q1, q1q2, q1q3, q2q2, q2q3, q3q3;
     // Use IMU algorithm if magnetometer measurement invalid (avoids NaN in magnetometer normalisation)
     if((mx == 0.0f) && (my == 0.0f) && (mz == 0.0f)) {
-        MadgwickAHRSupdateIMU(gx, gy, gz, ax, ay, az, results);
+		MadgwickAHRSupdateIMU(gx, gy, gz, ax, ay, az, results, freqCallibration);
         return;
     }
 
@@ -135,10 +135,10 @@ void GRAlgorithm::MadgwickAHRSupdate(float gx, float gy, float gz, float ax, flo
     }
 
     // Integrate rate of change of quaternion to yield quaternion
-    q0 += qDot1 * (1.0f / sampleFreq);
-    q1 += qDot2 * (1.0f / sampleFreq);
-    q2 += qDot3 * (1.0f / sampleFreq);
-    q3 += qDot4 * (1.0f / sampleFreq);
+	q0 += qDot1 * (1.0f / (sampleFreq + freqCallibration));
+	q1 += qDot2 * (1.0f / (sampleFreq + freqCallibration));
+	q2 += qDot3 * (1.0f / (sampleFreq + freqCallibration));
+	q3 += qDot4 * (1.0f / (sampleFreq + freqCallibration));
 
     // Normalise quaternion
     recipNorm = invSqrt(q0 * q0 + q1 * q1 + q2 * q2 + q3 * q3);
@@ -146,11 +146,11 @@ void GRAlgorithm::MadgwickAHRSupdate(float gx, float gy, float gz, float ax, flo
     q1 *= recipNorm;
     q2 *= recipNorm;
     q3 *= recipNorm;
-     std::cout<<"Q :"<<q0<<" "<<q1<<" "<<q2<<" "<<q3<<std::endl;
+//vlad     std::cout<<"Q :"<<q0<<" "<<q1<<" "<<q2<<" "<<q3<<std::endl;
     std::vector<float> new_result = {q0, q1, q2, q3};
     results->push_back(new_result);
  }
- void GRAlgorithm::MadgwickAHRSupdateIMU(float gx, float gy, float gz, float ax, float ay, float az, std::deque<std::vector<float>>* results) {
+ void GRAlgorithm::MadgwickAHRSupdateIMU(float gx, float gy, float gz, float ax, float ay, float az, std::deque<std::vector<float>>* results, int freqCallibration) {
     //float q0, q1, q2, q3;
 
    /* if(results->size() == 4)
@@ -222,10 +222,10 @@ void GRAlgorithm::MadgwickAHRSupdate(float gx, float gy, float gz, float ax, flo
     }
 
     // Integrate rate of change of quaternion to yield quaternion
-    q0 += qDot1 * (1.0f / sampleFreq);
-    q1 += qDot2 * (1.0f / sampleFreq);
-    q2 += qDot3 * (1.0f / sampleFreq);
-    q3 += qDot4 * (1.0f / sampleFreq);
+	q0 += qDot1 * (1.0f / (sampleFreq + freqCallibration));
+	q1 += qDot2 * (1.0f / (sampleFreq + freqCallibration));
+	q2 += qDot3 * (1.0f / (sampleFreq + freqCallibration));
+	q3 += qDot4 * (1.0f / (sampleFreq + freqCallibration));
 
     // Normalise quaternion
     recipNorm = invSqrt(q0 * q0 + q1 * q1 + q2 * q2 + q3 * q3);
@@ -234,7 +234,7 @@ void GRAlgorithm::MadgwickAHRSupdate(float gx, float gy, float gz, float ax, flo
     q2 *= recipNorm;
     q3 *= recipNorm;
 
-    std::cout<<"Q :"<<q0<<q1<<q2<<q3<<std::endl;
+// vlad std::cout<<"Q :"<<q0<<q1<<q2<<q3<<std::endl;
 
     std::vector<float> new_result = {q0, q1, q2, q3};
     results->push_back(new_result);
@@ -269,7 +269,7 @@ double GRAlgorithm::constrain(double x, double a, double b)
         return x;
 }
 
-void GRAlgorithm::madgwickUpdateBuffer(imu* imu, std::deque<std::vector<float>>* quaternions)
+void GRAlgorithm::madgwickUpdateBuffer(imu* imu, std::deque<std::vector<float>>* quaternions, int freqCallibration)
 {
     std::vector<float> gyro, accel, mag;
     //while(true)
@@ -286,7 +286,7 @@ void GRAlgorithm::madgwickUpdateBuffer(imu* imu, std::deque<std::vector<float>>*
             mag = imu->mag.front();
             imu->mag.pop_front();
 
-            MadgwickAHRSupdate(gyro[0], gyro[1], gyro[2], accel[0], accel[1], accel[2], mag[0], mag[1], mag[2], quaternions);
+			MadgwickAHRSupdate(gyro[0], gyro[1], gyro[2], accel[0], accel[1], accel[2], mag[0], mag[1], mag[2], quaternions, freqCallibration);
         }
    // }
 
@@ -294,27 +294,27 @@ void GRAlgorithm::madgwickUpdateBuffer(imu* imu, std::deque<std::vector<float>>*
 }
 void GRAlgorithm::madgwickUpdateThr(device_t* inDevice, alg_device_t* outDevice)
 {
-    std::thread pinky(&GRAlgorithm::madgwickUpdateBuffer, this, &inDevice->pinky,  &outDevice->pinky);
+	std::thread pinky(&GRAlgorithm::madgwickUpdateBuffer, this, &inDevice->pinky,  &outDevice->pinky, 140);
     pinky.detach();
     std::cout<<"run MadgwickAHRSupdate thread for pinky"<<endl;
     
-    std::thread ring(&GRAlgorithm::madgwickUpdateBuffer, this, &inDevice->ring,  &outDevice->ring);
+	std::thread ring(&GRAlgorithm::madgwickUpdateBuffer, this, &inDevice->ring,  &outDevice->ring, 140);
     ring.detach();
     std::cout<<"run MadgwickAHRSupdate thread for ring"<<endl;
 
-    std::thread middle(&GRAlgorithm::madgwickUpdateBuffer, this, &inDevice->middle,  &outDevice->middle);
+	std::thread middle(&GRAlgorithm::madgwickUpdateBuffer, this, &inDevice->middle,  &outDevice->middle, 140);
     middle.detach();
     std::cout<<"run MadgwickAHRSupdate thread for middle"<<endl;
 
-    std::thread index(&GRAlgorithm::madgwickUpdateBuffer, this, &inDevice->index,  &outDevice->index);
+	std::thread index(&GRAlgorithm::madgwickUpdateBuffer, this, &inDevice->index,  &outDevice->index, 140);
     index.detach();
     std::cout<<"run MadgwickAHRSupdate thread for index"<<endl;
 
-    std::thread thumb(&GRAlgorithm::madgwickUpdateBuffer, this, &inDevice->thumb,  &outDevice->thumb);
+	std::thread thumb(&GRAlgorithm::madgwickUpdateBuffer, this, &inDevice->thumb,  &outDevice->thumb, 140);
     thumb.detach();
     std::cout<<"run MadgwickAHRSupdate thread for thumb"<<endl;
 
-    std::thread palm(&GRAlgorithm::madgwickUpdateBuffer, this, &inDevice->palm,  &outDevice->palm);
+	std::thread palm(&GRAlgorithm::madgwickUpdateBuffer, this, &inDevice->palm,  &outDevice->palm, 140);
     palm.detach();
     std::cout<<"run MadgwickAHRSupdate thread for palm"<<endl;
 

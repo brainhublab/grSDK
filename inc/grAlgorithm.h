@@ -50,10 +50,10 @@ class GRAlgorithm
         float invSqrt(float x);            // algorithm gain
                                       // 2 * proportional gain (Kp)
         float q0 , q1, q2, q3;  // quaternion of sensor frame relative to auxiliary frame
-        void MadgwickAHRSupdate(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz, std::deque<std::vector<float>>*);
-        void MadgwickAHRSupdateIMU(float gx, float gy, float gz, float ax, float ay, float az, std::deque<std::vector<float>>*);
+		void MadgwickAHRSupdate(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz, std::deque<std::vector<float>>*, int);
+		void MadgwickAHRSupdateIMU(float gx, float gy, float gz, float ax, float ay, float az, std::deque<std::vector<float>>*, int);
 
-        void madgwickUpdateBuffer(imu*, std::deque<std::vector<float>>*);
+		void madgwickUpdateBuffer(imu*, std::deque<std::vector<float>>*, int);
         void madgwickUpdateThr(device_t*, alg_device_t*);
 
 };

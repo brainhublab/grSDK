@@ -133,7 +133,7 @@ bool GRConnection::connectAndRead(device_t* device)
         std::stringstream ss(msg);
 
         ss >> id;
-        std::cout<<"ID: "<<" "<<id<<"MSG :"<<msg<<std::endl;
+//vlad        std::cout<<"ID: "<<" "<<id<<"MSG :"<<msg<<std::endl;
 
         switch(id)
         {

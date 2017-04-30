@@ -159,14 +159,14 @@ bool GRRenderer::drawFingers(GRHandNode *hand)
   {
           for ( int i = 3; i >= 0; i-- )
           {
-                  drawFinger( hand, fingerDistance, i );
+				  drawFinger( hand, fingerDistance, i );
           }
   }
   else
   {
           for ( int i = 0; i < 4; i++ )
           {
-                  drawFinger( hand, fingerDistance, i );
+				  drawFinger( hand, fingerDistance, i );
           }
   }
   //
@@ -219,11 +219,16 @@ bool GRRenderer::renderArm( GRHandNode *arm, float angleX, float angleY, float a
         /** draw hand **/
         struct GRHandNode *hand = &( *arm ).children[ 0 ];
         createSphere( 0.3f, 10, 10 );
-        // glRotatef(( *hand ).angleX, 1.f, 0.f, 0.f );
-        // glRotatef(( *hand ).angleY, 0.f, 1.f, 0.f );
-        // glRotatef(( *hand ).angleZ, 0.f, 0.f, 1.f );
-        glPushMatrix();
-        glMultMatrixf(hand->matrix);
+
+		// rotate with euler angles
+		printf("\n\n Here are my euler angles: %f, %f, %f ! \n====\n", hand->angleX, hand->angleY, hand->angleZ);
+		glRotatef(( *hand ).angleX, 1.f, 0.f, 0.f );
+		glRotatef(( *hand ).angleY, 0.f, 1.f, 0.f );
+		glRotatef(( *hand ).angleZ, 0.f, 0.f, 1.f );
+
+		// rotate with matrix
+		glPushMatrix();
+		glMultMatrixf(hand->matrix);
         if ( arm->isLeft )
         {
                 drawLeftHand( data.arm.hand_width, data.arm.hand_height, data.arm.hand_depth );
@@ -243,24 +248,59 @@ bool GRRenderer::renderArm( GRHandNode *arm, float angleX, float angleY, float a
 bool GRRenderer::drawFinger( GRHandNode *hand, float fingerDistance, int fingerIndex )
 {
         struct GRHandNode *phalange = &( *hand ).children[ fingerIndex ];
-        glPushMatrix( );
+		glPushMatrix( );
+		//glMultMatrixf(phalange->matrix);
+		float heightRatio = 0.f, radiusRatio = 0.f;
+
+
+//		if(phalange->matrix[5] > - 0.95f)
+//			phalange->matrix[5] = - 0.95f;
+//		if(phalange->matrix[6] > - 0.4f)
+//			phalange->matrix[6] = - 0.4f;
+
+
+
 		glMultMatrixf(phalange->matrix);
-        float heightRatio = 0.f, radiusRatio = 0.f;
+
+//		if(fingerIndex == 4)
+//		{
+//			printf("\n");
+//			for(auto &u : phalange->matrix)
+//			{
+//				printf(": %f :", u);
+//			}
+//		}
+
+		// rotate with euler angles just first phalange!
+		glRotatef(( *phalange ).angleX-180, 1.f, 0.f, 0.f );
+		glRotatef(( *phalange ).angleY, 0.f, 1.f, 0.f );
+		glRotatef(( *phalange ).angleZ, 0.f, 0.f, 1.f );
+
         while ( phalange != NULL )
-        {
+		{
 
-
-				glRotatef(( *phalange ).angleX, 1.f, 0.f, 0.f );
-				glRotatef(( *phalange ).angleY, 0.f, 1.f, 0.f );
-				glRotatef(( *phalange ).angleZ, 0.f, 0.f, 1.f );
-                createFrustum( data.arm.phalange_radiuses[fingerIndex] - radiusRatio, data.arm.phalange_heights[fingerIndex] - heightRatio, 0.8 );
+				createFrustum( data.arm.phalange_radiuses[fingerIndex] - radiusRatio, data.arm.phalange_heights[fingerIndex] - heightRatio, 0.8 );
                 createSphere( data.arm.phalange_radiuses[fingerIndex] - radiusRatio + 0.02f, 10, 10 );
-                glTranslatef( 0.f, data.arm.phalange_heights[fingerIndex] - heightRatio, 0.f );
+				glTranslatef( 0.f, data.arm.phalange_heights[fingerIndex] - heightRatio, 0.f );
                 phalange = &( *phalange ).children[ 0 ];
+				if(phalange)
+				{
+//					if(phalange->matrix[5] > - 0.95f)
+//						phalange->matrix[5] = - 0.95f;
+//					if(phalange->matrix[6] > - 0.4f)
+//						phalange->matrix[6] = - 0.4f;
+//
+					glMultMatrixf(phalange->matrix);
+
+					glRotatef(( *phalange ).angleX-180, 1.f, 0.f, 0.f );
+					glRotatef(( *phalange ).angleY, 0.f, 1.f, 0.f );
+					glRotatef(( *phalange ).angleZ, 0.f, 0.f, 1.f );
+				}
                 heightRatio += data.arm.phalange_heights[fingerIndex]/7;
-                radiusRatio += data.arm.phalange_radiuses[fingerIndex]/7;
-        }
-        glPopMatrix( );
+				radiusRatio += data.arm.phalange_radiuses[fingerIndex]/7;
+			//	glPopMatrix();
+		}
+		glPopMatrix( );
         glTranslatef( fingerDistance, 0.f, 0.f );
         return true;
 }
