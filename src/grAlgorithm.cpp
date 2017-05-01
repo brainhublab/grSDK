@@ -10,6 +10,7 @@ GRAlgorithm::GRAlgorithm()
     q1 = 0.0f;
     q2 = 0.0f;
     q3 = 0.0f;
+    printf("\nInitialized algor %f %f %f %f\n" , q0, q1, q2, q3);
     //invSampleFreq = 1.0f / sampleFreqDef;
 }
 
@@ -33,6 +34,8 @@ void grInitAlgorithms()
 }
 
 void GRAlgorithm::MadgwickAHRSupdate(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz, std::deque<std::vector<float>>* results, int freqCallibration) {
+
+    std::cout<<"Input :"<<gx<<" "<<gy<<" "<<gz<<" "<<ax<<" "<<ay<<" "<<az<<" "<<mx<<" "<<my<<" "<<mz<<std::endl;
 
     /*if(results->size() != 0)
     {
@@ -64,6 +67,7 @@ void GRAlgorithm::MadgwickAHRSupdate(float gx, float gy, float gz, float ax, flo
     gy *= 0.0174533f;
     gz *= 0.0174533f;
 
+    std::cout<<"Pre-Middle Q :"<<q0<<" "<<q1<<" "<<q2<<" "<<q3<<std::endl;
     // Rate of change of quaternion from gyroscope
         // Rate of change of quaternion from gyroscope
     qDot1 = 0.5f * (-q1 * gx - q2 * gy - q3 * gz);
@@ -71,6 +75,7 @@ void GRAlgorithm::MadgwickAHRSupdate(float gx, float gy, float gz, float ax, flo
     qDot3 = 0.5f * (q0 * gy - q1 * gz + q3 * gx);
     qDot4 = 0.5f * (q0 * gz + q1 * gy - q2 * gx);
 
+    std::cout<<"Middle Q :"<<q0<<" "<<q1<<" "<<q2<<" "<<q3<<std::endl;
     // Compute feedback only if accelerometer measurement valid (avoids NaN in accelerometer normalisation)
     if(!((ax == 0.0f) && (ay == 0.0f) && (az == 0.0f))) {
 
@@ -146,7 +151,7 @@ void GRAlgorithm::MadgwickAHRSupdate(float gx, float gy, float gz, float ax, flo
     q1 *= recipNorm;
     q2 *= recipNorm;
     q3 *= recipNorm;
-//vlad     std::cout<<"Q :"<<q0<<" "<<q1<<" "<<q2<<" "<<q3<<std::endl;
+    std::cout<<"Q :"<<q0<<" "<<q1<<" "<<q2<<" "<<q3<<std::endl;
     std::vector<float> new_result = {q0, q1, q2, q3};
     results->push_back(new_result);
  }
@@ -234,9 +239,10 @@ void GRAlgorithm::MadgwickAHRSupdate(float gx, float gy, float gz, float ax, flo
     q2 *= recipNorm;
     q3 *= recipNorm;
 
-// vlad std::cout<<"Q :"<<q0<<q1<<q2<<q3<<std::endl;
+//    std::cout<<"Q :"<<q0<<q1<<q2<<q3<<std::endl;
 
     std::vector<float> new_result = {q0, q1, q2, q3};
+
     results->push_back(new_result);
 }
 
@@ -278,7 +284,6 @@ void GRAlgorithm::madgwickUpdateBuffer(imu* imu, std::deque<std::vector<float>>*
 
         while(!imu->gyro.empty() && imu->gyro.front().size() == 3 && !imu->acc.empty() && imu->acc.front().size() == 3 && !imu->mag.empty() && imu->mag.front().size() == 3)
         {
-            usleep(20);
            // std::cout<<"in alg while"<<endl;
             gyro = imu->gyro.front();
             imu->gyro.pop_front();
@@ -287,10 +292,10 @@ void GRAlgorithm::madgwickUpdateBuffer(imu* imu, std::deque<std::vector<float>>*
             mag = imu->mag.front();
             imu->mag.pop_front();
 
+            std::cout<<"\nbefore madgwickUpdate() Q :"<<q0<<" "<<q1<<" "<<q2<<" "<<q3<<std::endl;
 			MadgwickAHRSupdate(gyro[0], gyro[1], gyro[2], accel[0], accel[1], accel[2], mag[0], mag[1], mag[2], quaternions, freqCallibration);
         }
    // }
-
 
 }
 void GRAlgorithm::madgwickUpdateThr(device_t* inDevice, alg_device_t* outDevice)

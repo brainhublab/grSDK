@@ -303,7 +303,6 @@ bool GRConnection::splitData(std::string data, imu* sensor)
     {
         arr[i] = n;
         i++;
-        //usleep(20);
     }
 
     for(int i=1;i<10;i++)

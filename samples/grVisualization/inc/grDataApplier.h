@@ -29,9 +29,14 @@ public:
 
 	bool isLoggingEnabled = false; // bool for logging to a file
 public slots:
-	void fetchData(); // gets data from algdev and applies it for hand
+	bool fetchSignal();
+//	signals:
+//	void fetchSignal();
 
 private:
+
+	bool fetchData(); // gets data from algdev and applies it for hand
+
 
 	QTimer *fetchTimer; // a timer for fetchdata
 
@@ -48,6 +53,13 @@ private:
 	GRAlgorithm alg3;
 	GRAlgorithm alg4;
 	GRAlgorithm alg5;
+
+	// for applying data
+	bool applyToFinger(std::deque<std::vector<float>>&, int);
+	bool applyToHand(std::deque<std::vector<float>>&);
+	std::vector<float>* nodeQuanternion;
+
+	bool fetchRunning = false;
 };
 
 #endif // GR_BUFFER_MANAGER_H
