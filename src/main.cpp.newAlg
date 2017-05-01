@@ -1,0 +1,22 @@
+#include "GRT/GRT.h"
+#include "grAlgorithmNew.h"
+using namespace GRT;
+using namespace std;
+
+int main (int argc, const char * argv[])
+{
+    GRAlgorithm grAlg;
+
+    grAlg.loadTrainingData("./DTWTrainingData.grt");
+    grAlg.setTestDataFromTraining(20);
+
+    grAlg.saveModel("./DTWModel.grt");
+    grAlg.loadModel("./DTWModel.grt");
+
+    grAlg.train();
+    grAlg.test();
+
+    cout << grAlg.getTestAccuracy() << endl;
+
+    return 0;
+}
