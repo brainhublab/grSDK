@@ -8,7 +8,6 @@
 
 #include <cmath>
 
-
 /*void splitSensorData(std::vector<float> quat, double arr[4])
 {
 	arr[0] = data[1];
@@ -37,15 +36,87 @@ bool GRDataApplier::setArm(GRHand *oArm)
 	return arm != nullptr;
 };
 
+bool GRDataApplier::fetchSignal()
+{
+
+	printf("Checking...");
+	if(!fetchRunning)
+	{
+		fetchRunning = true;
+		printf("Yes! Fetching data...\n");
+		fetchData();
+
+		fetchRunning = false;
+		return true;
+	}
+	printf("\nNo! Fetching now...\n");
+	return false;
+};
+
 bool GRDataApplier::run()
 {
 
 #ifdef GR_VISUALIZATION_LOGGING_ENABLED
 	printf("DataApplier: setting up fetchtimer...\n");
 #endif
+
+printf("Setting up.");
+	for(int i = 0; i < 64; i++)
+	{
+		printf(".");
+		usleep(20);
+		conn.connectAndRead(&dev);
+		if(!dev.pinky.acc.empty())
+			dev.pinky.acc.pop_front();
+		if(!dev.pinky.gyro.empty())
+			dev.pinky.gyro.pop_front();
+		if(!dev.pinky.mag.empty())
+			dev.pinky.mag.pop_front();
+
+		if(!dev.ring.acc.empty())
+			dev.ring.acc.pop_front();
+		if(!dev.ring.gyro.empty())
+			dev.ring.gyro.pop_front();
+		if(!dev.ring.mag.empty())
+			dev.ring.mag.pop_front();
+
+		if(!dev.middle.acc.empty())
+			dev.middle.acc.pop_front();
+		if(!dev.middle.gyro.empty())
+			dev.middle.gyro.pop_front();
+		if(!dev.middle.mag.empty())
+			dev.middle.mag.pop_front();
+
+		if(!dev.index.acc.empty())
+			dev.index.acc.pop_front();
+		if(!dev.index.gyro.empty())
+			dev.index.gyro.pop_front();
+		if(!dev.index.mag.empty())
+			dev.index.mag.pop_front();
+
+		if(!dev.thumb.acc.empty())
+			dev.thumb.acc.pop_front();
+
+		if(!dev.thumb.gyro.empty())
+			dev.thumb.gyro.pop_front();
+		if(!dev.thumb.mag.empty())
+			dev.thumb.mag.pop_front();
+
+
+		if(!dev.palm.acc.empty())
+			dev.palm.acc.pop_front();
+		if(!dev.palm.gyro.empty())
+			dev.palm.gyro.pop_front();
+		if(!dev.palm.mag.empty())
+			dev.palm.mag.pop_front();
+
+		printf(".");
+	}
 	// start timer for fetching data from source to separate copies
 	fetchTimer = new QTimer();
-	QObject::connect(fetchTimer, SIGNAL(timeout()), this, SLOT(fetchData()));
+	QObject::connect(fetchTimer, SIGNAL(timeout()), this, SLOT(fetchSignal()));
+//	QObject::connect(this, SIGNAL(fetchSignal()), this, SLOT(fetchData()));
+
 	fetchTimer->start(fetchFrequency);
 
 	return true;
@@ -94,7 +165,7 @@ void quaternionToRotation(std::vector<float>& quaternion,
 }
 
 
-void GRDataApplier::fetchData()
+bool GRDataApplier::fetchData()
 {
 	conn.connectAndRead(&dev);
 	//usleep(100);
@@ -113,108 +184,8 @@ void GRDataApplier::fetchData()
 	applyToFinger(algDev.thumb, 4);
 
 	applyToHand(algDev.palm);
-
-/*
-	if (!algDev.pinky.empty())
-	{
-		std::vector<float>& d = algDev.pinky.front();
-		// TODO: limits
-
-
-
-//		if(d[0] < 0.97f)
-//			d[0] = 0.97f;
-//
-//		if(d[3] < -0.205f)
-//			d[3] = -0.205f;
-//		if(d[3] > 0.750f)
-//			d[3] = 0.750f;
-
-
-		GLfloat mat[16];
-		quaternionToRotation(d, mat);
-		arm->bendFingerWithMatrix(0, mat);
-		algDev.pinky.pop_front();
-	}
-	if (!algDev.ring.empty())
-	{
-		std::vector<float>& d = algDev.ring.front();
-
-
-		printf("Ring quant: %f %f %f %f\n", d[0], d[1], d[2], d[3]);
-
-		// TODO: limits
-		if(d[0] < 0.97f)
-			d[0] = 0.97f;
-
-		if(d[3] < -0.205f)
-			d[3] = -0.205f;
-		if(d[3] > 0.750f)
-			d[3] = 0.750f;
-
-		GLfloat mat[16];
-		quaternionToRotation(d, mat);
-		arm->bendFingerWithMatrix(1, mat);
-		algDev.ring.pop_front();
-	}
-	if (!algDev.middle.empty())
-	{
-		std::vector<float>& d = algDev.middle.front();
-
-
-		printf("Middle quant: %f %f %f %f\n", d[0], d[1], d[2], d[3]);
-
-		if (d[0] < 0.97f)
-			d[0] = 0.97f;
-
-		if (d[3] < -0.205f)
-			d[3] = -0.205f;
-		if (d[3] > 0.750f)
-			d[3] = 0.750f;
-
-		GLfloat mat[16];
-		quaternionToRotation(d, mat);
-		arm->bendFingerWithMatrix(2, mat);
-		algDev.middle.pop_front();
-	}
-	if (!algDev.index.empty())
-	{
-		std::vector<float>& d = algDev.index.front();
-
-		printf("Index quant: %f %f %f %f\n", d[0], d[1], d[2], d[3]);
-		if (d[0] < 0.97f)
-			d[0] = 0.97f;
-		if (d[3] < -0.205f)
-			d[3] = -0.205f;
-		if (d[3] > 0.750f)
-			d[3] = 0.750f;
-
-		GLfloat mat[16];
-		quaternionToRotation(d, mat);
-		arm->bendFingerWithMatrix(3, mat);
-		algDev.index.pop_front();
-	}
-	if (!algDev.thumb.empty())
-	{
-		std::vector<float>& d = algDev.thumb.front();
-
-
-		printf("Thumb quant: %f %f %f %f\n", d[0], d[1], d[2], d[3]);
-		if (d[0] < 0.97f)
-			d[0] = 0.97f;
-
-		if (d[3] < -0.205f)
-			d[3] = -0.205f;
-		if (d[3] > 0.750f)
-			d[3] = 0.750f;
-
-
-		GLfloat mat[16];
-		quaternionToRotation(d, mat);
-		arm->bendFingerWithMatrix(4, mat);
-		algDev.thumb.pop_front();
-	}
-*/
+//	emit fetchSignal();
+	return true;
 }
 
 bool GRDataApplier::applyToHand(std::deque<std::vector<float>> &node)
@@ -227,7 +198,7 @@ bool GRDataApplier::applyToHand(std::deque<std::vector<float>> &node)
 		quaternionToRotation(*nodeQuanternion, mat);
 		arm->bendHandWithMatrix(mat);
 		node.pop_front();
-		nodeQuanternion->clear();
+		(*nodeQuanternion).clear();
 		return true;
 	}
 
@@ -240,23 +211,32 @@ bool GRDataApplier::applyToFinger(std::deque<std::vector<float>> &node, int inde
 	{
 		nodeQuanternion = &node.front();
 
-		//printf("%d quant: %f %f %f %f\n",index,  (*nodeQuanternion)[0], (*nodeQuanternion)[1], (*nodeQuanternion)[2], (*nodeQuanternion)[3]);
+		printf("%d quant: %f %f %f %f\n",index,  (*nodeQuanternion)[0], (*nodeQuanternion)[1], (*nodeQuanternion)[2], (*nodeQuanternion)[3]);
 
+		// get only z rotation
+		(*nodeQuanternion)[1] = 0;
+		(*nodeQuanternion)[2] = 0;
+		double mag = sqrt(  ((*nodeQuanternion)[0])*((*nodeQuanternion)[0]) +
+							((*nodeQuanternion)[3])*((*nodeQuanternion)[3]));
+		(*nodeQuanternion)[0] /= mag;
+		(*nodeQuanternion)[3] /= mag;
 		// limit
-		if ((*nodeQuanternion)[0] < 0.97f)
-			(*nodeQuanternion)[0] = 0.97f;
+//		if ((*nodeQuanternion)[0] < 0.97f)
+//			(*nodeQuanternion)[0] = 0.97f;
+//		(*nodeQuanternion)[1] = 0.f ;
+//		(*nodeQuanternion)[2] = 0.f;
 
-		if ((*nodeQuanternion)[3] < -0.205f)
-			(*nodeQuanternion)[3] = -0.205f;
-		if ((*nodeQuanternion)[3] > 0.750f)
-			(*nodeQuanternion)[3] = 0.750f;
-
+//		if ((*nodeQuanternion)[3] < -0.205f)
+//			(*nodeQuanternion)[3] = -0.205f;
+//		if ((*nodeQuanternion)[3] > 0.750f)
+//			(*nodeQuanternion)[3] = 0.750f;
+//
 		GLfloat mat[16];
 		quaternionToRotation(*nodeQuanternion, mat);
 		arm->bendFingerWithMatrix(index, mat);
 
 		node.pop_front();
-		nodeQuanternion->clear();
+		(*nodeQuanternion).clear();
 		return true;
 	}
 	return false;
