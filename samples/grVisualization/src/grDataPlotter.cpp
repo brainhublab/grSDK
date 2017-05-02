@@ -29,7 +29,7 @@ GRDataPlotter::~GRDataPlotter() {
     delete dataTimer;
 }
 
-bool GRDataPlotter::drawPlotFromBuffer()
+bool GRDataPlotter::runPlotting()
 {
     dataTimer = new QTimer();
     QObject::connect(dataTimer, SIGNAL(timeout()), this, SLOT(fetchData()));

@@ -16,15 +16,16 @@ public:
     GRDataPlotter( QCustomPlot *);
     ~GRDataPlotter();
 
-    bool setupPlot(std::deque<std::vector<float>>* );
-    bool drawPlotFromBuffer();
+    bool setupPlot(std::deque<std::vector<float>>* ); // assigns buffer and makes new axis on plot
+    bool runPlotting(); // runs timer for fetchData()
 
-    void splitSensorData(std::string str, double arr[3]);
     bool pause = false;
 public slots:
-    void fetchData();
+    void fetchData(); // pops front element from buffer and adds it to plot
 
 private:
+
+	void splitSensorData(std::string str, double arr[3]);
 
     QCustomPlot* plot = nullptr;
     QTimer *dataTimer = nullptr;

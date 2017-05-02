@@ -28,9 +28,9 @@ GestusConnection& GestusConnection::operator =(const GestusConnection& connectio
 {
 
 }
- /* 
+ /*
   * this method iterate and set the default adapter name it's like domain name
-  */ 
+  */
 bool GestusConnection::setAdapterName()
 {
     DBusConnection *conn;
@@ -56,7 +56,7 @@ bool GestusConnection::setAdapterName()
             DBUS_TYPE_INVALID);
 
     reply = dbus_connection_send_with_reply_and_block(conn, msg, -1, derror);
-    
+
     if(reply == NULL)
     {
         std::cout<<"Can't find any adapters"<<std::endl;
@@ -75,9 +75,9 @@ bool GestusConnection::setAdapterName()
     return TRUE;
 }
 /*
- * get the adapter name 
+ * get the adapter name
  */
-std::string GestusConnection::getAdapterName()  
+std::string GestusConnection::getAdapterName()
 {
     return adapter.name;
 }
@@ -91,7 +91,7 @@ device_t GestusConnection::getAdapter()
 /*
  * return the ID of connected device "dev" from parameter
  */
-int GestusConnection::getDeviceId(device_t dev)  
+int GestusConnection::getDeviceId(device_t dev)
 {
     return dev.id;
 }
@@ -207,7 +207,7 @@ bool GestusConnection::getData(int devId, std::string characteristic, std::deque
         std::cout<<"Can't find this: "<<characteristic<<"characteristic"<<std::endl;
     }
 */
-    
+
     std::thread thr(&GestusConnection::connectAndRead, this, dev, characteristic, buffer); // createnew thread
     thr.detach(); // detach thread from main proccess
 
@@ -227,11 +227,11 @@ bool GestusConnection::connectAndRead(device_t dev, std::string characteristic, 
 
     std::string s;
 
-    while(TRUE) //loop for reading of data from characteristic path TODO set the fucking timer 
+    while(TRUE) //loop for reading of data from characteristic path TODO set the fucking timer
     {
         msg = dbus_message_new_method_call(
                 dbusBluez.name.c_str(),
-                characteristic.c_str(), 
+                characteristic.c_str(),
                 "org.bluez.GattCharacteristic1",
                 "ReadValue"
                 );
@@ -239,7 +239,7 @@ bool GestusConnection::connectAndRead(device_t dev, std::string characteristic, 
         reply = dbus_connection_send_with_reply_and_block(conn, msg, -1, derror);
         DBusMessageIter rootIter;
         if(reply == NULL)
-        {   
+        {
             std::cout<<"Can't read value from device "<<dev.name<<" with characteristic"<<characteristic<<std::endl;
             return FALSE;
         }
@@ -274,7 +274,7 @@ bool GestusConnection::connectAndRead(device_t dev, std::string characteristic, 
     }
     return TRUE;
 }
-/* 
+/*
  * connect to defaut adapter dbusBluez and iterate the DBus tree for finding of connected devices
  * select GR devices from all and set needed parameters
  */
@@ -338,7 +338,7 @@ bool GestusConnection::setAvalibleDevices()
             devices.push_back(dev);
         }
         /*
-        else 
+        else
         {
             std::cout<<"Not found any Gestus Devices :("<<std::endl;
             return FALSE;
@@ -441,7 +441,7 @@ bool GestusConnection::setDeviceCharacteristics(device_t* device, std::string de
 
     return TRUE;
 }
-/* 
+/*
  * returns the DBus message with properties of device by object path in DBus tree
  * returns property of selected characteristic.
  */
@@ -516,7 +516,7 @@ bool GestusConnection::parsePropertyArray(DBusMessage *reply, std::vector<std::s
     return TRUE;
 }
 /*
- * internal auxiliary method 
+ * internal auxiliary method
  * parse property array by rely in STRING type
  * if it's basic type
  */

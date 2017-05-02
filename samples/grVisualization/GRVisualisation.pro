@@ -19,7 +19,7 @@ DESTDIR = ./bin
 MOC_DIR=./build/generated_files
 SOURCES += ./src/main.cpp\
     ./src/grVisualization.cpp \
-    ./src/grBufferManager.cpp \
+    ./src/grDataApplier.cpp \
     ./src/GRGLWidget.cpp \
     ./src/grHand.cpp \
     ./src/grRender.cpp \
@@ -30,7 +30,7 @@ SOURCES += ./src/main.cpp\
 
 HEADERS  += ./inc/grVisualization.h \
     ./inc/ui_grVisualization.h \
-    ./inc/grBufferManager.h \
+    ./inc/grDataApplier.h \
     ./inc/GRGLWidget.h \
     ./inc/grHandNode.h \
     ./inc/grHand.h \

@@ -15,10 +15,10 @@ public:
         explicit GRHand(bool left);
         ~GRHand();
 
-        // 
+        // benging with matrix
 		bool bendHandWithMatrix(GLfloat mat[16]);
 		bool bendFingerWithMatrix( int index, GLfloat mat[16] );
-        // bending
+        // bending with euler angles
         bool bendArm( float angleX, float angleY, float angleZ );
         bool bendHand( float angleX, float angleY, float angleZ );
         bool bendFinger( int index, float angleX, float angleY, float angleZ );
