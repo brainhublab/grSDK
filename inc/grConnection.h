@@ -34,9 +34,10 @@ class GRConnection
         bool connect(std::string, std::string, std::string);
         bool release(std::string, std::string, std::string);
 
+        bool getDataThr(device_t*);
         bool getData(device_t*);
 
-//    private:
+    private:
         char buf[256];
         int portDescriptor;
         std::string rfcommPath;
@@ -49,7 +50,6 @@ class GRConnection
 
         int openPort(std::string);
 
-        bool connectAndRead(device_t*);
 
         bool splitData(std::string data, imu*);
 };

@@ -12,6 +12,7 @@
 #include <GL/glut.h>
 #include "grVisualization.h"
 */
+#include "grUtilities.h"
 #include "grConnection.h"
 #include "grAlgorithm.h"
 #include "grDevice.h"
@@ -21,145 +22,51 @@ using namespace GRT;
 using namespace std;
 int main (int argc, const char * argv[])
 {
-
-    //Create a new instance of the ClassificationData
-    TimeSeriesClassificationData trainingData;
-
-    //Set the dimensionality of the data (you need to do this before you can add any samples)
-    trainingData.setNumDimensions( 6 );
-
-    //You can also give the dataset a name (the name should have no spaces)
-    trainingData.setDatasetName("grTraining");
-
-    //You can also add some info text about the data
-    trainingData.setInfoText("This data contains some gr data");
-
-    //Here you would grab some data from your sensor and label it with the corresponding gesture it belongs to
-    UINT gestureLabel = 1;
-    VectorDouble sample(6);
-
-    MatrixDouble trainingSample;
-
-    //For now we will just add some random data
-    Random random;
-    device_t dev;
     GRConnection conn;
-    int ch , c;
+    device_t dev;
+    GRUtilities utils;
+
+    vector<string> sensors;// ("palm", "pinky");
+    sensors.push_back("palm");
+    sensors.push_back("pinky");
+    string alg="DTW";
+    utils.setDatasetProperties("testDataset", "Test info text", "test", alg);
+    utils.setSensors(sensors, alg);
+
+
+    int ch;
     initscr();
     cbreak();
     noecho();
     nodelay(stdscr,TRUE);
-    while( ch!='q')
-    {  
-       
-      ch=getch();
-      if(ch == 'r')
-      {
-         while(ch != 's')
-         {
-            ch = getch(); 
-        conn.connectAndRead(&dev);
-        sample[0] = dev.palm.gyro.front()[0];
-        sample[1] = dev.palm.gyro.front()[1];
-        sample[2] = dev.palm.gyro.front()[2];
-        sample[3] = dev.palm.acc.front()[0];
-        sample[4] = dev.palm.acc.front()[1];
-        sample[5] = dev.palm.acc.front()[2];
 
-        dev.palm.gyro.pop_front();
-        dev.palm.acc.pop_front();
-        /*
-        sample[0] = random.getRandomNumberUniform(-1.0,1.0);
-        sample[1] = random.getRandomNumberUniform(-1.0,1.0); 
-        sample[2] = random.getRandomNumberUniform(-1.0,1.0); 
-*/
-        //Add the sample to the training data
-       usleep(20);
-        trainingSample.push_back(sample);
-         }
+    while(ch!='q')
+    {
+        ch=getch();
+        if(ch == 'r')
+        {
+            cout<<"saving"<<endl;
+            while(ch!='s')
+            {
+                cout<<"reading"<<endl;
+                ch = getch();
+                if(conn.getData(&dev))
+                {
+                    usleep(20);
+                    utils.pushDatasetDTW(&dev);
+                    usleep(20); 
+                }
+            }
+        }
+        else if(ch == 'n')
+        {
+            utils.saveDataset(alg);
 
-         trainingData.addSample( gestureLabel, trainingSample );
-         
-      }
-      else if(ch == 'n')
-      {
-        
-         gestureLabel ++;
-         cout<<"next gesture"<<endl;
-      }
-      
+            utils.setNextLabel(alg);
+            cout<<"NEXT GESTURE"<<endl;
+        }
+
     }
 
-    //After recording your training data you can then save it to a file
-    if( !trainingData.save( "grTrainingData.grt" ) ){
-        cout << "ERROR: Failed to save dataset to file!\n";
-        return EXIT_FAILURE;
-    }
-
-    /*//This can then be loaded later
-    if( !trainingData.load( "TrainingData.grt" ) ){
-        cout << "ERROR: Failed to load dataset from file!\n";
-        return EXIT_FAILURE;
-    }
-
-    //You can also save and load the training data to a CSV file
-    //Each row will contain a sample, with the first column containing the class label and the remaining columns containing the data
-    if( !trainingData.save( "TrainingData.csv" ) ){
-        cout << "ERROR: Failed to save dataset to csv file!\n";
-        return EXIT_FAILURE;
-    }
-
-    if( !trainingData.load( "TrainingData.csv" ) ){
-        cout << "ERROR: Failed to load dataset from csv file!\n";
-        return EXIT_FAILURE;
-    }
-
-    //This is how you can get some stats from the training data
-    string datasetName = trainingData.getDatasetName();
-    string infoText = trainingData.getInfoText();
-    UINT numSamples = trainingData.getNumSamples();
-    UINT numDimensions = trainingData.getNumDimensions();
-    UINT numClasses = trainingData.getNumClasses();
-
-    cout << "Dataset Name: " << datasetName << endl;
-    cout << "InfoText: " << infoText << endl;
-    cout << "NumberOfSamples: " << numSamples << endl;
-    cout << "NumberOfDimensions: " << numDimensions << endl;
-    cout << "NumberOfClasses: " << numClasses << endl;
-
-    //You can also get the minimum and maximum ranges of the data
-    vector< MinMax > ranges = trainingData.getRanges();
-
-    cout << "The ranges of the dataset are: \n";
-    for(UINT j=0; j<ranges.size(); j++){
-        cout << "Dimension: " << j << " Min: " << ranges[j].minValue << " Max: " << ranges[j].maxValue << endl;
-    }
-
-    //If you want to partition the dataset into a training dataset and a test dataset then you can use the partition function
-    //A value of 80 means that 80% of the original data will remain in the training dataset and 20% will be returned as the test dataset
-    ClassificationData testData = trainingData.partition( 80 );
-
-    //If you have multiple datasets that you want to merge together then use the merge function
-    if( !trainingData.merge( testData ) ){
-        cout << "ERROR: Failed to save merge datasets!\n";
-        return EXIT_FAILURE;
-    }
-
-    //If you want to run K-Fold cross validation using the dataset then you should first spilt the dataset into K-Folds
-    //A value of 10 splits the dataset into 10 folds and the true parameter signals that stratified sampling should be used
-    if( !trainingData.spiltDataIntoKFolds( 10, true ) ){
-        cout << "ERROR: Failed to spiltDataIntoKFolds!\n";
-        return EXIT_FAILURE;
-    }
-
-    //After you have called the spilt function you can then get the training and test sets for each fold
-    for(UINT foldIndex=0; foldIndex<10; foldIndex++){
-        ClassificationData foldTrainingData = trainingData.getTrainingFoldData( foldIndex );
-        ClassificationData foldTestingData = trainingData.getTestFoldData( foldIndex );
-    }
-*/
-    //If need you can clear any training data that you have recorded
-    trainingData.clear();
-    endwin();
     return EXIT_SUCCESS;
 }

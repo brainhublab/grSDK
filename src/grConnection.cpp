@@ -101,9 +101,9 @@ bool GRConnection::release(std::string serial_dev, std::string addr, std::string
 }
 
 
-bool GRConnection::getData(device_t* device)
+bool GRConnection::getDataThr(device_t* device)
 {
-    std::thread thr(&GRConnection::connectAndRead, this, device);
+    std::thread thr(&GRConnection::getData, this, device);
     std::thread::id thrId;
 
     thrId = thr.get_id();
@@ -115,7 +115,7 @@ bool GRConnection::getData(device_t* device)
 }
 
 
-bool GRConnection::connectAndRead(device_t* device)
+bool GRConnection::getData(device_t* device)
 {
    // std::cout<<"running read while"<<std::endl;
 

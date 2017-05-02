@@ -17,18 +17,6 @@
 #include <grDevice.h>
 using namespace std;
 //using namespace Eigen;
-struct alg_device_t
-{
-    // q x y z
-    // to store quaternions
-    std::deque<std::vector<float>> pinky;
-    std::deque<std::vector<float>> ring;
-    std::deque<std::vector<float>> middle;
-    std::deque<std::vector<float>> index;
-    std::deque<std::vector<float>> thumb;
-    std::deque<std::vector<float>> palm;
-};
-
 
 class GRAlgorithm 
 {
@@ -39,7 +27,8 @@ class GRAlgorithm
         GRAlgorithm(const GRAlgorithm& );
         GRAlgorithm& operator=(const GRAlgorithm&);
         void grInitAlgorithms();
- //   private:
+        //bool 
+   private:
         //helper methods
         double constrain(double , double , double );
         double gravity = 256;

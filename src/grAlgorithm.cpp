@@ -33,22 +33,7 @@ void grInitAlgorithms()
 }
 
 void GRAlgorithm::MadgwickAHRSupdate(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz, std::deque<std::vector<float>>* results, int freqCallibration) {
-
-    /*if(results->size() != 0)
-    {
-        q0 = results->back()[0];
-        q1 = results->back()[1];
-        q2 = results->back()[2];
-        q3 = results->back()[3];
-    }
-    else
-    {*/
-      //  q0 = 1.0f;
-      //  q1 = 0.0f;
-      //  q2 = 0.0f;
-      //  q3 = 0.0f;
-    //}
-    //std::cout<<gx<<" "<<gy<<" "<<gz<<std::endl;
+   //std::cout<<gx<<" "<<gy<<" "<<gz<<std::endl;
     float recipNorm;
     float s0, s1, s2, s3;
     float qDot1, qDot2, qDot3, qDot4;
@@ -151,23 +136,6 @@ void GRAlgorithm::MadgwickAHRSupdate(float gx, float gy, float gz, float ax, flo
     results->push_back(new_result);
  }
  void GRAlgorithm::MadgwickAHRSupdateIMU(float gx, float gy, float gz, float ax, float ay, float az, std::deque<std::vector<float>>* results, int freqCallibration) {
-    //float q0, q1, q2, q3;
-
-   /* if(results->size() == 4)
-    {
-        q0 = results->back()[0];
-        q1 = results->back()[1];
-        q2 = results->back()[2];
-        q3 = results->back()[3];
-    }
-    else
-    {
-        q0 = 0.f;
-        q1 = 0.f;
-        q2 = 0.f;
-        q3 = 0.f;
-    }*/
-
     float recipNorm;
     float s0, s1, s2, s3;
     float qDot1, qDot2, qDot3, qDot4;
@@ -234,7 +202,6 @@ void GRAlgorithm::MadgwickAHRSupdate(float gx, float gy, float gz, float ax, flo
     q2 *= recipNorm;
     q3 *= recipNorm;
 
-// vlad std::cout<<"Q :"<<q0<<q1<<q2<<q3<<std::endl;
 
     std::vector<float> new_result = {q0, q1, q2, q3};
     results->push_back(new_result);
@@ -272,9 +239,6 @@ double GRAlgorithm::constrain(double x, double a, double b)
 void GRAlgorithm::madgwickUpdateBuffer(imu* imu, std::deque<std::vector<float>>* quaternions, int freqCallibration)
 {
     std::vector<float> gyro, accel, mag;
-    //while(true)
-    //{
-    //std::cout<<"before alg while"<<endl;
 
         while(!imu->gyro.empty() && imu->gyro.front().size() == 3 && !imu->acc.empty() && imu->acc.front().size() == 3&& !imu->mag.empty() && imu->mag.front().size() == 3)
         {
@@ -288,7 +252,6 @@ void GRAlgorithm::madgwickUpdateBuffer(imu* imu, std::deque<std::vector<float>>*
 
 			MadgwickAHRSupdate(gyro[0], gyro[1], gyro[2], accel[0], accel[1], accel[2], mag[0], mag[1], mag[2], quaternions, freqCallibration);
         }
-   // }
 
 
 }

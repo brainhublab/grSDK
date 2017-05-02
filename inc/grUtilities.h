@@ -4,8 +4,13 @@
 #include <iostream>
 #include <string>
 #include <vector>
+
+#include "grDevice.h"
+#include "grDataAttributes.h"
+
 #include "GRT/GRT.h"
 
+//using namespace GRT;
 
 
 class GRUtilities
@@ -16,16 +21,19 @@ class GRUtilities
     GRUtilities(const GRUtilities&);
     GRUtilities& operator=(const GRUtilities&);
 
-    void setSensors(std::vector<std::string>)
+    void setSensors(std::vector<std::string>, std::string);
+    void setDatasetProperties(std::string, std::string, std::string, std::string);
+    void setNextLabel(std::string);
 
 
-    bool trainDTW(device_t* ,GRT::UINT, std::vector<td::string>);
-    bool trainHMM(device_t*, GRT::UINT, std::vector<std::string>);
+    bool pushDatasetDTW(device_t*);
+    bool pushDatasetHMM(device_t*);
+
+    bool saveDataset(std::string);
 
     private:
-    std::vector<std::string> sensors;
-    int dimensions;
-    GRT::TimeSeriesClassificationData trainingDataDTW;
-    GRT::TimeSeriesClassificationData trainingDataHMM;
-}
+
+    data_attributes datasetDTW;
+    data_attributes datasetHMM;
+};
 #endif

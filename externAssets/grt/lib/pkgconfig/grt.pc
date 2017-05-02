@@ -1,4 +1,4 @@
-prefix=/home/h3lgi/code/gestusSDK/externAssets/grt
+prefix=../../../grt
 exec_prefix=${prefix}
 libdir=${prefix}/
 includedir=${prefix}/include
