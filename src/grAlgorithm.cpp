@@ -337,6 +337,7 @@ std::vector<float> GRAlgorithm::computeAngles()
     pitch = pitch * 57.29578f;
     yaw = yaw * 57.29578f + 180.0f;
 
+    angles.push_back(0.0f);
     angles.push_back(roll);
     angles.push_back(pitch);
     angles.push_back(yaw);
