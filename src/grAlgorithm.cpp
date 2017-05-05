@@ -232,13 +232,16 @@ void GRAlgorithm::MadgwickAHRSupdate(float gx, float gy, float gz, float ax, flo
 //    std::cout<<"Q :"<<q0<<q1<<q2<<q3<<std::endl;
 
     std::vector<float> new_result = {q0, q1, q2, q3};
-if(flag == "QANTERION")
+    if(flag == "QATERNION")
     {
-    results->push_back(new_result);
+        results->push_back(new_result);
     }
     else if(flag == "EULER")
     {
-        results->push_back(computeAngles(new_result));
+        if(!anglesComputed)
+        {
+            results->push_back(computeAngles());
+        }
     }
     else
     {
