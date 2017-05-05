@@ -42,15 +42,10 @@ class GRConnection
         int portDescriptor;
         std::string rfcommPath;
         std::vector<device_t> avalibleDevices;
-
         bool setUpRfcomm(std::string);
         bool setTerm();
-
         std::string getNext();
-
         int openPort(std::string);
-
-
         bool splitData(std::string data, imu*);
 };
 

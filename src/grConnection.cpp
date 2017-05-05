@@ -140,7 +140,7 @@ bool GRConnection::getData(device_t* device)
             case 0:
                 if(!f0)
                 {
-                    splitData(msg, &device->pinky);
+                    splitData(msg, &device->pinky);//TODO add if statement
                     f0 = true;
                 }
                 break;
@@ -320,12 +320,18 @@ bool GRConnection::splitData(std::string data, imu* sensor)
             mag.push_back(arr[i]);
         }
     }
-
-    sensor->gyro.push_back(gyro);
-    sensor->acc.push_back(acc);
-    sensor->mag.push_back(mag);
-
-    return true;
+    if(gyro.size == 3 && acc.size == 3 && mag.size == 3)
+    {
+        sensor->gyro.push_back(gyro);
+        sensor->acc.push_back(acc);
+        sensor->mag.push_back(mag);
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+    
 }
 
 
