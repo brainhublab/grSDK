@@ -6,7 +6,7 @@
 #include <cstring>
 #include <vector>
 #include <deque>
-#include <cmath>
+#include <math.h>
 #include <thread>
 
 //#include <eigen3/Eigen/Dense>
@@ -42,9 +42,10 @@ class GRAlgorithm
         //float betaDef = 0.1;
         float beta;
         float roll, pitch, yaw;
+        std::vector<float> angles;
         char anglesComputed;
 
-        std::vector<float> computeAngles(std::vector<float> );
+        std::vector<float> computeAngles();
         float invSqrt(float x);            // algorithm gain
         void MadgwickAHRSupdate(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz, std::deque<std::vector<float>>*, int, std::string);
 		void MadgwickAHRSupdateIMU(float gx, float gy, float gz, float ax, float ay, float az, std::deque<std::vector<float>>*, int, std::string);

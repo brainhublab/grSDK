@@ -144,13 +144,16 @@ void GRAlgorithm::MadgwickAHRSupdate(float gx, float gy, float gz, float ax, flo
     anglesComputed = 0;
     
     std::vector<float> new_result = {q0, q1, q2, q3};
-    if(flag == "QANTERION")
+    if(flag == "QATERNION")
     {
     results->push_back(new_result);
     }
     else if(flag == "EULER")
     {
-        results->push_back(computeAngles(new_result));
+        if(!anglesComputed)
+        {
+            results->push_back(computeAngles());
+        }
     }
     else
     {
@@ -323,21 +326,20 @@ void GRAlgorithm::madgwickUpdateThr(device_t* inDevice, alg_device_t* outDevice,
 
 }
 
-std::vector<float> GRAlgorithm::computeAngles(std::vector<float> rott)
+std::vector<float> GRAlgorithm::computeAngles()
 {
-    roll = atan2f(rott[0] * rott[1] + rott[2] * rott[3], 0.5f - rott[1] * rott[1] - rott[2] * rott[2]);
-    pitch = asinf(-2.0 * (rott[1] * rott[3] - rott[0] * rott[2]));
-    yaw = atan2f(rott[1] * rott[2] + rott[0] * rott[3], 0.5f - rott[2] * rott[2] - rott[3] * rott[3]);
+    angles.clear();
+    roll = atan2f(q0*q1 + q2*q3, 0.5f - q1*q1 - q2*q2);
+    pitch = asinf(-2.0*(q1*q3 - q0*q2));
+    yaw = atan2f(q1*q2 + q0*q3, 0.5f - q2*q2 - q3*q3);
 
-    rott[0] = 0.0f;
-    rott[1] = roll;
-    rott[2] = pitch;
-    rott[3] = yaw;
+    roll = roll * 57.29578f;
+    pitch = pitch * 57.29578f;
+    yaw = yaw * 57.29578f + 180.0f;
 
-    roll = 0.0f;
-    pitch = 0.0f;
-    yaw = 0.0f;
-
+    angles.push_back(roll);
+    angles.push_back(pitch);
+    angles.push_back(yaw);
     anglesComputed = 1;
-    return rott;
+    return angles;
 }
