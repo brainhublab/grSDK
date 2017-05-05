@@ -320,7 +320,7 @@ bool GRConnection::splitData(std::string data, imu* sensor)
             mag.push_back(arr[i]);
         }
     }
-    if(gyro.size == 3 && acc.size == 3 && mag.size == 3)
+    if(gyro.size() == 3 && acc.size() == 3 && mag.size() == 3)
     {
         sensor->gyro.push_back(gyro);
         sensor->acc.push_back(acc);

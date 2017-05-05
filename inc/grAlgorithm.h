@@ -9,8 +9,8 @@
 #include <cmath>
 #include <thread>
 
-#include <eigen3/Eigen/Dense>
-#include <eigen3/Eigen/Geometry>
+//#include <eigen3/Eigen/Dense>
+//#include <eigen3/Eigen/Geometry>
 
 #include "GRT/GRT.h"
 
@@ -42,12 +42,12 @@ class GRAlgorithm
         //float betaDef = 0.1;
         float beta;
         float roll, pitch, yaw;
-        char angleComputed;
+        char anglesComputed;
 
-        void computeAngles(std::deque<std::vector<float> >* );
+        std::vector<float> computeAngles(std::vector<float> );
         float invSqrt(float x);            // algorithm gain
-        void MadgwickAHRSupdate(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz, std::deque<std::vector<float>>*, int);
-		void MadgwickAHRSupdateIMU(float gx, float gy, float gz, float ax, float ay, float az, std::deque<std::vector<float>>*, int);
+        void MadgwickAHRSupdate(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz, std::deque<std::vector<float>>*, int, std::string);
+		void MadgwickAHRSupdateIMU(float gx, float gy, float gz, float ax, float ay, float az, std::deque<std::vector<float>>*, int, std::string);
 
     	};
 

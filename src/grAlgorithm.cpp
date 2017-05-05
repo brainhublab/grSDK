@@ -37,7 +37,8 @@ void grInitAlgorithms()
 {
 }
 
-void GRAlgorithm::MadgwickAHRSupdate(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz, std::deque<std::vector<float>>* results, int freqCallibration) {
+void GRAlgorithm::MadgwickAHRSupdate(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz, std::deque<std::vector<float>>* results, int freqCallibration, std::string flag)
+{
 
 //    std::cout<<"Input :"<<gx<<" "<<gy<<" "<<gz<<" "<<ax<<" "<<ay<<" "<<az<<" "<<mx<<" "<<my<<" "<<mz<<std::endl;
    float recipNorm;
@@ -47,7 +48,7 @@ void GRAlgorithm::MadgwickAHRSupdate(float gx, float gy, float gz, float ax, flo
     float _2q0mx, _2q0my, _2q0mz, _2q1mx, _2bx, _2bz, _4bx, _4bz, _2q0, _2q1, _2q2, _2q3, _2q0q2, _2q2q3, q0q0, q0q1, q0q2, q0q3, q1q1, q1q2, q1q3, q2q2, q2q3, q3q3;
     // Use IMU algorithm if magnetometer measurement invalid (avoids NaN in magnetometer normalisation)
     if((mx == 0.0f) && (my == 0.0f) && (mz == 0.0f)) {
-		MadgwickAHRSupdateIMU(gx, gy, gz, ax, ay, az, results, freqCallibration);
+		MadgwickAHRSupdateIMU(gx, gy, gz, ax, ay, az, results, freqCallibration, flag);
         return;
     }
 
@@ -140,12 +141,24 @@ void GRAlgorithm::MadgwickAHRSupdate(float gx, float gy, float gz, float ax, flo
     q2 *= recipNorm;
     q3 *= recipNorm;
 
-    angleComputed = 0;
+    anglesComputed = 0;
     
     std::vector<float> new_result = {q0, q1, q2, q3};
+    if(flag == "QANTERION")
+    {
     results->push_back(new_result);
+    }
+    else if(flag == "EULER")
+    {
+        results->push_back(computeAngles(new_result));
+    }
+    else
+    {
+        std::cout<<"ERROR: No such flag "<<flag<<std::endl;
+    }
  }
- void GRAlgorithm::MadgwickAHRSupdateIMU(float gx, float gy, float gz, float ax, float ay, float az, std::deque<std::vector<float>>* results, int freqCallibration) {
+ void GRAlgorithm::MadgwickAHRSupdateIMU(float gx, float gy, float gz, float ax, float ay, float az, std::deque<std::vector<float>>* results, int freqCallibration, std::string flag) 
+{
     float recipNorm;
     float s0, s1, s2, s3;
     float qDot1, qDot2, qDot3, qDot4;
@@ -212,12 +225,23 @@ void GRAlgorithm::MadgwickAHRSupdate(float gx, float gy, float gz, float ax, flo
     q2 *= recipNorm;
     q3 *= recipNorm;
 
-    angleComputed = 0;
+    anglesComputed = 0;
 //    std::cout<<"Q :"<<q0<<q1<<q2<<q3<<std::endl;
 
     std::vector<float> new_result = {q0, q1, q2, q3};
-
+if(flag == "QANTERION")
+    {
     results->push_back(new_result);
+    }
+    else if(flag == "EULER")
+    {
+        results->push_back(computeAngles(new_result));
+    }
+    else
+    {
+        std::cout<<"ERROR: No such flag "<<flag<<std::endl;
+    }
+
 }
 
 //---------------------------------------------------------------------------------------------------
@@ -264,22 +288,7 @@ void GRAlgorithm::madgwickUpdateBuffer(imu* imu, std::deque<std::vector<float>>*
             imu->mag.pop_front();
 
             std::cout<<"\nbefore madgwickUpdate() Q :"<<q0<<" "<<q1<<" "<<q2<<" "<<q3<<std::endl;
-            if(flag == "QUANTERION")
-            {
-			    MadgwickAHRSupdate(gyro[0], gyro[1], gyro[2], accel[0], accel[1], accel[2], mag[0], mag[1], mag[2], rotatios, freqCallibration);
-            }
-            else if(flag == "EULER")
-            {
-                 MadgwickAHRSupdate(gyro[0], gyro[1], gyro[2], accel[0], accel[1], accel[2], mag[0], mag[1], mag[2], rotations, freqCallibration);
-                 if(!angleComputed)
-                 {
-                    computeAngles(rotations);
-                 }
-            }
-            else
-            {
-                std::cout<<"ERROR: Wrong FLAG parameter no such flag with name"<<flag<<std::endl;
-            }
+		    MadgwickAHRSupdate(gyro[0], gyro[1], gyro[2], accel[0], accel[1], accel[2], mag[0], mag[1], mag[2], rotations, freqCallibration, flag);
         }
 
 }
@@ -314,11 +323,11 @@ void GRAlgorithm::madgwickUpdateThr(device_t* inDevice, alg_device_t* outDevice,
 
 }
 
-void GRAlgorithm::computeAngles(std::deque<std::vector<float> >* rott)
+std::vector<float> GRAlgorithm::computeAngles(std::vector<float> rott)
 {
-    roll = atan2f(rott[0]*rott[1] + rott[2]*rott[3], 0.5f - rott[1]*rott[1] - rott[2]*rott[2]);
-    pitch = asinf(-2.0 * (rott[1]*rott[3] - rott[0]*q));
-    yaw = atan2f(q1*q2 + q0*q3, 0.5f - q2*q2 - q3*q3);
+    roll = atan2f(rott[0] * rott[1] + rott[2] * rott[3], 0.5f - rott[1] * rott[1] - rott[2] * rott[2]);
+    pitch = asinf(-2.0 * (rott[1] * rott[3] - rott[0] * rott[2]));
+    yaw = atan2f(rott[1] * rott[2] + rott[0] * rott[3], 0.5f - rott[2] * rott[2] - rott[3] * rott[3]);
 
     rott[0] = 0.0f;
     rott[1] = roll;
@@ -330,4 +339,5 @@ void GRAlgorithm::computeAngles(std::deque<std::vector<float> >* rott)
     yaw = 0.0f;
 
     anglesComputed = 1;
+    return rott;
 }
