@@ -29,8 +29,8 @@ GRHand::GRHand(bool left)
 
 		struct GRHandNode *hand = &(this->children[0]);
     hand->isLeft = left;
-        hand->setMaxAngles(80.f, 0.f, 80.f);
-        hand->setMinAngles(-80.f, 0.f, -40.f);
+//        hand->setMaxAngles(130.f, 0.f, 80.f);
+//        hand->setMinAngles(0.f, 0.f, -40.f);
 
         // Fingers initializing
 		hand->children = new struct GRHandNode[5];
@@ -39,7 +39,7 @@ GRHand::GRHand(bool left)
         for ( int i = 0; i < 5; i++ )
         {
                 // Add remaining phalanges for each finger
-                float maxFingerAngleX = 85.f, minFingerAngleX = -5.f;
+                float maxFingerAngleX = 175.f*0, minFingerAngleX = -180.f*0;
 
                 // initializing of first phalange
 				struct GRHandNode *firstPhalange = &( *hand ).children[ i ];
@@ -223,8 +223,8 @@ bool GRHand::bendFingerWithMatrix( int index, GLfloat mat[16] )
 
 bool GRHand::bend( GRHandNode *node, float angleX, float angleY, float angleZ )
 {
-    /*
         // check if bending is possible
+    /*
         if(node->maxAngleX != 0.f &&
              (node->angleX + angleX >= node->maxAngleX
                 || node->angleX + angleX <= node->minAngleX))
@@ -244,8 +244,8 @@ bool GRHand::bend( GRHandNode *node, float angleX, float angleY, float angleZ )
              || node->angleZ + angleZ <= node->minAngleZ))
         {
                 return false;
-        }
-*/
+        }*/
+
 
         // todo: if you want to move on new angle every time (without adding last position) change += to =
         node->angleX = angleX;
