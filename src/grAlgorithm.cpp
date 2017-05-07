@@ -49,8 +49,6 @@ void GRAlgorithm::MadgwickAHRSupdate(float gx, float gy, float gz, float ax, flo
         float mx, float my, float mz, std::deque<std::vector<float>>* results, int freqCallibration, 
         std::string flag)
 {
-
-    //    std::cout<<"Input :"<<gx<<" "<<gy<<" "<<gz<<" "<<ax<<" "<<ay<<" "<<az<<" "<<mx<<" "<<my<<" "<<mz<<std::endl;
     float recipNorm;
     float s0, s1, s2, s3;
     float qDot1, qDot2, qDot3, qDot4;
@@ -69,14 +67,11 @@ void GRAlgorithm::MadgwickAHRSupdate(float gx, float gy, float gz, float ax, flo
 
     std::cout<<"Pre-Middle Q :"<<q0<<" "<<q1<<" "<<q2<<" "<<q3<<std::endl;
     // Rate of change of quaternion from gyroscope
-    // Rate of change of quaternion from gyroscope
     qDot1 = 0.5f * (-q1 * gx - q2 * gy - q3 * gz);
     qDot2 = 0.5f * (q0 * gx + q2 * gz - q3 * gy);
     qDot3 = 0.5f * (q0 * gy - q1 * gz + q3 * gx);
     qDot4 = 0.5f * (q0 * gz + q1 * gy - q2 * gx);
 
-    std::cout<<"Middle Q :"<<q0<<" "<<q1<<" "<<q2<<" "<<q3<<std::endl;
-    // Compute feedback only if accelerometer measurement valid (avoids NaN in accelerometer normalisation)
     if(!((ax == 0.0f) && (ay == 0.0f) && (az == 0.0f))) {
 
         // Normalise accelerometer measurement
@@ -339,28 +334,24 @@ void GRAlgorithm::madgwickUpdateThr(device_t* inDevice, alg_device_t* outDevice,
     std::thread palm(&GRAlgorithm::madgwickUpdateBuffer, this, &inDevice->palm,  &outDevice->palm, freqCallibration, flag);
     palm.detach();
     std::cout<<"run MadgwickAHRSupdate thread for palm"<<endl;
-
-
-
-
 }
 
 std::vector<float> GRAlgorithm::computeAngles()
 {
-    angles.clear();
-    roll = atan2f(q0*q1 + q2*q3, 0.5f - q1*q1 - q2*q2);
-    pitch = asinf(-2.0*(q1*q3 - q0*q2));
-    yaw = atan2f(q1*q2 + q0*q3, 0.5f - q2*q2 - q3*q3);
+    this->angles.clear();
+    this->roll = atan2f(q0*q1 + q2*q3, 0.5f - q1*q1 - q2*q2);
+    this->pitch = asinf(-2.0*(q1*q3 - q0*q2));
+    this->yaw = atan2f(q1*q2 + q0*q3, 0.5f - q2*q2 - q3*q3);
 
-    roll = roll * 57.29578f;
-    pitch = pitch * 57.29578f;
-    yaw = yaw * 57.29578f + 180.0f;
+    this->roll = this->roll * 57.29578f;
+    this->pitch = this->pitch * 57.29578f;
+    this->yaw = this->yaw * 57.29578f + 180.0f;
 
-    angles.push_back(0.0f);
-    angles.push_back(roll);
-    angles.push_back(pitch);
-    angles.push_back(yaw);
-    anglesComputed = 1;
+    this->angles.push_back(0.0f);
+    this->angles.push_back(this->roll);
+    this->angles.push_back(this->pitch);
+    this->angles.push_back(this->yaw);
+    this->anglesComputed = 1;
     return angles;
 }
 

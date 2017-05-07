@@ -24,7 +24,7 @@ class GRUtilities
     void setSensors(std::vector<std::string>, std::string);
     void setDatasetProperties(std::string, std::string, std::string, std::string);
     void setNextLabel(std::string);
-
+    void clearTrainingData(std::string); 
 
     bool pushDatasetDTW(device_t*);
     bool pushDatasetHMM(device_t*);
