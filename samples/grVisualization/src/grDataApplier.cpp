@@ -169,15 +169,15 @@ bool GRDataApplier::fetchData()
 {
     conn.getData(&dev);
 	//usleep(100);
-	alg1.madgwickUpdateBuffer(&dev.pinky, &algDev.pinky, 140);
-	alg2.madgwickUpdateBuffer(&dev.ring, &algDev.ring, 140);
-	alg3.madgwickUpdateBuffer(&dev.middle, &algDev.middle, 160);
-	alg4.madgwickUpdateBuffer(&dev.index, &algDev.index, 180);
-	alg5.madgwickUpdateBuffer(&dev.thumb, &algDev.thumb, 120);
-	alg.madgwickUpdateBuffer(&dev.palm, &algDev.palm, 40);
+    alg1.madgwickUpdateBuffer(&dev.pinky, &algDev.pinky, 140, "QATERNION"); // QUATERION"
+    alg2.madgwickUpdateBuffer(&dev.ring, &algDev.ring, 140, "QATERNION");
+    alg3.madgwickUpdateBuffer(&dev.middle, &algDev.middle, 160, "QATERNION");
+    alg4.madgwickUpdateBuffer(&dev.index, &algDev.index, 180, "QATERNION");
+    alg5.madgwickUpdateBuffer(&dev.thumb, &algDev.thumb, 120, "QATERNION");
+    alg.madgwickUpdateBuffer(&dev.palm, &algDev.palm, 40, "QATERNION");
 
 
-	applyToFinger(algDev.pinky, 0);
+    applyToFinger(algDev.pinky, 0);
 	applyToFinger(algDev.ring, 1);
 	applyToFinger(algDev.middle, 2);
 	applyToFinger(algDev.index, 3);
@@ -192,26 +192,58 @@ bool GRDataApplier::applyToHand(std::deque<std::vector<float>> &node)
 {
 	if (!node.empty())
 	{
-		nodeQuanternion = &node.front();
+        nodeQuanternion = &node.front();
 
-		GLfloat mat[16];
-		quaternionToRotation(*nodeQuanternion, mat);
-		arm->bendHandWithMatrix(mat);
-		node.pop_front();
-		(*nodeQuanternion).clear();
+        GLfloat mat[16];
+        quaternionToRotation(*nodeQuanternion, mat);
+
+//        printf("Hand Q: %f %f %f %f\n",  (*nodeQuanternion)[0], (*nodeQuanternion)[1], (*nodeQuanternion)[2], (*nodeQuanternion)[3]);
+        arm->bendHandWithMatrix(mat);
+
+        //arm->bendHand((*nodeQuanternion)[2], (*nodeQuanternion)[1], (*nodeQuanternion)[3]);
+        if(!prevQuants[5].empty())
+            prevQuants[5].clear();
+        prevQuants[5] = *nodeQuanternion;
+
+        node.pop_front();
+        (*nodeQuanternion).clear();
 		return true;
 	}
 
 	return false;
 };
 
+
+float getYaw(std::vector<float> &q)
+{
+    float roll = 0.0f;
+    float pitch = 0.0f;
+    float yaw = 0.0f;
+
+    roll = atan2f(q[0]*q[1] + q[2]*q[3], 0.5f - q[1]*q[1] - q[2]*q[2]);
+//    pitch = asinf(-2.0*(q1*q3 - q0*q2));
+    yaw = atan2f(q[1]*q[2] + q[0]*q[3], 0.5f - q[2]*q[2] - q[3]*q[3]);
+
+    roll = roll * 57.29578f;
+    pitch = pitch * 57.29578f;
+    yaw = yaw * 57.29578f + 180.0f;
+    return yaw;
+}
+
+
 bool GRDataApplier::applyToFinger(std::deque<std::vector<float>> &node, int index)
 {
-	if (!node.empty())
+    printf("Here we are");
+    if (!node.empty() && !node.front().size() < 4)
 	{
+        printf("Pop front:");
+        for(auto a : node.front())
+        {
+            printf("%f", a);
+        }
         nodeQuanternion = &node.front();
 
-		// get only z rotation
+        // get only z rotation
         (*nodeQuanternion)[1] = 0;
         (*nodeQuanternion)[2] = 0;
         double mag = sqrt(  ((*nodeQuanternion)[0])*((*nodeQuanternion)[0]) +
@@ -221,23 +253,39 @@ bool GRDataApplier::applyToFinger(std::deque<std::vector<float>> &node, int inde
 
 
         if(index == 4)
-            printf("%d quant: %f %f %f %f mag: %f\n",index,  (*nodeQuanternion)[0], (*nodeQuanternion)[1], (*nodeQuanternion)[2], (*nodeQuanternion)[3], mag);
-		// limit
+            printf("This is yaw: %f\n", getYaw(*nodeQuanternion));
+//            printf("Bending thumb on %f angles!\n", (*nodeQuanternion)[3]);
+//            printf("%d euler: %f %f %f %f\n",index,  (*nodeQuanternion)[0], (*nodeQuanternion)[1], (*nodeQuanternion)[2], (*nodeQuanternion)[3]);
 
-        // top 0.6 bottom - 0.2
 
-//        if (abs((*nodeQuanternion)[3]) > 0.305f)
-//            (*nodeQuanternion)[3] = 0.205f;
-//        /*
-//        if ((*nodeQuanternion)[3] > 0.750f)
-//            (*nodeQuanternion)[3] = 0.750f;*/
+        if( getYaw(*nodeQuanternion) > getYaw(algDev.palm.front()))
+        {
+            printf("Moooving fingers");
+            // limit
+            if(getYaw(*nodeQuanternion) < 250.f && getYaw(*nodeQuanternion) > 180.f)
+            {
 
-        GLfloat mat[16];
-        quaternionToRotation(*nodeQuanternion, mat);
-        arm->bendFingerWithMatrix(index, mat);
+            GLfloat mat[16];
+            quaternionToRotation(*nodeQuanternion, mat);
+            arm->bendFingerWithMatrix(index, mat);
+            }
+        }
+//        arm->bendFirstPhalange(index, 0*(*nodeQuanternion)[3], 0, 180);
+        printf("Pop front:");
+        for(auto a : node.front())
+        {
+            printf("%f", a);
+        }
 
-		node.pop_front();
-		(*nodeQuanternion).clear();
+
+        if(!prevQuants[index].empty())
+        {
+
+            prevQuants[index].clear();
+        }
+        prevQuants[index] = node.front();
+        node.pop_front();
+        (*nodeQuanternion).clear();
 		return true;
 	}
 	return false;

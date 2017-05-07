@@ -57,8 +57,8 @@ private:
 	// for applying data
 	bool applyToFinger(std::deque<std::vector<float>>&, int);
 	bool applyToHand(std::deque<std::vector<float>>&);
-	std::vector<float>* nodeQuanternion;
-
+    std::vector<float>* nodeQuanternion;
+    std::vector<float> prevQuants[6];
 	bool fetchRunning = false;
 };
 

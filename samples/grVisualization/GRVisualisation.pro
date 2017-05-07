@@ -10,7 +10,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = GRVisualization
 TEMPLATE = app
-LIBS += -L/usr/lib64 -ldbus-1 -lglut -lGLU
+LIBS += -L/usr/lib64 -L../../externAssets/grt/lib -ldbus-1 -lglut -lGLU -lgrt
 INCLUDEPATH +=  /usr/include/dbus-1.0 /usr/lib64/dbus-1.0/include ./inc ../../externAssets/qcustomplot ../../externAssets/grt/include ../../externAssets/ ../../inc ./
 QMAKE_CXXFLAGS += -g -std=c++11
 
