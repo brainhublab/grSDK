@@ -67,6 +67,7 @@ int main (int argc, const char * argv[])
         }
 
     }
+    utils.clearTrainingData("DTW");
 
     return EXIT_SUCCESS;
 }

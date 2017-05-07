@@ -42,6 +42,8 @@ void GRUtilities::setSensors(std::vector<std::string> sens, std::string alg)
         this->datasetHMM.dimensions = sens.size() * 6; 
         this->datasetHMM.sample.resize(datasetHMM.dimensions);
         this->datasetHMM.sensors = sens;
+        this->datasetHMM.trainingData.setNumDimensions(datasetHMM.dimensions);
+
     }
     else
     {
