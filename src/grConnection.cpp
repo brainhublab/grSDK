@@ -3,15 +3,15 @@
 //constructor
 GRConnection::GRConnection()
 {
-    rfcommPath = "/dev/rfcomm0";
-    setUpRfcomm(rfcommPath);
+    this->rfcommPath = "/dev/rfcomm0";
+    setUpRfcomm(this->rfcommPath);
 }
 
 
 //destructor
 GRConnection::~GRConnection()
 {
-    close(portDescriptor);
+    close(this->portDescriptor);
 }
 
 
@@ -117,8 +117,6 @@ bool GRConnection::getDataThr(device_t* device)
 
 bool GRConnection::getData(device_t* device)
 {
-   // std::cout<<"running read while"<<std::endl;
-
     int id, i = 0;
     std::string msg;
     bool f0, f1, f2, f3, f4, f5;
@@ -126,15 +124,10 @@ bool GRConnection::getData(device_t* device)
     while(!f5)//!(f0==true && f1==true && f2==true && f3==true && f4==true && f5==true))
     {
        // std::cout<<"in read while"<<std::endl;
-
-     
-
         msg = getNext();
         std::stringstream ss(msg);
 
         ss >> id;
-//vlad        std::cout<<"ID: "<<" "<<id<<"MSG :"<<msg<<std::endl;
-
         switch(id)
         {
             case 0:
@@ -194,7 +187,7 @@ bool GRConnection::getData(device_t* device)
 //private helper methods
 bool GRConnection::setUpRfcomm(std::string src)
 {
-    portDescriptor = openPort(src);
+    this->portDescriptor = openPort(src);
     if(portDescriptor < 0)
     {
         return false;
@@ -253,7 +246,7 @@ std::string GRConnection::getNext()
 
     while(true)
     {
-        n = read(portDescriptor, buf, 1);
+        n = read(this->portDescriptor, buf, 1);
         if(n < 0)
         {
             std::cout << "GRConnection::getNext read failed" << std::endl;
@@ -331,6 +324,9 @@ bool GRConnection::splitData(std::string data, imu* sensor)
     {
         return false;
     }
+    gyro.clear();
+    acc.clear();
+    mag.clear();
     
 }
 

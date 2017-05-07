@@ -27,19 +27,35 @@ class GRAlgorithm
         GRAlgorithm(const GRAlgorithm& );
         GRAlgorithm& operator=(const GRAlgorithm&);
         void grInitAlgorithms();
-        //bool
+        //madgwick
         void madgwickUpdateBuffer(imu*, std::deque<std::vector<float>>*, int, std::string flag);
         void madgwickUpdateThr(device_t*, alg_device_t*, int, std::string flag);
+        //gesture recognition
+        // Loads training data from .grt file
+        bool loadTrainingData(string filepath);
+        // Loads test data from .grt file
+        bool loadTestData(string filepath);
+        // Takes `size`% from training data to use for testing accuracy
+        bool setTestDataFromTraining(int size);
+        // Traing the algorithm
+        bool train();
+        // Test the algorithm with testData and return accuracy
+        double test();
+        double getTestAccuracy();
+        // Used for saving/loading trained model of the algorithm
+        bool saveModel(string filepath);
+        bool loadModel(string filepath);
+        // Predictions functions
+        bool predict(GRT::MatrixDouble timeseries);
+        GRT::UINT getPredictedClassLabel();
+        double getMaximumLikelihood();
 
-
- 
-   private:
+    private:
         //helper methods
         double constrain(double , double , double );
         double gravity = 256;
+        //madgwick algorithm vars and methods
         float q0 , q1, q2, q3;  // quaternion of sensor frame relative to auxiliary frame
-        //float sampleFreq = 512.0;
-        //float betaDef = 0.1;
         float beta;
         float roll, pitch, yaw;
         std::vector<float> angles;
@@ -47,10 +63,19 @@ class GRAlgorithm
 
         std::vector<float> computeAngles();
         float invSqrt(float x);            // algorithm gain
-        void MadgwickAHRSupdate(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz, std::deque<std::vector<float>>*, int, std::string);
-		void MadgwickAHRSupdateIMU(float gx, float gy, float gz, float ax, float ay, float az, std::deque<std::vector<float>>*, int, std::string);
+        void MadgwickAHRSupdate(float gx, float gy, float gz, float ax, float ay, float az, 
+                float mx, float my, float mz, std::deque<std::vector<float>>*, int, std::string);
+        void MadgwickAHRSupdateIMU(float gx, float gy, float gz, float ax, float ay, float az, 
+                std::deque<std::vector<float>>*, int, std::string);
 
-    	};
+        //gesture recognition vars and methods
+        GRT::DTW dtw;
+        GRT::TimeSeriesClassificationData trainingData;
+        GRT::TimeSeriesClassificationData testData;
+
+        double testAccuracy = 0.0;
+
+};
 
 
 #endif
