@@ -3,15 +3,15 @@
 //constructor
 GRConnection::GRConnection()
 {
-    this->rfcommPath = "/dev/rfcomm0";
-    setUpRfcomm(this->rfcommPath);
+    rfcommPath = "/dev/rfcomm0";
+    setUpRfcomm(rfcommPath);
 }
 
 
 //destructor
 GRConnection::~GRConnection()
 {
-    close(this->portDescriptor);
+    close(portDescriptor);
 }
 
 
@@ -246,7 +246,7 @@ std::string GRConnection::getNext()
 
     while(true)
     {
-        n = read(this->portDescriptor, buf, 1);
+        n = read(portDescriptor, buf, 1);
         if(n < 0)
         {
             std::cout << "GRConnection::getNext read failed" << std::endl;

@@ -202,7 +202,9 @@ bool GRDataApplier::applyToHand(std::deque<std::vector<float>> &node)
 
         //arm->bendHand((*nodeQuanternion)[2], (*nodeQuanternion)[1], (*nodeQuanternion)[3]);
         if(!prevQuants[5].empty())
-            prevQuants[5].clear();
+		{
+			prevQuants[5].clear();
+		}
         prevQuants[5] = *nodeQuanternion;
 
         node.pop_front();
@@ -258,18 +260,37 @@ bool GRDataApplier::applyToFinger(std::deque<std::vector<float>> &node, int inde
 //            printf("%d euler: %f %f %f %f\n",index,  (*nodeQuanternion)[0], (*nodeQuanternion)[1], (*nodeQuanternion)[2], (*nodeQuanternion)[3]);
 
 
-        if( getYaw(*nodeQuanternion) > getYaw(algDev.palm.front()))
-        {
-            printf("Moooving fingers");
-            // limit
-            if(getYaw(*nodeQuanternion) < 250.f && getYaw(*nodeQuanternion) > 180.f)
-            {
+		bool moveit = false;
+		/*if(!prevQuants[index].empty())
+		{
+			float palmQuantDiff = getYaw(prevQuants[5]) - getYaw(algDev.palm.front());
+			float fingerQuantDiff = getYaw(prevQuants[index]) - getYaw(*nodeQuanternion);
+			if((palmQuantDiff > fingerQuantDiff && (abs(palmQuantDiff-fingerQuantDiff) > 1.f)) ||
+					(palmQuantDiff < fingerQuantDiff && (abs(fingerQuantDiff-palmQuantDiff) > 1.f)))
+			{
+				moveit = true;
+			}
+		}*/
+//if( getYaw(*nodeQuanternion) > getYaw(algDev.palm.front()))
 
-            GLfloat mat[16];
-            quaternionToRotation(*nodeQuanternion, mat);
-            arm->bendFingerWithMatrix(index, mat);
-            }
-        }
+		//if( getYaw(*nodeQuanternion) > getYaw(algDev.palm.front()))
+		//{
+			printf("Moooving fingers");
+			// limit
+			float diff = getYaw(algDev.palm.front()) - getYaw(*nodeQuanternion);
+	//		float diff2 = getYaw(*nodeQuanternion) - getYaw(algDev.palm.front());
+				printf("\n============\nHere is diff: %f, Yaw of %d finger: %f, Yaw of Palm: %f \n\n", diff, index, getYaw(*nodeQuanternion), getYaw(algDev.palm.front()));
+					//if(getYaw(*nodeQuanternion) < 300.f && getYaw(*nodeQuanternion) > 100.f)
+			//float d = -60;
+			//if(diff < 15 && diff > -90)
+			if(getYaw(*nodeQuanternion) < 280.f && getYaw(*nodeQuanternion) > 120.f)// && diff < 15.f && diff > -90)
+			{
+
+				GLfloat mat[16];
+				quaternionToRotation(*nodeQuanternion, mat);
+				arm->bendFingerWithMatrix(index, mat);
+			}
+		//}
 //        arm->bendFirstPhalange(index, 0*(*nodeQuanternion)[3], 0, 180);
         printf("Pop front:");
         for(auto a : node.front())
