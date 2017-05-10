@@ -235,14 +235,15 @@ float getYaw(std::vector<float> &q)
 
 bool GRDataApplier::applyToFinger(std::deque<std::vector<float>> &node, int index)
 {
-    printf("Here we are");
+	//printf("Here we are");
     if (!node.empty() && !node.front().size() < 4)
 	{
-        printf("Pop front:");
+		std::cout<<"Pop front	:";
         for(auto a : node.front())
         {
-            printf("%f", a);
+			std::cout<<a;
         }
+		std::cout<<std::endl;
         nodeQuanternion = &node.front();
 
         // get only z rotation
@@ -275,11 +276,11 @@ bool GRDataApplier::applyToFinger(std::deque<std::vector<float>> &node, int inde
 
 		//if( getYaw(*nodeQuanternion) > getYaw(algDev.palm.front()))
 		//{
-			printf("Moooving fingers");
+			//printf("Moooving fingers");
 			// limit
 			float diff = getYaw(algDev.palm.front()) - getYaw(*nodeQuanternion);
 	//		float diff2 = getYaw(*nodeQuanternion) - getYaw(algDev.palm.front());
-				printf("\n============\nHere is diff: %f, Yaw of %d finger: %f, Yaw of Palm: %f \n\n", diff, index, getYaw(*nodeQuanternion), getYaw(algDev.palm.front()));
+				//printf("\n============\nHere is diff: %f, Yaw of %d finger: %f, Yaw of Palm: %f \n\n", diff, index, getYaw(*nodeQuanternion), getYaw(algDev.palm.front()));
 					//if(getYaw(*nodeQuanternion) < 300.f && getYaw(*nodeQuanternion) > 100.f)
 			//float d = -60;
 			//if(diff < 15 && diff > -90)
@@ -292,11 +293,12 @@ bool GRDataApplier::applyToFinger(std::deque<std::vector<float>> &node, int inde
 			}
 		//}
 //        arm->bendFirstPhalange(index, 0*(*nodeQuanternion)[3], 0, 180);
-        printf("Pop front:");
+		std::cout<<"Pop front: ";
         for(auto a : node.front())
         {
-            printf("%f", a);
+		   std::cout<<a;
         }
+		std::cout<<std::endl;
 
 
         if(!prevQuants[index].empty())

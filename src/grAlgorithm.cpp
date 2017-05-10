@@ -65,7 +65,7 @@ void GRAlgorithm::MadgwickAHRSupdate(float gx, float gy, float gz, float ax, flo
     gy *= 0.0174533f;
     gz *= 0.0174533f;
 
-    std::cout<<"Pre-Middle Q :"<<q0<<" "<<q1<<" "<<q2<<" "<<q3<<std::endl;
+	//std::cout<<"Pre-Middle Q :"<<q0<<" "<<q1<<" "<<q2<<" "<<q3<<std::endl;
     // Rate of change of quaternion from gyroscope
     qDot1 = 0.5f * (-q1 * gx - q2 * gy - q3 * gz);
     qDot2 = 0.5f * (q0 * gx + q2 * gz - q3 * gy);
@@ -302,7 +302,7 @@ void GRAlgorithm::madgwickUpdateBuffer(imu* imu, std::deque<std::vector<float>>*
         mag = imu->mag.front();
         imu->mag.pop_front();
 
-        std::cout<<"\nbefore madgwickUpdate() Q :"<<q0<<" "<<q1<<" "<<q2<<" "<<q3<<std::endl;
+	   // std::cout<<"\nbefore madgwickUpdate() Q :"<<q0<<" "<<q1<<" "<<q2<<" "<<q3<<std::endl;
         MadgwickAHRSupdate(gyro[0], gyro[1], gyro[2], accel[0], accel[1], accel[2], mag[0], mag[1], mag[2], 
                 rotations, freqCallibration, flag);
     }

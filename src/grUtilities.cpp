@@ -2,10 +2,10 @@
 GRUtilities::GRUtilities()
 {
 
-    this->datasetDTW.sensors.clear();
-    this->datasetDTW.gestureLabel = 1;
-    this->datasetHMM.sensors.clear();
-    this->datasetHMM.gestureLabel = 1;
+    datasetDTW.sensors.clear();
+    datasetDTW.gestureLabel = 1;
+    datasetHMM.sensors.clear();
+    datasetHMM.gestureLabel = 1;
     //datasetDTW.trainingData.setNumDimensions(datasetDTW.dimensions);
     //datasetDTW.trainingData.setDatasetName("grDTWTrainingData"); //TODO later add relative name 
     //datasetDTW.trainingData.setInfoText("Thisdataset contains some GR data"); //later add relative info text
@@ -31,18 +31,18 @@ void GRUtilities::setSensors(std::vector<std::string> sens, std::string alg)
 {
     if(alg == "DTW")
     {
-        this->datasetDTW.dimensions = sens.size() * 6; 
-        this->datasetDTW.sample.resize(datasetDTW.dimensions);
-        this->datasetDTW.sensors = sens;
-        this->datasetDTW.trainingData.setNumDimensions(datasetDTW.dimensions);
+        datasetDTW.dimensions = sens.size() * 6; 
+        datasetDTW.sample.resize(datasetDTW.dimensions);
+        datasetDTW.sensors = sens;
+        datasetDTW.trainingData.setNumDimensions(datasetDTW.dimensions);
 
     }
     else if(alg == "HMM")
     {
-        this->datasetHMM.dimensions = sens.size() * 6; 
-        this->datasetHMM.sample.resize(datasetHMM.dimensions);
-        this->datasetHMM.sensors = sens;
-        this->datasetHMM.trainingData.setNumDimensions(datasetHMM.dimensions);
+        datasetHMM.dimensions = sens.size() * 6; 
+        datasetHMM.sample.resize(datasetHMM.dimensions);
+        datasetHMM.sensors = sens;
+        datasetHMM.trainingData.setNumDimensions(datasetHMM.dimensions);
 
     }
     else
@@ -56,15 +56,15 @@ void GRUtilities::setDatasetProperties(std::string dataSetName, std::string info
 {
     if(alg == "DTW")
     {
-        this->datasetDTW.trainingData.setDatasetName(dataSetName);
-        this->datasetDTW.trainingData.setInfoText(infoText);
-        this->datasetDTW.fileProp = fProp;
+        datasetDTW.trainingData.setDatasetName(dataSetName);
+        datasetDTW.trainingData.setInfoText(infoText);
+        datasetDTW.fileProp = fProp;
     }
     else if(alg == "HMM")
     {
-        this->datasetHMM.trainingData.setDatasetName(dataSetName);
-        this->datasetHMM.trainingData.setInfoText(infoText);
-        this->datasetHMM.fileProp = fProp;
+        datasetHMM.trainingData.setDatasetName(dataSetName);
+        datasetHMM.trainingData.setInfoText(infoText);
+        datasetHMM.fileProp = fProp;
     }
     else
     {
@@ -77,11 +77,11 @@ void GRUtilities::setNextLabel(std::string alg)
 {
     if(alg == "DTW")
     {
-        this->datasetDTW.gestureLabel +=1;
+        datasetDTW.gestureLabel +=1;
     }
     else if(alg == "HMM")
     {
-        this->datasetHMM.gestureLabel +=1;
+        datasetHMM.gestureLabel +=1;
     }
     else
     {
@@ -94,11 +94,11 @@ void GRUtilities::clearTrainingData(std::string alg)
 {
     if(alg == "DTW")
     {
-        this->datasetDTW.trainingData.clear();
+        datasetDTW.trainingData.clear();
     }
     else if(alg == "HMM")
     {
-        this->datasetHMM.trainingData.clear();
+        datasetHMM.trainingData.clear();
     }
 
 }
@@ -110,11 +110,10 @@ bool GRUtilities::pushDatasetDTW(device_t *dev )
 
     int counter = 0;
 
-    for(int i=0; i<this->datasetDTW.sensors.size(); i++)
+    for(int i=0; i < datasetDTW.sensors.size(); i++)
     {
 
-        if(dev->imus[this->datasetDTW.sensors[i]]->gyro.front().size() == 3 &&
-              dev->imus[this->datasetDTW.sensors[i]]->acc.front().size() == 3)
+       if(!dev->imus[datasetDTW.sensors[i]]->gyro.empty() && !dev->imus[datasetDTW.sensors[i]]->gyro.front().empty() && !dev->imus[datasetDTW.sensors[i]]->acc.empty() && !dev->imus[datasetDTW.sensors[i]]->acc.front().empty() )
         {
                    
         for(int j=0; j<6; j++)
@@ -125,17 +124,15 @@ bool GRUtilities::pushDatasetDTW(device_t *dev )
                 //std::cout<<datasetDTW.sensors[i]<<std::endl;
                 //std::cout<<"F"<<dev->imus["palm"]->gyro.front()[j]<<std::endl;
                 //std::cout<<"D "<<(*dev->imus[datasetDTW.sensors[i]]).gyro.front()[j]<<std::endl;
-                std::cout<<"J "<<j<<std::endl;
-                {
-                    std::cout<<dev->imus[this->datasetDTW.sensors[i]]->gyro.front().size()<<std::endl;
-                    this->datasetDTW.sample[j+counter] = dev->imus[this->datasetDTW.sensors[i]]->gyro.front()[j];
-                }
+               // std::cout<<"J "<<j<<std::endl;
+                 //   std::cout<<dev->imus[datasetDTW.sensors[i]]->gyro.front().size()<<std::endl;
+                 datasetDTW.sample[j+counter] = dev->imus[datasetDTW.sensors[i]]->gyro.front()[j];
 
             }
             else 
             {
-                this->datasetDTW.sample[(j+counter)] = dev->imus[this->datasetDTW.sensors[i]]->acc.front()[j-3];
-
+                datasetDTW.sample[(j+counter)] = dev->imus[datasetDTW.sensors[i]]->acc.front()[j-3];
+                
             }
         }
         counter +=6;
@@ -144,40 +141,44 @@ bool GRUtilities::pushDatasetDTW(device_t *dev )
 
 
     usleep(20);
-    this->datasetDTW.trainingSample.push_back(this->datasetDTW.sample);
-    for(int i=0; i<this->datasetDTW.sensors.size(); i++)
-    {
-        dev->imus[this->datasetDTW.sensors[i]]->gyro.pop_front();
-        dev->imus[this->datasetDTW.sensors[i]]->acc.pop_front();
-    }
+    datasetDTW.trainingSample.push_back(datasetDTW.sample);
+    for(int i=0; i<datasetDTW.sensors.size(); i++)
+   {
+      if(!dev->imus[datasetDTW.sensors[i]]->gyro.empty() && !dev->imus[datasetDTW.sensors[i]]->gyro.front().empty() && !dev->imus[datasetDTW.sensors[i]]->acc.empty() && !dev->imus[datasetDTW.sensors[i]]->acc.front().empty() )
+        {
+  
+                 dev->imus[datasetDTW.sensors[i]]->gyro.pop_front();
+                dev->imus[datasetDTW.sensors[i]]->acc.pop_front();
+        }
+   }
 
 
-    this->datasetDTW.trainingData.addSample(this->datasetDTW.gestureLabel, this->datasetDTW.trainingSample);
+    datasetDTW.trainingData.addSample(datasetDTW.gestureLabel, datasetDTW.trainingSample);
 
 }
 
 bool GRUtilities::pushDatasetHMM(device_t *dev)
 {
-    this->datasetHMM.trainingData.setNumDimensions(this->datasetHMM.dimensions);
-    this->datasetHMM.trainingData.setDatasetName("grDTWTrainingData"); //TODO later add relative name 
-    this->datasetHMM.trainingData.setInfoText("Thisdataset contains some GR data"); //later add relative info text
+    datasetHMM.trainingData.setNumDimensions(datasetHMM.dimensions);
+    datasetHMM.trainingData.setDatasetName("grDTWTrainingData"); //TODO later add relative name 
+    datasetHMM.trainingData.setInfoText("Thisdataset contains some GR data"); //later add relative info text
 
     //UINT gestureLabel = 1;
 
     int counter = 0;
 
-    for(int i=0; i<this->datasetHMM.sensors.size(); i++)
+    for(int i=0; i<datasetHMM.sensors.size(); i++)
     {
         for(int j=0; j<6; j++)
         {
             if(j < 3 )
             {
-                this->datasetHMM.sample[j+counter] = dev->imus[this->datasetHMM.sensors[i]]->gyro.front()[j];
+                datasetHMM.sample[j+counter] = dev->imus[datasetHMM.sensors[i]]->gyro.front()[j];
 
             }
             else 
             {
-                this->datasetHMM.sample[(j+counter)] = dev->imus[this->datasetHMM.sensors[i]]->acc.front()[i-3];
+                datasetHMM.sample[(j+counter)] = dev->imus[datasetHMM.sensors[i]]->acc.front()[i-3];
 
             }
         }
@@ -186,15 +187,15 @@ bool GRUtilities::pushDatasetHMM(device_t *dev)
 
 
     usleep(20);
-    this->datasetHMM.trainingSample.push_back(this->datasetHMM.sample);
-    for(int i=0; i<this->datasetHMM.sensors.size(); i++)
+    datasetHMM.trainingSample.push_back(datasetHMM.sample);
+    for(int i=0; i<datasetHMM.sensors.size(); i++)
     {
-        dev->imus[this->datasetHMM.sensors[i]]->gyro.pop_front();
-        dev->imus[this->datasetHMM.sensors[i]]->acc.pop_front();
+        dev->imus[datasetHMM.sensors[i]]->gyro.pop_front();
+        dev->imus[datasetHMM.sensors[i]]->acc.pop_front();
     }
 
 
-    this->datasetHMM.trainingData.addSample(this->datasetHMM.gestureLabel, this->datasetHMM.trainingSample);
+    datasetHMM.trainingData.addSample(datasetHMM.gestureLabel, datasetHMM.trainingSample);
 
 }
 
@@ -202,7 +203,7 @@ bool GRUtilities::saveDataset(std::string alg)
 {
     if(alg == "DTW")
     {
-        if(!this->datasetDTW.trainingData.save(("data/grTrainingDTW"+this->datasetDTW.fileProp)))
+        if(!datasetDTW.trainingData.save(("data/grTrainingDTW"+datasetDTW.fileProp)))
         {
             std::cout<<"ERROR: Failed to save dataset to file \n";
             return EXIT_FAILURE;
@@ -213,7 +214,7 @@ bool GRUtilities::saveDataset(std::string alg)
     }
     else if(alg == "HMM")
     {
-        if(!this->datasetHMM.trainingData.save(("data/grTrainingHMM"+this->datasetHMM.fileProp)))
+        if(!datasetHMM.trainingData.save(("data/grTrainingHMM"+datasetHMM.fileProp)))
         {
             std::cout<<"ERROR: Failed to save dataset to file \n";
             return EXIT_FAILURE;

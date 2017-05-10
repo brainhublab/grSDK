@@ -121,13 +121,45 @@ bool GRConnection::getData(device_t* device)
     std::string msg;
     bool f0, f1, f2, f3, f4, f5;
     f0 = f1 = f2 = f3 = f4 = f5 = false;
-    while(!f5)//!(f0==true && f1==true && f2==true && f3==true && f4==true && f5==true))
+    while(i<6)//!(f0==true && f1==true && f2==true && f3==true && f4==true && f5==true))
     {
        // std::cout<<"in read while"<<std::endl;
         msg = getNext();
         std::stringstream ss(msg);
 
         ss >> id;
+        if(id == 0)
+        {
+        
+                    splitData(msg, &device->pinky);//TODO add if statement
+        }
+        else if(id ==1)
+        {
+        
+                    splitData(msg, &device->ring);
+        }
+        else if(id == 2)
+        {
+        
+                    splitData(msg, &device->middle);
+        }
+        else if(id == 3)
+        {
+        
+                    splitData(msg, &device->index);
+        }
+        else if(id==4)
+        {
+        
+                    splitData(msg, &device->thumb);
+        }
+        else if(id==5)
+        {
+        
+                
+                    splitData(msg, &(device->palm));
+        }
+/*
         switch(id)
         {
             case 0:
@@ -174,7 +206,7 @@ bool GRConnection::getData(device_t* device)
                 }
                 break;
         }
-
+*/
         msg.clear();
         i++;
     }
@@ -292,7 +324,7 @@ bool GRConnection::splitData(std::string data, imu* sensor)
     std::stringstream ss(data);
     std::vector<float> gyro, acc, mag;
 
-    while(ss >> n)
+    while(ss >> n && i<10)
     {
         arr[i] = n;
         i++;

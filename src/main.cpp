@@ -27,8 +27,13 @@ int main (int argc, const char * argv[])
     GRUtilities utils;
 
     vector<string> sensors;// ("palm", "pinky");
-    sensors.push_back("palm");
     sensors.push_back("pinky");
+    sensors.push_back("ring");
+    sensors.push_back("middle");
+    sensors.push_back("index");
+    sensors.push_back("thumb");
+    sensors.push_back("palm");
+    
     string alg="DTW";
     utils.setDatasetProperties("testDataset", "Test info text", "test", alg);
     utils.setSensors(sensors, alg);
@@ -40,17 +45,41 @@ int main (int argc, const char * argv[])
     noecho();
     nodelay(stdscr,TRUE);
 
+   for(int i=0; i<2; i++)
+    {
+        conn.getData(&dev);
+        dev.pinky.gyro.pop_front();
+        dev.pinky.acc.pop_front();
+        dev.pinky.mag.pop_front();
+        dev.ring.gyro.pop_front();
+        dev.ring.acc.pop_front();
+        dev.ring.mag.pop_front();
+        dev.middle.gyro.pop_front();
+        dev.middle.acc.pop_front();
+        dev.middle.mag.pop_front();
+        dev.index.gyro.pop_front();
+        dev.index.acc.pop_front();
+        dev.index.mag.pop_front();
+        dev.thumb.gyro.pop_front();
+        dev.thumb.acc.pop_front();
+        dev.thumb.mag.pop_front();
+        dev.palm.gyro.pop_front();
+        dev.palm.acc.pop_front();
+        dev.palm.mag.pop_front();
+        usleep(20);
+
+    }
     while(ch!='q')
     {
         ch=getch();
         if(ch == 'r')
         {
             cout<<"saving"<<endl;
-            while(ch!='s')
+            while(ch!='s' && conn.getData(&dev))
             {
                 cout<<"reading"<<endl;
                 ch = getch();
-                if(conn.getData(&dev))
+                if(true)
                 {
                     usleep(20);
                     utils.pushDatasetDTW(&dev);
@@ -59,7 +88,7 @@ int main (int argc, const char * argv[])
             }
         }
         else if(ch == 'n')
-        {
+        {              
             utils.saveDataset(alg);
 
             utils.setNextLabel(alg);
