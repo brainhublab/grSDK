@@ -240,11 +240,30 @@ bool GRDataApplier::applyToFinger(std::deque<std::vector<float>> &node, int inde
 	{
 		nodeQuanternion = &node.front();
 		GLfloat mat[16];
+
+		float yaw = getYaw(*nodeQuanternion);
+
+        float palmYaw = 0.0f;
+        if(!algDev.palm.empty() && algDev.palm.front().size() > 3)
+        {
+            palmYaw = getYaw(algDev.palm.front());
+        }
+
+
+        printf("This is yaw: %f, this is difference: %f\n", yaw, (palmYaw-yaw));
+
+
+        //if(palmYaw == 0.f || ((palmYaw-yaw) > -100.f && (palmYaw-yaw) < 30.f))// || ( yaw > 250 && (palmYaw-yaw) < -70.f && (palmYaw-yaw) > 30.f))
+
+        {
 		quaternionToRotation(*nodeQuanternion, mat);
-		arm->bendFingerWithMatrix(index, mat);
+        arm->bendFingerWithMatrix(index, mat);
+        }
+
         node.pop_front();
         (*nodeQuanternion).clear();
-		return true;
+
+        return true;
 	}
 	return false;
 }
