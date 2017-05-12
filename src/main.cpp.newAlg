@@ -7,15 +7,15 @@ int main (int argc, const char * argv[])
 {
     GRAlgorithm grAlg;
 
-    grAlg.loadTrainingData("./DTWTrainingData.grt");
+    grAlg.loadTrainingData("./data/DTWTrainingData.grt");
     grAlg.setTestDataFromTraining(20);
 
-    grAlg.saveModel("./DTWModel.grt");
-    grAlg.loadModel("./DTWModel.grt");
+    //grAlg.loadModel("./data/DTWModel.grt");
 
     grAlg.train();
     grAlg.test();
 
+    grAlg.saveModel("./data/DTWModel.grt");
     cout << grAlg.getTestAccuracy() << endl;
 
     return 0;

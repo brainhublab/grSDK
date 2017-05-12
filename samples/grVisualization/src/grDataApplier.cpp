@@ -173,8 +173,8 @@ bool GRDataApplier::fetchData()
     alg2.madgwickUpdateBuffer(&dev.ring, &algDev.ring, 140, "QATERNION");
     alg3.madgwickUpdateBuffer(&dev.middle, &algDev.middle, 160, "QATERNION");
     alg4.madgwickUpdateBuffer(&dev.index, &algDev.index, 180, "QATERNION");
-    alg5.madgwickUpdateBuffer(&dev.thumb, &algDev.thumb, 120, "QATERNION");
-    alg.madgwickUpdateBuffer(&dev.palm, &algDev.palm, 40, "QATERNION");
+    alg5.madgwickUpdateBuffer(&dev.thumb, &algDev.thumb, 140, "QATERNION");
+    alg.madgwickUpdateBuffer(&dev.palm, &algDev.palm, 60, "QATERNION");
 
 
     applyToFinger(algDev.pinky, 0);
@@ -238,30 +238,42 @@ bool GRDataApplier::applyToFinger(std::deque<std::vector<float>> &node, int inde
 	//printf("Here we are");
     if (!node.empty() && !node.front().size() < 4)
 	{
-		std::cout<<"Pop front	:";
-        for(auto a : node.front())
-        {
+		nodeQuanternion = &node.front();
+		GLfloat mat[16];
+		quaternionToRotation(*nodeQuanternion, mat);
+		arm->bendFingerWithMatrix(index, mat);
+        node.pop_front();
+        (*nodeQuanternion).clear();
+		return true;
+	}
+	return false;
+}
+
+/*hack	std::cout<<"Pop front	:";
+		for(auto a : node.front())
+		{
 			std::cout<<a;
-        }
+		}
 		std::cout<<std::endl;
-        nodeQuanternion = &node.front();
+		nodeQuanternion = &node.front();
+*/
+		// get only z rotation
+/*hack        (*nodeQuanternion)[1] = 0;
+		(*nodeQuanternion)[2] = 0;
+		double mag = sqrt(  ((*nodeQuanternion)[0])*((*nodeQuanternion)[0]) +
+							((*nodeQuanternion)[3])*((*nodeQuanternion)[3]));
+		(*nodeQuanternion)[0] /= mag;
+		(*nodeQuanternion)[3] /= mag;
 
-        // get only z rotation
-        (*nodeQuanternion)[1] = 0;
-        (*nodeQuanternion)[2] = 0;
-        double mag = sqrt(  ((*nodeQuanternion)[0])*((*nodeQuanternion)[0]) +
-                            ((*nodeQuanternion)[3])*((*nodeQuanternion)[3]));
-        (*nodeQuanternion)[0] /= mag;
-        (*nodeQuanternion)[3] /= mag;
 
-
-        if(index == 4)
-            printf("This is yaw: %f\n", getYaw(*nodeQuanternion));
+		if(index == 4)
+			printf("This is yaw: %f\n", getYaw(*nodeQuanternion));
 //            printf("Bending thumb on %f angles!\n", (*nodeQuanternion)[3]);
 //            printf("%d euler: %f %f %f %f\n",index,  (*nodeQuanternion)[0], (*nodeQuanternion)[1], (*nodeQuanternion)[2], (*nodeQuanternion)[3]);
 
 
 		bool moveit = false;
+hack*/
 		/*if(!prevQuants[index].empty())
 		{
 			float palmQuantDiff = getYaw(prevQuants[5]) - getYaw(algDev.palm.front());
@@ -278,38 +290,32 @@ bool GRDataApplier::applyToFinger(std::deque<std::vector<float>> &node, int inde
 		//{
 			//printf("Moooving fingers");
 			// limit
-			float diff = getYaw(algDev.palm.front()) - getYaw(*nodeQuanternion);
+	//		float diff = getYaw(algDev.palm.front()) - getYaw(*nodeQuanternion);
 	//		float diff2 = getYaw(*nodeQuanternion) - getYaw(algDev.palm.front());
 				//printf("\n============\nHere is diff: %f, Yaw of %d finger: %f, Yaw of Palm: %f \n\n", diff, index, getYaw(*nodeQuanternion), getYaw(algDev.palm.front()));
 					//if(getYaw(*nodeQuanternion) < 300.f && getYaw(*nodeQuanternion) > 100.f)
 			//float d = -60;
-			//if(diff < 15 && diff > -90)
-			if(getYaw(*nodeQuanternion) < 280.f && getYaw(*nodeQuanternion) > 120.f)// && diff < 15.f && diff > -90)
-			{
+//hack			//if(diff < 15 && diff > -90)
+//hack			if(getYaw(*nodeQuanternion) < 280.f && getYaw(*nodeQuanternion) > 120.f)// && diff < 15.f && diff > -90)
+//			{
 
-				GLfloat mat[16];
-				quaternionToRotation(*nodeQuanternion, mat);
-				arm->bendFingerWithMatrix(index, mat);
-			}
+		//		GLfloat mat[16];
+			//	quaternionToRotation(*nodeQuanternion, mat);
+				//arm->bendFingerWithMatrix(index, mat);
+//			}
 		//}
 //        arm->bendFirstPhalange(index, 0*(*nodeQuanternion)[3], 0, 180);
-		std::cout<<"Pop front: ";
-        for(auto a : node.front())
-        {
+/*hack		std::cout<<"Pop front: ";
+		for(auto a : node.front())
+		{
 		   std::cout<<a;
-        }
+		}
 		std::cout<<std::endl;
 
+	 if(!prevQuants[index].empty())
+		{
 
-        if(!prevQuants[index].empty())
-        {
-
-            prevQuants[index].clear();
-        }
-        prevQuants[index] = node.front();
-        node.pop_front();
-        (*nodeQuanternion).clear();
-		return true;
-	}
-	return false;
-}
+			prevQuants[index].clear();
+		}
+		prevQuants[index] = node.front();
+hack*/
