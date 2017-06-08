@@ -36,6 +36,57 @@ bool GRConnection::findDevices()
 //TODO need to be implemented later
 std::vector<device_t> GRConnection::getAvalibleDevices()
 {
+    dev_names deviceNames;
+    device_t device;
+    std::vector<device_t> devices;
+
+    inquiry_info *inqInfo = NULL;
+    int maxRsp, numRsp;
+    int devId, sock, len, flags;
+
+    char addr[19] = {0};
+    char name[248] = {0};
+
+    devId = hci_get_route(NULL);
+    sock = hci_open_dev(devId);
+    if(devId < 0 || sock < 0)
+    {
+        perror("opening socket while scan devices");
+        exit(1);
+    }
+
+    len = 8;
+    maxRsp = 255;
+    flags = IREQ_CACHE_FLUSH;
+    inqInfo = (inquiry_info*)malloc(maxRsp * sizeof(inquiry_info));
+
+    numRsp = hci_inquiry(devId, len, maxRsp, NULL, &inqInfo, flags);
+    if(numRsp < 0)
+    {
+        perror("hci_inquiry error while scanning devices");
+    }
+
+    for(int i =0; i < numRsp; i++)
+    {
+        ba2str(&(inqInfo + i)->bdaddr, addr);
+        memset(name, 0, sizeof(name));
+        if(hci_read_remote_name(sock, &(inqInfo + i)->bdaddr, sizeof(name), name, 0) < 0)
+        {
+            strcpy(name, "[unknown]");
+        }
+        else if(deviceNames.left == name || deviceNames.right == name || deviceNames.test == name )
+        {
+            device.id = i;
+            device.name = (std::string(name));
+            device.addr = (std::string(addr));
+
+            devices.push_back(device);
+
+            device.clear_attributes();
+        }
+    }
+    std::cout<< devices.size()<<std::endl;
+
 }
 
 

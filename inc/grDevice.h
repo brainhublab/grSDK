@@ -17,7 +17,7 @@ struct dev_names
     {
         left = "GR[L]";
         right = "GR[R]";
-        test = "hc-06";    
+        test = "HC-06";    
     }
 };
 struct imu
@@ -33,6 +33,8 @@ struct device_t
     int id;
     std::string name;
     
+    std::string addr;
+
     std::map<std::string, imu*> imus;
 
     imu pinky;
@@ -43,6 +45,8 @@ struct device_t
     imu palm;
     device_t()
     {
+       id = 0;
+
        pinky.id = 0;
        ring.id = 1;
        middle.id = 2;
@@ -58,18 +62,25 @@ struct device_t
        imus["thumb"] = &thumb;
        imus["palm"] = &palm;
     }
+
+    void clear_attributes()
+    {
+           id = 0;
+            name.clear();
+            addr.clear(); 
+      }
 };
 
 struct alg_device_t
 {
     // q x y z
     // to store quaternions
-    std::deque<std::vector<float>> pinky;
-    std::deque<std::vector<float>> ring;
-    std::deque<std::vector<float>> middle;
-    std::deque<std::vector<float>> index;
-    std::deque<std::vector<float>> thumb;
-    std::deque<std::vector<float>> palm;
+    std::deque<std::vector<float> > pinky;
+    std::deque<std::vector<float> > ring;
+    std::deque<std::vector<float> > middle;
+    std::deque<std::vector<float> > index;
+    std::deque<std::vector<float> > thumb;
+    std::deque<std::vector<float> > palm;
 };
 
 
