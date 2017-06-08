@@ -4,8 +4,11 @@
 #include <iostream>
 #include <deque>
 #include <string>
+#include <cstring>
 #include <vector>
 #include <map>
+
+#include <stdlib.h>
 
 struct dev_names
 {
@@ -20,6 +23,30 @@ struct dev_names
         test = "HC-06";    
     }
 };
+struct gr_message
+{
+    int dev_id;
+
+    std::vector<float> gyro;
+    std::vector<float> acc;
+    std::vector<float> mag;
+
+    float timestamp;
+
+    gr_message()
+    {
+        dev_id = 0.0;
+           
+        std::memset(&gyro[0], 0, sizeof(gyro));
+        std::memset(&acc[0], 0, sizeof(acc));
+        std::memset(&mag[0], 0, sizeof(mag));
+
+        timestamp = 0.0;
+    }
+};
+
+
+/*
 struct imu
 {
    int id; 
@@ -27,6 +54,13 @@ struct imu
     std::deque<std::vector<float> > acc;
     std::deque<std::vector<float> > mag;
 };
+*/
+struct imu
+{
+    int id;
+    std::deque<gr_message> data;
+};
+
 
 struct device_t
 {
@@ -36,13 +70,21 @@ struct device_t
     std::string addr;
 
     std::map<std::string, imu*> imus;
-
+/*
     imu pinky;
     imu ring;
     imu middle;
     imu index;
     imu thumb;
     imu palm;
+  */  //
+    imu pinky;
+    imu ring;
+    imu middle;
+    imu index;
+    imu thumb;
+    imu palm;
+
     device_t()
     {
        id = 0;
@@ -82,7 +124,5 @@ struct alg_device_t
     std::deque<std::vector<float> > thumb;
     std::deque<std::vector<float> > palm;
 };
-
-
 
 #endif

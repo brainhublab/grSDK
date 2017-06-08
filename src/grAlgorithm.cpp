@@ -287,7 +287,7 @@ double GRAlgorithm::constrain(double x, double a, double b)
 
 void GRAlgorithm::madgwickUpdateBuffer(imu* imu, std::deque<std::vector<float>>* rotations, 
         int freqCallibration, std::string flag)
-{
+{/*
     std::vector<float> gyro, accel, mag;
 
     while(!imu->gyro.empty() && imu->gyro.front().size() == 3 && 
@@ -306,7 +306,7 @@ void GRAlgorithm::madgwickUpdateBuffer(imu* imu, std::deque<std::vector<float>>*
         MadgwickAHRSupdate(gyro[0], gyro[1], gyro[2], accel[0], accel[1], accel[2], mag[0], mag[1], mag[2], 
                 rotations, freqCallibration, flag);
     }
-
+*/
 }
 void GRAlgorithm::madgwickUpdateThr(device_t* inDevice, alg_device_t* outDevice, 
         int freqCallibration, std::string flag)

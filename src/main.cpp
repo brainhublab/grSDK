@@ -2,8 +2,17 @@
 #include "grAlgorithmNew.h"
 #include "grConnection.h"
 #include "grDevice.h"
-using namespace GRT;
-using namespace std;
+
+#include <stdio.h>
+#include <iostream>
+#include <unistd.h>
+#include <string>
+#include <sys/socket.h>
+#include <bluetooth/bluetooth.h>
+#include <bluetooth/rfcomm.h>
+
+//using namespace GRT;
+//using namespace std;
 
 int main (int argc, const char * argv[])
 {

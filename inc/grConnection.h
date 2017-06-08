@@ -24,7 +24,7 @@
 #include <bluetooth/bluetooth.h>
 #include <bluetooth/hci.h>
 #include <bluetooth/hci_lib.h>
-
+#include <bluetooth/rfcomm.h>
 class GRConnection
 {
     public:
@@ -33,12 +33,14 @@ class GRConnection
         GRConnection(const GRConnection&);
         GRConnection& operator=(const GRConnection&);
 
-        bool findDevices();
         std::vector<device_t> getAvalibleDevices();
         int getDeviceId(device_t);
 
-        bool connect(std::string, std::string, std::string);
-        bool release(std::string, std::string, std::string);
+        //bool connect(std::string, std::string, std::string);
+       // bool release(std::string, std::string, std::string);
+        
+        bool getDataThrS(device_t *);
+        bool getDataS(device_t* );
 
         bool getDataThr(device_t*);
         bool getData(device_t*);
@@ -53,6 +55,8 @@ class GRConnection
         std::string getNext();
         int openPort(std::string);
         bool splitData(std::string data, imu*);
+        bool splitDataN(std::string, imu*);
+
 };
 
 #endif

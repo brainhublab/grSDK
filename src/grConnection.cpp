@@ -1,5 +1,5 @@
 #include "grConnection.h"
-
+#include <sys/socket.h>
 //constructor
 GRConnection::GRConnection()
 {
@@ -26,11 +26,6 @@ GRConnection& GRConnection::operator=(const GRConnection& t)
 {
 }
 
-
-//TODO later maybe we will implement his function in lower layer
-bool GRConnection::findDevices()
-{
-}
 
 
 //TODO need to be implemented later
@@ -87,6 +82,11 @@ std::vector<device_t> GRConnection::getAvalibleDevices()
     }
     std::cout<< devices.size()<<std::endl;
 
+    free(inqInfo);
+    close(sock);
+
+    return devices;
+
 }
 
 
@@ -95,7 +95,7 @@ int GRConnection::getDeviceId(device_t dev)
 {
 }
 
-
+/*
 //TODO add mor rfcomm devices and need to bee imlemented later
 bool GRConnection::connect(std::string serial_dev, std::string addr, std::string  chanel)
 {
@@ -150,8 +150,97 @@ bool GRConnection::release(std::string serial_dev, std::string addr, std::string
     std::cout<<"succssesfuly release device: "<<addr<<std::endl;
     return true;
 }
+//TODO
+*/
+bool GRConnection::getDataThrS(device_t* device)
+{
+
+}
+bool GRConnection::getDataS(device_t* device)
+{
+ 
+    struct sockaddr_rc addr = { 0 };
+    int sock, status, bytes_read;
+    int id;
+    char buf[1024] = {0};
+
+    std::string rawMessage;
+
+    //char dest TODO
+    
+    sock = socket(AF_BLUETOOTH, SOCK_STREAM, BTPROTO_RFCOMM);
+
+    addr.rc_family = AF_BLUETOOTH;
+    addr.rc_channel = (uint8_t) 1; //TODO maeby need to be changet with device id
+    str2ba(device->addr.c_str(), &addr.rc_bdaddr);
+
+    //connect to gr
+    status = connect(sock, (struct sockaddr *)&addr, sizeof(addr));
+
+    while(rawMessage.size() != 10)
+    {
+        bytes_read = read(sock, buf, sizeof(buf));
+
+        if(bytes_read >0)
+        {
+            for(int i=0; i<bytes_read; i++)
+            {
+                if(buf[i] != '\n')
+                {   
+                    
+                    rawMessage += buf[i];
+                    std::stringstream ss(rawMessage);
+
+                    ss >> id;
+                    if(id == 0)
+                    {
+
+                        splitDataN(rawMessage, &device->pinky);
+                        device->pinky.data.back().timestamp = 1;//TODO add if statement
+                    }
+                    else if(id ==1)
+                    {
+
+                        splitDataN(rawMessage, &device->ring);
+                        device->ring.data.back().timestamp = 1;
+                    }
+                    else if(id == 2)
+                    {
+
+                        splitDataN(rawMessage, &device->middle);
+                        device->middle.data.back().timestamp = 1;
+                    }
+                    else if(id == 3)
+                    {
+
+                        splitDataN(rawMessage, &device->index);
+                        device->index.data.back().timestamp = 1;
+                    }
+                    else if(id==4)
+                    {
+
+                        splitDataN(rawMessage, &device->thumb);
+                        device->thumb.data.back().timestamp = 1;
+                    }
+                    else if(id==5)
+                    {
 
 
+                        splitDataN(rawMessage, &(device->palm));
+                        device->palm.data.back().timestamp = 1;
+
+                    }
+
+                }
+                else
+                {
+                    //rawMessage.clear()
+                }
+
+            }
+        }
+    }
+}
 bool GRConnection::getDataThr(device_t* device)
 {
     std::thread thr(&GRConnection::getData, this, device);
@@ -165,7 +254,7 @@ bool GRConnection::getDataThr(device_t* device)
     return true;
 }
 
-
+/*
 bool GRConnection::getData(device_t* device)
 {
     int id, i = 0;
@@ -210,6 +299,7 @@ bool GRConnection::getData(device_t* device)
                 
                     splitData(msg, &(device->palm));
         }
+*/
 /*
         switch(id)
         {
@@ -258,6 +348,7 @@ bool GRConnection::getData(device_t* device)
                 break;
         }
 */
+/*
         msg.clear();
         i++;
     }
@@ -266,7 +357,7 @@ bool GRConnection::getData(device_t* device)
     return true;
 }
 
-
+*/
 //private helper methods
 bool GRConnection::setUpRfcomm(std::string src)
 {
@@ -368,9 +459,10 @@ int GRConnection::openPort(std::string path)
 }
 
 
-bool GRConnection::splitData(std::string data, imu* sensor)
+/*bool GRConnection::splitData(std::string data, imu* sensor)
 {
     int i = 0;
+    
     float n, arr[10];
     std::stringstream ss(data);
     std::vector<float> gyro, acc, mag;
@@ -410,6 +502,52 @@ bool GRConnection::splitData(std::string data, imu* sensor)
     gyro.clear();
     acc.clear();
     mag.clear();
+    
+}
+*/
+bool GRConnection::splitDataN(std::string data, imu* sensor)
+{
+    int i = 0;
+    int id;
+    float n, arr[10];
+    std::stringstream ss(data);
+   // std::vector<float> gyro, acc, mag;
+
+    gr_message msg;
+    while(ss >> n && i<10)
+    {
+        arr[i] = n;
+        i++;
+    }
+
+    for(int i=1;i<10;i++)
+    {
+        if(i <= 3)
+        {
+            msg.gyro.push_back(arr[i]);
+        }
+        else if(i > 3 && i <= 6)
+        {
+            msg.acc.push_back(arr[i]);
+        }
+        else if(i > 6 )
+        {
+            msg.mag.push_back(arr[i]);
+        }
+    }
+    if(msg.gyro.size() == 3 && msg.acc.size() == 3 && msg.mag.size() == 3)
+    {
+        sensor->data.push_back(msg);
+        
+        msg.gyro.clear();
+        msg.acc.clear();
+        msg.mag.clear();
+        return true;
+    }
+    else
+    {
+        return false;
+    }
     
 }
 
