@@ -25,7 +25,7 @@ struct dev_names
 };
 struct gr_message
 {
-    int dev_id;
+    int id;
 
     std::vector<float> gyro;
     std::vector<float> acc;
@@ -35,13 +35,36 @@ struct gr_message
 
     gr_message()
     {
-        dev_id = 0.0;
+        id = 0;
            
         std::memset(&gyro[0], 0, sizeof(gyro));
         std::memset(&acc[0], 0, sizeof(acc));
         std::memset(&mag[0], 0, sizeof(mag));
 
         timestamp = 0.0;
+    }
+    bool empty()
+    {
+        if((gyro.empty() && acc.empty() && mag.empty()) ||
+                gyro.empty() || acc.empty() || mag.empty())
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    bool is_complite()
+    {
+        if((gyro.size() == 3) && (acc.size() == 3) && (mag.size() == 3))
+        {
+            return true;
+        }
+        else 
+        {
+            return false;
+        }
     }
 };
 
@@ -59,6 +82,18 @@ struct imu
 {
     int id;
     std::deque<gr_message> data;
+
+    imu()
+    {
+        id = 0;
+        data.clear();
+    }
+
+    void pop_message_by_id()
+    {
+    
+    }
+
 };
 
 
@@ -70,14 +105,7 @@ struct device_t
     std::string addr;
 
     std::map<std::string, imu*> imus;
-/*
-    imu pinky;
-    imu ring;
-    imu middle;
-    imu index;
-    imu thumb;
-    imu palm;
-  */  //
+
     imu pinky;
     imu ring;
     imu middle;

@@ -113,7 +113,9 @@ bool GRUtilities::pushDatasetDTW(device_t *dev )
     for(int i=0; i < datasetDTW.sensors.size(); i++)
     {
 
-       if(!dev->imus[datasetDTW.sensors[i]]->gyro.empty() && !dev->imus[datasetDTW.sensors[i]]->gyro.front().empty() && !dev->imus[datasetDTW.sensors[i]]->acc.empty() && !dev->imus[datasetDTW.sensors[i]]->acc.front().empty() )
+       if(!dev->imus[datasetDTW.sensors[i]]->data.front().empty() && 
+               !dev->imus[datasetDTW.sensors[i]]->data.front().gyro.empty() && 
+               !dev->imus[datasetDTW.sensors[i]]->data.front().acc.empty() )
         {
                    
         for(int j=0; j<6; j++)
@@ -126,12 +128,12 @@ bool GRUtilities::pushDatasetDTW(device_t *dev )
                 //std::cout<<"D "<<(*dev->imus[datasetDTW.sensors[i]]).gyro.front()[j]<<std::endl;
                // std::cout<<"J "<<j<<std::endl;
                  //   std::cout<<dev->imus[datasetDTW.sensors[i]]->gyro.front().size()<<std::endl;
-                 datasetDTW.sample[j+counter] = dev->imus[datasetDTW.sensors[i]]->gyro.front()[j];
+                 datasetDTW.sample[j+counter] = dev->imus[datasetDTW.sensors[i]]->data.front().gyro[j];
 
             }
             else 
             {
-                datasetDTW.sample[(j+counter)] = dev->imus[datasetDTW.sensors[i]]->acc.front()[j-3];
+                datasetDTW.sample[(j+counter)] = dev->imus[datasetDTW.sensors[i]]->data.front().acc[j-3];
                 
             }
         }
@@ -144,11 +146,13 @@ bool GRUtilities::pushDatasetDTW(device_t *dev )
     datasetDTW.trainingSample.push_back(datasetDTW.sample);
     for(int i=0; i<datasetDTW.sensors.size(); i++)
    {
-      if(!dev->imus[datasetDTW.sensors[i]]->gyro.empty() && !dev->imus[datasetDTW.sensors[i]]->gyro.front().empty() && !dev->imus[datasetDTW.sensors[i]]->acc.empty() && !dev->imus[datasetDTW.sensors[i]]->acc.front().empty() )
+      if(!dev->imus[datasetDTW.sensors[i]]->data.empty() && 
+              !dev->imus[datasetDTW.sensors[i]]->data.front().gyro.empty() && 
+              !dev->imus[datasetDTW.sensors[i]]->data.front().acc.empty() )
         {
   
-                 dev->imus[datasetDTW.sensors[i]]->gyro.pop_front();
-                dev->imus[datasetDTW.sensors[i]]->acc.pop_front();
+                 dev->imus[datasetDTW.sensors[i]]->data.pop_front();
+                //dev->imus[datasetDTW.sensors[i]]->acc.pop_front();
         }
    }
 
@@ -173,12 +177,12 @@ bool GRUtilities::pushDatasetHMM(device_t *dev)
         {
             if(j < 3 )
             {
-                datasetHMM.sample[j+counter] = dev->imus[datasetHMM.sensors[i]]->gyro.front()[j];
+                datasetHMM.sample[j+counter] = dev->imus[datasetHMM.sensors[i]]->data.front().gyro[j];
 
             }
             else 
             {
-                datasetHMM.sample[(j+counter)] = dev->imus[datasetHMM.sensors[i]]->acc.front()[i-3];
+                datasetHMM.sample[(j+counter)] = dev->imus[datasetHMM.sensors[i]]->data.front().acc[i-3];
 
             }
         }
@@ -190,8 +194,8 @@ bool GRUtilities::pushDatasetHMM(device_t *dev)
     datasetHMM.trainingSample.push_back(datasetHMM.sample);
     for(int i=0; i<datasetHMM.sensors.size(); i++)
     {
-        dev->imus[datasetHMM.sensors[i]]->gyro.pop_front();
-        dev->imus[datasetHMM.sensors[i]]->acc.pop_front();
+        dev->imus[datasetHMM.sensors[i]]->data.pop_front();
+        //dev->imus[datasetHMM.sensors[i]]->acc.pop_front();
     }
 
 

@@ -243,7 +243,7 @@ bool GRConnection::getDataS(device_t* device)
 }
 bool GRConnection::getDataThr(device_t* device)
 {
-    std::thread thr(&GRConnection::getData, this, device);
+    std::thread thr(&GRConnection::getDataS, this, device);
     std::thread::id thrId;
 
     thrId = thr.get_id();

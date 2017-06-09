@@ -287,26 +287,25 @@ double GRAlgorithm::constrain(double x, double a, double b)
 
 void GRAlgorithm::madgwickUpdateBuffer(imu* imu, std::deque<std::vector<float>>* rotations, 
         int freqCallibration, std::string flag)
-{/*
+{
     std::vector<float> gyro, accel, mag;
 
-    while(!imu->gyro.empty() && imu->gyro.front().size() == 3 && 
-            !imu->acc.empty() && imu->acc.front().size() == 3 && 
-            !imu->mag.empty() && imu->mag.front().size() == 3)
+    while(!imu->data.front().gyro.empty() && imu->data.front().gyro.size() == 3 && 
+            !imu->data.front().acc.empty() && imu->data.front().acc.size() == 3 && 
+            !imu->data.front().mag.empty() && imu->data.front().mag.size() == 3)
     {
         // std::cout<<"in alg while"<<endl;
-        gyro = imu->gyro.front();
-        imu->gyro.pop_front();
-        accel = imu->acc.front();
-        imu->acc.pop_front();
-        mag = imu->mag.front();
-        imu->mag.pop_front();
+        gyro = imu->data.front().gyro;
+        accel = imu->data.front().acc;
+        mag = imu->data.front().mag;
+        
+        imu->data.pop_front();
 
 	   // std::cout<<"\nbefore madgwickUpdate() Q :"<<q0<<" "<<q1<<" "<<q2<<" "<<q3<<std::endl;
         MadgwickAHRSupdate(gyro[0], gyro[1], gyro[2], accel[0], accel[1], accel[2], mag[0], mag[1], mag[2], 
                 rotations, freqCallibration, flag);
     }
-*/
+
 }
 void GRAlgorithm::madgwickUpdateThr(device_t* inDevice, alg_device_t* outDevice, 
         int freqCallibration, std::string flag)
