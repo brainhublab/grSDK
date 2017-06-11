@@ -2,8 +2,8 @@
 *.swp
 *.ini
 .idea/*
-**/bin/*
-**/build/*
+bin/*
+build/*
 externAssets/*.zip
 externAssets/grt
 externAssets/eigen
