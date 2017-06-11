@@ -6,4 +6,5 @@
 **/build/*
 **/build/generated_files/*
 externAssets/*.zip
-
+*/**/*.zip
+*/**/*.tar.gz
