@@ -4,6 +4,7 @@
 .idea/*
 **/bin/*
 **/build/*
-**/build/generated_files/*
 externAssets/*.zip
-
+externAssets/grt
+externAssets/eigen
+data/*
