@@ -15,10 +15,12 @@
 #include "GRT/GRT.h"
 
 #include <grDevice.h>
+#include <grMadgwick.h>
+#include <grGrt.h>
 using namespace std;
 //using namespace Eigen;
 
-class GRAlgorithm 
+class GRAlgorithm : protected GRMadgwick, public GRGrt
 {
 
     public:
@@ -30,7 +32,7 @@ class GRAlgorithm
         //madgwick
         void madgwickUpdateBuffer(imu*, std::deque<std::vector<float>>*, int, std::string flag);
         void madgwickUpdateThr(device_t*, alg_device_t*, int, std::string flag);
-        //gesture recognition
+        /*//gesture recognition
         // Loads training data from .grt file
         bool loadTrainingData(string filepath);
         // Loads test data from .grt file
@@ -49,10 +51,10 @@ class GRAlgorithm
         bool predict(GRT::MatrixDouble timeseries);
         GRT::UINT getPredictedClassLabel();
         double getMaximumLikelihood();
-
+*/
     private:
         //helper methods
-        double constrain(double , double , double );
+        /*double constrain(double , double , double );
         double gravity = 256;
         //madgwick algorithm vars and methods
         float q0 , q1, q2, q3;  // quaternion of sensor frame relative to auxiliary frame
@@ -74,7 +76,7 @@ class GRAlgorithm
         GRT::TimeSeriesClassificationData testData;
 
         double testAccuracy = 0.0;
-
+*/
 };
 
 

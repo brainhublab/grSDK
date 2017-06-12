@@ -5,7 +5,7 @@
 
 GRAlgorithm::GRAlgorithm()
 {
-    this->beta = betaDef;
+    /*this->beta = betaDef;
     this->q0 = 1.0f;
     this->q1 = 0.0f;
     this->q2 = 0.0f;
@@ -15,7 +15,7 @@ GRAlgorithm::GRAlgorithm()
     this->roll = 0.0f;
     this->pitch = 0.0f;
     this->yaw = 0.0f;
-    this->anglesComputed = 0;
+    this->anglesComputed = 0;*/
 }
 
 GRAlgorithm::~GRAlgorithm()
@@ -25,26 +25,27 @@ GRAlgorithm::~GRAlgorithm()
 
 GRAlgorithm::GRAlgorithm(const GRAlgorithm& t)
 {
-    this->dtw = GRT::DTW(t.dtw);
+    /*this->dtw = GRT::DTW(t.dtw);
     this->trainingData = GRT::TimeSeriesClassificationData(t.trainingData);
     this->testData = GRT::TimeSeriesClassificationData(t.testData);
 
     this->testAccuracy = t.testAccuracy;
+    */
 }
 
 GRAlgorithm& GRAlgorithm::operator=(const GRAlgorithm& t)
 {
-    this->dtw = GRT::DTW(t.dtw);
+    /*this->dtw = GRT::DTW(t.dtw);
     this->trainingData = GRT::TimeSeriesClassificationData(t.trainingData);
     this->testData = GRT::TimeSeriesClassificationData(t.testData);
 
-    this->testAccuracy = t.testAccuracy;
+    this->testAccuracy = t.testAccuracy;*/
 }
 
 void grInitAlgorithms()
 {
 }
-
+/*
 void GRAlgorithm::MadgwickAHRSupdate(float gx, float gy, float gz, float ax, float ay, float az, 
         float mx, float my, float mz, std::deque<std::vector<float>>* results, int freqCallibration, 
         std::string flag)
@@ -284,7 +285,7 @@ double GRAlgorithm::constrain(double x, double a, double b)
     else
         return x;
 }
-
+*/
 void GRAlgorithm::madgwickUpdateBuffer(imu* imu, std::deque<std::vector<float>>* rotations, 
         int freqCallibration, std::string flag)
 {
@@ -302,7 +303,7 @@ void GRAlgorithm::madgwickUpdateBuffer(imu* imu, std::deque<std::vector<float>>*
         imu->data.pop_front();
 
 	   // std::cout<<"\nbefore madgwickUpdate() Q :"<<q0<<" "<<q1<<" "<<q2<<" "<<q3<<std::endl;
-        MadgwickAHRSupdate(gyro[0], gyro[1], gyro[2], accel[0], accel[1], accel[2], mag[0], mag[1], mag[2], 
+        GRMadgwick::MadgwickAHRSupdate(gyro[0], gyro[1], gyro[2], accel[0], accel[1], accel[2], mag[0], mag[1], mag[2], 
                 rotations, freqCallibration, flag);
     }
 
@@ -334,7 +335,7 @@ void GRAlgorithm::madgwickUpdateThr(device_t* inDevice, alg_device_t* outDevice,
     palm.detach();
     std::cout<<"run MadgwickAHRSupdate thread for palm"<<endl;
 }
-
+/*
 std::vector<float> GRAlgorithm::computeAngles()
 {
     this->angles.clear();
@@ -486,3 +487,4 @@ double GRAlgorithm::getMaximumLikelihood()
     return this->dtw.getMaximumLikelihood();
 }
 
+*/

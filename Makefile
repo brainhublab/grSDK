@@ -24,7 +24,7 @@ BINARIES=main
 all:$(BINARIES)
 
 
-$(BIN_DIR)/%: $(BUILD_DIR)/grConnection.o $(BUILD_DIR)/grAlgorithm.o $(BUILD_DIR)/grUtilities.o $(BUILD_DIR)/%.o 
+$(BIN_DIR)/%: $(BUILD_DIR)/grConnection.o $(BUILD_DIR)/grAlgorithm.o $(BUILD_DIR)/grUtilities.o $(BUILD_DIR)/grGrt.o $(BUILD_DIR)/grMadgwick.o $(BUILD_DIR)/%.o 
 		$(CPP) $(CPP_FLAGS) $(LIB) $(INCLUDE) $^ -o $@ $(LIB_FLAGS)
 
 
