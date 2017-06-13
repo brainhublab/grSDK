@@ -8,3 +8,4 @@ externAssets/*.zip
 externAssets/grt
 externAssets/eigen
 data/*
+externAssets/sources/grt_source/build/tmp
