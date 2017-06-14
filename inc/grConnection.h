@@ -10,6 +10,7 @@
 #include <map>
 #include <sstream>
 #include <thread>
+#include <chrono>
 
 #include <stdio.h>   /* Standard input/output definitions */
 #include <stdlib.h>
@@ -37,25 +38,22 @@ class GRConnection
         int getDeviceId(device_t);
 
         //bool connect(std::string, std::string, std::string);
-       // bool release(std::string, std::string, std::string);
+        // bool release(std::string, std::string, std::string);
         
-        bool getDataThrS(device_t *);
-        bool getDataS(device_t* );
-
         bool getDataThr(device_t*);
         bool getData(device_t*);
 
+
     private:
         char buf[256];
-        int portDescriptor;
-        std::string rfcommPath;
         std::vector<device_t> avalibleDevices;
-        bool setUpRfcomm(std::string);
-        bool setTerm();
-        std::string getNext();
-        int openPort(std::string);
-        bool splitData(std::string data, imu*);
-        bool splitDataN(std::string, imu*);
+        std::string getNext();  
+        bool splitData(std::string, imu*);
+        //timer vars & methods
+        std::chrono::time_point<std::chrono::system_clock> start, end;
+        float timeStamp;
+        float getTimeStamp(); 
+        
 
 };
 

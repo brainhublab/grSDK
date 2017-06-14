@@ -7,7 +7,6 @@
 #include "GRT/GRT.h"
 
 #include "grDevice.h"
-
 #include "grDataAttributes.h"
 
 class GRGrt
@@ -36,9 +35,8 @@ public:
         GRT::UINT getPredictedClassLabel();
         double getMaximumLikelihood();
 
-        //from utils
-
-        void setSensors(std::vector<std::string>, std::string);
+        //utils
+        void setDataSetSensors(std::vector<std::string>, std::string);
 		void setDatasetProperties(std::string, std::string, std::string, std::string);
 		void setNextLabel(std::string);
 		void clearTrainingData(std::string); 
@@ -57,7 +55,7 @@ private:
 
         double testAccuracy = 0.0;
 
-        //from Utils
+        //Utils
         data_attributes datasetDTW;
     	data_attributes datasetHMM;
 };
