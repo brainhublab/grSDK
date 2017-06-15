@@ -37,10 +37,9 @@ struct gr_message
     {
         id = 0;
            
-        std::memset(&gyro[0], 0, sizeof(gyro));
-        std::memset(&acc[0], 0, sizeof(acc));
-        std::memset(&mag[0], 0, sizeof(mag));
-
+        gyro.clear();
+        acc.clear();
+        mag.clear();
         time_stamp = 0.0;
     }
     bool empty()
@@ -102,7 +101,7 @@ struct device_t
     int id;
     std::string name;
     
-    std::string addr;
+    std::string address;
 
     std::map<std::string, imu*> imus;
 
@@ -132,38 +131,12 @@ struct device_t
        imus["thumb"] = &thumb;
        imus["palm"] = &palm;
     }
-    ~device_t()
-    {
-    }
-    device_t(const device_t& t)
-    {
-    }
-    device_t& operator=(const device_t& t)
-    {
-            
-            this->id = t.id;
-            this->name = t.name;
-            this->imus = t.imus;
-            this->pinky = t.pinky;
-            this->ring = t.ring;
-            this->middle = t.middle;
-            this->index = t.index;
-            this->thumb = t.thumb;
-            this->palm = t.palm;
-
-        return *this;
-    }
-
+   
     void clear_attributes()
     {
            id = 0;
             name.clear();
-            addr.clear(); 
-      }
-
-    void set_addr(std::string new_addr)
-    {
-       addr = new_addr;
+            address.clear(); 
     }
 };
 

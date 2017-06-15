@@ -31,21 +31,25 @@ int main (int argc, const char * argv[])
     cout << grAlg.getTestAccuracy() << endl;
 */
     GRConnection conn;
-    device_t *device;
-    //device->addr.assign("98:D3:32:10:AC:59");
-    std::vector<device_t> devices;
+    device_t device;
+    //device.address = "98:D3:32:10:AC:59";
+    std::map<int, device_t> devices;
     devices = conn.getAvalibleDevices();
-    *device = devices.front(); 
-    std::cout<<devices.front().addr<<endl;
+    sleep(4);
+    //*device = devices.front();
+    std::cout<<"this is size of devices "<<devices.size()<<std::endl; 
+    std::cout<<"this is the addres "<<devices[1].address<<std::endl;
+    std::cout<<"this is the name "<<devices[1].name<<std::endl;
+   /* 
     while(1)
     {
-        conn.getData(device);
+        conn.getData(&device);
 
-        if(!device->pinky.data.empty())
+        if(!device.pinky.data.empty())
         {
-            std::cout<<device->pinky.data.front().gyro.front();
-            device->pinky.data.pop_front();
+            std::cout<<device.pinky.data.front().gyro.front();
+            device.pinky.data.pop_front();
         }
-    }
+    }*/
     return 0;
 }

@@ -5,8 +5,8 @@ BUILD_DIR=./build
 BIN_DIR=./bin
 
 CPP=g++
-LIB_FLAGS=-ldbus-1 -lconfig++
-CPP_FLAGS= -g -std=c++11 -pthread -lgrt -lncurses -ltinfo -lstdc++ -lbluetooth#-Wall #-pedantic
+LIB_FLAGS=-lconfig++
+CPP_FLAGS= -g -std=c++11 -pthread -lgrt -ltinfo -lstdc++ -lbluetooth#-Wall #-pedantic
 
 EXTERN = ./externAssets
 GRT_LIB = /grt/lib/ 
@@ -14,7 +14,7 @@ GRT_INC = /grt/include
 
 DBUS_INC=-I/usr/include/dbus-1.0 -I/usr/lib64/dbus-1.0/include
 LIB=-L/usr/lib64 -L$(EXTERN)$(GRT_LIB) 
-INCLUDE=-I$(INC_DIR) $(DBUS_INC) -I$(EXTERN)$(GRT_INC)
+INCLUDE=-I$(INC_DIR) -I$(EXTERN)$(GRT_INC)
 
 
 main: $(BIN_DIR)/main

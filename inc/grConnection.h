@@ -14,12 +14,10 @@
 
 #include <stdio.h>   /* Standard input/output definitions */
 #include <stdlib.h>
-#include <string.h>  /* String function definitions */
+#include <string>  /* String function definitions */
 #include <unistd.h>  /* UNIX standard function definitions */
 #include <fcntl.h>   /* File control definitions */
 #include <errno.h>   /* Error number definitions */
-#include <termios.h>
-
 
 #include <sys/socket.h>
 #include <bluetooth/bluetooth.h>
@@ -34,8 +32,14 @@ class GRConnection
         GRConnection(const GRConnection&);
         GRConnection& operator=(const GRConnection&);
 
-        std::vector<device_t> getAvalibleDevices();
+        std::map<int, device_t> getAvalibleDevices();
+        bool setActiveDevice(int);
+
         int getDeviceId(device_t);
+
+        gr_message getMassage(int);
+        std::vector<GRConnection> getAllMessages;
+        
 
         //bool connect(std::string, std::string, std::string);
         // bool release(std::string, std::string, std::string);
@@ -46,13 +50,18 @@ class GRConnection
 
     private:
         char buf[256];
-        std::vector<device_t> avalibleDevices;
+        float timeStamp;
+        std::chrono::time_point<std::chrono::system_clock> start, end;
+        std::map<int, device_t> avalibleDevices;
+        std::map<int, int> deviceSockets;
+        std::map<int, device_t> activeDevices;
+
         std::string getNext();  
         bool splitData(std::string, imu*);
-        //timer vars & methods
-        std::chrono::time_point<std::chrono::system_clock> start, end;
-        float timeStamp;
-        float getTimeStamp(); 
+        float getTimeStamp();
+        bool deviceIsIn(std::string); 
+        int asignDeviceWithSocket(int); // parameter is device ID
+        device_t getDeviceById(int);
         
 
 };

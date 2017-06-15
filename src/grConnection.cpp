@@ -32,11 +32,11 @@ GRConnection& GRConnection::operator=(const GRConnection& t)
 
 
 //TODO need to be implemented later
-std::vector<device_t> GRConnection::getAvalibleDevices()
+std::map<int, device_t> GRConnection::getAvalibleDevices()
 {
     dev_names deviceNames;
     device_t device;
-    std::vector<device_t> devices;
+    //std::map<int, device_t> devices;
 
     inquiry_info *inqInfo = NULL;
     int maxRsp, numRsp;
@@ -74,29 +74,57 @@ std::vector<device_t> GRConnection::getAvalibleDevices()
         }
         else if(deviceNames.left == name || deviceNames.right == name || deviceNames.test == name )
         {
-            device.id = i;
-            device.name = (std::string(name));
-            device.addr = (std::string(addr));
-
-            devices.push_back(device);
-
+            //device.id = i;
+            
+            std::cout<<name<<" "<<addr<<std::endl;
+            
+            device.name.assign(name, strlen(name));
+            device.address.assign(addr, strlen(addr));
+            
+            std::cout<<"addr in class "<<device.address<<std::endl;
+            std::cout<<"name in class "<<device.name<<std::endl;
+            if(!deviceIsIn(device.address))
+            {
+                device.id = (avalibleDevices.size() + 1);
+                avalibleDevices[device.id] = device;
+            }
+            std::cout<<"size in class "<<avalibleDevices.size()<<std::endl;
+            std::cout<<"address afer store "<<avalibleDevices[1].address<<std::endl;
+            std::cout<<"name after store"<< avalibleDevices[1].name<<std::endl;
+            
             device.clear_attributes();
         }
     }
-    std::cout<< devices.size()<<std::endl;
+    //sleep(1);
+       // std::cout<< "add from class"<<devices.front().addr<<std::endl;
 
-    free(inqInfo);
-    close(sock);
 
-    return devices;
+    return avalibleDevices;
 
 }
 
+bool GRConnection::setActiveDevice(int id)
+{
+   std::map<int, device_t>::iterator it = activeDevices.begin();
+   while(it != activeDevices.end()) 
+   {
+        if(id == it->first)
+        {
+            std::cout<<"ERROR: could not ad device with id: "<<id<<" because is exists"<<std::endl;
+            return false;
+        }
+   }
+   asignDeviceWithSocket(id);
+   activeDevices[id] = avalibleDevices[id];
+  
+}
 
 //TODO needs to be implemented later
-int GRConnection::getDeviceId(device_t dev)
+int GRConnection::getDeviceId(device_t device)
 {
+    return device.id;
 }
+
 
 bool GRConnection::getData(device_t* device)
 {
@@ -114,15 +142,16 @@ bool GRConnection::getData(device_t* device)
 
     addr.rc_family = AF_BLUETOOTH;
     addr.rc_channel = (uint8_t) 1; //TODO maeby need to be changet with device id
-    str2ba(device->addr.c_str(), &addr.rc_bdaddr);
+    str2ba(device->address.c_str(), &addr.rc_bdaddr);
 
     //connect to gr
     status = connect(sock, (struct sockaddr *)&addr, sizeof(addr));
 
-    while(rawMessage.size() != 10)
+    bool messageAvalible = true;
+    while(messageAvalible)
     {
-        bytes_read = read(sock, buf, sizeof(buf));
 
+        bytes_read = read(sock, buf, sizeof(buf));
         if(bytes_read >0)
         {
             for(int i=0; i<bytes_read; i++)
@@ -130,6 +159,12 @@ bool GRConnection::getData(device_t* device)
                 if(buf[i] != '\n')
                 {                     
                     rawMessage += buf[i];
+
+                }
+                else
+                {
+                    std::cout<<"this is raw message"<<rawMessage<<std::endl;
+                    messageAvalible = false;
                     std::stringstream ss(rawMessage);
 
                     ss >> id;
@@ -164,15 +199,16 @@ bool GRConnection::getData(device_t* device)
                         device->palm.data.back().time_stamp = getTimeStamp();
 
                     }
-                }
-                else
-                {
-                    //rawMessage.clear()
+                    rawMessage.clear();
+                   // std::cout<<device->palm.data.front().time_stamp;
+                    
                 }
 
             }
         }
+        
     }
+    close(sock);
 }
 bool GRConnection::getDataThr(device_t* device)
 {
@@ -187,10 +223,10 @@ bool GRConnection::getDataThr(device_t* device)
     return true;
 }
 /*
-std::string GRConnection::getNext()
-{
-    char buf[2];
-    ssize_t n;
+   std::string GRConnection::getNext()
+   {
+   char buf[2];
+   ssize_t n;
     std::string res;
 
     while(true)
@@ -242,19 +278,19 @@ bool GRConnection::splitData(std::string data, imu* sensor)
             msg.mag.push_back(arr[i]);
         }
     }
-    if(msg.gyro.size() == 3 && msg.acc.size() == 3 && msg.mag.size() == 3)
-    {
+  //  if(msg.gyro.size() == 3 && msg.acc.size() == 3 && msg.mag.size() == 3)
+    //{
         sensor->data.push_back(msg);
         
         msg.gyro.clear();
         msg.acc.clear();
         msg.mag.clear();
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+     //   return true;
+    //}
+//    else
+  //  {
+    //    return false;
+   // }
     
 }
 
@@ -269,4 +305,58 @@ float GRConnection::getTimeStamp()
     timeStamp = (timeStamp * 0.001f);
     
     return timeStamp;
+}
+
+bool GRConnection::deviceIsIn(std::string addr)
+{
+    int i=1;
+    
+    while(i <= avalibleDevices.size())
+    {
+        if(addr != avalibleDevices[i].address)
+        {
+            i++; 
+        }
+        else if(addr == avalibleDevices[i].address) 
+        {
+            
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+int GRConnection::asignDeviceWithSocket(int id)
+{
+    int i=1;
+    int s;
+    std::map<int, int>::iterator it = deviceSockets.begin();
+    while(it != deviceSockets.end())
+    {
+        if(id == it->first)
+        {
+            std::cout<<"ERROR this id: "<<id<<" is already in use"<<std::endl;
+            return 0; 
+        }
+        it++;
+    }
+    s = socket(AF_BLUETOOTH, SOCK_STREAM, BTPROTO_RFCOMM);
+    deviceSockets[id] = s;
+    
+    return s;
+}
+
+
+device_t GRConnection::getDeviceById(int id)
+{
+    if(activeDevices.find(id)->first != 0)
+    {
+        return activeDevices[id];
+    }
+    else
+    {
+        std::cout<<"ERROR: No such device with id: "<<id<<std::endl;
+//        return; TODO need to ad empty device or error
+    }
 }
