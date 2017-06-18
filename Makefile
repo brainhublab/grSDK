@@ -6,7 +6,7 @@ BIN_DIR=./bin
 
 CPP=g++
 LIB_FLAGS=-lconfig++
-CPP_FLAGS= -g -std=c++11 -pthread -lgrt -ltinfo -lstdc++ -lbluetooth#-Wall #-pedantic
+CPP_FLAGS= -g -std=c++11  -std=gnu++11 -pthread -lgrt -ltinfo -lstdc++ -lbluetooth#-Wall #-pedantic
 
 EXTERN = ./externAssets
 GRT_LIB = /grt/lib/ 

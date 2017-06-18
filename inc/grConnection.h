@@ -24,6 +24,20 @@
 #include <bluetooth/hci.h>
 #include <bluetooth/hci_lib.h>
 #include <bluetooth/rfcomm.h>
+
+
+struct dev_socket
+{
+    int sock;
+    struct sockaddr_rc addr = { 0 };
+
+    sockaddr_rc* getAddrRef()
+    {
+        return &this->addr;
+    }
+};
+
+
 class GRConnection
 {
     public:
@@ -45,16 +59,18 @@ class GRConnection
         // bool release(std::string, std::string, std::string);
         
         bool getDataThr(device_t*);
-        bool getData(device_t*);
+        bool getData(int );
 
-
+        
+        bool connectSocket(int);
     private:
         char buf[256];
         float timeStamp;
         std::chrono::time_point<std::chrono::system_clock> start, end;
         std::map<int, device_t> avalibleDevices;
-        std::map<int, int> deviceSockets;
         std::map<int, device_t> activeDevices;
+        std::map<int, dev_socket> deviceSockets;
+        std::map<int, std::string> bufferedData;
 
         std::string getNext();  
         bool splitData(std::string, imu*);
@@ -62,8 +78,9 @@ class GRConnection
         bool deviceIsIn(std::string); 
         int asignDeviceWithSocket(int); // parameter is device ID
         device_t getDeviceById(int);
+        int getDeviceSocketById(int);
+        bool asignMessageWithImu(std::string, device_t*); 
         
-
 };
 
 #endif
