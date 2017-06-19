@@ -36,6 +36,7 @@ int main (int argc, const char * argv[])
     std::map<int, device_t> devices;
    conn.getAvalibleDevices();
    conn.setActiveDevice(1);
+   conn.connectSocket(1);
    
     sleep(4);
     //*device = devices.front();
@@ -46,7 +47,8 @@ int main (int argc, const char * argv[])
   while(1)
     {
         usleep(40);
-        conn.getData(1);
+
+        conn.readData(1);
         usleep(40);
         
         /*if(!device.pinky.data.empty())

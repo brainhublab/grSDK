@@ -54,13 +54,10 @@ class GRConnection
         gr_message getMassage(int);
         std::vector<GRConnection> getAllMessages;
         
-
-        //bool connect(std::string, std::string, std::string);
-        // bool release(std::string, std::string, std::string);
-        
-        bool getDataThr(device_t*);
-        bool getData(int );
-
+        device_t* getData(int, std::string, std::string); 
+       
+        bool readDataThr(int);
+        bool readData(int );
         
         bool connectSocket(int);
     private:
