@@ -1,5 +1,5 @@
 #include "GRT/GRT.h"
-#include "grAlgorithmNew.h"
+#include "grAlgorithm.h"
 #include "grConnection.h"
 #include "grDevice.h"
 

@@ -2,9 +2,12 @@
 *.swp
 *.ini
 .idea/*
-**/bin/*
-**/build/*
-**/build/generated_files/*
+bin/*
+build/*
 externAssets/*.zip
 */**/*.zip
 */**/*.tar.gz
+externAssets/grt
+externAssets/eigen
+data/*
+externAssets/sources/grt_source/build/tmp
