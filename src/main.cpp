@@ -10,7 +10,8 @@
 #include <sys/socket.h>
 #include <bluetooth/bluetooth.h>
 #include <bluetooth/rfcomm.h>
-
+#include <map>
+#include <unordered_map>
 //using namespace GRT;
 //using namespace std;
 
@@ -31,31 +32,22 @@ int main (int argc, const char * argv[])
     cout << grAlg.getTestAccuracy() << endl;
 */
     GRConnection conn;
-    device_t device;
+    device_t* device;
     //device.address = "98:D3:32:10:AC:59";
     std::map<int, device_t> devices;
    conn.getAvalibleDevices();
    conn.setActiveDevice(1);
    conn.connectSocket(1);
-   
-    sleep(4);
-    //*device = devices.front();
-    std::cout<<"this is size of devices "<<devices.size()<<std::endl; 
-    std::cout<<"this is the addres "<<devices[1].address<<std::endl;
-    std::cout<<"this is the name "<<devices[1].name<<std::endl;
-    
+   //
+   std::unordered_map<std::string, gr_message> data;
   while(1)
     {
-        usleep(40);
 
-        conn.readData(1);
-        usleep(40);
-        
-        /*if(!device.pinky.data.empty())
-        {
-            std::cout<<device.pinky.data.front().gyro.front();
-            device.pinky.data.pop_front();
-        }*/
+         data = conn.getData(1, "ITER");
+         if(!data.empty())
+             std::cout<<data["palm"].gyro[1]<<std::endl;
+        //conn.readData(1);
+       
     }
-    return 0;
+  return 0;
 }

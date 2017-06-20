@@ -8,6 +8,7 @@
 #include <vector>
 #include <deque>
 #include <map>
+#include <unordered_map>
 #include <sstream>
 #include <thread>
 #include <chrono>
@@ -54,20 +55,21 @@ class GRConnection
         gr_message getMassage(int);
         std::vector<GRConnection> getAllMessages;
         
-        device_t* getData(int, std::string, std::string); 
+        std::unordered_map<std::string, gr_message> getData(int, std::string); 
+        //bool getData(int, std::string); 
        
         bool readDataThr(int);
         bool readData(int );
-        
+       device_t* getDevice(int); 
         bool connectSocket(int);
     private:
         char buf[256];
         float timeStamp;
         std::chrono::time_point<std::chrono::system_clock> start, end;
         std::map<int, device_t> avalibleDevices;
-        std::map<int, device_t> activeDevices;
-        std::map<int, dev_socket> deviceSockets;
-        std::map<int, std::string> bufferedData;
+        std::unordered_map<int, device_t> activeDevices;
+        std::unordered_map<int, dev_socket> deviceSockets;
+        std::unordered_map<int, std::string> bufferedData;
 
         std::string getNext();  
         bool splitData(std::string, imu*);
@@ -78,6 +80,7 @@ class GRConnection
         int getDeviceSocketById(int);
         bool asignMessageWithImu(std::string, device_t*); 
         
+   // std::map<std::string, gr_message> messages;
 };
 
 #endif
