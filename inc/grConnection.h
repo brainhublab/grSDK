@@ -53,14 +53,11 @@ class GRConnection
         int getDeviceId(device_t);
 
         gr_message getMassage(int);
-        std::vector<GRConnection> getAllMessages;
         
-        std::unordered_map<std::string, gr_message> getData(int, std::string); 
-        //bool getData(int, std::string); 
+        bool getData(int, gr_message*);
+      
+        device_t* getDevice(int); 
        
-        bool readDataThr(int);
-        bool readData(int );
-       device_t* getDevice(int); 
         bool connectSocket(int);
     private:
         char buf[256];

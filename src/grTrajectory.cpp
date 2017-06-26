@@ -16,10 +16,10 @@ GRTrajectory::GRTrajectory()
 GRTrajectory::~GRTrajectory()
 {}
 
-Vector3d GRTrajectory::_getNewPosByVelocity(Vector3d acc, int timestamp)
+Vector3d GRTrajectory::_getNewPosByVelocity(Vector3d acc, float timestamp)
 {
     Vector3d velocity, distance, pos_next;
-    int time_elapsed = timestamp - this->timestamp_last;
+    float time_elapsed = timestamp - this->timestamp_last;
 
     velocity = this->velocity_last + ((acc * G) * time_elapsed);
     distance = velocity * time_elapsed;
@@ -29,29 +29,29 @@ Vector3d GRTrajectory::_getNewPosByVelocity(Vector3d acc, int timestamp)
     return pos_next;
 }
 
-Vector3d GRTrajectory::_getNewPosByIntegrating(Vector3d acc, int timestamp)
+Vector3d GRTrajectory::_getNewPosByIntegrating(Vector3d acc, float timestamp)
 {
     Vector3d pos_next;
-    int time_elapsed = timestamp - this->timestamp_last;
+    float time_elapsed = timestamp - this->timestamp_last;
 
     pos_next = this->pos_last + this->velocity_last * time_elapsed + 0.5 * (acc * G) * (time_elapsed * time_elapsed);
 
     return pos_next;
 }
 
-vector<double> GRTrajectory::_toStdVector(Vector3d in)
+vector<float> GRTrajectory::_toStdVector(Vector3d in)
 {
-    vector<double> out = {in(0), in(1), in(2)};
+    vector<float> out = {in(0), in(1), in(2)};
     return out;
 }
 
-Vector3d GRTrajectory::_toVector3d(vector<double> in)
+Vector3d GRTrajectory::_toVector3d(vector<float> in)
 {
     Vector3d out = {in[0], in[1], in[2]};
     return out;
 }
 
-vector<double> GRTrajectory::getNewPosByVelocity(vector<double> acc, int timestamp)
+vector<float> GRTrajectory::getNewPosByVelocity(vector<float> acc, float timestamp)
 {
     Vector3d acc_v, pos_next;
 
@@ -64,7 +64,7 @@ vector<double> GRTrajectory::getNewPosByVelocity(vector<double> acc, int timesta
     return this->_toStdVector(pos_next);
 }
 
-vector<double> GRTrajectory::getNewPosByIntegrating(vector<double> acc, int timestamp)
+vector<float> GRTrajectory::getNewPosByIntegrating(vector<float> acc, float timestamp)
 {
     Vector3d acc_v, pos_next;
 
@@ -77,7 +77,7 @@ vector<double> GRTrajectory::getNewPosByIntegrating(vector<double> acc, int time
     return this->_toStdVector(pos_next);
 }
 
-vector<double> GRTrajectory::getNewPos(vector<double> acc, int timestamp)
+vector<float> GRTrajectory::getNewPos(vector<float> acc, float timestamp)
 {
     Vector3d acc_v, speed_pos, integrated_pos, pos_next;
 

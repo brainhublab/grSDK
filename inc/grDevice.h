@@ -23,20 +23,16 @@ struct dev_names
         test = "HC-06";    
     }
 };
-struct gr_message
+struct imu 
 {
-    int id;
-
     std::vector<float> gyro;
     std::vector<float> acc;
     std::vector<float> mag;
 
     float time_stamp;
 
-    gr_message()
+    imu()
     {
-        id = 0;
-           
         gyro.clear();
         acc.clear();
         mag.clear();
@@ -68,42 +64,9 @@ struct gr_message
 };
 
 
-/*
-struct imu
-{
-   int id; 
-    std::deque<std::vector<float> > gyro;
-    std::deque<std::vector<float> > acc;
-    std::deque<std::vector<float> > mag;
-};
-*/
-struct imu
+struct gr_message
 {
     int id;
-    std::deque<gr_message> data;
-
-    imu()
-    {
-        id = 0;
-        data.clear();
-    }
-
-    void pop_message_by_id()
-    {
-    
-    }
-
-};
-
-
-struct device_t
-{
-    int id;
-    std::string name;
-    
-    std::string address;
-
-    std::map<std::string, imu*> imus;
 
     imu pinky;
     imu ring;
@@ -112,35 +75,30 @@ struct device_t
     imu thumb;
     imu palm;
 
+};
+
+
+struct device_t
+{
+    int id;
+    std::string name;
+
+    std::string address;
+
     device_t()
     {
-       id = 0;
-
-       pinky.id = 0;
-       ring.id = 1;
-       middle.id = 2;
-       index.id = 3;
-       thumb.id = 4;
-       palm.id = 5;
-
-       
-       imus["pinky"] = &pinky;
-       imus["ring"] = &ring;
-       imus["middle"] = &middle;
-       imus["index"] = &index;
-       imus["thumb"] = &thumb;
-       imus["palm"] = &palm;
+        id = 0;
     }
-   
+
     void clear_attributes()
     {
-           id = 0;
-            name.clear();
-            address.clear(); 
+        id = 0;
+        name.clear();
+        address.clear(); 
     }
 };
 
-struct alg_device_t
+struct gr_alg_message
 {
     // q x y z
     // to store quaternions

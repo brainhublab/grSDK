@@ -124,55 +124,13 @@ int GRConnection::getDeviceId(device_t device)
     return device.id;
 }
 
-std::unordered_map<std::string, gr_message> GRConnection::getData(int devId, std::string type)
-{   
-    //TODO implement sesor spliting
-    //std::map<std::string, gr_message> messages;
-    std::unordered_map<std::string, gr_message> messages;
-    if(type == "ITER")
-    {
-        readData(devId);
-    }
-    else if(type == "THREAD")
-    {
-        readDataThr(devId); 
-    }
-    else
-    {
-        std::cout<<"ERROR: no such type= "<<type<<" for recieving data please select ITER or THREAD";
-    }
-
-    if(!(activeDevices[devId].pinky.data.empty() ||
-                activeDevices[devId].ring.data.empty() ||
-                activeDevices[devId].middle.data.empty() ||
-                activeDevices[devId].index.data.empty() ||
-                activeDevices[devId].thumb.data.empty() ||
-                activeDevices[devId].palm.data.empty() ))
-    {
-        messages["pinky"] = activeDevices[devId].pinky.data.front();
-        activeDevices[devId].pinky.data.pop_front();
-        messages["ring"] = activeDevices[devId].ring.data.front();
-        activeDevices[devId].ring.data.pop_front();
-        messages["middle"] = activeDevices[devId].middle.data.front();
-        activeDevices[devId].middle.data.pop_front();
-        messages["index"] = activeDevices[devId].index.data.front();
-        activeDevices[devId].index.data.pop_front();
-        messages["thumb"] = activeDevices[devId].thumb.data.front();
-        activeDevices[devId].thumb.data.pop_front();
-        messages["palm"] = activeDevices[devId].palm.data.front();
-        activeDevices[devId].palm.data.pop_front();
-    }
-
-
-    return messages;  
-}
 
 device_t* GRConnection::getDevice(int devId)
 {
     return &(activeDevices[devId]);
 }
 
-bool GRConnection::readData(int devId)
+bool GRConnection::readData(int devId, gr_message* message)
 {
     int sock, status, bytes_read;
     int id;
@@ -191,7 +149,6 @@ bool GRConnection::readData(int devId)
     { 
 
         bytes_read = read(sock, buf, sizeof(buf));
-    //    std::cout<<"========"<<std::endl;
         if(bytes_read >0)
         {
                 if(buf[0] != '\n')
@@ -205,7 +162,7 @@ bool GRConnection::readData(int devId)
                     
              //       std::cout<<"message "<<rawMessage<<std::endl;
                     iter++;
-                    asignMessageWithImu(rawMessage, &(activeDevices[devId]));             
+                    asignMessageWithImu(rawMessage, message);             
                     rawMessage.clear();
 
                 }
@@ -244,45 +201,6 @@ bool GRConnection::readData(int devId)
 
 }
 
-bool GRConnection::readDataThr(int devId)
-{
-    std::thread thr(&GRConnection::readData, this, devId);
-    std::thread::id thrId;
-
-    thrId = thr.get_id();
-    thr.detach();
-
-    std::cout<<"connection thread is running"<<std::endl;
-
-    return true;
-}
-
-/*
-   std::string GRConnection::getNext()
-   {
-   char buf[2];
-   ssize_t n;
-   std::string res;
-
-   while(true)
-   {
-   n = read(portDescriptor, buf, 1);
-   if(n < 0)
-   {
-   std::cout << "GRConnection::getNext read failed" << std::endl;
-   return std::string("");
-   }
-   if(buf[0]!= '\n')
-   {
-   res += buf[0];
-   }
-   else
-   {
-   return res;
-   }
-   }
-   }
-   */
 bool GRConnection::splitData(std::string data, imu* sensor)
 {
     int i = 0;
@@ -291,7 +209,7 @@ bool GRConnection::splitData(std::string data, imu* sensor)
     std::stringstream ss(data);
     // std::vector<float> gyro, acc, mag;
 
-    gr_message msg;
+    //gr_message msg;
     while(ss >> n && i<10)
     {
         arr[i] = n;
@@ -302,22 +220,22 @@ bool GRConnection::splitData(std::string data, imu* sensor)
     {
         if(i <= 3)
         {
-            msg.gyro.push_back(arr[i]);
+            sensor->gyro.push_back(arr[i]);
         }
         else if(i > 3 && i <= 6)
         {
-            msg.acc.push_back(arr[i]);
+            sensor->acc.push_back(arr[i]);
         }
         else if(i > 6 )
         {
-            msg.mag.push_back(arr[i]);
+            sensor->mag.push_back(arr[i]);
         }
     }
-    sensor->data.push_back(msg);
+    //sensor->data.push_back(msg);
 
-    msg.gyro.clear();
-    msg.acc.clear();
-    msg.mag.clear();
+    //msg.gyro.clear();
+    //msg.acc.clear();
+    //msg.mag.clear();
 
 }
 
@@ -412,7 +330,7 @@ int GRConnection::getDeviceSocketById(int id)
     return devSock;
 }
 
-bool GRConnection::asignMessageWithImu(std::string rawMessage, device_t* device)
+bool GRConnection::asignMessageWithImu(std::string rawMessage, gr_message* message)
 {   
     int id;
     bool messageAvalible = false;
@@ -421,34 +339,34 @@ bool GRConnection::asignMessageWithImu(std::string rawMessage, device_t* device)
     ss >> id;
     if(id == 0)
     {
-        splitData(rawMessage, &device->pinky);
-        device->pinky.data.back().time_stamp = getTimeStamp();//TODO add if statement
+        splitData(rawMessage, imessage->pinky);
+        message->pinky.time_stamp = getTimeStamp();//TODO add if statement
     }
     else if(id ==1)
     {
-        splitData(rawMessage, &device->ring);
-        device->ring.data.back().time_stamp = getTimeStamp();
+        splitData(rawMessage, message->ring);
+        mesage->ring.time_stamp = getTimeStamp();
     }
     else if(id == 2)
     {
-        splitData(rawMessage, &device->middle);
-        device->middle.data.back().time_stamp = getTimeStamp();
+        splitData(rawMessage, message->middle);
+        message->middle.time_stamp = getTimeStamp();
     }
     else if(id == 3)
     {
-        splitData(rawMessage, &device->index);
-        device->index.data.back().time_stamp = getTimeStamp();
+        splitData(rawMessage, message->index);
+        message->index.time_stamp = getTimeStamp();
     }
     else if(id==4)
     {
-        splitData(rawMessage, &device->thumb);
-        device->thumb.data.back().time_stamp = getTimeStamp();
+        splitData(rawMessage, message->thumb);
+        message->thumb.time_stamp = getTimeStamp();
     }
     else if(id==5)
     {
        // std::cout<<rawMessage<<std::endl;
-        splitData(rawMessage, &(device->palm));
-        device->palm.data.back().time_stamp = getTimeStamp();
+        splitData(rawMessage, message->palm);
+        message->palm.time_stamp = getTimeStamp();
 
     }
     //rawMessage.clear();

@@ -27,52 +27,58 @@ void grInitAlgorithms()
 {
 }
 
-void GRAlgorithm::madgwickUpdateBuffer(imu* imu, std::deque<std::vector<float>>* rotations, 
-        int freqCallibration, std::string flag)
+gr_alg_message GRAlgorithm::madgwickUpdate(gr_message* imu, int freqCallibration, std::string flag)
 {
-    std::vector<float> gyro, accel, mag;
+    std::vector<float> rotations;
+    	   // std::cout<<"\nbefore madgwickUpdate() Q :"<<q0<<" "<<q1<<" "<<q2<<" "<<q3<<std::endl;
+        GRMadgwick::MadgwickAHRSupdate(imu->gyro[0], imu->gyro[1], imu->gyro[2], 
+                imu->accel[0], imu->accel[1], imu->accel[2], 
+                imu->mag[0], imu->mag[1], imu->mag[2], &rotations, freqCallibration);
 
-    while(!imu->data.front().gyro.empty() && imu->data.front().gyro.size() == 3 && 
-            !imu->data.front().acc.empty() && imu->data.front().acc.size() == 3 && 
-            !imu->data.front().mag.empty() && imu->data.front().mag.size() == 3)
+    if(flag == "QANTERION")
     {
-        // std::cout<<"in alg while"<<endl;
-        gyro = imu->data.front().gyro;
-        accel = imu->data.front().acc;
-        mag = imu->data.front().mag;
-        
-        imu->data.pop_front();
-
-	   // std::cout<<"\nbefore madgwickUpdate() Q :"<<q0<<" "<<q1<<" "<<q2<<" "<<q3<<std::endl;
-        GRMadgwick::MadgwickAHRSupdate(gyro[0], gyro[1], gyro[2], accel[0], accel[1], accel[2], mag[0], mag[1], mag[2], 
-                rotations, freqCallibration, flag);
+        return rotations;
+    }
+    else if(flag == "ANGLES")
+    {
+        rotations = computeAngles(rotations);
+        return rodations;
+    }
+    else
+    {
+        std::cout<<"ERROR: no such flag "<<flag<<std::endl;
     }
 
 }
-void GRAlgorithm::madgwickUpdateThr(device_t* inDevice, alg_device_t* outDevice, 
-        int freqCallibration, std::string flag)
+/* TODO implement in thread madgwick update
+void GRAlgorithm::madgwickUpdateThr(imu* imu, int freqCallibration, std::string flag)
 {
-    std::thread pinky(&GRAlgorithm::madgwickUpdateBuffer, this, &inDevice->pinky,  &outDevice->pinky, freqCallibration, flag);
+    std::thread madgwick(&GRAlgorithm::madgwickUpdate, this, imu,  freqCallibration, flag);
     pinky.detach();
     std::cout<<"run MadgwickAHRSupdate thread for pinky"<<endl;
-
-    std::thread ring(&GRAlgorithm::madgwickUpdateBuffer, this, &inDevice->ring,  &outDevice->ring, freqCallibration, flag);
-    ring.detach();
-    std::cout<<"run MadgwickAHRSupdate thread for ring"<<endl;
-
-    std::thread middle(&GRAlgorithm::madgwickUpdateBuffer, this, &inDevice->middle,  &outDevice->middle, freqCallibration, flag);
-    middle.detach();
-    std::cout<<"run MadgwickAHRSupdate thread for middle"<<endl;
-
-    std::thread index(&GRAlgorithm::madgwickUpdateBuffer, this, &inDevice->index,  &outDevice->index, freqCallibration, flag);
-    index.detach();
-    std::cout<<"run MadgwickAHRSupdate thread for index"<<endl;
-
-    std::thread thumb(&GRAlgorithm::madgwickUpdateBuffer, this, &inDevice->thumb,  &outDevice->thumb, freqCallibration, flag);
-    thumb.detach();
-    std::cout<<"run MadgwickAHRSupdate thread for thumb"<<endl;
-
-    std::thread palm(&GRAlgorithm::madgwickUpdateBuffer, this, &inDevice->palm,  &outDevice->palm, freqCallibration, flag);
-    palm.detach();
-    std::cout<<"run MadgwickAHRSupdate thread for palm"<<endl;
 }
+*/
+std::vector<float> GRMadgwick::computeAngles(std::vector<float> q)
+{
+
+    std::vector<float> angles;
+    angles.clear();
+    float roll = 0.0f;
+    float pitch = 0.0f;
+    float yaw = 0.0f;
+    roll = atan2f(q[0]*q[1] + q[2]*q[3], 0.5f - q[1]*q[1] - q[2]*q[2]);
+    pitch = asinf(-2.0*(q[1]*q[3] - q[0]*q[2]));
+    yaw = atan2f(q[1]*q[2] + q[0]*q[3], 0.5f - q[2]*q[2] - q[3]*q[3]);
+
+    roll = roll * 57.29578f;
+    pitch = pitch * 57.29578f;
+    yaw = yaw * 57.29578f + 180.0f;
+
+    angles.push_back(0.0f);
+    angles.push_back(roll);
+    angles.push_back(pitch);
+    angles.push_back(yaw);
+    anglesComputed = 1;
+    return angles;
+}
+

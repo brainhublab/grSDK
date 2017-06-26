@@ -20,7 +20,7 @@
 using namespace std;
 //using namespace Eigen;
 
-class GRAlgorithm : protected GRMadgwick, public GRGrt
+class GRAlgorithm :public GRGrt
 {
 
     public:
@@ -30,9 +30,19 @@ class GRAlgorithm : protected GRMadgwick, public GRGrt
         GRAlgorithm& operator=(const GRAlgorithm&);
         void grInitAlgorithms();
         //madgwick
-        void madgwickUpdateBuffer(imu*, std::deque<std::vector<float>>*, int, std::string flag);
-        void madgwickUpdateThr(device_t*, alg_device_t*, int, std::string flag);
+        gr_alg_message madgwickUpdate(gr_message*, int, std::string flag);
+        //void madgwickUpdateThr(device_t*, alg_device_t*, int, std::string flag);//TODO need to implement
     private:
+        float roll, pitch, yaw;
+        std::vector<float> angles;
+        std::vector<float> computeAngles(std::vector<float>);
+
+        GRMadgwick pinkyMadgwick;
+        GRMadgwick ringMadgwick;
+        GRMadgwick middleMadgwick;
+        GRMadgwick indexMadgwick;
+        GRMadgwick thumbMadgwick;
+        GRMadgwick palmMadgwick;
 
 
 };

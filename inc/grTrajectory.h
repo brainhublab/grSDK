@@ -7,28 +7,29 @@
 using Eigen::Vector3d;
 using namespace std;
 
-#define G 9.000416
+#define G 0.035157875 // 9.000416 / 256
+
 
 class GRTrajectory
 {
     private:
         Vector3d pos_last;
         Vector3d velocity_last;
-        int timestamp_last;
+        float timestamp_last;
 
-        Vector3d _getNewPosByVelocity(Vector3d, int);
-        Vector3d _getNewPosByIntegrating(Vector3d, int);
+        Vector3d _getNewPosByVelocity(Vector3d, float);
+        Vector3d _getNewPosByIntegrating(Vector3d, float);
 
-        vector<double> _toStdVector(Vector3d);
-        Vector3d _toVector3d(vector<double>);
+        vector<float> _toStdVector(Vector3d);
+        Vector3d _toVector3d(vector<float>);
     public:
         GRTrajectory();
         ~GRTrajectory();
 
-        vector<double> getNewPosByVelocity(vector<double>, int);
-        vector<double> getNewPosByIntegrating(vector<double>, int);
+        vector<float> getNewPosByVelocity(vector<float>, float);
+        vector<float> getNewPosByIntegrating(vector<float>, float);
 
-        vector<double> getNewPos(vector<double> acc, int timestamp);
+        vector<float> getNewPos(vector<float> acc, float timestamp);
 };
 
 #endif

@@ -31,8 +31,7 @@ GRMadgwick& GRMadgwick::operator=(const GRMadgwick& t)
 
 }
 void GRMadgwick::MadgwickAHRSupdate(float gx, float gy, float gz, float ax, float ay, float az, 
-        float mx, float my, float mz, std::deque<std::vector<float>>* results, int freqCallibration, 
-        std::string flag)
+        float mx, float my, float mz, std::vector<float>* results, int freqCallibration)
 {
     float recipNorm;
     float s0, s1, s2, s3;
@@ -135,24 +134,13 @@ void GRMadgwick::MadgwickAHRSupdate(float gx, float gy, float gz, float ax, floa
     anglesComputed = 0;
 
     std::vector<float> new_result = {q0, q1, q2, q3};
-    if(flag == "QATERNION")
-    {
-        results->push_back(new_result);
-    }
-    else if(flag == "EULER")
-    {
-        if(!anglesComputed)
-        {
-            results->push_back(computeAngles());
-        }
-    }
-    else
-    {
-        std::cout<<"ERROR: No such flag "<<flag<<std::endl;
-    }
+
+    results->assign(new_result.begin(), new_result.end());
+
+
 }
 void GRMadgwick::MadgwickAHRSupdateIMU(float gx, float gy, float gz, float ax, float ay, float az, 
-        std::deque<std::vector<float>>* results, int freqCallibration, std::string flag) 
+        std::deque<std::vector<float>>* results, int freqCallibration) 
 {
     float recipNorm;
     float s0, s1, s2, s3;
@@ -224,21 +212,7 @@ void GRMadgwick::MadgwickAHRSupdateIMU(float gx, float gy, float gz, float ax, f
     //    std::cout<<"Q :"<<q0<<q1<<q2<<q3<<std::endl;
 
     std::vector<float> new_result = {q0, q1, q2, q3};
-    if(flag == "QATERNION")
-    {
-        results->push_back(new_result);
-    }
-    else if(flag == "EULER")
-    {
-        if(!anglesComputed)
-        {
-            results->push_back(computeAngles());
-        }
-    }
-    else
-    {
-        std::cout<<"ERROR: No such flag "<<flag<<std::endl;
-    }
+    results->assign(new_result.begin(), new_result.end());
 
 }
 
@@ -268,22 +242,4 @@ double GRMadgwick::constrain(double x, double a, double b)
     }
     else
         return x;
-}
-std::vector<float> GRMadgwick::computeAngles()
-{
-    this->angles.clear();
-    this->roll = atan2f(q0*q1 + q2*q3, 0.5f - q1*q1 - q2*q2);
-    this->pitch = asinf(-2.0*(q1*q3 - q0*q2));
-    this->yaw = atan2f(q1*q2 + q0*q3, 0.5f - q2*q2 - q3*q3);
-
-    this->roll = this->roll * 57.29578f;
-    this->pitch = this->pitch * 57.29578f;
-    this->yaw = this->yaw * 57.29578f + 180.0f;
-
-    this->angles.push_back(0.0f);
-    this->angles.push_back(this->roll);
-    this->angles.push_back(this->pitch);
-    this->angles.push_back(this->yaw);
-    this->anglesComputed = 1;
-    return angles;
 }
