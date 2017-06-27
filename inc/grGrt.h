@@ -41,8 +41,8 @@ public:
 		void setNextLabel(std::string);
 		void clearTrainingData(std::string); 
 
-		bool pushDatasetDTW(device_t*);
-		bool pushDatasetHMM(device_t*);
+		bool pushDatasetDTW(gr_message*);
+		bool pushDatasetHMM(gr_message*);
 
 		bool saveDataset(std::string);
 

@@ -245,7 +245,7 @@ void GRGrt::clearTrainingData(std::string alg)
     }
 
 }
-bool GRGrt::pushDatasetDTW(device_t *dev )
+bool GRGrt::pushDatasetDTW(gr_message* data )
 {
 
     
@@ -256,9 +256,9 @@ bool GRGrt::pushDatasetDTW(device_t *dev )
     for(int i=0; i < datasetDTW.sensors.size(); i++)
     {
 
-       if(!dev->imus[datasetDTW.sensors[i]]->data.front().empty() && 
-               !dev->imus[datasetDTW.sensors[i]]->data.front().gyro.empty() && 
-               !dev->imus[datasetDTW.sensors[i]]->data.front().acc.empty() )
+       if(!data->imus[datasetDTW.sensors[i]]->empty() && 
+               !data->imus[datasetDTW.sensors[i]]->gyro.empty() && 
+               !data->imus[datasetDTW.sensors[i]]->empty() )
         {
                    
         for(int j=0; j<6; j++)
@@ -271,12 +271,12 @@ bool GRGrt::pushDatasetDTW(device_t *dev )
                 //std::cout<<"D "<<(*dev->imus[datasetDTW.sensors[i]]).gyro.front()[j]<<std::endl;
                // std::cout<<"J "<<j<<std::endl;
                  //   std::cout<<dev->imus[datasetDTW.sensors[i]]->gyro.front().size()<<std::endl;
-                 datasetDTW.sample[j+counter] = dev->imus[datasetDTW.sensors[i]]->data.front().gyro[j];
+                 datasetDTW.sample[j+counter] = data->imus[datasetDTW.sensors[i]]->gyro[j];
 
             }
             else 
             {
-                datasetDTW.sample[(j+counter)] = dev->imus[datasetDTW.sensors[i]]->data.front().acc[j-3];
+                datasetDTW.sample[(j+counter)] = data->imus[datasetDTW.sensors[i]]->acc[j-3];
                 
             }
         }
@@ -285,26 +285,13 @@ bool GRGrt::pushDatasetDTW(device_t *dev )
     }
 
 
-    usleep(20);
     datasetDTW.trainingSample.push_back(datasetDTW.sample);
-    for(int i=0; i<datasetDTW.sensors.size(); i++)
-   {
-      if(!dev->imus[datasetDTW.sensors[i]]->data.empty() && 
-              !dev->imus[datasetDTW.sensors[i]]->data.front().gyro.empty() && 
-              !dev->imus[datasetDTW.sensors[i]]->data.front().acc.empty() )
-        {
   
-                 dev->imus[datasetDTW.sensors[i]]->data.pop_front();
-                //dev->imus[datasetDTW.sensors[i]]->acc.pop_front();
-        }
-   }
-
-
     datasetDTW.trainingData.addSample(datasetDTW.gestureLabel, datasetDTW.trainingSample);
 
 }
 
-bool GRGrt::pushDatasetHMM(device_t *dev)
+bool GRGrt::pushDatasetHMM(gr_message* data)
 {
     datasetHMM.trainingData.setNumDimensions(datasetHMM.dimensions);
     datasetHMM.trainingData.setDatasetName("grDTWTrainingData"); //TODO later add relative name 
@@ -320,12 +307,12 @@ bool GRGrt::pushDatasetHMM(device_t *dev)
         {
             if(j < 3 )
             {
-                datasetHMM.sample[j+counter] = dev->imus[datasetHMM.sensors[i]]->data.front().gyro[j];
+                datasetHMM.sample[j+counter] = data->imus[datasetHMM.sensors[i]]->gyro[j];
 
             }
             else 
             {
-                datasetHMM.sample[(j+counter)] = dev->imus[datasetHMM.sensors[i]]->data.front().acc[i-3];
+                datasetHMM.sample[(j+counter)] = data->imus[datasetHMM.sensors[i]]->acc[i-3];
 
             }
         }
@@ -335,11 +322,6 @@ bool GRGrt::pushDatasetHMM(device_t *dev)
 
     usleep(20);
     datasetHMM.trainingSample.push_back(datasetHMM.sample);
-    for(int i=0; i<datasetHMM.sensors.size(); i++)
-    {
-        dev->imus[datasetHMM.sensors[i]]->data.pop_front();
-        //dev->imus[datasetHMM.sensors[i]]->acc.pop_front();
-    }
 
 
     datasetHMM.trainingData.addSample(datasetHMM.gestureLabel, datasetHMM.trainingSample);

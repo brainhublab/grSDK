@@ -10,10 +10,6 @@ GRMadgwick::GRMadgwick()
     this->q1 = 0.0f;
     this->q2 = 0.0f;
     this->q3 = 0.0f;
-    this->roll = 0.0f;
-    this->pitch = 0.0f;
-    this->yaw = 0.0f;
-    this->anglesComputed = 0;
 }
 
 GRMadgwick::~GRMadgwick()
@@ -41,7 +37,7 @@ void GRMadgwick::MadgwickAHRSupdate(float gx, float gy, float gz, float ax, floa
 
     // Use IMU algorithm if magnetometer measurement invalid (avoids NaN in magnetometer normalisation)
     if((mx == 0.0f) && (my == 0.0f) && (mz == 0.0f)) {
-        MadgwickAHRSupdateIMU(gx, gy, gz, ax, ay, az, results, freqCallibration, flag);
+        MadgwickAHRSupdateIMU(gx, gy, gz, ax, ay, az, results);
         return;
     }
 
@@ -131,8 +127,6 @@ void GRMadgwick::MadgwickAHRSupdate(float gx, float gy, float gz, float ax, floa
     q2 *= recipNorm;
     q3 *= recipNorm;
 
-    anglesComputed = 0;
-
     std::vector<float> new_result = {q0, q1, q2, q3};
 
     results->assign(new_result.begin(), new_result.end());
@@ -140,7 +134,7 @@ void GRMadgwick::MadgwickAHRSupdate(float gx, float gy, float gz, float ax, floa
 
 }
 void GRMadgwick::MadgwickAHRSupdateIMU(float gx, float gy, float gz, float ax, float ay, float az, 
-        std::deque<std::vector<float>>* results) 
+        std::vector<float>* results) 
 {
     float recipNorm;
     float s0, s1, s2, s3;
@@ -208,14 +202,13 @@ void GRMadgwick::MadgwickAHRSupdateIMU(float gx, float gy, float gz, float ax, f
     q2 *= recipNorm;
     q3 *= recipNorm;
 
-    anglesComputed = 0;
     //    std::cout<<"Q :"<<q0<<q1<<q2<<q3<<std::endl;
 
     std::vector<float> new_result = {q0, q1, q2, q3};
     results->assign(new_result.begin(), new_result.end());
 
 }
-bool setFreqCalibration(int callibration)
+bool GRMadgwick::setFreqCalibration(int callibration)
 {
     this->freqCallibration = callibration;
 }
