@@ -30,8 +30,9 @@ class GRAlgorithm :public GRGrt
         GRAlgorithm& operator=(const GRAlgorithm&);
         void grInitAlgorithms();
         //madgwick
-        gr_alg_message madgwickUpdate(gr_message*, int, std::string flag);
+        bool madgwickUpdate(gr_message*, gr_alg_message*, int, std::string flag);
         //void madgwickUpdateThr(device_t*, alg_device_t*, int, std::string flag);//TODO need to implement
+        bool setupMadgwick(int, int, int, int, int, int);
     private:
         float roll, pitch, yaw;
         std::vector<float> angles;
@@ -43,6 +44,8 @@ class GRAlgorithm :public GRGrt
         GRMadgwick indexMadgwick;
         GRMadgwick thumbMadgwick;
         GRMadgwick palmMadgwick;
+
+        std::unordered_map<std::string, GRMadgwick*> madgwickObjects;
 
 
 };

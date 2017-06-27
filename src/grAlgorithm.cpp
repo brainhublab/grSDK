@@ -5,6 +5,13 @@
 
 GRAlgorithm::GRAlgorithm()
 {
+    
+    madgwickObjects["pinky"] = &(this->pinkyMadgwick);
+    madgwickObjects["ring"] = &(this->ringMadgwick);
+    madgwickObjects["middle"] = &(this->middleMadgwick);
+    madgwickObjects["index"] = &(this->indexMadgwick);
+    madgwickObjects["thumb"] = &(this->thumbMadgwick);
+    madgwickObjects["palm"] = &(this->palmMadgwick);
  
 }
 
@@ -27,28 +34,54 @@ void grInitAlgorithms()
 {
 }
 
-gr_alg_message GRAlgorithm::madgwickUpdate(gr_message* imu, int freqCallibration, std::string flag)
+bool GRAlgorithm::madgwickUpdate(gr_message* message, gr_alg_message* result, 
+        int freqCallibration, std::string flag)
 {
     std::vector<float> rotations;
-    	   // std::cout<<"\nbefore madgwickUpdate() Q :"<<q0<<" "<<q1<<" "<<q2<<" "<<q3<<std::endl;
-        GRMadgwick::MadgwickAHRSupdate(imu->gyro[0], imu->gyro[1], imu->gyro[2], 
-                imu->accel[0], imu->accel[1], imu->accel[2], 
-                imu->mag[0], imu->mag[1], imu->mag[2], &rotations, freqCallibration);
+    std::unordered_map<std::string, imu*>::iterator it;
+    // std::cout<<"\nbefore madgwickUpdate() Q :"<<q0<<" "<<q1<<" "<<q2<<" "<<q3<<std::endl;
+    for(it=message->imus.begin(); it!=message->imus.end(); it++ )
+    {
+        madgwickObjects[it->first]->MadgwickAHRSupdate(
+                message->imus[it->first]->gyro[0], message->imus[it->first]->gyro[1], message->imus[it->first]->gyro[2], 
+                message->imus[it->first]->acc[0], message->imus[it->first]->acc[1], message->imus[it->first]->acc[2], 
+                message->imus[it->first]->mag[0], message->imus[it->first]->mag[1], message->imus[it->first]->mag[2], 
+                &rotations);
+        if(it->first == "pinky")
+        {
+            result->pinky.push_back(rotations);
+        }
+        else if(it->first == "ring")
+        {
+            result->ring.push_back(rotations);
+        }
+        else if(it->first == "middle")
+        {
+            result->middle.push_back(rotations);
+        }
+        else if(it->first == "index")
+        {
+            result->index.push_back(rotations);
+        }
+        else if(it->first == "thumb")
+        {
+            result->thumb.push_back(rotations);
+        }
+        else
+        {
+            result->palm.push_back(rotations);
+        }
+    }
 
-    if(flag == "QANTERION")
-    {
-        return rotations;
-    }
-    else if(flag == "ANGLES")
-    {
-        rotations = computeAngles(rotations);
-        return rodations;
-    }
-    else
-    {
-        std::cout<<"ERROR: no such flag "<<flag<<std::endl;
-    }
-
+}
+bool GRAlgorithm::setupMadgwick(int pCallib, int rCallib, int mCallib, int iCallib, int tCallib, int paCallib)
+{
+    madgwickObjects["pinky"]->setFreqCalibration(pCallib);
+    madgwickObjects["ring"]->setFreqCalibration(rCallib);
+    madgwickObjects["middle"]->setFreqCalibration(mCallib);
+    madgwickObjects["index"]->setFreqCalibration(iCallib);
+    madgwickObjects["thumb"]->setFreqCalibration(tCallib);
+    madgwickObjects["palm"]->setFreqCalibration(paCallib);
 }
 /* TODO implement in thread madgwick update
 void GRAlgorithm::madgwickUpdateThr(imu* imu, int freqCallibration, std::string flag)
@@ -58,7 +91,7 @@ void GRAlgorithm::madgwickUpdateThr(imu* imu, int freqCallibration, std::string 
     std::cout<<"run MadgwickAHRSupdate thread for pinky"<<endl;
 }
 */
-std::vector<float> GRMadgwick::computeAngles(std::vector<float> q)
+std::vector<float> GRAlgorithm::computeAngles(std::vector<float> q)
 {
 
     std::vector<float> angles;
@@ -78,7 +111,6 @@ std::vector<float> GRMadgwick::computeAngles(std::vector<float> q)
     angles.push_back(roll);
     angles.push_back(pitch);
     angles.push_back(yaw);
-    anglesComputed = 1;
     return angles;
 }
 

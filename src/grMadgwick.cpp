@@ -31,7 +31,7 @@ GRMadgwick& GRMadgwick::operator=(const GRMadgwick& t)
 
 }
 void GRMadgwick::MadgwickAHRSupdate(float gx, float gy, float gz, float ax, float ay, float az, 
-        float mx, float my, float mz, std::vector<float>* results, int freqCallibration)
+        float mx, float my, float mz, std::vector<float>* results)
 {
     float recipNorm;
     float s0, s1, s2, s3;
@@ -140,7 +140,7 @@ void GRMadgwick::MadgwickAHRSupdate(float gx, float gy, float gz, float ax, floa
 
 }
 void GRMadgwick::MadgwickAHRSupdateIMU(float gx, float gy, float gz, float ax, float ay, float az, 
-        std::deque<std::vector<float>>* results, int freqCallibration) 
+        std::deque<std::vector<float>>* results) 
 {
     float recipNorm;
     float s0, s1, s2, s3;
@@ -215,7 +215,10 @@ void GRMadgwick::MadgwickAHRSupdateIMU(float gx, float gy, float gz, float ax, f
     results->assign(new_result.begin(), new_result.end());
 
 }
-
+bool setFreqCalibration(int callibration)
+{
+    this->freqCallibration = callibration;
+}
 // Fast inverse square-root
 
 float GRMadgwick::invSqrt(float x) {

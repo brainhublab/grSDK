@@ -7,7 +7,7 @@
 #include <cstring>
 #include <vector>
 #include <map>
-
+#include <unordered_map>
 #include <stdlib.h>
 
 struct dev_names
@@ -74,6 +74,20 @@ struct gr_message
     imu index;
     imu thumb;
     imu palm;
+
+    std::unordered_map<std::string, imu*> imus;
+
+    gr_message()
+    {
+        id = 0;
+        
+        imus["pinky"] = &pinky;
+        imus["ring"] = &ring;
+        imus["middle"] = &middle;
+        imus["index"] = &index;
+        imus["thumb"] = &thumb;
+        imus["palm"] = &palm;
+    }
 
 };
 

@@ -130,7 +130,7 @@ device_t* GRConnection::getDevice(int devId)
     return &(activeDevices[devId]);
 }
 
-bool GRConnection::readData(int devId, gr_message* message)
+bool GRConnection::getData(int devId, gr_message* message)
 {
     int sock, status, bytes_read;
     int id;
@@ -201,7 +201,7 @@ bool GRConnection::readData(int devId, gr_message* message)
 
 }
 
-bool GRConnection::splitData(std::string data, imu* sensor)
+bool GRConnection::splitData(std::string data, imu sensor)
 {
     int i = 0;
     int id;
@@ -220,15 +220,15 @@ bool GRConnection::splitData(std::string data, imu* sensor)
     {
         if(i <= 3)
         {
-            sensor->gyro.push_back(arr[i]);
+            sensor.gyro.push_back(arr[i]);
         }
         else if(i > 3 && i <= 6)
         {
-            sensor->acc.push_back(arr[i]);
+            sensor.acc.push_back(arr[i]);
         }
         else if(i > 6 )
         {
-            sensor->mag.push_back(arr[i]);
+            sensor.mag.push_back(arr[i]);
         }
     }
     //sensor->data.push_back(msg);
@@ -339,13 +339,13 @@ bool GRConnection::asignMessageWithImu(std::string rawMessage, gr_message* messa
     ss >> id;
     if(id == 0)
     {
-        splitData(rawMessage, imessage->pinky);
+        splitData(rawMessage, message->pinky);
         message->pinky.time_stamp = getTimeStamp();//TODO add if statement
     }
     else if(id ==1)
     {
         splitData(rawMessage, message->ring);
-        mesage->ring.time_stamp = getTimeStamp();
+        message->ring.time_stamp = getTimeStamp();
     }
     else if(id == 2)
     {
@@ -371,7 +371,7 @@ bool GRConnection::asignMessageWithImu(std::string rawMessage, gr_message* messa
     }
     //rawMessage.clear();
     //TODO need to comment
-    if(!device->palm.data.empty())
+    if(!message->palm.gyro.empty())
     {   
         //std::cout<<device->palm.data.front().gyro[1]<<std::endl;
         //device->palm.data.pop_front();

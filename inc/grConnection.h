@@ -69,13 +69,13 @@ class GRConnection
         std::unordered_map<int, std::string> bufferedData;
 
         std::string getNext();  
-        bool splitData(std::string, imu*);
+        bool splitData(std::string, imu);
         float getTimeStamp();
         bool deviceIsIn(std::string); 
         int asignDeviceWithSocket(int); // parameter is device ID
         device_t getDeviceById(int);
         int getDeviceSocketById(int);
-        bool asignMessageWithImu(std::string, device_t*); 
+        bool asignMessageWithImu(std::string, gr_message*); 
         
    // std::map<std::string, gr_message> messages;
 };
