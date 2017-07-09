@@ -29,7 +29,7 @@ struct imu
     std::vector<float> acc;
     std::vector<float> mag;
 
-    float time_stamp;
+    unsigned long time_stamp;
 
     imu()
     {

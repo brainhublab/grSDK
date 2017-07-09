@@ -160,9 +160,11 @@ bool GRConnection::getData(int devId, gr_message* message)
 
                     messageAvalible = true;
                     
-             //       std::cout<<"message "<<rawMessage<<std::endl;
+    //               std::cout<<"message "<<rawMessage<<std::endl;
                     iter++;
-                    asignMessageWithImu(rawMessage, message);             
+                    asignMessageWithImu(rawMessage, message);
+                  /*  if(!message->palm.gyro.empty())
+                    std::cout<<"in read data --->"<< message->palm.gyro[1]<<std::endl;             */
                     rawMessage.clear();
 
                 }
@@ -201,38 +203,53 @@ bool GRConnection::getData(int devId, gr_message* message)
 
 }
 
-bool GRConnection::splitData(std::string data, imu sensor)
+bool GRConnection::splitData(std::string data, imu* sensor)
 {
+    sensor->gyro.clear();
+    sensor->acc.clear();
+    sensor->mag.clear();
     int i = 0;
     int id;
-    float n, arr[10];
+    float n, arr[11];
     std::stringstream ss(data);
     // std::vector<float> gyro, acc, mag;
 
     //gr_message msg;
-    while(ss >> n && i<10)
+    while(ss >> n && i<11)
     {
         arr[i] = n;
         i++;
     }
 
-    for(int i=1;i<10;i++)
+
+    for(int i=1;i<11;i++)
     {
         if(i <= 3)
         {
-            sensor.gyro.push_back(arr[i]);
+            sensor->gyro.push_back(arr[i]);
         }
         else if(i > 3 && i <= 6)
         {
-            sensor.acc.push_back(arr[i]);
+            sensor->acc.push_back(arr[i]);
         }
-        else if(i > 6 )
+        else if(i > 6 && i<=9)
         {
-            sensor.mag.push_back(arr[i]);
+            sensor->mag.push_back(arr[i]);
         }
-    }
-    //sensor->data.push_back(msg);
+        else if(i > 9)
+        {
+           sensor->time_stamp = arr[i];
+        }
 
+    }
+    //std::cout<<"from split data "<<sensor.gyro[0]<<std::endl;
+    //sensor->data.push_back(msg);
+    /*for(int i=0;i<3;i++)
+    {
+        std::cout<<sensor->gyro[i]<<" ";
+    }
+    std::cout<<std::endl;
+*/
     //msg.gyro.clear();
     //msg.acc.clear();
     //msg.mag.clear();
@@ -339,34 +356,34 @@ bool GRConnection::asignMessageWithImu(std::string rawMessage, gr_message* messa
     ss >> id;
     if(id == 0)
     {
-        splitData(rawMessage, message->pinky);
-        message->pinky.time_stamp = getTimeStamp();//TODO add if statement
+        splitData(rawMessage, &message->pinky);
+        //message->pinky.time_stamp = getTimeStamp();//TODO add if statement
     }
     else if(id ==1)
     {
-        splitData(rawMessage, message->ring);
-        message->ring.time_stamp = getTimeStamp();
+        splitData(rawMessage, &message->ring);
+        //message->ring.time_stamp = getTimeStamp();
     }
     else if(id == 2)
     {
-        splitData(rawMessage, message->middle);
-        message->middle.time_stamp = getTimeStamp();
+        splitData(rawMessage, &message->middle);
+        //message->middle.time_stamp = getTimeStamp();
     }
     else if(id == 3)
     {
-        splitData(rawMessage, message->index);
-        message->index.time_stamp = getTimeStamp();
+        splitData(rawMessage, &message->index);
+        //message->index.time_stamp = getTimeStamp();
     }
     else if(id==4)
     {
-        splitData(rawMessage, message->thumb);
-        message->thumb.time_stamp = getTimeStamp();
+        splitData(rawMessage, &message->thumb);
+        //message->thumb.time_stamp = getTimeStamp();
     }
     else if(id==5)
     {
        // std::cout<<rawMessage<<std::endl;
-        splitData(rawMessage, message->palm);
-        message->palm.time_stamp = getTimeStamp();
+        splitData(rawMessage, &message->palm);
+        //message->palm.time_stamp = getTimeStamp();
 
     }
     //rawMessage.clear();
