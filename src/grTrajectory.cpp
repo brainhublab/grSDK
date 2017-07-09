@@ -49,44 +49,72 @@ vector<float> GRTrajectory::_toStdVector(Vector3d in)
 
 Vector3d GRTrajectory::_toVector3d(vector<float> in)
 {
-    Vector3d out = {in[0], in[1], in[2]};
+    Vector3d out(in[0], in[1], in[2]);
     return out;
 }
 
-vector<float> GRTrajectory::getNewPosByVelocity(vector<float> acc, unsigned long timestamp)
+Quaterniond GRTrajectory::_toQuaterniond(vector<double> in)
 {
-    Vector3d acc_v, pos_next;
+    Quaterniond out(in[0], in[1], in[2], in[3]);
+    return out;
+}
+
+Vector3d GRTrajectory::_rotateAcc(Vector3d acc, Quaterniond q)
+{
+    q.normalize();
+
+    Quaterniond acc_q;
+    acc_q.w() = 0;
+    acc_q.vec() = acc;
+
+    Quaterniond out_q = q * acc_q * q.inverse();
+    Vector3d out = out_q.vec();
+    return out;
+}
+
+vector<double> GRTrajectory::getNewPosByVelocity(vector<double> acc, vector<double> q, unsigned long timestamp)
+{
+    Vector3d acc_v, acc_fixed, pos_next;
+    Quaterniond q_q;
 
     acc_v = this->_toVector3d(acc);
+    q_q = this->_toQuaterniond(q);
+    acc_fixed = this->_rotateAcc(acc_v, q_q);
 
-    pos_next = this->_getNewPosByVelocity(acc_v, timestamp);
+    pos_next = this->_getNewPosByVelocity(acc_fixed, timestamp);
     this->pos_last = pos_next;
     this->timestamp_last = timestamp;
 
     return this->_toStdVector(pos_next);
 }
 
-vector<float> GRTrajectory::getNewPosByIntegrating(vector<float> acc, unsigned long timestamp)
+vector<double> GRTrajectory::getNewPosByIntegrating(vector<double> acc, vector<double> q, unsigned long timestamp)
 {
-    Vector3d acc_v, pos_next;
+    Vector3d acc_v, acc_fixed, pos_next;
+    Quaterniond q_q;
 
     acc_v = this->_toVector3d(acc);
+    q_q = this->_toQuaterniond(q);
+    acc_fixed = this->_rotateAcc(acc_v, q_q);
 
-    pos_next = this->_getNewPosByIntegrating(acc_v, timestamp);
+    pos_next = this->_getNewPosByIntegrating(acc_fixed, timestamp);
     this->pos_last = pos_next;
     this->timestamp_last = timestamp;
 
     return this->_toStdVector(pos_next);
 }
 
-vector<float> GRTrajectory::getNewPos(vector<float> acc, float timestamp)
+vector<double> GRTrajectory::getNewPos(vector<double> acc, vector<double> q, unsigned long timestamp)
 {
-    Vector3d acc_v, speed_pos, integrated_pos, pos_next;
+    Vector3d acc_v, acc_fixed, speed_pos, integrated_pos, pos_next;
+    Quaterniond q_q;
 
     acc_v = this->_toVector3d(acc);
+    q_q = this->_toQuaterniond(q);
+    acc_fixed = this->_rotateAcc(acc_v, q_q);
 
-    speed_pos = this->_getNewPosByVelocity(acc_v, timestamp);
-    integrated_pos = this->_getNewPosByIntegrating(acc_v, timestamp);
+    speed_pos = this->_getNewPosByVelocity(acc_fixed, timestamp);
+    integrated_pos = this->_getNewPosByIntegrating(acc_fixed, timestamp);
 
     pos_next = (speed_pos + integrated_pos) / 2;
 
