@@ -9,7 +9,7 @@ using Eigen::Vector3d;
 using Eigen::Quaterniond;
 using namespace std;
 
-#define G  3.3490547936e-05// 9.000416 need to be 9.80665
+#define G  9.80665// 9.000416 need to be 9.80665
 
 
 class GRTrajectory

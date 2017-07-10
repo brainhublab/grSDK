@@ -34,9 +34,9 @@ class GRAlgorithm :public GRGrt
         //void madgwickUpdateThr(device_t*, alg_device_t*, int, std::string flag);//TODO need to implement
         bool setupMadgwick(int, int, int, int, int, int);
     private:
-        float roll, pitch, yaw;
-        std::vector<float> angles;
-        std::vector<float> computeAngles(std::vector<float>);
+        double roll, pitch, yaw;
+        std::vector<double> angles;
+        std::vector<double> computeAngles(std::vector<double>);
 
         GRMadgwick pinkyMadgwick;
         GRMadgwick ringMadgwick;

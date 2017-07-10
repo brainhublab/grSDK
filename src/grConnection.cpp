@@ -210,9 +210,9 @@ bool GRConnection::splitData(std::string data, imu* sensor)
     sensor->mag.clear();
     int i = 0;
     int id;
-    float n, arr[11];
+    double n, arr[11];
     std::stringstream ss(data);
-    // std::vector<float> gyro, acc, mag;
+    // std::vector<double> gyro, acc, mag;
 
     //gr_message msg;
     while(ss >> n && i<11)
@@ -256,7 +256,7 @@ bool GRConnection::splitData(std::string data, imu* sensor)
 
 }
 
-float GRConnection::getTimeStamp()
+double GRConnection::getTimeStamp()
 {
     this->timeStamp = 0.0;
 

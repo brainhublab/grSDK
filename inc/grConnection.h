@@ -61,7 +61,7 @@ class GRConnection
         bool connectSocket(int);
     private:
         char buf[256];
-        float timeStamp;
+        double timeStamp;
         std::chrono::time_point<std::chrono::system_clock> start, end;
         std::map<int, device_t> avalibleDevices;
         std::unordered_map<int, device_t> activeDevices;
@@ -70,7 +70,7 @@ class GRConnection
 
         std::string getNext();  
         bool splitData(std::string, imu*);
-        float getTimeStamp();
+        double getTimeStamp();
         bool deviceIsIn(std::string); 
         int asignDeviceWithSocket(int); // parameter is device ID
         device_t getDeviceById(int);

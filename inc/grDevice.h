@@ -25,9 +25,9 @@ struct dev_names
 };
 struct imu 
 {
-    std::vector<float> gyro;
-    std::vector<float> acc;
-    std::vector<float> mag;
+    std::vector<double> gyro;
+    std::vector<double> acc;
+    std::vector<double> mag;
 
     unsigned long time_stamp;
 
@@ -116,12 +116,12 @@ struct gr_alg_message
 {
     // q x y z
     // to store quaternions
-    std::deque<std::vector<float> > pinky;
-    std::deque<std::vector<float> > ring;
-    std::deque<std::vector<float> > middle;
-    std::deque<std::vector<float> > index;
-    std::deque<std::vector<float> > thumb;
-    std::deque<std::vector<float> > palm;
+    std::vector<double>  pinky;
+    std::vector<double>  ring;
+    std::vector<double>  middle;
+    std::vector<double>  index;
+    std::vector<double>  thumb;
+    std::vector<double>  palm;
 };
 
 #endif

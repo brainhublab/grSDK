@@ -36,7 +36,7 @@ int main (int argc, const char * argv[])
     GRConnection conn;
     device_t* device;
     gr_message msg;
-    alg_gr_message alg_msg;
+    gr_alg_message alg_msg;
     //device.address = "98:D3:32:10:AC:59";
     std::map<int, device_t> devices;
    conn.getAvalibleDevices();
@@ -44,21 +44,23 @@ int main (int argc, const char * argv[])
    conn.connectSocket(1);
 
    GRAlgorithm alg;
-   alg.setupMadgwick(165, 165, 165, 165, 165, 165); //need to check
+   alg.setupMadgwick(140, 140, 140, 140, 140, 140); //need to check
 
    //
    std::unordered_map<std::string, gr_message> data;
-   FILE* f;
+   FILE* f, *fa;
    f = fopen("firs.txt", "w");
-   std::vector<float> trajectory, acc;
-   float time;
+   fa = fopen("firs_acc.txt", "w");
+   std::vector<double> trajectory, acc;
+   double time;
    GRTrajectory traj;
-
+int itr = 0;
   while(1)
     {
+        itr ++;
 
          conn.getData(1, &msg);
-         if(!msg.imus["palm"]->acc.empty())
+         if(!msg.imus["palm"]->acc.empty() && itr > 10)
          {
             /* std::cout<<"data -->";
              for(int i=0; i<3; i++)
@@ -79,10 +81,18 @@ int main (int argc, const char * argv[])
               std::cout<<msg.imus["pinky"]->time_stamp;
 */              
              alg.madgwickUpdate(&msg, &alg_msg, 1, "flag");
+            std::cout<<"QUANTERNION---->";
+            for(int i =0;i<4;i++)
+            {
+                std::cout<<alg_msg.palm[i];
+            }
+            std::cout<<std::endl;
+              trajectory = traj.getNewPosByIntegrating(msg.palm.acc, alg_msg.palm, msg.palm.time_stamp);
 
-              trajectory = traj.getNewPosByVelocity(msg.palm.acc, msg.palm.time_stamp);
+              printf( "%f %f %f \n", trajectory[0], trajectory[1], trajectory[2]); 
               std::cout<<msg.palm.acc[0]<<" "<<msg.palm.acc[1]<<" "<<msg.palm.acc[2]<<std::endl;
               fprintf(f, "%f %f %f \n", trajectory[0], trajectory[1], trajectory[2]); 
+              fprintf(fa, "%f %f %f \n", msg.palm.acc[0], msg.palm.acc[1], msg.palm.acc[2]); 
               std::cout<<std::endl;
          }
          msg.palm.gyro.clear();
