@@ -8,11 +8,11 @@ GRVisualization::GRVisualization(QWidget *parent) :
 		ui(new Ui::GRVisualization)
 {
 
+    ui->setupUi(this);
 #ifdef GR_VISUALIZATION_LOGGING_ENABLED
 	printf("GR visualization: setting up UI...\n");
 #endif
 
-	ui->setupUi(this);
 	initUiProps();
 
 	rightArmApplier.setArm(&ui->GLwidget->rightArm);

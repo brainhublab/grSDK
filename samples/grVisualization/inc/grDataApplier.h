@@ -40,10 +40,16 @@ private:
 
 	QTimer *fetchTimer; // a timer for fetchdata
 
-	GRHand* arm; // for moving arm
-	device_t dev;
-	alg_device_t algDev; // filtered data
-	GRConnection conn;
+
+    GRHand* arm; // for moving arm
+
+
+    GRConnection conn;
+    device_t* device;
+    gr_message msg;
+    gr_alg_message alg_msg;
+    std::map<int, device_t> devices;
+
 
 	int fetchFrequency = 20;
 	// algorithms for each finger and hand
@@ -56,7 +62,7 @@ private:
 
 	// for applying data
 	bool applyToFinger(std::deque<std::vector<float>>&, int);
-	bool applyToHand(std::deque<std::vector<float>>&);
+    bool applyToHand(std::vector<double>&);
     std::vector<float>* nodeQuanternion;
     std::vector<float> prevQuants[6];
 	bool fetchRunning = false;

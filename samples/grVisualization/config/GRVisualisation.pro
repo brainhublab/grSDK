@@ -27,6 +27,11 @@ SOURCES += ./src/main.cpp\
     ./src/grDataPlotter.cpp \
     ../../src/grConnection.cpp \
     ../../src/grAlgorithm.cpp \
+	../../src/grGrt.cpp \
+	../../src/grMadgwick.cpp \
+        ../../src/grTrajectory.cpp \
+	../../src/grUtilities.cpp \
+
 
 HEADERS  += ./inc/grVisualization.h \
     ./inc/ui_grVisualization.h \
@@ -40,6 +45,12 @@ HEADERS  += ./inc/grVisualization.h \
     ./inc/grDataPlotter.h \
     ../../inc/grConnection.h \
     ../../inc/grAlgorithm.h \
+	../../inc/grDataAttributes.h \
+	../../inc/grDevice.h \
+	../../inc/grGrt.h \
+	../../inc/grMadgwick.h \
+        ../../inc/grTrajectory.h \
+	../../inc/grUtilities.h \
 
 FORMS    += grVisualisation.ui
 
