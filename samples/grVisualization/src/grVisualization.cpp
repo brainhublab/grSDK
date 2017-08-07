@@ -25,6 +25,7 @@ GRVisualization::GRVisualization(QWidget *parent) :
 	plotter_all_gyro = new GRDataPlotter(ui->gyroscope);
 	plotter_all_mag = new GRDataPlotter(ui->magnetometer);
 
+    buffer = new std::deque<std::vector<float>>();
 }
 
 GRVisualization::~GRVisualization()
@@ -37,6 +38,7 @@ GRVisualization::~GRVisualization()
 	delete plotter_all_gyro;
 	delete plotter_all_mag;
 	delete ui;
+    delete buffer;
 
 
 #ifdef GR_VISUALIZATION_LOGGING_ENABLED
@@ -77,7 +79,30 @@ bool GRVisualization::runDataReading()
 #ifdef GR_VISUALIZATION_LOGGING_ENABLED
 	printf("GRVisualization: running data reading...\n");
 #endif
-	rightArmApplier.run();
+    plotter_all_acc->setupPlot(buffer);
+    rightArmApplier.writeQuanternionHistory(buffer);
+
+    rightArmApplier.run();
+    plotter_all_acc->runPlotting();
+
+    std::map<int, device_t> ad = rightArmApplier.getActiveDevices();
+    device_t d;
+    if(ad.empty())
+    {
+        d.name = "SOME DEVICE";
+        d.address = "08:FC:0S:SD:0P";
+        ad[4] = d;
+    }
+    for(std::map<int, device_t>::const_iterator it = ad.begin(); it != ad.end(); it++)
+    {
+        d = it->second;
+        QTreeWidgetItem* item = new QTreeWidgetItem();
+        QTreeWidgetItem* address = new QTreeWidgetItem();
+        item->setText(0, QString(d.name.c_str()));
+        address->setText(0, QString(d.address.c_str()));
+        item->addChild(address);
+        ui->devicesTree->addTopLevelItem(item);
+    }
 	return true;
 }
 
@@ -128,20 +153,20 @@ void GRVisualization::on_loggingCheckBox_toggled(bool checked)
 {
 	ui->randomData->setVisible(checked);
 
-	rightArmApplier.isLoggingEnabled = checked;
+//	rightArmApplier.isLoggingEnabled = checked;
 }
 
 void GRVisualization::on_randomData_clicked()
 {
-	printf("\nGRVisualization: The function Random data is disabled now\n");
-//    int max = 256, min = -256;
-//    std::vector<float> s;
-//    s.push_back(qrand() % ((max + 1) - min) + min);
-//    //s.append(" ");
-//    s.push_back(0);//qrand() % ((max + 1) - min) + min));
-//    //s.append(" ");
-//    s.push_back(0);//qrand() % ((max + 1) - min) + min));
-//    //rightArmApplier.sourceBuffer->push_back(s);
+//	printf("\nGRVisualization: The function Random data is disabled now\n");
+    int max = 256, min = -256;
+    std::vector<double> s;
+    s.push_back(qrand() % ((max + 1) - min) + min);
+//    s.append(" ");
+    s.push_back(qrand() % ((max + 1) - min) + min);
+//    s.append(" ");
+    s.push_back(qrand() % ((max + 1) - min) + min);
+    rightArmApplier.addHistoryData(s);
 
 }
 

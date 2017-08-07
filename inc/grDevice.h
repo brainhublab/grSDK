@@ -122,6 +122,19 @@ struct gr_alg_message
     std::vector<double>  index;
     std::vector<double>  thumb;
     std::vector<double>  palm;
+
+    std::unordered_map<std::string, std::vector<double>*> nodes;
+
+    gr_alg_message()
+    {
+        nodes["pinky"] = &pinky;
+        nodes["ring"] = &ring;
+        nodes["middle"] = &middle;
+        nodes["index"] = &index;
+        nodes["thumb"] = &thumb;
+        nodes["palm"] = &palm;
+    }
+
 };
 
 #endif

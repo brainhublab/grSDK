@@ -25,10 +25,13 @@
 GRDataApplier::GRDataApplier()
 {
 	plog::init(plog::debug, "log.csv");
+    nodeQuanternion = new std::vector<float>();
 }
 
 GRDataApplier::~GRDataApplier()
-{}
+{
+    delete nodeQuanternion;
+}
 
 bool GRDataApplier::setArm(GRHand *oArm)
 {
@@ -68,19 +71,52 @@ printf("Setting up.");
 
 	fetchTimer->start(fetchFrequency);
 
-    conn.getAvalibleDevices();
-    conn.setActiveDevice(1);
-    conn.connectSocket(1);
+    // configuring connection to devices
 
-    alg.setupMadgwick(140, 140, 140, 140, 140, 140);
-    alg1.setupMadgwick(140, 140, 140, 140, 140, 140);
-    alg2.setupMadgwick(140, 140, 140, 140, 140, 140);
-    alg3.setupMadgwick(140, 140, 140, 140, 140, 140);
-    alg4.setupMadgwick(140, 140, 140, 140, 140, 140);
-    alg5.setupMadgwick(140, 140, 140, 140, 140, 140);
+    std::map<int, device_t> availableDevices;
+    availableDevices = conn.getAvalibleDevices();
+    for(std::map<int, device_t>::const_iterator it = availableDevices.begin(); it != availableDevices.end(); ++it)
+    {
+        conn.setActiveDevice(it->first);
+        conn.connectSocket(it->first);
+        activeDevices[it->first] = it->second;
+    }
+
+    algPinky.setupMadgwick(140, 140, 140, 140, 140, 140);
+    algRing.setupMadgwick(140, 140, 140, 140, 140, 140);
+    algMiddle.setupMadgwick(140, 140, 140, 140, 140, 140);
+    algIndex.setupMadgwick(140, 140, 140, 140, 140, 140);
+    algThumb.setupMadgwick(140, 140, 140, 140, 140, 140);
+    algPalm.setupMadgwick(140, 140, 140, 140, 140, 140);
 
 
-	return true;
+    return true;
+}
+
+bool GRDataApplier::addHistoryData(std::vector<double> quant)
+{
+    if(targetQuanternionHistory == nullptr)
+    {
+        return false;
+    }
+    std::vector<float> q;
+    for(int i = 0; i < quant.size(); i++)
+    {
+        q.push_back((float) quant[i]);
+    }
+    targetQuanternionHistory->push_back(q);
+    return true;
+}
+
+bool GRDataApplier::writeQuanternionHistory(std::deque<std::vector<float> > * h)
+{
+    targetQuanternionHistory = h;
+    return true;
+}
+
+const std::map<int, device_t> &GRDataApplier::getActiveDevices() const
+{
+    return activeDevices;
 }
 
 // Quaternion (x, y, z, w)
@@ -125,64 +161,63 @@ void quaternionToRotation(std::vector<float>& quaternion,
 	rotation[15] = 1;
 }
 
+bool GRDataApplier::processMsg(std::string nodeName)
+{
+    if(!msg.imus[nodeName]->acc.empty())
+    {
+        algPalm.madgwickUpdate(&msg, &alg_msg, 1, "flag");
+        std::cout<<"QUANTERNION---->";
+
+        for(int i = 0; i < 4; i++)
+        {
+            std::cout << (*alg_msg.nodes[nodeName])[i];
+        }
+        std::cout<<std::endl;
+
+        if(nodeName == "palm")
+        {
+            applyToHand(*alg_msg.nodes[nodeName]);
+            addHistoryData(*alg_msg.nodes[nodeName]);
+        }
+        msg.imus[nodeName]->gyro.clear();
+        msg.imus[nodeName]->acc.clear();
+        msg.imus[nodeName]->mag.clear();
+        return true;
+    }
+
+    return false;
+}
 
 bool GRDataApplier::fetchData()
 {
-    conn.getData(1, &msg);
-
-    if(!msg.imus["palm"]->acc.empty())
-    {
-        if(!msg.imus["palm"]->acc.empty())
-        {
-           /* std::cout<<"data -->";
-            for(int i=0; i<3; i++)
-            {
-                std::cout<<msg.imus["pinky"]->gyro[i]<<" ";
-
-            }
-             for(int i=0; i<3; i++)
-            {
-                std::cout<<msg.imus["pinky"]->acc[i]<<" ";
-
-            }
-             for(int i=0; i<3; i++)
-            {
-                std::cout<<msg.imus["pinky"]->mag[i]<<" ";
-
-            }
-             std::cout<<msg.imus["pinky"]->time_stamp;
-*/
-            alg.madgwickUpdate(&msg, &alg_msg, 1, "flag");
-           std::cout<<"QUANTERNION---->";
-
-           for(int i =0;i<4;i++)
-           {
-               std::cout<<alg_msg.palm[i];
-           }
-
-           applyToHand(alg_msg.palm);
-           std::cout<<std::endl;
-//             trajectory = traj.getNewPosByIntegrating(msg.palm.acc, alg_msg.palm, msg.palm.time_stamp);
-
-//             printf( "%f %f %f \n", trajectory[0], trajectory[1], trajectory[2]);
-//             std::cout<<msg.palm.acc[0]<<" "<<msg.palm.acc[1]<<" "<<msg.palm.acc[2]<<std::endl;
-//             fprintf(f, "%f %f %f \n", trajectory[0], trajectory[1], trajectory[2]);
-//             fprintf(fa, "%f %f %f \n", msg.palm.acc[0], msg.palm.acc[1], msg.palm.acc[2]);
-//             std::cout<<std::endl;
-        }
-        msg.palm.gyro.clear();
-        msg.palm.acc.clear();
-        msg.palm.mag.clear();
-
-    }
+    std::vector<double> v;
+    v.push_back(1);
+    v.push_back(0);
+    v.push_back(0);
+    v.push_back(0);
+    applyToHand(v);
+    v.clear();
+    v.push_back(0.985);
+    v.push_back(0);
+    v.push_back(0);
+    v.push_back(0.014);
+    applyToFinger(v, 0);
+    applyToFinger(v, 1);
+    applyToFinger(v, 2);
+    applyToFinger(v, 3);
+    applyToFinger(v, 4);
     /*
-    alg1.madgwickUpdateBuffer(&dev.pinky, &algDev.pinky, 140, "QATERNION"); // QUATERION"
-    alg2.madgwickUpdateBuffer(&dev.ring, &algDev.ring, 140, "QATERNION");
-    alg3.madgwickUpdateBuffer(&dev.middle, &algDev.middle, 160, "QATERNION");
-    alg4.madgwickUpdateBuffer(&dev.index, &algDev.index, 180, "QATERNION");
-    alg5.madgwickUpdateBuffer(&dev.thumb, &algDev.thumb, 140, "QATERNION");
-    alg.madgwickUpdateBuffer(&dev.palm, &algDev.palm, 60, "QATERNION");*/
+    printf("hello");*/
+    if(activeDevices.empty())
+    {
+        return false;
+    }
 
+    for(std::map<int, device_t>::const_iterator it = activeDevices.begin(); it != activeDevices.end(); ++it)
+    {
+        conn.getData(it->first, &msg);
+        processMsg("palm");
+    }
 
 //    applyToFinger(algDev.pinky, 0);
 //	applyToFinger(algDev.ring, 1);
@@ -192,23 +227,36 @@ bool GRDataApplier::fetchData()
 
 //	applyToHand(algDev.palm);
 //	emit fetchSignal();
-	return true;
+    return true;
+}
+
+bool GRDataApplier::setAlgorithms()
+{
+    algorithms["pinky"] = GRAlgorithm();
+    algorithms["ring"] = GRAlgorithm();
+    algorithms["middle"] = GRAlgorithm();
+    algorithms["index"] = GRAlgorithm();
+    algorithms["thumb"] = GRAlgorithm();
+    algorithms["palm"] = GRAlgorithm();
+
+    return true;
 }
 
 bool GRDataApplier::applyToHand(std::vector<double> &quant)
 {
     if (!quant.empty())
 	{
-        for(int i = 0; i < 4; i++)\
+        nodeQuanternion->clear();
+        for(int i = 0; i < quant.size(); i++)\
         {
 
-            (*nodeQuanternion)[i] = (float)quant[i];
+            nodeQuanternion->push_back((float)quant[i]);
         }
 
         GLfloat mat[16];
         quaternionToRotation(*nodeQuanternion, mat);
 
-//        printf("Hand Q: %f %f %f %f\n",  (*nodeQuanternion)[0], (*nodeQuanternion)[1], (*nodeQuanternion)[2], (*nodeQuanternion)[3]);
+        printf("Hand Q: %f %f %f %f\n",  (*nodeQuanternion)[0], (*nodeQuanternion)[1], (*nodeQuanternion)[2], (*nodeQuanternion)[3]);
         arm->bendHandWithMatrix(mat);
 
         //arm->bendHand((*nodeQuanternion)[2], (*nodeQuanternion)[1], (*nodeQuanternion)[3]);
@@ -244,13 +292,19 @@ float getYaw(std::vector<float> &q)
 }
 
 
-bool GRDataApplier::applyToFinger(std::deque<std::vector<float>> &node, int index)
+bool GRDataApplier::applyToFinger(std::vector<double> &node, int index)
 {
 	//printf("Here we are");
-    if (!node.empty() && !node.front().size() < 4)
+    if (!node.empty())
 	{
-		nodeQuanternion = &node.front();
-		GLfloat mat[16];
+        nodeQuanternion->clear();
+        for(int i = 0; i < node.size(); i++)\
+        {
+
+            nodeQuanternion->push_back((float)node[i]);
+        }
+
+        GLfloat mat[16];
 
 		float yaw = getYaw(*nodeQuanternion);
 
@@ -268,14 +322,44 @@ bool GRDataApplier::applyToFinger(std::deque<std::vector<float>> &node, int inde
         arm->bendFingerWithMatrix(index, mat);
         }
 
-        node.pop_front();
         (*nodeQuanternion).clear();
 
         return true;
 	}
 	return false;
 }
+/*bool GRDataApplier::applyToFinger(std::deque<std::vector<float>> &node, int index)
+{
+    //printf("Here we are");
+    if (!node.empty() && !node.front().size() < 4)
+    {
+        nodeQuanternion = &node.front();
+        GLfloat mat[16];
 
+        float yaw = getYaw(*nodeQuanternion);
+
+        float palmYaw = 0.0f;
+
+
+
+        printf("This is yaw: %f, this is difference: %f\n", yaw, (palmYaw-yaw));
+
+
+        //if(palmYaw == 0.f || ((palmYaw-yaw) > -100.f && (palmYaw-yaw) < 30.f))// || ( yaw > 250 && (palmYaw-yaw) < -70.f && (palmYaw-yaw) > 30.f))
+
+        {
+        quaternionToRotation(*nodeQuanternion, mat);
+        arm->bendFingerWithMatrix(index, mat);
+        }
+
+        node.pop_front();
+        (*nodeQuanternion).clear();
+
+        return true;
+    }
+    return false;
+}
+*/
 /*hack	std::cout<<"Pop front	:";
 		for(auto a : node.front())
 		{

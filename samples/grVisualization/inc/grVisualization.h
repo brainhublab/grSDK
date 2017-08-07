@@ -54,7 +54,7 @@ private:
 	Ui::GRVisualization *ui;
 
 	GRDataApplier rightArmApplier;
-
+    std::deque<std::vector<float>>* buffer;
 	// TODO : Maybe move it to GRDataApplier, because it manages all data, not grVisualization
 	GRDataPlotter *plotter_acc;
 	GRDataPlotter *plotter_gyro;
