@@ -24,8 +24,14 @@
 
 GRDataApplier::GRDataApplier()
 {
-	plog::init(plog::debug, "log.csv");
+    plog::init(plog::debug, "log.csv");
     nodeQuanternion = new std::vector<float>();
+    fingers["pinky"] = 0;
+    fingers["ring"] = 1;
+    fingers["middle"] = 2;
+    fingers["index"] = 3;
+    fingers["thumb"] = 4;
+
 }
 
 GRDataApplier::~GRDataApplier()
@@ -82,12 +88,7 @@ printf("Setting up.");
         activeDevices[it->first] = it->second;
     }
 
-    algPinky.setupMadgwick(140, 140, 140, 140, 140, 140);
-    algRing.setupMadgwick(140, 140, 140, 140, 140, 140);
-    algMiddle.setupMadgwick(140, 140, 140, 140, 140, 140);
-    algIndex.setupMadgwick(140, 140, 140, 140, 140, 140);
-    algThumb.setupMadgwick(140, 140, 140, 140, 140, 140);
-    algPalm.setupMadgwick(140, 140, 140, 140, 140, 140);
+    alg.setupMadgwick(140, 140, 160, 180, 140, 60);
 
 
     return true;
@@ -165,7 +166,7 @@ bool GRDataApplier::processMsg(std::string nodeName)
 {
     if(!msg.imus[nodeName]->acc.empty())
     {
-        algPalm.madgwickUpdate(&msg, &alg_msg, 1, "flag");
+        alg.madgwickUpdate(&msg, &alg_msg, 1, "flag");
         std::cout<<"QUANTERNION---->";
 
         for(int i = 0; i < 4; i++)
@@ -178,6 +179,10 @@ bool GRDataApplier::processMsg(std::string nodeName)
         {
             applyToHand(*alg_msg.nodes[nodeName]);
             addHistoryData(*alg_msg.nodes[nodeName]);
+        }
+        else
+        {
+            applyToFinger(*alg_msg.nodes[nodeName], fingers[nodeName]);
         }
         msg.imus[nodeName]->gyro.clear();
         msg.imus[nodeName]->acc.clear();
@@ -206,10 +211,10 @@ bool GRDataApplier::fetchData()
     applyToFinger(v, 2);
     applyToFinger(v, 3);
     applyToFinger(v, 4);
-    /*
-    printf("hello");*/
+    printf("hello");
     if(activeDevices.empty())
     {
+//        printf("No active devices.");
         return false;
     }
 
@@ -217,6 +222,11 @@ bool GRDataApplier::fetchData()
     {
         conn.getData(it->first, &msg);
         processMsg("palm");
+        processMsg("pinky");
+        processMsg("ring");
+        processMsg("middle");
+        processMsg("index");
+        processMsg("thumb");
     }
 
 //    applyToFinger(algDev.pinky, 0);

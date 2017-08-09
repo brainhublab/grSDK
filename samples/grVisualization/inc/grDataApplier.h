@@ -57,12 +57,13 @@ private:
     std::unordered_map<std::string, GRAlgorithm> algorithms;
     bool setAlgorithms();
 
-    GRAlgorithm algPinky;
-    GRAlgorithm algRing;
-    GRAlgorithm algMiddle;
-    GRAlgorithm algIndex;
-    GRAlgorithm algThumb;
-    GRAlgorithm algPalm;
+    GRAlgorithm alg;
+//    GRAlgorithm algPinky;
+//    GRAlgorithm algRing;
+//    GRAlgorithm algMiddle;
+//    GRAlgorithm algIndex;
+//    GRAlgorithm algThumb;
+//    GRAlgorithm algPalm;
 
 	// for applying data
     bool applyToFinger(std::vector<double>&, int);
@@ -71,6 +72,7 @@ private:
     std::vector<float> prevQuants[6];
     bool fetchRunning = false;
 
+    std::unordered_map<std::string, int> fingers;
     std::deque<std::vector<float>>* targetQuanternionHistory = nullptr;
 };
 

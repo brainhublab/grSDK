@@ -52,7 +52,7 @@ bool GRRenderer::setViewport( int width, int height )
         // enabling transparency
         glEnable (GL_BLEND);
         glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
+glLineWidth(2.f);
         return true;
 }
 int GRRenderer::getWidth()
@@ -98,7 +98,7 @@ bool GRRenderer::renderTrajectory( GRHand *arm, float angleX, float angleY, floa
 bool GRRenderer::drawScene(float angleX, float angleY, float angleZ)
 {
         glLoadIdentity( );
-        glColor4ub(0, 200, 0, 255);
+        glColor4ub(170, 214, 238, 255);
         float screenFloatX = 10.3f ,
                         screenFloatY = 5.5f; // todo: where can i receive these things?
         float halfScreenX = screenFloatX/2.f, halfScreenY = screenFloatY/2.f;
@@ -109,8 +109,18 @@ bool GRRenderer::drawScene(float angleX, float angleY, float angleZ)
 //  glRotatef( angleX, 1.f, 0.f, 0.f );
 //  glRotatef( angleY, 0.f, 1.f, 0.f );
 //  glRotatef( angleZ, 0.f, 0.f, 1.f );
+        //glLineWidth(2.f);
         // left piece of scene
         glBegin(GL_LINE_LOOP);
+        glColor4ub(49, 133, 178, 221);
+        glVertex3f(-halfScreenX, -halfScreenY, 0.01);
+        glVertex3f(-insidePointX, -insidePointY, data.scene_depth+0.01);
+        glVertex3f(-insidePointX, insidePointY, data.scene_depth+0.01);
+        glVertex3f(-halfScreenX, halfScreenY, 0.01);
+        glEnd();
+
+        glBegin(GL_QUADS);
+        glColor4ub(80, 157, 199, 221);
         glVertex3f(-halfScreenX, -halfScreenY, 0);
         glVertex3f(-insidePointX, -insidePointY, data.scene_depth);
         glVertex3f(-insidePointX, insidePointY, data.scene_depth);
@@ -118,27 +128,53 @@ bool GRRenderer::drawScene(float angleX, float angleY, float angleZ)
         glEnd();
         // right piece of scene
         glBegin(GL_LINE_LOOP);
+        glColor4ub(49, 133, 178, 221);
+        glVertex3f(halfScreenX, -halfScreenY, 0.01);
+        glVertex3f(insidePointX, -insidePointY, data.scene_depth+0.01);
+        glVertex3f(insidePointX, insidePointY, data.scene_depth+0.01);
+        glVertex3f(halfScreenX, halfScreenY, 0.01);
+        glEnd();
+
+        glBegin(GL_QUADS);
+        glColor4ub(80, 157, 199, 221);
         glVertex3f(halfScreenX, -halfScreenY, 0);
         glVertex3f(insidePointX, -insidePointY, data.scene_depth);
         glVertex3f(insidePointX, insidePointY, data.scene_depth);
         glVertex3f(halfScreenX, halfScreenY, 0);
         glEnd();
         // top piece of scene
-        glBegin(GL_LINE_LOOP);
+        glBegin(GL_QUADS);
+        glColor4ub(80, 157, 199, 221);
         glVertex3f(-halfScreenX, halfScreenY, 0);
         glVertex3f(halfScreenX, halfScreenY, 0);
         glVertex3f(insidePointX, insidePointY, data.scene_depth);
         glVertex3f(-insidePointX, insidePointY, data.scene_depth);
         glEnd();
-        // bottom piece of scene
         glBegin(GL_LINE_LOOP);
+        glColor4ub(49, 133, 178, 221);
+        glVertex3f(-halfScreenX, halfScreenY, 0.01);
+        glVertex3f(halfScreenX, halfScreenY, 0.01);
+        glVertex3f(insidePointX, insidePointY, data.scene_depth+0.01);
+        glVertex3f(-insidePointX, insidePointY, data.scene_depth+0.01);
+        glEnd();
+        // bottom piece of scene
+        glBegin(GL_QUADS);
+        glColor4ub(80, 157, 199, 221);
         glVertex3f(-halfScreenX, -halfScreenY, 0);
         glVertex3f(halfScreenX, -halfScreenY, 0);
         glVertex3f(insidePointX, -insidePointY, data.scene_depth);
         glVertex3f(-insidePointX, -insidePointY, data.scene_depth);
         glEnd();
-        // center of scene
         glBegin(GL_LINE_LOOP);
+        glColor4ub(49, 133, 178, 221);
+        glVertex3f(-halfScreenX, -halfScreenY, 0.01);
+        glVertex3f(halfScreenX, -halfScreenY, 0.01);
+        glVertex3f(insidePointX, -insidePointY, data.scene_depth+0.01);
+        glVertex3f(-insidePointX, -insidePointY, data.scene_depth+0.01);
+        glEnd();
+        // center of scene
+        glColor4ub(49, 133, 178, 255);
+        glBegin(GL_QUADS);
         glVertex3f(-insidePointX, insidePointY, data.scene_depth);
         glVertex3f(insidePointX, insidePointY, data.scene_depth);
         glVertex3f(insidePointX, -insidePointY, data.scene_depth);
@@ -289,7 +325,7 @@ bool GRRenderer::createCube( float x, float y, float z )
 {
         float halfX = x / 2, halfZ = z / 2;
         glBegin( GL_QUADS );
-        glColor4f(data.planeColor.r, data.planeColor.g, data.planeColor.b, data.planeColor.a );
+        glColor4ub(data.planeColor.a, data.planeColor.r, data.planeColor.g, data.planeColor.b );
         glVertex3f( halfX, y, halfZ );
         glVertex3f( halfX, 0.f, halfZ );
         glVertex3f( -halfX, 0.f, halfZ );
@@ -316,7 +352,7 @@ bool GRRenderer::createCube( float x, float y, float z )
         glVertex3f( -halfX, y, -halfZ );
         glEnd( );
         glBegin( GL_LINES );
-        glColor4ub(data.linesColor.r, data.linesColor.g, data.planeColor.b, data.linesColor.a );
+        glColor4ub(data.linesColor.a, data.linesColor.r, data.linesColor.g, data.linesColor.b );
         glVertex3f( halfX, y, halfZ );
         glVertex3f( -halfX, y, halfZ );
         glVertex3f( -halfX, y, halfZ );
@@ -353,7 +389,7 @@ bool GRRenderer::drawRightHand( float x, float y, float z )
         float rightPointX = 0.5f * x, rightPointY = 0.5f * y;
         // bottom hand
         glBegin( GL_TRIANGLE_FAN );
-        glColor4ub(data.planeColor.r, data.planeColor.g, data.planeColor.b, data.planeColor.a );
+        glColor4ub(data.planeColor.a, data.planeColor.r, data.planeColor.g, data.planeColor.b );
         glVertex3f( halfBase, 0.f, halfDepth );
         glVertex3f( -halfBase, 0.f, halfDepth );
         glVertex3f( leftPointX, leftPointY, halfDepth );
@@ -363,7 +399,7 @@ bool GRRenderer::drawRightHand( float x, float y, float z )
         glVertex3f( halfBase, 0.f, halfDepth );
         glEnd( );
         glBegin( GL_LINE_LOOP );
-        glColor4ub(data.linesColor.r, data.linesColor.g, data.planeColor.b, data.linesColor.a );
+        glColor4ub(data.linesColor.a, data.linesColor.r, data.linesColor.g, data.linesColor.b );
         glVertex3f( halfBase, 0.f, halfDepth );
         glVertex3f( -halfBase, 0.f, halfDepth );
         glVertex3f( leftPointX, leftPointY, halfDepth );
@@ -373,7 +409,7 @@ bool GRRenderer::drawRightHand( float x, float y, float z )
         glEnd( );
         // hand top
         glBegin( GL_TRIANGLE_FAN );
-        glColor4ub(data.planeColor.r, data.planeColor.g, data.planeColor.b, data.planeColor.a );
+        glColor4ub(data.planeColor.a, data.planeColor.r, data.planeColor.g, data.planeColor.b );
         glVertex3f( halfBase, 0.f, -halfDepth );
         glVertex3f( -halfBase, 0.f, -halfDepth );
         glVertex3f( leftPointX, leftPointY, -halfDepth );
@@ -383,7 +419,7 @@ bool GRRenderer::drawRightHand( float x, float y, float z )
         glVertex3f( halfBase, 0.f, -halfDepth );
         glEnd( );
         glBegin( GL_LINE_LOOP );
-        glColor4ub(data.linesColor.r, data.linesColor.g, data.planeColor.b, data.linesColor.a );
+        glColor4ub(data.linesColor.a, data.linesColor.r, data.linesColor.g, data.linesColor.b );
         glVertex3f( halfBase, 0.f, -halfDepth );
         glVertex3f( -halfBase, 0.f, -halfDepth );
         glVertex3f( leftPointX, leftPointY, -halfDepth );
@@ -392,7 +428,7 @@ bool GRRenderer::drawRightHand( float x, float y, float z )
         glVertex3f( rightPointX, rightPointY, -halfDepth );
         glEnd( );
         glBegin( GL_TRIANGLE_FAN );
-        glColor4ub(data.planeColor.r, data.planeColor.g, data.planeColor.b, data.planeColor.a );
+        glColor4ub(data.planeColor.a, data.planeColor.r, data.planeColor.g, data.planeColor.b );
         glVertex3f( halfBase, 0.f, halfDepth );
         glVertex3f( halfBase, 0.f, -halfDepth );
         glVertex3f( -halfBase, 0.f, -halfDepth );
@@ -439,7 +475,7 @@ bool GRRenderer::drawLeftHand( float x, float y, float z )
         float rightPointX = 0.5f * x, rightPointY = 0.5f * y;
         // bottom hand
         glBegin( GL_TRIANGLE_FAN );
-        glColor4ub(data.planeColor.r, data.planeColor.g, data.planeColor.b, data.planeColor.a );
+        glColor4ub(data.planeColor.a, data.planeColor.r, data.planeColor.g, data.planeColor.b );
         glVertex3f( halfBase, 0.f, halfDepth );//0
         glVertex3f( -halfBase, 0.f, halfDepth ); //1
         glVertex3f( -rightPointX, rightPointY, halfDepth ); // 5
@@ -449,7 +485,7 @@ bool GRRenderer::drawLeftHand( float x, float y, float z )
         //glVertex3f(halfBase, 0.f, halfDepth); // todo: for what?
         glEnd( );
         glBegin( GL_LINE_LOOP );
-        glColor4ub(data.linesColor.r, data.linesColor.g, data.planeColor.b, data.linesColor.a );
+        glColor4ub(data.linesColor.a, data.linesColor.r, data.linesColor.g, data.linesColor.b );
         glVertex3f( halfBase, 0.f, halfDepth );
         glVertex3f( -halfBase, 0.f, halfDepth );
         glVertex3f( -rightPointX, rightPointY, halfDepth );
@@ -459,7 +495,7 @@ bool GRRenderer::drawLeftHand( float x, float y, float z )
         glEnd( );
         // hand top
         glBegin( GL_TRIANGLE_FAN );
-        glColor4ub(data.planeColor.r, data.planeColor.g, data.planeColor.b, data.planeColor.a );
+        glColor4ub(data.planeColor.a, data.planeColor.r, data.planeColor.g, data.planeColor.b );
         glVertex3f( halfBase, 0.f, -halfDepth );
         glVertex3f( -halfBase, 0.f, -halfDepth );
         glVertex3f( -rightPointX, rightPointY, -halfDepth );
@@ -469,7 +505,7 @@ bool GRRenderer::drawLeftHand( float x, float y, float z )
         glEnd( );
         // top
         glBegin( GL_LINE_LOOP );
-        glColor4ub(data.linesColor.r, data.linesColor.g, data.planeColor.b, data.linesColor.a );
+        glColor4ub(data.linesColor.a, data.linesColor.r, data.linesColor.g, data.linesColor.b );
         glVertex3f( halfBase, 0.f, -halfDepth );
         glVertex3f( -halfBase, 0.f, -halfDepth );
         glVertex3f( -rightPointX, rightPointY, -halfDepth );
@@ -479,7 +515,7 @@ bool GRRenderer::drawLeftHand( float x, float y, float z )
         glEnd( );
         // 0-1
         glBegin( GL_TRIANGLE_FAN );
-        glColor4ub(data.planeColor.r, data.planeColor.g, data.planeColor.b, data.planeColor.a );
+        glColor4ub(data.planeColor.a, data.planeColor.r, data.planeColor.g, data.planeColor.b );
         glVertex3f( halfBase, 0.f, halfDepth );
         glVertex3f( halfBase, 0.f, -halfDepth );
         glVertex3f( -halfBase, 0.f, -halfDepth );
@@ -525,7 +561,7 @@ bool GRRenderer::drawLeftHand( float x, float y, float z )
 bool GRRenderer::createSphere( float radius, int slices, int stacks )
 {
         GLUquadric *quad = gluNewQuadric( );
-        glColor4ub(data.linesColor.r, data.linesColor.g, data.planeColor.b, data.linesColor.a );
+        glColor4ub(data.linesColor.a, data.linesColor.r, data.linesColor.g, data.linesColor.b );
         gluSphere( quad, radius, slices, stacks );
         gluDeleteQuadric( quad );
         return true;
@@ -559,40 +595,40 @@ bool GRRenderer::createFrustum( float radius, float height, float ratio = 1 ) //
                 z2 = cosf( static_cast<float>(( angle * ( i + 1 )) * ( M_PI / 180 ))) * radius;
                 // drawing bottom triangle
                 glBegin( GL_TRIANGLES );
-                glColor4ub(data.planeColor.r, data.planeColor.g, data.planeColor.b, data.planeColor.a );
+                glColor4ub(data.planeColor.a, data.planeColor.r, data.planeColor.g, data.planeColor.b );
                 glVertex3f( 0.f, y1, 0.f );
                 glVertex3f( x1, y1, z1 );
                 glVertex3f( x2, y1, z2 );
                 glEnd( );
                 glBegin( GL_LINE_LOOP );
-                glColor4ub(data.linesColor.r, data.linesColor.g, data.planeColor.b, data.linesColor.a );
+                glColor4ub(data.linesColor.a, data.linesColor.r, data.linesColor.g, data.linesColor.b );
                 glVertex3f( 0.f, y1, 0.f );
                 glVertex3f( x1, y1, z1 );
                 glVertex3f( x2, y1, z2 );
                 glEnd( );
                 // drawing top triangle
                 glBegin( GL_TRIANGLES );
-                glColor4ub(data.planeColor.r, data.planeColor.g, data.planeColor.b, data.planeColor.a );
+                glColor4ub(data.planeColor.a, data.planeColor.r, data.planeColor.g, data.planeColor.b );
                 glVertex3f( 0.f, y2, 0.f );
                 glVertex3f( x1 * ratio, y2, z1 * ratio );
                 glVertex3f( x2 * ratio, y2, z2 * ratio );
                 glEnd( );
                 glBegin( GL_LINE_LOOP );
-                glColor4ub(data.linesColor.r, data.linesColor.g, data.planeColor.b, data.linesColor.a );
+                glColor4ub(data.linesColor.a, data.linesColor.r, data.linesColor.g, data.linesColor.b );
                 glVertex3f( 0.f, y2, 0.f );
                 glVertex3f( x1 * ratio, y2, z1 * ratio );
                 glVertex3f( x2 * ratio, y2, z2 * ratio );
                 glEnd( );
                 // drawing side between triangles
                 glBegin( GL_QUADS );
-                glColor4ub(data.planeColor.r, data.planeColor.g, data.planeColor.b, data.planeColor.a );
+                glColor4ub(data.planeColor.a, data.planeColor.r, data.planeColor.g, data.planeColor.b );
                 glVertex3f( x1, y1, z1 );
                 glVertex3f( x2, y1, z2 );
                 glVertex3f( x2 * ratio, y2, z2 * ratio );
                 glVertex3f( x1 * ratio, y2, z1 * ratio );
                 glEnd( );
                 glBegin( GL_LINE_LOOP );
-                glColor4ub(data.linesColor.r, data.linesColor.g, data.planeColor.b, data.linesColor.a );
+                glColor4ub(data.linesColor.a, data.linesColor.r, data.linesColor.g, data.linesColor.b );
                 glVertex3f( x1, y1, z1 );
                 glVertex3f( x2, y1, z2 );
                 glVertex3f( x2 * ratio, y2, z2 * ratio );
@@ -604,18 +640,18 @@ bool GRRenderer::createFrustum( float radius, float height, float ratio = 1 ) //
 
 bool GRRenderer::setLinesColor(int r, int g, int b, int a)
 {
-    data.linesColor.r = r;
-    data.linesColor.g = g;
-    data.linesColor.b = b;
-    data.linesColor.a = a;
+    data.linesColor.a = r;
+    data.linesColor.r = g;
+    data.linesColor.g = b;
+    data.linesColor.b = a;
     return true;
 }
 
 bool GRRenderer::setPlaneColor(int r, int g, int b, int a)
 {
-    data.planeColor.r = r;
-    data.planeColor.g = g;
-    data.planeColor.b = b;
-    data.planeColor.a = a;
+    data.planeColor.a = r;
+    data.planeColor.r = g;
+    data.planeColor.g = b;
+    data.planeColor.b = a;
     return true;
 }

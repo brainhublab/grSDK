@@ -16,7 +16,7 @@ GRGLWidget::GRGLWidget(QWidget *parent) :
 void GRGLWidget::initializeGL()
 {
 
-    glClearColor( 0.0f, 0.5f, 0.5f, 0.0f );
+    glClearColor( 0.463f, 0.722f, 0.863f, 0.0f );
     glEnable(GL_DEPTH_TEST);
 //    glEnable(GL_LIGHT0);
 //    glEnable(GL_LIGHTING);

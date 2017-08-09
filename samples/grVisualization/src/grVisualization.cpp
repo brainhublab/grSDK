@@ -16,6 +16,7 @@ GRVisualization::GRVisualization(QWidget *parent) :
 	initUiProps();
 
 	rightArmApplier.setArm(&ui->GLwidget->rightArm);
+    leftArmApplier.setArm(&ui->GLwidget->leftArm);
 
 	plotter_acc = new GRDataPlotter(ui->only_accelerometer);
 	plotter_gyro = new GRDataPlotter(ui->only_gyroscope);
@@ -54,13 +55,13 @@ bool GRVisualization::initUiProps()
 	sizes.push_back(100);
 	ui->splitter->setSizes(sizes);
 	// checkboxes style init
-	ui->hackerModeCheckBox->setStyleSheet("background-color: #008081;");
-	ui->leftHandCheckBox->setStyleSheet("background-color: #008081;");
-	ui->rightHandCheckBox->setStyleSheet("background-color: #008081;");
-	ui->trajectoryCheckBox->setStyleSheet("background-color: #008081;");
-	ui->loggingCheckBox->setStyleSheet("background-color: #008081;");
-	ui->settings->setStyleSheet("background-color: #008081;");
-	ui->devicesTree->setStyleSheet("background-color: #008081;");
+    ui->hackerModeCheckBox->setStyleSheet("background-color: #76B8DC;");
+    ui->leftHandCheckBox->setStyleSheet("background-color: #76B8DC;");
+    ui->rightHandCheckBox->setStyleSheet("background-color: #76B8DC;");
+    ui->trajectoryCheckBox->setStyleSheet("background-color: #76B8DC;");
+    ui->loggingCheckBox->setStyleSheet("background-color: #76B8DC;");
+    ui->settings->setStyleSheet("background-color: #76B8DC;");
+    ui->devicesTree->setStyleSheet("background-color: #76B8DC;");
 	// QColor backgroundColor = ui->settings->palette().light().color();
 	// backgroundColor.setAlpha(100);
 	// QPainter customPainter(this);
@@ -79,6 +80,9 @@ bool GRVisualization::runDataReading()
 #ifdef GR_VISUALIZATION_LOGGING_ENABLED
 	printf("GRVisualization: running data reading...\n");
 #endif
+    /// left
+    leftArmApplier.run();
+
     plotter_all_acc->setupPlot(buffer);
     rightArmApplier.writeQuanternionHistory(buffer);
 
@@ -98,8 +102,11 @@ bool GRVisualization::runDataReading()
         d = it->second;
         QTreeWidgetItem* item = new QTreeWidgetItem();
         QTreeWidgetItem* address = new QTreeWidgetItem();
+        QTreeWidgetItem* id = new QTreeWidgetItem();
         item->setText(0, QString(d.name.c_str()));
         address->setText(0, QString(d.address.c_str()));
+        id->setText(0, QString(QString::number(d.id)));
+        item->addChild(id);
         item->addChild(address);
         ui->devicesTree->addTopLevelItem(item);
     }
@@ -129,22 +136,23 @@ void GRVisualization::on_hackerModeCheckBox_toggled(bool checked)
 {
 	if (checked)
 	{
-		ui->GLwidget->getRenderer()->setPlaneColor(0, 255, 0, 0);
-		// ui->GLwidget->getRenderer()->setLinesColor(255,193,7, 255);
-		ui->GLwidget->getRenderer()->setLinesColor(0, 255, 0, 255);
-		ui->hackerModeCheckBox->setStyleSheet("color: white;"
-				                                      "background: #e67e22;"
-				                                      "selection-color: #34495e;"
-				                                      "selection-background-color: white;");
+        ui->GLwidget->getRenderer()->setLinesColor(249, 173, 201, 255);
+        ui->GLwidget->getRenderer()->setPlaneColor(0,0,0, 0);
+        ui->GLwidget->getRenderer()->setLineWidth(1.5f);
+//		ui->hackerModeCheckBox->setStyleSheet("color: white;"
+//				                                      "background: #e67e22;"
+//				                                      "selection-color: #34495e;"
+//				                                      "selection-background-color: white;");
 	} else
 	{
-		// go to default
-		ui->GLwidget->getRenderer()->setLinesColor(255, 0, 0, 255);
+        // go to default    a r g b
+        ui->GLwidget->getRenderer()->setLineWidth(2.f);
+        ui->GLwidget->getRenderer()->setLinesColor(235, 86, 141, 255);
 		ui->GLwidget->getRenderer()->setPlaneColor(255, 255, 255, 255);
-		ui->hackerModeCheckBox->setStyleSheet("color: white;"
-				                                      "background: #008081;"
-				                                      "selection-color: white;"
-				                                      "selection-background-color: white;");
+//		ui->hackerModeCheckBox->setStyleSheet("color: white;"
+//                                                      "background: #76B8DC;"
+//				                                      "selection-color: white;"
+//				                                      "selection-background-color: white;");
 	}
 
 }
