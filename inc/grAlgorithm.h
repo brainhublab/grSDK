@@ -19,6 +19,29 @@
 #include <grGrt.h>
 using namespace std;
 //using namespace Eigen;
+struct k_filter_vars
+{
+    double volt;
+    double proccess;
+    double pc;
+    double g;
+    double p;
+    double xp;
+    double zp;
+    double xe;
+
+    k_filter_vars()
+    {
+        volt = 0.0;
+        proccess = 0.0;
+        pc = 0.0;
+        g = 0.0;
+        p = 1.0;
+        xp = 0.0;
+        zp = 0.0;
+        xe = 0.0;
+    }
+}
 
 class GRAlgorithm :public GRGrt
 {
@@ -33,6 +56,12 @@ class GRAlgorithm :public GRGrt
         bool madgwickUpdate(gr_message*, gr_alg_message*, int, std::string flag);
         //void madgwickUpdateThr(device_t*, alg_device_t*, int, std::string flag);//TODO need to implement
         bool setupMadgwick(int, int, int, int, int, int);
+
+        //simplified Kalman
+        bool setUpKfilter(std::vector<double>, k_filter_vars*);
+        double kFilter(double, k_filter_vars*);
+
+             
     private:
         double roll, pitch, yaw;
         std::vector<double> angles;
@@ -46,6 +75,11 @@ class GRAlgorithm :public GRGrt
         GRMadgwick palmMadgwick;
 
         std::unordered_map<std::string, GRMadgwick*> madgwickObjects;
+
+        //kFilter help methods
+        double stdev(std::vector<double>*);
+        double average(std::vector<double>*);
+
 
 
 };

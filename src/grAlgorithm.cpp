@@ -91,6 +91,24 @@ void GRAlgorithm::madgwickUpdateThr(imu* imu, int freqCallibration, std::string 
     std::cout<<"run MadgwickAHRSupdate thread for pinky"<<endl;
 }
 */
+bool GRAlgorithm::setUpKfilter(std::vector<double> data, k_filter_vars* k_vars)
+{
+    k_vars->volt = stdev(&data);
+
+}
+
+double GRAlgorithm::kFilter(double input, k_filter_vars* k_vars)
+{
+    k_vars->pc = k_vars->p + k_vars->proccess;
+    k_vars->g = k_vars->pc / (k_vars->pc + k_vars->volt);
+    k_vars->p = (1 - k_vars->g) * k_vars->pc;
+    k_vars->xp = k_vars->xe;
+    k_vars->zp = k_vars->xp;
+    k_vars->xe = k_vars->g * (input - k_vars->zp) + k_vars->xp;
+    
+    return k_vars->xe;
+}
+
 std::vector<double> GRAlgorithm::computeAngles(std::vector<double> q)
 {
 
@@ -113,4 +131,24 @@ std::vector<double> GRAlgorithm::computeAngles(std::vector<double> q)
     angles.push_back(yaw);
     return angles;
 }
+//Kfilter private help methods
 
+double GRAlgorithm::stdev(std::vector<double>* input)
+{
+    double sum = std::accumulate(input->begin(), input->end(), 0.0);
+    double mean = sum / input->size();
+
+    std::vector<double> diff(input->size());
+    std::transform(input->begin(), input->end(), diff.begin(),
+            std::bind2nd(std::minus<double>(), mean));
+
+    double sq_sum = std::inner_product(diff.begin(), diff.end(), diff.begin(), 0.0);
+    double stdev = std::sqrt(sq_sum / input->size());
+
+    return stdev;
+}
+
+double GRAlgorithm::average(std::vector<double>* input)
+{
+    double average = std::acumulate(input->begin(), input->end(), 0.0);
+}
