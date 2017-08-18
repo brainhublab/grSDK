@@ -91,9 +91,69 @@ void GRAlgorithm::madgwickUpdateThr(imu* imu, int freqCallibration, std::string 
     std::cout<<"run MadgwickAHRSupdate thread for pinky"<<endl;
 }
 */
-bool GRAlgorithm::setUpKfilter(std::vector<double> data, k_filter_vars* k_vars)
+bool GRAlgorithm::setUpKfilter(GRConnection conn, acc_k_vars* k_vars, std::string flag, int devId)
 {
-    k_vars->volt = stdev(&data);
+    int i = 0;
+    gr_message msg;
+    std::vector<double> acc_x;
+    std::vector<double> acc_y;
+    std::vector<double> acc_z;
+    while(i < 50)
+    {
+        conn.getData(devId, &msg);
+        if(flag == "pinky")
+        {
+            acc_x.push_back(msg.pinky.acc[0]);
+            acc_y.push_back(msg.pinky.acc[1]);
+            acc_z.push_back(msg.pinky.acc[2]);
+        }
+        else if(flag == "ring")
+        {
+        
+            acc_x.push_back(msg.ring.acc[0]);
+            acc_y.push_back(msg.ring.acc[1]);
+            acc_z.push_back(msg.ring.acc[2]);
+        }
+        else if(flag == "middle")
+        {
+        
+            acc_x.push_back(msg.middle.acc[0]);
+            acc_y.push_back(msg.middle.acc[1]);
+            acc_z.push_back(msg.middle.acc[2]);
+        }
+        else if(flag == "index")
+        {
+        
+            acc_x.push_back(msg.index.acc[0]);
+            acc_y.push_back(msg.index.acc[1]);
+            acc_z.push_back(msg.index.acc[2]);
+        }
+        else if(flag == "thumb")
+        {
+        
+            acc_x.push_back(msg.thumb.acc[0]);
+            acc_y.push_back(msg.thumb.acc[1]);
+            acc_z.push_back(msg.thumb.acc[2]);
+        }
+        else if(flag == "palm")
+        {
+        
+            acc_x.push_back(msg.palm.acc[0]);
+            acc_y.push_back(msg.palm.acc[1]);
+            acc_z.push_back(msg.palm.acc[2]);
+        }
+        else
+        {
+            std::cout<<"ERROR: no such flag -> "<<flag<<std::endl;
+        }
+       msg.clear();
+       i++;
+      
+    }
+    k_vars->acc_k_x.volt = stdev(&acc_x);
+    k_vars->acc_k_y.volt = stdev(&acc_y);
+    k_vars->acc_k_z.volt = stdev(&acc_z);
+
 
 }
 
@@ -150,5 +210,5 @@ double GRAlgorithm::stdev(std::vector<double>* input)
 
 double GRAlgorithm::average(std::vector<double>* input)
 {
-    double average = std::acumulate(input->begin(), input->end(), 0.0);
+    double average = std::accumulate(input->begin(), input->end(), 0.0);
 }

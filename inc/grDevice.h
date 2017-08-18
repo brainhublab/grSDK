@@ -61,6 +61,13 @@ struct imu
             return false;
         }
     }
+
+    bool clear()
+    {
+        gyro.clear();
+        acc.clear();
+        mag.clear();
+    }
 };
 
 
@@ -87,6 +94,16 @@ struct gr_message
         imus["index"] = &index;
         imus["thumb"] = &thumb;
         imus["palm"] = &palm;
+    }
+    bool clear()
+    {
+        pinky.clear();
+        ring.clear();
+        middle.clear();
+        index.clear();
+        thumb.clear();
+        palm.clear();
+
     }
 
 };

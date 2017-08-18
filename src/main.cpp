@@ -87,7 +87,7 @@ int itr = 0;
                 std::cout<<alg_msg.palm[i];
             }
             std::cout<<std::endl;
-              trajectory = traj.getNewPosByVeloko(msg.palm.acc, alg_msg.palm, msg.palm.time_stamp);
+              trajectory = traj.getNewPosByIntegrating(msg.palm.acc, alg_msg.palm, msg.palm.time_stamp);
 
               printf( "%f %f %f \n", trajectory[0], trajectory[1], trajectory[2]); 
               std::cout<<msg.palm.acc[0]<<" "<<msg.palm.acc[1]<<" "<<msg.palm.acc[2]<<std::endl;

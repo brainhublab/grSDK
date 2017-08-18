@@ -8,12 +8,16 @@
 #include <deque>
 #include <math.h>
 #include <thread>
+#include <numeric>
+#include <functional>
+#include <algorithm>
 
 //#include <eigen3/Eigen/Dense>
 //#include <eigen3/Eigen/Geometry>
 
 #include "GRT/GRT.h"
 
+#include <grConnection.h>
 #include <grDevice.h>
 #include <grMadgwick.h>
 #include <grGrt.h>
@@ -41,7 +45,14 @@ struct k_filter_vars
         zp = 0.0;
         xe = 0.0;
     }
-}
+};
+
+struct acc_k_vars
+{
+    k_filter_vars acc_k_x;
+    k_filter_vars acc_k_y;
+    k_filter_vars acc_k_z;
+};
 
 class GRAlgorithm :public GRGrt
 {
@@ -58,7 +69,8 @@ class GRAlgorithm :public GRGrt
         bool setupMadgwick(int, int, int, int, int, int);
 
         //simplified Kalman
-        bool setUpKfilter(std::vector<double>, k_filter_vars*);
+        
+        bool setUpKfilter(GRConnection conn, acc_k_vars*, std::string, int );//TODO implement for fingers
         double kFilter(double, k_filter_vars*);
 
              

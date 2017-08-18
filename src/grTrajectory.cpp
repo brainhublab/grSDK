@@ -22,9 +22,9 @@ Vector3d GRTrajectory::_getNewPosByVelocity(Vector3d acc, unsigned long timestam
     Vector3d acc_ms, velocity, distance, pos_next;
     double dt = (timestamp - this->timestamp_last) / 1000.f;
 
-    acc_ms = this->_getAccValue(acc);
+    // acc_ms = this->_getAccValue(acc);
 
-    velocity = this->velocity_last + acc_ms * dt;
+    velocity = this->velocity_last + acc * dt;
     distance = velocity * dt;
 
     pos_next = this->pos_last + distance;
@@ -34,16 +34,21 @@ Vector3d GRTrajectory::_getNewPosByVelocity(Vector3d acc, unsigned long timestam
 
 Vector3d GRTrajectory::_getNewPosByIntegrating(Vector3d acc, unsigned long timestamp)
 {
-    Vector3d acc_ms, pos_next;
+    Vector3d acc_ms, pos_next, velocity;
     double dt = (timestamp - this->timestamp_last) / 1000.f;
 
-    acc_ms = this->_getAccValue(acc);
+    // acc_ms = this->_getAccValue(acc);
+    
+    acc_ms = acc - acc_last;
+    cout << "delta: " << dt << ";temp acc: " << acc_ms << endl;
 
-    cout << "temp acc: " << acc_ms << endl;
+    velocity = this->velocity_last + acc * dt;
+    // velocity_last = velocity;
+    
+    pos_next = this->pos_last + (this->velocity_last * dt + 0.5 * acc_ms * (dt * dt));
 
-    pos_next = this->pos_last + this->velocity_last * dt + 0.5 * acc_ms * (dt * dt);
-
-    this->velocity_last = this->velocity_last + acc_ms * dt;
+    // this->velocity_last = this->velocity_last + acc_ms * dt;
+    acc_last = acc;
     return pos_next;
 }
 
@@ -121,14 +126,41 @@ Vector3d GRTrajectory::_getAccValue(Vector3d in)
     return out;
 }
 
+Vector3d GRTrajectory::gravity_compensate(vector<double> q, vector<double> acc)
+{
+    std::vector<double> g;
+    g.push_back(0);
+    g.push_back(0);
+    g.push_back(0);
+    
+
+   // return _toVector3d(result);
+}
+
 vector<double> GRTrajectory::getNewPosByVelocity(vector<double> acc, vector<double> q, unsigned long timestamp)
 {
     Vector3d acc_v, acc_fixed, pos_next;
     Quaterniond q_q;
+    //
+    // remove gravity
+    //
+        // a - here call gravity_compenstate
 
-    acc_v = this->_toVector3d(acc);
-    q_q = this->_toQuaterniond(q);
-    acc_fixed = this->_rotateAcc(acc_v, q_q);
+        // b
+    // acc_v = this->_toVector3d(acc);
+    
+    //q_q = this->_toQuaterniond(q);
+    //acc_fixed = this->_rotateAcc(acc_v, q_q);
+    acc_fixed = gravity_compensate(q, acc);
+       //  b - here, after rotating with quant-n just acc_fixed = acc_fixed - [0, 0, +-9.8]
+       
+        // OR c - apply low-pass algorithm 
+        // https://developer.android.com/reference/android/hardware/SensorEvent.html#values
+        // float alpha = 0.8;
+        // gravity = [0 0 9.8];
+        // gravity = alpha * gravity + (1-alpha) * acc_v;
+        // result_acc = acc_v - gravity;
+
 
     pos_next = this->_getNewPosByVelocity(acc_fixed, timestamp);
     this->pos_last = pos_next;
@@ -142,7 +174,9 @@ vector<double> GRTrajectory::getNewPosByIntegrating(vector<double> acc, vector<d
     if(this->timestamp_last == 0)
     {
         this->timestamp_last = timestamp;
+        this->acc_last = _toVector3d(acc);
         return this->_toStdVector(this->pos_last);
+
     }
     Vector3d acc_v, acc_fixed, pos_next;
     Quaterniond q_q;
@@ -150,10 +184,12 @@ vector<double> GRTrajectory::getNewPosByIntegrating(vector<double> acc, vector<d
     acc_v = this->_toVector3d(acc);
     q_q = this->_toQuaterniond(q);
     acc_fixed = this->_rotateAcc(acc_v, q_q);
-
+    acc_fixed = acc_fixed - gravity;
     std::cout << "acc_fixed" << std::endl << acc_fixed << std::endl;
 
+    std::cout << "Position last: " << pos_last << std::endl;
     pos_next = this->_getNewPosByIntegrating(acc_fixed, timestamp);
+    std::cout << "Position new: " << pos_next << std::endl;
     this->pos_last = pos_next;
     this->timestamp_last = timestamp;
 

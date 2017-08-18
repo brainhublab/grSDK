@@ -33,6 +33,9 @@ class GRTrajectory
         vector<double> _toStdVector(Vector3d);
         Vector3d _toVector3d(vector<double>);
         Quaterniond _toQuaterniond(vector<double>);
+        Vector3d gravity_compensate(vector<double> , vector<double> );
+        Vector3d gravity = Vector3d(0.0, 0.0, 256.0);
+        Vector3d acc_last; 
     public:
         GRTrajectory();
         ~GRTrajectory();
