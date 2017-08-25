@@ -18,42 +18,37 @@ using namespace std;
 
 class GRTrajectory
 {
-    private:
-        Vector3d pos_last;
-        Vector3d velocity_last;
-        unsigned long timestamp_last;
-        bool first_call;
-
-        Vector3d _getNewPosByVelocity(Vector3d, unsigned long);
-        Vector3d _getNewPosByIntegrating(Vector3d, unsigned long, Quaterniond);
-
-        Vector3d _getNewPosByVeliko(Vector3d, unsigned long);
-
-        Vector3d _rotateAcc(Vector3d, Quaterniond);
-        Vector3d _convertAccToG(Vector3d);
-
-        vector<double> _toStdVector(Vector3d);
-        Vector3d _toVector3d(vector<double>);
-        Quaterniond _toQuaterniond(vector<double>);
-        Vector3d gravity_compensate(vector<double> , vector<double> );
-        Vector3d gravity = Vector3d(0.0, 0.0, G);
-        Vector3d acc_last; 
-        Matrix4d correctionMatrix;
-        Matrix4d desiredMatrix;
-        Matrix4d realMatrix;
-
-        bool setupGravityMatrices();
     public:
-        GRTrajectory();
-        ~GRTrajectory();
-        bool calibrateGravityMatrix(std::vector<double>, int);
-        bool calculateCorrectionMatrix();
-        vector<double> getNewPosByVelocity(vector<double>, vector<double>, unsigned long);
-        vector<double> getNewPosByIntegrating(vector<double>, vector<double>, unsigned long);
+        GRTrajectory(); //constructor
+        ~GRTrajectory(); //destructor
+        bool calibrateGravityMatrix(std::vector<double>, int); //gravity matrix callibration method
+        bool calculateCorrectionMatrix(); //calculation of correction graity matrix
+        vector<double> getNewPosByVelocity(vector<double>, vector<double>, unsigned long); //getting new position 
+        vector<double> getNewPosByIntegrating(vector<double>, vector<double>, unsigned long); //getting of new position
+        vector<double> getNewPos(vector<double> acc, vector<double>, unsigned long);//use both methods
+    private:
+        Vector3d pos_last; //last stored position
+        Vector3d velocity_last; //last stored velocity
+        unsigned long timestamp_last; //last stored timestamp
+        bool first_call; //arbitary variable for initialization of algorithms 
 
-        vector<double> getNewPosByVeloko(vector<double>, vector<double>, unsigned long);
+        Vector3d _getNewPosByVelocity(Vector3d, unsigned long); //method in two step gettng of position
+        Vector3d _getNewPosByIntegrating(Vector3d, unsigned long, Quaterniond); //double integration position
 
-        vector<double> getNewPos(vector<double> acc, vector<double>, unsigned long);
+        Vector3d _rotateAcc(Vector3d, Quaterniond);//rotate accelerometer vector with quaternion
+        Vector3d _convertAccToG(Vector3d);//coverts acceleromer raw data to G
+
+        vector<double> _toStdVector(Vector3d);//convert Eigen::Vector3d to std::vector
+        Vector3d _toVector3d(vector<double>);//convert std::vector to Eigen::vector3d
+        Quaterniond _toQuaterniond(vector<double>);//convert std::vector to Eigen::Quaterniond
+        Vector3d _gravity_compensate(vector<double> , vector<double> );//gravity compenstation with acc and q
+        Vector3d _gravity = Vector3d(0.0, 0.0, G); //gravity vector
+        Vector3d _acc_last; //last stored accelerometer data
+        Matrix4d _correctionMatrix; // correction matrix for callibration of accelerometer
+        Matrix4d _desiredMatrix; // desired matrix for calibration of accelerometer
+        Matrix4d _realMatrix;//matrix with real raw data from accelerometer
+
+        bool _setupGravityMatrices(); // setup method for correction matrix for accelerometer
 };
 
 #endif

@@ -1,8 +1,6 @@
-#include <iostream>
 #include "grTrajectory.h"
 
-#include <Eigen/LU>
-GRTrajectory::GRTrajectory()
+GRTrajectory::GRTrajectory() //constructor
 {
     this->first_call = true;
     this->timestamp_last = 0;
@@ -13,47 +11,50 @@ GRTrajectory::GRTrajectory()
     this->velocity_last(0) = 0;
     this->velocity_last(1) = 0;
     this->velocity_last(2) = 0;
-    setupGravityMatrices();
+    _setupGravityMatrices();
 }
-
+/*destructor
+ * */
 GRTrajectory::~GRTrajectory()
 {}
-bool GRTrajectory::setupGravityMatrices()
+
+/*Setup matrix needed for callibration of acceleromater
+ * it' booll method which sets default values on matrices for each axis
+ */
+bool GRTrajectory::setupGravityMatrices() // if u want to see your matrix paste flag TODO need to be implement
 {
     for(int i=0; i<4; i++)
     {
-        desiredMatrix(3, i) = 1;
-        realMatrix(3, i) = 1;
+       this->_desiredMatrix(3, i) = 1;
+       this->_realMatrix(3, i) = 1;
     }
-    desiredMatrix(2, 0) = G;
-    desiredMatrix(2, 1) = -G;
-    desiredMatrix(0, 2) = G;
-    desiredMatrix(1, 3) = G;
+    _desiredMatrix(2, 0) = G;
+    _desiredMatrix(2, 1) = -G;
+    _desiredMatrix(0, 2) = G;
+    _desiredMatrix(1, 3) = G;
     
-    
+    return 1;
 
    // std::cout<<desiredMatrix<<std::endl;
 }
 
+/*Calculation of correction matrix by multiplying woth inversed real data matrix
+ */
 bool GRTrajectory::calculateCorrectionMatrix()
 {
     //std::cout << "Inversing matrixx \n " << realMatrix;
-//    PartialPivLU<Matrix4d> lu(realMatrix);
 
-    realMatrix = (realMatrix.inverse()).eval();
-    // realMatrix.inverse();
-    // lu.inverse();
-    // realMatrix = lu.matrixLU();
-
-    //std::cout << "\n inversed!!!;  \n " << realMatrix << std::endl;
-
-    correctionMatrix = desiredMatrix * realMatrix; 
+    _realMatrix = (_realMatrix.inverse()).eval();
+    _correctionMatrix = _desiredMatrix * _realMatrix; 
   
-
-   // std::cout << std::endl << "real: " << realMatrix << "\n desiredMatrix: " << desiredMatrix <<
-    //   "\n correctionMatrix: " << correctionMatrix << std::endl; 
+    return 1;
 }
 
+/*Private mathod which calculate trajectory in two steps 
+ * It's take two arguments "acclerometer raw data " and "timestamp"
+ * 1) Current velocity
+ * 2) position by velocity & time
+ */
 Vector3d GRTrajectory::_getNewPosByVelocity(Vector3d acc, unsigned long timestamp)
 {
     Vector3d acc_ms, velocity, distance, pos_next;
@@ -68,7 +69,13 @@ Vector3d GRTrajectory::_getNewPosByVelocity(Vector3d acc, unsigned long timestam
     this->velocity_last = velocity;
     return pos_next;
 }
-Vector3d GRTrajectory::_convertAccToG(Vector3d in)
+
+/* Private method which convert's raw accelerometer data units to G
+ * mg/LSB -> G
+ * It's take one argument Eigen::Vector3d with raw accelerometer data
+ * and return Eigen::Vector3d with accelerometer data in G units
+ */
+Vector3d GRTrajectory::_convertAccToG(Vector3d in) //TODO need to be unified 
 {
     Vector3d out;
     out = ((in * ACC_MULT));// / 1000);// * G;
@@ -76,58 +83,55 @@ Vector3d GRTrajectory::_convertAccToG(Vector3d in)
     return out;
 }
 
+/* Private method for rotation accelerometer vector by quaternion calculated in
+ * Madgwick algorith for the same data frame
+ * This is needed for removing of gravity from calculations
+ * It's take two arguments EIgen::Vector3d woth raw accelerometer data and
+ * Eigen::Quaterniond with quaternion and it's return rotated Eigen::Vector3d vector
+ */ 
 Vector3d GRTrajectory::_rotateAcc(Vector3d acc, Quaterniond q)
 {
-    /*Vector3d u(q.x(), q.y(), q.z());
-    float s = q.w();
-
-    Vector3d result = 2.0f * u.dot(acc) * u + (s*s - u.dot(u)) * acc + 2.0f *s * u.cross(acc);
-
-    return result;
-    */
     
     Quaterniond acc_q, inversed_q;
-//   q.normalize();
    q = q.conjugate(); 
-   /*
-    q.normalize();
-    q = q.conjugate();
-*/
-    inversed_q = q;
-    /*inversed_q.normalize();
-    inversed_q = inversed_q.conjugate(); 
-  */  
- //  inversed_q.normalize(); 
+   inversed_q = q;
    inversed_q = inversed_q.conjugate();
     
     acc_q.w() = 0;
     acc_q.vec() = acc;
-    // std::cout<<"acc_q "<<acc_q.w()<<acc_q.vec()<<"===="<<acc<<std::endl;
     
     Quaterniond out_q = (q * acc_q) * inversed_q;
     Vector3d out = out_q.vec();
     // std::cout<<"out quanternion ----------> "<<out_q.vec()<<std::endl;
     // std::cout<<"out vector ------->>>>>"<<out<<std::endl;
     return out;
-
-    
 }
 
+/* Method which callibrate matrix accelerometer data with callibration matrix
+ * Takes two arguments accelerometer raw data vector in different positions and
+ * iterator for each position. Maximum of iteration are 4.
+ * Need to be call in loop with increase iterator in each iteration and position
+ * Positions are Z, -Z, X, Y;
+ */
 bool GRTrajectory::calibrateGravityMatrix(std::vector<double> acc, int j)
 {   
 
     Vector3d acc_e = _toVector3d(acc);
     acc_e = _convertAccToG(acc_e);
     acc_e = acc_e * G;
-    //std::cout << "Adding " << acc_e << " for " << j << " column of \n" << realMatrix << std::endl;
     for(int i = 0; i < 3; i++)
     {
         realMatrix(i, j) = acc_e(i);
     }
-
     //std::cout << "Now realMatrix is = \n" << realMatrix << std::endl;
-
+    return 1;
 }
+
+/* Private method which takes two arguments and calculate new position by double integration 
+ * parameters are Eigen::Vector3d with raw accelerometer data, timestamp, and
+ * Eigen::Quaterniond calculated in Madgwick for current data frame
+ * return Eigen::Vector3d with new coordinates
+ */
 Vector3d GRTrajectory::_getNewPosByIntegrating(Vector3d acc, unsigned long timestamp, Quaterniond q)
 {
     Vector4d acc4d;
@@ -135,49 +139,18 @@ Vector3d GRTrajectory::_getNewPosByIntegrating(Vector3d acc, unsigned long times
     double dt = (timestamp - this->timestamp_last) / 1000.f;
     acc_tmp = acc;
     acc = acc - acc_last;
-    //std::cout << "Hello, this is acc-acc_last BEFORE convert: " << std::endl << acc << std::endl;
     acc = this->_convertAccToG(acc);
 
-    //std::cout << "Hello, this is acc-acc_last after convert: " << std::endl << acc << std::endl;
-
-    //std::cout<<"before rotation--->>"<<acc<<std::endl;
    // acc = _rotateAcc(acc, q); //rotation 
-  //  std::cout<<"after rotation--->>"<<acc<<std::endl;
 
     acc = acc * G; //converting from G units to M/s^2
- ///   std::cout<<"after rotation and *G (m/s/s)--->>"<<acc<<std::endl;
-/*
-   // acc = correctionMatrix * acc;
-    for(int i =0; i< 3; i++)
-    {
-
-        acc4d(i) = acc(i);
-    }
-    acc4d(3) = 1;
-
-    acc4d = correctionMatrix * acc4d ;
-
-    std::cout<<"aloha this is 4d vector:  "<<acc4d<<std::endl;
-
- 
-    //cout << "delta: " << dt << ";temp acc: " << acc_ms << endl;
- 
-    for(int i=0; i<3; i++)
-   {
-        acc(i) = acc4d(i);
-   }
-*/
-
     // acc(2) = acc(2) - G;
-    //std::cout<<"after rotation and --->>"<<acc<<std::endl;
-    
     
     velocity = this->velocity_last + acc* dt;
     pos_next = this->pos_last + (velocity * dt + 0.5 * acc * (dt * dt));
-   //pos_next = this->pos_last + (velocity_last * dt);
 
     this->velocity_last = velocity;//this->velocity_last + acc_ms * dt;
-     acc_last = acc_tmp;
+    acc_last = acc_tmp;
     this->pos_last = pos_next;
     this->timestamp_last = timestamp;
     
@@ -185,51 +158,35 @@ Vector3d GRTrajectory::_getNewPosByIntegrating(Vector3d acc, unsigned long times
     return pos_next;
 }
 
-Vector3d GRTrajectory::_getNewPosByVeliko(Vector3d acc, unsigned long timestamp)
-{
-    Vector3d pos_next, velocity_new, acc_ms;
-    double dt = (timestamp - this->timestamp_last) / 1000.f;
-
-    //acc_ms = this->_getAccValue(acc); TODO
-
-    if(this->first_call)
-    {
-        this->first_call = false;
-
-        pos_next = 0.5 * acc_ms * (dt * dt);
-        velocity_new = (pos_next - this->pos_last) / dt;
-        this->velocity_last = velocity_new;
-    }
-
-    pos_next = 0.5 * acc_ms * (dt * dt) + this->velocity_last * dt + this->pos_last;
-    velocity_new = (pos_next - this->pos_last) / dt;
-
-    this->pos_last = pos_next;
-    this->velocity_last = velocity_new;
-    this->timestamp_last = timestamp;
-
-    return pos_next;
-}
-
+/* Private method for converting of Eigen::Vector3d to sdt::vector
+ */
 vector<double> GRTrajectory::_toStdVector(Vector3d in)
 {
     vector<double> out = {in(0), in(1), in(2)};
     return out;
 }
 
+/*Private method for converting of std::vector to Eigen::Vector3d
+ */
 Vector3d GRTrajectory::_toVector3d(vector<double> in)
 {
     Vector3d out(in[0], in[1], in[2]);
     return out;
 }
 
+/*Private method for converting std::vector with Madgwick quaternion to 
+ * Eigen::Quaterniond
+ */
 Quaterniond GRTrajectory::_toQuaterniond(vector<double> in)
 {
     Quaterniond out(in[0], in[1], in[2], in[3]);
     return out;
 }
 
-Vector3d GRTrajectory::gravity_compensate(vector<double> q, vector<double> acc)
+/*Private method for gravity compensation it's take two arguments quaternion of rotation and
+ * raw accelerometer data
+ */
+Vector3d GRTrajectory::_gravity_compensate(vector<double> q, vector<double> acc)
 {
     std::vector<double> g;
     g.push_back(0);
@@ -240,30 +197,17 @@ Vector3d GRTrajectory::gravity_compensate(vector<double> q, vector<double> acc)
     // return _toVector3d(result);
 }
 
+
+/* Public method return new position by two step calculation of new positio
+ * 1) calculation of velocity
+ * 2) calculation of position
+ * Takes three arguments accelerometer raw data quaternion of ratation and timestamp
+ */
 vector<double> GRTrajectory::getNewPosByVelocity(vector<double> acc, vector<double> q, unsigned long timestamp)
 {
     Vector3d acc_v, acc_fixed, pos_next;
     Quaterniond q_q;
-    //
-    // remove gravity
-    //
-    // a - here call gravity_compenstate
-
-    // b
-    // acc_v = this->_toVector3d(acc);
-
-    //q_q = this->_toQuaterniond(q);
-    //acc_fixed = this->_rotateAcc(acc_v, q_q);
     acc_fixed = gravity_compensate(q, acc);
-    //  b - here, after rotating with quant-n just acc_fixed = acc_fixed - [0, 0, +-9.8]
-
-    // OR c - apply low-pass algorithm 
-    // https://developer.android.com/reference/android/hardware/SensorEvent.html#values
-    // float alpha = 0.8;
-    // gravity = [0 0 9.8];
-    // gravity = alpha * gravity + (1-alpha) * acc_v;
-    // result_acc = acc_v - gravity;
-
 
     pos_next = this->_getNewPosByVelocity(acc_fixed, timestamp);
     this->pos_last = pos_next;
@@ -272,6 +216,9 @@ vector<double> GRTrajectory::getNewPosByVelocity(vector<double> acc, vector<doub
     return this->_toStdVector(pos_next);
 }
 
+/*Public method for calculating new position by double integrating
+ * takes three arguments vector with raw accelerometer data quaternion and timestamp
+ */
 vector<double> GRTrajectory::getNewPosByIntegrating(vector<double> acc, vector<double> q, unsigned long timestamp)
 {
     if(this->timestamp_last == 0)
@@ -293,28 +240,8 @@ vector<double> GRTrajectory::getNewPosByIntegrating(vector<double> acc, vector<d
     return  this->_toStdVector(_getNewPosByIntegrating(acc_v, timestamp, q_q));
 }
 
-vector<double> GRTrajectory::getNewPosByVeloko(vector<double> acc, vector<double> q, unsigned long timestamp)
-{
-    if(this->timestamp_last == 0)
-    {
-        this->timestamp_last = timestamp;
-        return this->_toStdVector(this->pos_last);
-
-    }
-    Vector3d acc_v, acc_fixed, pos_next;
-    Quaterniond q_q;
-
-    acc_v = this->_toVector3d(acc);
-    q_q = this->_toQuaterniond(q);
-    acc_fixed = this->_rotateAcc(acc_v, q_q);
-
-    std::cout << "acc_fixed" << std::endl << acc_fixed << std::endl;
-
-    pos_next = this->_getNewPosByVeliko(acc_fixed, timestamp);
-
-    return this->_toStdVector(pos_next);
-}
-
+/*Public method which returns position with using both metods for getting trajectory
+ */
 vector<double> GRTrajectory::getNewPos(vector<double> acc, vector<double> q, unsigned long timestamp)
 {
     Vector3d acc_v, acc_fixed, speed_pos, integrated_pos, pos_next;
