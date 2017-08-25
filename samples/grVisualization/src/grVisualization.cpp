@@ -15,6 +15,7 @@ GRVisualization::GRVisualization(QWidget *parent) :
 
 	initUiProps();
 
+    // Set OpenGL Models for appliers
 	rightArmApplier.setArm(&ui->GLwidget->rightArm);
     leftArmApplier.setArm(&ui->GLwidget->leftArm);
 
@@ -47,6 +48,7 @@ GRVisualization::~GRVisualization()
 #endif
 }
 
+// constructor helper
 bool GRVisualization::initUiProps()
 {
 	// splitter init
@@ -74,24 +76,32 @@ bool GRVisualization::initUiProps()
 	return true;
 }
 
+
+/*
+ * Runs a process of device searching, data reading and plotting
+ * red, green, blue, alpha
+*/
 bool GRVisualization::runDataReading()
 {
 
 #ifdef GR_VISUALIZATION_LOGGING_ENABLED
 	printf("GRVisualization: running data reading...\n");
 #endif
-    /// left
+    // for left arm find devices, activate them and start reading to OpenGL model
     leftArmApplier.run();
 
+    // setting up buffer for plotter
     plotter_all_acc->setupPlot(buffer);
     rightArmApplier.writeQuanternionHistory(buffer);
 
+    // for right arm find devices, activate them and start reading to OpenGL model
     rightArmApplier.run();
     plotter_all_acc->runPlotting();
 
+    // find devices and put them into UI devices tree
     std::map<int, device_t> ad = rightArmApplier.getActiveDevices();
     device_t d;
-    if(ad.empty())
+    if(ad.empty()) // if there are no activeDevices - show some sample data in UI devices tree
     {
         d.name = "SOME DEVICE";
         d.address = "08:FC:0S:SD:0P";
@@ -117,16 +127,26 @@ bool GRVisualization::runDataReading()
 // Qt Slots
 //
 
+/*
+ * Render or not trajectory
+*/
 void GRVisualization::on_trajectoryCheckBox_toggled(bool checked)
 {
 	ui->GLwidget->renderTrajectory(checked);
 }
 
+
+/*
+ * Render or not Left hand
+*/
 void GRVisualization::on_leftHandCheckBox_toggled(bool checked)
 {
 	ui->GLwidget->renderLeftHand(checked);
 }
 
+/*
+ * Render or not Right hand
+*/
 void GRVisualization::on_rightHandCheckBox_toggled(bool checked)
 {
 	ui->GLwidget->renderRightHand(checked);
@@ -157,6 +177,10 @@ void GRVisualization::on_hackerModeCheckBox_toggled(bool checked)
 
 }
 
+
+/*
+ * Show&Hide randomData button
+*/
 void GRVisualization::on_loggingCheckBox_toggled(bool checked)
 {
 	ui->randomData->setVisible(checked);
@@ -164,6 +188,10 @@ void GRVisualization::on_loggingCheckBox_toggled(bool checked)
 //	rightArmApplier.isLoggingEnabled = checked;
 }
 
+
+/*
+ * Pushes random data to history
+*/
 void GRVisualization::on_randomData_clicked()
 {
 //	printf("\nGRVisualization: The function Random data is disabled now\n");
@@ -178,6 +206,9 @@ void GRVisualization::on_randomData_clicked()
 
 }
 
+/*
+ * Pause&run plotting
+*/
 void GRVisualization::on_pausePlotCheckBox_toggled(bool checked)
 {
 	plotter_acc->pause = checked;

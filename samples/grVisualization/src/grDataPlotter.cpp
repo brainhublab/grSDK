@@ -7,6 +7,10 @@
 
 // Helpers
 
+/*
+ * str is string with format "double double double", arr is C-style array
+ * splits a string into array
+*/
 void GRDataPlotter::splitSensorData(std::string str, double arr[3])
 {
         int i = 0;
@@ -19,36 +23,50 @@ void GRDataPlotter::splitSensorData(std::string str, double arr[3])
         }
 }
 
+// Definitions
 
+/*
+ * pl is pointer to QCustomPlot object from Qt UI
+*/
 GRDataPlotter::GRDataPlotter( QCustomPlot *pl)
 {
     plot = pl;
 }
 
 GRDataPlotter::~GRDataPlotter() {
-    delete dataTimer;
+    if(dataTimer)
+    {
+        delete dataTimer;
+    }
 }
 
+/*
+ * sets timer for calling fetchData()
+*/
 bool GRDataPlotter::runPlotting()
 {
     dataTimer = new QTimer();
     QObject::connect(dataTimer, SIGNAL(timeout()), this, SLOT(fetchData()));
-    dataTimer->start(50);
+    dataTimer->start(fetchFrequency);
 
     return true;
 }
 
+/*
+ * set buffer for plotting and config UI plot
+*/
 bool GRDataPlotter::setupPlot(std::deque<std::vector<float>> *buf)
 {
     buffer = buf;
 
     plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectAxes |
                                     QCP::iSelectLegend | QCP::iSelectPlottables);
-    plot->setInteraction(QCP::iRangeDrag, true);  // Включаем взаимодействие перетаскивания графика
-    plot->axisRect()->setRangeDrag(Qt::Horizontal);   // Включаем перетаскивание только по горизонтальной оси
+    // enable horizontal and vertical drag
+    plot->setInteraction(QCP::iRangeDrag, true);
+    plot->axisRect()->setRangeDrag(Qt::Horizontal);
     plot->axisRect()->setRangeDrag(Qt::Vertical);
-
-    plot->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignLeft|Qt::AlignTop); // legend position
+    // legend position
+    plot->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignLeft|Qt::AlignTop);
 
     plot->legend->setVisible(true);
     plot->legend->setFont(QFont("Helvetica", 9));
@@ -69,6 +87,10 @@ bool GRDataPlotter::setupPlot(std::deque<std::vector<float>> *buf)
 
     return plot != nullptr;
 }
+
+/*
+ * gets data from buffer and plots it
+*/
 void GRDataPlotter::fetchData()
 {
     double arr[3] = {0, 0, 0}; // grad
@@ -87,6 +109,7 @@ void GRDataPlotter::fetchData()
         return;
     }
 
+    // plot data
     plot->graph(0)->addData(plot->graph(0)->dataCount(), arr[0]);
     plot->graph(0)->rescaleValueAxis();
     plot->graph(1)->addData(plot->graph(1)->dataCount(), arr[1]);

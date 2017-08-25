@@ -4,76 +4,57 @@
 #include <QObject>
 #include <QTimer>
 
+#include <iostream>
 #include <deque>
 #include <string>
-
 #include "plog/Log.h" //Lib for logging in csv format
 
 #include "GRGLWidget.h"
-
-#include <iostream>
-
 #include "grConnection.h"
 #include "grAlgorithm.h"
+
 class GRDataApplier : public QObject
 {
 	Q_OBJECT
 public:
 	GRDataApplier();
-
 	~GRDataApplier();
 
-	bool setArm(GRHand *arm); // set the arm for applying data
-	bool run(); // runs fetchdata every {fetchFrequency)
+    bool setArm(GRHand *arm); // sets OpenGL model of arm for data applying
+    bool run(); // connect device and run fetchdata every {fetchFrequency)
 
-    bool addHistoryData(std::vector<double>);
-    bool writeQuanternionHistory(std::deque<std::vector<float>>*);
-	bool isLoggingEnabled = false; // bool for logging to a file
+    bool writeQuanternionHistory(std::deque<std::vector<float>>*); // start writing history to vector pointer
+    bool addHistoryData(std::vector<double>); // adds new quaternion to history
 
-    const std::map<int, device_t>& getActiveDevices() const;
-
+    const std::map<int, device_t>& getActiveDevices() const; // returns activated devices
+    bool isLoggingEnabled = false; // for logging to a file
 
 public slots:
-	bool fetchSignal();
-//	signals:
-//	void fetchSignal();
-
+    bool fetchSignal(); // this signal is called every 20 ms
 private:
-    bool processMsg(std::string);
-    bool fetchData(); // gets data from algdev and applies it for hand
-	QTimer *fetchTimer; // a timer for fetchdata
-    GRHand* arm; // for moving arm
+    bool fetchRunning = false; // mutex analog
+    int fetchFrequency = 20; // ms
+    QTimer *fetchTimer; // a timer for fetchdata
 
+    GRHand *arm; // OpenGL model pointer
 
-    GRConnection conn;
+    GRConnection conn; // connection for data getting
     device_t* device;
-    gr_message msg;
-    gr_alg_message alg_msg;
+    gr_message msg; // raw data
+    GRAlgorithm alg; // madgwick algorithm for alg_msg producing
+    gr_alg_message alg_msg; // madgwick updated data
     std::map<int, device_t> activeDevices;
 
+    bool processMsg(std::string); // gets data from msg variable, updates it with madgwick and writes to alg_msg
+    bool fetchData(); // gets data from algdev, writes it to msg variable and apply msg for each arm node
 
-	int fetchFrequency = 20;
-	// algorithms for each finger and hand
-    std::unordered_map<std::string, GRAlgorithm> algorithms;
-    bool setAlgorithms();
+    bool applyToFinger(std::vector<double>&, int); // apply quaternion to [int] finger
+    bool applyToHand(std::vector<double>&); // apply quaternion to hand
+    std::vector<float>* nodeQuanternion; // current temporary quaternion
+    std::vector<float> prevQuants[6]; // previous quaternions of msg
 
-    GRAlgorithm alg;
-//    GRAlgorithm algPinky;
-//    GRAlgorithm algRing;
-//    GRAlgorithm algMiddle;
-//    GRAlgorithm algIndex;
-//    GRAlgorithm algThumb;
-//    GRAlgorithm algPalm;
-
-	// for applying data
-    bool applyToFinger(std::vector<double>&, int);
-    bool applyToHand(std::vector<double>&);
-    std::vector<float>* nodeQuanternion;
-    std::vector<float> prevQuants[6];
-    bool fetchRunning = false;
-
-    std::unordered_map<std::string, int> fingers;
-    std::deque<std::vector<float>>* targetQuanternionHistory = nullptr;
+    std::unordered_map<std::string, int> fingers; // nodeName-indexe
+    std::deque<std::vector<float>>* targetQuanternionHistory = nullptr; // buffer pointer for writing a history of quaternions
 };
 
 #endif // GR_BUFFER_MANAGER_H
