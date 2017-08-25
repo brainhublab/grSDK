@@ -5,13 +5,15 @@
 #include <cmath>
 #include "Eigen/Dense"
 #include "Eigen/Geometry"
+//#include "Eigen"
 
 using Eigen::Vector3d;
 using Eigen::Quaterniond;
+using  namespace Eigen;
 using namespace std;
 
 #define G  9.80665  // 9.000416 need to be 9.80665
-#define ACC_MULT 0.061
+#define ACC_MULT 0.00409836065574 //0.244 //0.061
 #define FILTER_LOW 0
 
 class GRTrajectory
@@ -23,23 +25,29 @@ class GRTrajectory
         bool first_call;
 
         Vector3d _getNewPosByVelocity(Vector3d, unsigned long);
-        Vector3d _getNewPosByIntegrating(Vector3d, unsigned long);
+        Vector3d _getNewPosByIntegrating(Vector3d, unsigned long, Quaterniond);
 
         Vector3d _getNewPosByVeliko(Vector3d, unsigned long);
 
         Vector3d _rotateAcc(Vector3d, Quaterniond);
-        Vector3d _getAccValue(Vector3d);
+        Vector3d _convertAccToG(Vector3d);
 
         vector<double> _toStdVector(Vector3d);
         Vector3d _toVector3d(vector<double>);
         Quaterniond _toQuaterniond(vector<double>);
         Vector3d gravity_compensate(vector<double> , vector<double> );
-        Vector3d gravity = Vector3d(0.0, 0.0, 256.0);
+        Vector3d gravity = Vector3d(0.0, 0.0, G);
         Vector3d acc_last; 
+        Matrix4d correctionMatrix;
+        Matrix4d desiredMatrix;
+        Matrix4d realMatrix;
+
+        bool setupGravityMatrices();
     public:
         GRTrajectory();
         ~GRTrajectory();
-
+        bool calibrateGravityMatrix(std::vector<double>, int);
+        bool calculateCorrectionMatrix();
         vector<double> getNewPosByVelocity(vector<double>, vector<double>, unsigned long);
         vector<double> getNewPosByIntegrating(vector<double>, vector<double>, unsigned long);
 
