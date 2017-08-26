@@ -5,7 +5,7 @@
 #include <vector>
 #include "GRT/GRT.h"
 
-struct data_attributes
+struct data_attributes //GRT data attributes 
 {
     std::vector<std::string> sensors;
     GRT::UINT gestureLabel;

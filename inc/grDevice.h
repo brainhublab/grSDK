@@ -10,7 +10,7 @@
 #include <unordered_map>
 #include <stdlib.h>
 
-struct dev_names
+struct dev_names//gr devices names needed for easier findign of avalible devices
 {
     std::string left;
     std::string right;
@@ -23,7 +23,7 @@ struct dev_names
         test = "HC-06";    
     }
 };
-struct imu 
+struct imu //Innertial mesurment unit data structure
 {
     std::vector<double> gyro;
     std::vector<double> acc;
@@ -71,7 +71,7 @@ struct imu
 };
 
 
-struct gr_message
+struct gr_message//device message datastructure 
 {
     int id;
 
@@ -103,13 +103,14 @@ struct gr_message
         index.clear();
         thumb.clear();
         palm.clear();
-
+        
+        return 1;
     }
 
 };
 
 
-struct device_t
+struct device_t//g device data structure
 {
     int id;
     std::string name;
@@ -129,7 +130,7 @@ struct device_t
     }
 };
 
-struct gr_alg_message
+struct gr_alg_message//gr message for algorithms
 {
     // q x y z
     // to store quaternions

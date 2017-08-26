@@ -27,26 +27,26 @@ class GRTrajectory
         vector<double> getNewPosByIntegrating(vector<double>, vector<double>, unsigned long); //getting of new position
         vector<double> getNewPos(vector<double> acc, vector<double>, unsigned long);//use both methods
     private:
-        Vector3d pos_last; //last stored position
-        Vector3d velocity_last; //last stored velocity
+        Eigen::Vector3d pos_last; //last stored position
+        Eigen::Vector3d velocity_last; //last stored velocity
         unsigned long timestamp_last; //last stored timestamp
         bool first_call; //arbitary variable for initialization of algorithms 
 
-        Vector3d _getNewPosByVelocity(Vector3d, unsigned long); //method in two step gettng of position
-        Vector3d _getNewPosByIntegrating(Vector3d, unsigned long, Quaterniond); //double integration position
+        Eigen::Vector3d _getNewPosByVelocity(Eigen::Vector3d, unsigned long); //method in two step gettng of position
+        Eigen::Vector3d _getNewPosByIntegrating(Eigen::Vector3d, unsigned long, Eigen::Quaterniond); //double integration position
 
-        Vector3d _rotateAcc(Vector3d, Quaterniond);//rotate accelerometer vector with quaternion
-        Vector3d _convertAccToG(Vector3d);//coverts acceleromer raw data to G
+        Eigen::Vector3d _rotateAcc(Eigen::Vector3d, Eigen::Quaterniond);//rotate accelerometer vector with quaternion
+        Eigen::Vector3d _convertAccToG(Eigen::Vector3d);//coverts acceleromer raw data to G
 
-        vector<double> _toStdVector(Vector3d);//convert Eigen::Vector3d to std::vector
-        Vector3d _toVector3d(vector<double>);//convert std::vector to Eigen::vector3d
-        Quaterniond _toQuaterniond(vector<double>);//convert std::vector to Eigen::Quaterniond
-        Vector3d _gravity_compensate(vector<double> , vector<double> );//gravity compenstation with acc and q
-        Vector3d _gravity = Vector3d(0.0, 0.0, G); //gravity vector
-        Vector3d _acc_last; //last stored accelerometer data
-        Matrix4d _correctionMatrix; // correction matrix for callibration of accelerometer
-        Matrix4d _desiredMatrix; // desired matrix for calibration of accelerometer
-        Matrix4d _realMatrix;//matrix with real raw data from accelerometer
+        vector<double> _toStdVector(Eigen::Vector3d);//convert Eigen::Vector3d to std::vector
+        Eigen::Vector3d _toVector3d(vector<double>);//convert std::vector to Eigen::vector3d
+        Eigen::Quaterniond _toQuaterniond(vector<double>);//convert std::vector to Eigen::Quaterniond
+        Eigen::Vector3d _gravity_compensate(vector<double> , vector<double> );//gravity compenstation with acc and q
+        Eigen::Vector3d _gravity = Vector3d(0.0, 0.0, G); //gravity vector
+        Eigen::Vector3d _acc_last; //last stored accelerometer data
+        Eigen::Matrix4d _correctionMatrix; // correction matrix for callibration of accelerometer
+        Eigen::Matrix4d _desiredMatrix; // desired matrix for calibration of accelerometer
+        Eigen::Matrix4d _realMatrix;//matrix with real raw data from accelerometer
 
         bool _setupGravityMatrices(); // setup method for correction matrix for accelerometer
 };

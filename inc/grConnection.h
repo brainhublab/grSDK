@@ -27,7 +27,7 @@
 #include <bluetooth/rfcomm.h>
 
 
-struct dev_socket
+struct dev_socket //grDevice socket structure 
 {
     int sock;
     struct sockaddr_rc addr = { 0 };
@@ -42,40 +42,40 @@ struct dev_socket
 class GRConnection
 {
     public:
-        GRConnection();
-        ~GRConnection();
-        GRConnection(const GRConnection&);
-        GRConnection& operator=(const GRConnection&);
+        GRConnection();//constructor
+        ~GRConnection();//destructor
+        GRConnection(const GRConnection&);//copy constructor
+        GRConnection& operator=(const GRConnection&);//operator = 
 
-        std::map<int, device_t> getAvalibleDevices();
-        bool setActiveDevice(int);
+        std::map<int, device_t> getAvalibleDevices();//return map of devices which are avalible for connection 
+        bool setActiveDevice(int); //add selected device to active devices and make precondition for connection
 
-        int getDeviceId(device_t);
+        int getDeviceId(device_t);//returns Id of devise
 
-        gr_message getMassage(int);
+        gr_message getMassage(int);//returns gr_message bi Id
         
-        bool getData(int, gr_message*);
+        bool getData(int, gr_message*);// fill gr_message with message from device
       
-        device_t* getDevice(int); 
+        device_t* getDevice(int); //returns device by id
        
-        bool connectSocket(int);
+        bool connectSocket(int);//connect to socket 
     private:
-        char buf[256];
-        double timeStamp;
-        std::chrono::time_point<std::chrono::system_clock> start, end;
-        std::map<int, device_t> avalibleDevices;
-        std::unordered_map<int, device_t> activeDevices;
-        std::unordered_map<int, dev_socket> deviceSockets;
-        std::unordered_map<int, std::string> bufferedData;
+        char _buf[256]; //buffer needet for reading from socket
+        double _timeStamp;//timestamp local not from device
+        std::chrono::time_point<std::chrono::system_clock> _start, _end;//timer
+        std::map<int, device_t> _avalibleDevices;//map from avalible devices
+        std::unordered_map<int, device_t> _activeDevices;//map from active devices
+        std::unordered_map<int, dev_socket> _deviceSockets;//map with device sockets
+        std::unordered_map<int, std::string> _bufferedData;//map with buffered data
 
-        std::string getNext();  
-        bool splitData(std::string, imu*);
-        double getTimeStamp();
-        bool deviceIsIn(std::string); 
-        int asignDeviceWithSocket(int); // parameter is device ID
-        device_t getDeviceById(int);
-        int getDeviceSocketById(int);
-        bool asignMessageWithImu(std::string, gr_message*); 
+        std::string _getNext();  //get nex message method
+        bool _splitData(std::string, imu*);//splid raw data 
+        double _getTimeStamp();//getting local timestamp
+        bool _deviceIsIn(std::string); //chack if device is active devices
+        int _asignDeviceWithSocket(int); // parameter is device ID
+        device_t _getDeviceById(int);//getting device by dev Id
+        int _getDeviceSocketById(int);// get device socket byd device id
+        bool _asignMessageWithImu(std::string, gr_message*); //asigning of gr_message with concret imu
         
    // std::map<std::string, gr_message> messages;
 };

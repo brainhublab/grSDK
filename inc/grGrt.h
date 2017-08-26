@@ -13,13 +13,13 @@ class GRGrt
 {
 public:
 
-		GRGrt();
-		~GRGrt();
-		GRGrt(const GRGrt& );
-		GRGrt& operator=(const GRGrt& );
-		bool loadTrainingData(std::string filepath);
+		GRGrt();//constructor
+		~GRGrt();//destructor
+		GRGrt(const GRGrt& );//copy constructor
+		GRGrt& operator=(const GRGrt& );//operator=
+		bool loadTrainingData(std::string filepath);//loading training data by path
         // Loads test data from .grt file
-        bool loadTestData(std::string filepath);
+        bool loadTestData(std::string filepath);//loading test data by path
         // Takes `size`% from training data to use for testing accuracy
         bool setTestDataFromTraining(int size);
         // Traing the algorithm
@@ -36,27 +36,27 @@ public:
         double getMaximumLikelihood();
 
         //utils
-        void setDataSetSensors(std::vector<std::string>, std::string);
-		void setDatasetProperties(std::string, std::string, std::string, std::string);
-		void setNextLabel(std::string);
-		void clearTrainingData(std::string); 
+        void setDataSetSensors(std::vector<std::string>, std::string);//set sensor for dataset
+		void setDatasetProperties(std::string, std::string, std::string, std::string);//properties of dataset
+		void setNextLabel(std::string);//nex label of dataset in training data 
+		void clearTrainingData(std::string); //clear
 
-		bool pushDatasetDTW(gr_message*);
-		bool pushDatasetHMM(gr_message*);
+		bool pushDatasetDTW(gr_message*);//push dataset to DTW 
+		bool pushDatasetHMM(gr_message*);//push dataset to HMM
 
-		bool saveDataset(std::string);
+		bool saveDataset(std::string);//saving in path 
 
 private:
 
 
-		GRT::DTW dtw;
-        GRT::TimeSeriesClassificationData trainingData;
-        GRT::TimeSeriesClassificationData testData;
+		GRT::DTW _dtw;//dtw object
+        GRT::TimeSeriesClassificationData _trainingData;//training data 
+        GRT::TimeSeriesClassificationData _testData;//test data
 
-        double testAccuracy = 0.0;
+        double _testAccuracy = 0.0;//
 
         //Utils
-        data_attributes datasetDTW;
-    	data_attributes datasetHMM;
+        data_attributes _datasetDTW;//object for DTW
+    	data_attributes _datasetHMM;//objects for HMM
 };
 #endif

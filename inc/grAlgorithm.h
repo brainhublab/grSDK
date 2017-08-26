@@ -12,9 +12,6 @@
 #include <functional>
 #include <algorithm>
 
-//#include <eigen3/Eigen/Dense>
-//#include <eigen3/Eigen/Geometry>
-
 #include "GRT/GRT.h"
 
 #include <grConnection.h>
@@ -22,8 +19,7 @@
 #include <grMadgwick.h>
 #include <grGrt.h>
 using namespace std;
-//using namespace Eigen;
-struct k_filter_vars
+struct k_filter_vars //variables needet from simplified kalman 
 {
     double volt;
     double proccess;
@@ -47,7 +43,7 @@ struct k_filter_vars
     }
 };
 
-struct acc_k_vars
+struct acc_k_vars //arbitary accelerometer vars for kalman
 {
     k_filter_vars acc_k_x;
     k_filter_vars acc_k_y;
@@ -58,39 +54,40 @@ class GRAlgorithm :public GRGrt
 {
 
     public:
-        GRAlgorithm();
-        ~GRAlgorithm();
-        GRAlgorithm(const GRAlgorithm& );
-        GRAlgorithm& operator=(const GRAlgorithm&);
-        void grInitAlgorithms();
+        GRAlgorithm(); //constructor
+        ~GRAlgorithm();//destructor
+        GRAlgorithm(const GRAlgorithm& );//copy constructor
+        GRAlgorithm& operator=(const GRAlgorithm&);//operator=
+        void grInitAlgorithms(); //initialise of algorithms
         //madgwick
-        bool madgwickUpdate(gr_message*, gr_alg_message*, int, std::string flag);
+        bool madgwickUpdate(gr_message*, gr_alg_message*, int, std::string flag); //Update iterative data of madgwick algorithm
         //void madgwickUpdateThr(device_t*, alg_device_t*, int, std::string flag);//TODO need to implement
-        bool setupMadgwick(int, int, int, int, int, int);
+        bool setupMadgwick(int, int, int, int, int, int);//precondition Madgwick algorithm
 
         //simplified Kalman
         
         bool setUpKfilter(GRConnection conn, acc_k_vars*, std::string, int );//TODO implement for fingers
-        double kFilter(double, k_filter_vars*);
+        double kFilter(double, k_filter_vars*);//simplified kalman 
 
              
     private:
-        double roll, pitch, yaw;
-        std::vector<double> angles;
-        std::vector<double> computeAngles(std::vector<double>);
+        double _roll, _pitch, _yaw;
+        std::vector<double> _angles;//vector with computed from quaternion angles
+        std::vector<double> _computeAngles(std::vector<double>);//calculation of angles from quaternion method
 
-        GRMadgwick pinkyMadgwick;
-        GRMadgwick ringMadgwick;
-        GRMadgwick middleMadgwick;
-        GRMadgwick indexMadgwick;
-        GRMadgwick thumbMadgwick;
-        GRMadgwick palmMadgwick;
+        //grMadgwick objects
+        GRMadgwick _pinkyMadgwick;
+        GRMadgwick _ringMadgwick;
+        GRMadgwick _middleMadgwick;
+        GRMadgwick _indexMadgwick;
+        GRMadgwick _thumbMadgwick;
+        GRMadgwick _palmMadgwick;
 
-        std::unordered_map<std::string, GRMadgwick*> madgwickObjects;
+        std::unordered_map<std::string, GRMadgwick*> _madgwickObjects; //map for easier access of objects
 
         //kFilter help methods
-        double stdev(std::vector<double>*);
-        double average(std::vector<double>*);
+        double _stdev(std::vector<double>*);//standart deviation
+        double _average(std::vector<double>*);//average
 
 
 

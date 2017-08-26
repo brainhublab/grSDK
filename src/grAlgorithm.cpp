@@ -6,12 +6,12 @@
 GRAlgorithm::GRAlgorithm()
 {
     
-    madgwickObjects["pinky"] = &(this->pinkyMadgwick);
-    madgwickObjects["ring"] = &(this->ringMadgwick);
-    madgwickObjects["middle"] = &(this->middleMadgwick);
-    madgwickObjects["index"] = &(this->indexMadgwick);
-    madgwickObjects["thumb"] = &(this->thumbMadgwick);
-    madgwickObjects["palm"] = &(this->palmMadgwick);
+    _madgwickObjects["pinky"] = &(this->_pinkyMadgwick);
+    _madgwickObjects["ring"] = &(this->_ringMadgwick);
+    _madgwickObjects["middle"] = &(this->_middleMadgwick);
+    _madgwickObjects["index"] = &(this->_indexMadgwick);
+    _madgwickObjects["thumb"] = &(this->_thumbMadgwick);
+    _madgwickObjects["palm"] = &(this->_palmMadgwick);
  
 }
 
@@ -30,19 +30,23 @@ GRAlgorithm& GRAlgorithm::operator=(const GRAlgorithm& t)
 
 }
 
+/* Initialize algorithms and variables needed for them
+ */
 void grInitAlgorithms()
 {
 }
 
-bool GRAlgorithm::madgwickUpdate(gr_message* message, gr_alg_message* result, 
-        int freqCallibration, std::string flag)
+/*Update step of Madgwick algorithm
+ * Takes gr_message and return quaternion 
+ */
+bool GRAlgorithm::madgwickUpdate(gr_message* message, gr_alg_message* result, int freqCallibration, std::string flag)
 {
     std::vector<double> rotations;
     std::unordered_map<std::string, imu*>::iterator it;
     // std::cout<<"\nbefore madgwickUpdate() Q :"<<q0<<" "<<q1<<" "<<q2<<" "<<q3<<std::endl;
     for(it=message->imus.begin(); it!=message->imus.end(); it++ )
     {
-        madgwickObjects[it->first]->MadgwickAHRSupdate(
+        _madgwickObjects[it->first]->MadgwickAHRSupdate(
                 message->imus[it->first]->gyro[0], message->imus[it->first]->gyro[1], message->imus[it->first]->gyro[2], 
                 message->imus[it->first]->acc[0], message->imus[it->first]->acc[1], message->imus[it->first]->acc[2], 
                 message->imus[it->first]->mag[0], message->imus[it->first]->mag[1], message->imus[it->first]->mag[2], 
@@ -74,14 +78,17 @@ bool GRAlgorithm::madgwickUpdate(gr_message* message, gr_alg_message* result,
     }
 
 }
+
+/*SetUp method for Madgwick algorithm 
+ */
 bool GRAlgorithm::setupMadgwick(int pCallib, int rCallib, int mCallib, int iCallib, int tCallib, int paCallib)
 {
-    madgwickObjects["pinky"]->setFreqCalibration(pCallib);
-    madgwickObjects["ring"]->setFreqCalibration(rCallib);
-    madgwickObjects["middle"]->setFreqCalibration(mCallib);
-    madgwickObjects["index"]->setFreqCalibration(iCallib);
-    madgwickObjects["thumb"]->setFreqCalibration(tCallib);
-    madgwickObjects["palm"]->setFreqCalibration(paCallib);
+    _madgwickObjects["pinky"]->setFreqCalibration(pCallib);
+    _madgwickObjects["ring"]->setFreqCalibration(rCallib);
+    _madgwickObjects["middle"]->setFreqCalibration(mCallib);
+    _madgwickObjects["index"]->setFreqCalibration(iCallib);
+    _madgwickObjects["thumb"]->setFreqCalibration(tCallib);
+    _madgwickObjects["palm"]->setFreqCalibration(paCallib);
 }
 /* TODO implement in thread madgwick update
 void GRAlgorithm::madgwickUpdateThr(imu* imu, int freqCallibration, std::string flag)
@@ -91,6 +98,10 @@ void GRAlgorithm::madgwickUpdateThr(imu* imu, int freqCallibration, std::string 
     std::cout<<"run MadgwickAHRSupdate thread for pinky"<<endl;
 }
 */
+
+/* setUp method for simplified kalman filter
+ * It's take a grConnection object make some iterations and calkulate variables needet for filter
+ */
 bool GRAlgorithm::setUpKfilter(GRConnection conn, acc_k_vars* k_vars, std::string flag, int devId)
 {
     int i = 0;
@@ -150,13 +161,15 @@ bool GRAlgorithm::setUpKfilter(GRConnection conn, acc_k_vars* k_vars, std::strin
        i++;
       
     }
-    k_vars->acc_k_x.volt = stdev(&acc_x);
-    k_vars->acc_k_y.volt = stdev(&acc_y);
-    k_vars->acc_k_z.volt = stdev(&acc_z);
+    k_vars->acc_k_x.volt = _stdev(&acc_x);
+    k_vars->acc_k_y.volt = _stdev(&acc_y);
+    k_vars->acc_k_z.volt = _stdev(&acc_z);
 
 
 }
 
+/*Simplified kalman filter 
+ */
 double GRAlgorithm::kFilter(double input, k_filter_vars* k_vars)
 {
     k_vars->pc = k_vars->p + k_vars->proccess;
@@ -169,7 +182,9 @@ double GRAlgorithm::kFilter(double input, k_filter_vars* k_vars)
     return k_vars->xe;
 }
 
-std::vector<double> GRAlgorithm::computeAngles(std::vector<double> q)
+/*compute pitch roll and yaw from quaternion
+ */
+std::vector<double> GRAlgorithm::_computeAngles(std::vector<double> q)
 {
 
     std::vector<double> angles;
@@ -189,11 +204,13 @@ std::vector<double> GRAlgorithm::computeAngles(std::vector<double> q)
     angles.push_back(roll);
     angles.push_back(pitch);
     angles.push_back(yaw);
-    return angles;
+    return _angles;
 }
-//Kfilter private help methods
 
-double GRAlgorithm::stdev(std::vector<double>* input)
+//Kfilter private help methods
+/* Standard deviation calculation
+ */
+double GRAlgorithm::_stdev(std::vector<double>* input)
 {
     double sum = std::accumulate(input->begin(), input->end(), 0.0);
     double mean = sum / input->size();
@@ -208,7 +225,9 @@ double GRAlgorithm::stdev(std::vector<double>* input)
     return stdev;
 }
 
-double GRAlgorithm::average(std::vector<double>* input)
+/*Average
+ */
+double GRAlgorithm::_average(std::vector<double>* input)
 {
     double average = std::accumulate(input->begin(), input->end(), 0.0);
 }
