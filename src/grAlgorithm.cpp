@@ -102,86 +102,53 @@ void GRAlgorithm::madgwickUpdateThr(imu* imu, int freqCallibration, std::string 
 /* setUp method for simplified kalman filter
  * It's take a grConnection object make some iterations and calkulate variables needet for filter
  */
-bool GRAlgorithm::setUpKfilter(GRConnection conn, acc_k_vars* k_vars, std::string flag, int devId)
+bool GRAlgorithm::setUpKfilter(GRConnection* conn, acc_k_vars* k_vars, int devId)
 {
     int i = 0;
     gr_message msg;
     std::vector<double> acc_x;
     std::vector<double> acc_y;
     std::vector<double> acc_z;
+    std::cout<<"starting kamlman initialization"<<std::endl;
     while(i < 50)
     {
-        conn.getData(devId, &msg);
-        if(flag == "pinky")
-        {
-            acc_x.push_back(msg.pinky.acc[0]);
-            acc_y.push_back(msg.pinky.acc[1]);
-            acc_z.push_back(msg.pinky.acc[2]);
-        }
-        else if(flag == "ring")
-        {
+        conn->getData( devId, &msg);
         
-            acc_x.push_back(msg.ring.acc[0]);
-            acc_y.push_back(msg.ring.acc[1]);
-            acc_z.push_back(msg.ring.acc[2]);
-        }
-        else if(flag == "middle")
+        acc_x.push_back(msg.palm.acc[0]);
+        acc_y.push_back(msg.palm.acc[1]);
+        acc_z.push_back(msg.palm.acc[2]);
+        if(i> 46)
         {
-        
-            acc_x.push_back(msg.middle.acc[0]);
-            acc_y.push_back(msg.middle.acc[1]);
-            acc_z.push_back(msg.middle.acc[2]);
+            k_vars->acc_k_x.accumulated.push_back(acc_x.back());
+            k_vars->acc_k_y.accumulated.push_back(acc_y.back());
+            k_vars->acc_k_z.accumulated.push_back(acc_z.back());
         }
-        else if(flag == "index")
-        {
-        
-            acc_x.push_back(msg.index.acc[0]);
-            acc_y.push_back(msg.index.acc[1]);
-            acc_z.push_back(msg.index.acc[2]);
-        }
-        else if(flag == "thumb")
-        {
-        
-            acc_x.push_back(msg.thumb.acc[0]);
-            acc_y.push_back(msg.thumb.acc[1]);
-            acc_z.push_back(msg.thumb.acc[2]);
-        }
-        else if(flag == "palm")
-        {
-        
-            acc_x.push_back(msg.palm.acc[0]);
-            acc_y.push_back(msg.palm.acc[1]);
-            acc_z.push_back(msg.palm.acc[2]);
-        }
-        else
-        {
-            std::cout<<"ERROR: no such flag -> "<<flag<<std::endl;
-        }
-       msg.clear();
-       i++;
-      
+        msg.clear();
+        i++;
+        std::cout<<i<<std::endl;
+
     }
-    k_vars->acc_k_x.volt = _stdev(&acc_x);
-    k_vars->acc_k_y.volt = _stdev(&acc_y);
-    k_vars->acc_k_z.volt = _stdev(&acc_z);
-
+    k_vars->acc_k_x.volt = _stDev(&acc_x);
+    k_vars->acc_k_y.volt = _stDev(&acc_y);
+    k_vars->acc_k_z.volt = _stDev(&acc_z);
+    std::cout<<"done with kalman setup"<<std::endl;
 
 }
 
-/*Simplified kalman filter 
- */
-double GRAlgorithm::kFilter(double input, k_filter_vars* k_vars)
+bool GRAlgorithm::kFilterStep(gr_message* msg, acc_k_vars* k_vars)
 {
-    k_vars->pc = k_vars->p + k_vars->proccess;
-    k_vars->g = k_vars->pc / (k_vars->pc + k_vars->volt);
-    k_vars->p = (1 - k_vars->g) * k_vars->pc;
-    k_vars->xp = k_vars->xe;
-    k_vars->zp = k_vars->xp;
-    k_vars->xe = k_vars->g * (input - k_vars->zp) + k_vars->xp;
-    
-    return k_vars->xe;
+    std::vector<double> tmpData;
+   _correctKFilter(msg->palm.acc, k_vars);
+    msg->palm.acc[0] = _kFilter(msg->palm.acc[0], &(k_vars->acc_k_x));
+    msg->palm.acc[0] = _kFilter(msg->palm.acc[1], &(k_vars->acc_k_y));
+    msg->palm.acc[0] = _kFilter(msg->palm.acc[2], &(k_vars->acc_k_z));
 }
+/*
+bool GRAlgorithm::setUpKfilterCoord(std::vector<std::vector<double> > acumulated_data, acc_k_vars* k_vars)
+{
 
+}
+bool kFilterStepCoord(std::vector<double> coord, )*/
 /*compute pitch roll and yaw from quaternion
  */
 std::vector<double> GRAlgorithm::_computeAngles(std::vector<double> q)
@@ -207,10 +174,24 @@ std::vector<double> GRAlgorithm::_computeAngles(std::vector<double> q)
     return _angles;
 }
 
+/*Simplified kalman filter 
+ */
+double GRAlgorithm::_kFilter(double input, k_filter_vars* k_vars)
+{
+    k_vars->pc = k_vars->p + k_vars->proccess;
+    k_vars->g = k_vars->pc / (k_vars->pc + k_vars->volt);
+    k_vars->p = (1 - k_vars->g) * k_vars->pc;
+    k_vars->xp = k_vars->xe;
+    k_vars->zp = k_vars->xp;
+    k_vars->xe = k_vars->g * (input - k_vars->zp) + k_vars->xp;
+    
+    return k_vars->xe;
+}
+
 //Kfilter private help methods
 /* Standard deviation calculation
  */
-double GRAlgorithm::_stdev(std::vector<double>* input)
+double GRAlgorithm::_stDev(std::vector<double>* input)
 {
     double sum = std::accumulate(input->begin(), input->end(), 0.0);
     double mean = sum / input->size();
@@ -230,4 +211,44 @@ double GRAlgorithm::_stdev(std::vector<double>* input)
 double GRAlgorithm::_average(std::vector<double>* input)
 {
     double average = std::accumulate(input->begin(), input->end(), 0.0);
+}
+
+double GRAlgorithm::_stdErr(std::vector<double>* input)
+{
+    double tmpVar = 0.0;
+    tmpVar = _stDev(input);
+    return (tmpVar/sqrt((double)input->size()));
+}
+
+bool GRAlgorithm::_correctKFilter(std::vector<double> data, acc_k_vars* k_vars)
+{
+    _sliceAndPush(&(k_vars->acc_k_x.accumulated), data[0]);
+    k_vars->acc_k_x.accumulated;
+    _sliceAndPush(&(k_vars->acc_k_y.accumulated), data[1]);
+    k_vars->acc_k_y.accumulated;
+    _sliceAndPush(&(k_vars->acc_k_z.accumulated), data[2]);
+    k_vars->acc_k_z.accumulated;
+
+    k_vars->acc_k_x.volt = _stDev(&(k_vars->acc_k_x.accumulated));
+    k_vars->acc_k_y.volt = _stDev(&(k_vars->acc_k_y.accumulated));
+    k_vars->acc_k_z.volt = _stDev(&(k_vars->acc_k_z.accumulated));
+    
+    return 1;    
+}
+
+bool GRAlgorithm::_sliceAndPush(std::vector<double>* data, double val)
+{
+   // std::cout<<"slice data size  -->"<<data->size()<<std::endl;
+
+    for(int i=0; i<data->size(); i++)
+    {
+        if(i<2)
+        {    
+            data->at(i) = data->at(i+1);
+        }
+        else
+        {
+            data->at(i) = val;
+        }
+    }   
 }

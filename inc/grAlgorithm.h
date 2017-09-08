@@ -30,10 +30,11 @@ struct k_filter_vars //variables needet from simplified kalman
     double zp;
     double xe;
 
+    std::vector<double> accumulated;
     k_filter_vars()
     {
         volt = 0.0;
-        proccess = 0.0;
+        proccess = 0.5;
         pc = 0.0;
         g = 0.0;
         p = 1.0;
@@ -66,9 +67,10 @@ class GRAlgorithm :public GRGrt
 
         //simplified Kalman
         
-        bool setUpKfilter(GRConnection conn, acc_k_vars*, std::string, int );//TODO implement for fingers
-        double kFilter(double, k_filter_vars*);//simplified kalman 
-
+        bool setUpKfilter(GRConnection*, acc_k_vars*, int );//TODO implement for fingers
+        bool kFilterStep(gr_message*, acc_k_vars*);
+//        bool setUpKfilterCoord(std::vector<std::vector<double> >, acc_k_vars* );
+//        bool kFilterStepCoord(std::vector<double>, acc_k_vars*);
              
     private:
         double _roll, _pitch, _yaw;
@@ -86,8 +88,12 @@ class GRAlgorithm :public GRGrt
         std::unordered_map<std::string, GRMadgwick*> _madgwickObjects; //map for easier access of objects
 
         //kFilter help methods
-        double _stdev(std::vector<double>*);//standart deviation
+        double _kFilter(double, k_filter_vars*);//simplified kalman 
+        double _stDev(std::vector<double>*);//standart deviation
         double _average(std::vector<double>*);//average
+        double _stdErr(std::vector<double>*);
+        bool _correctKFilter(std::vector<double>, acc_k_vars*);
+        bool _sliceAndPush(std::vector<double>*, double);
 
 
 

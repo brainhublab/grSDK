@@ -1,11 +1,15 @@
 #ifndef GR_TRAJECTORY
 #define GR_TRAJECTORY
 
+#include <iostream>
+
 #include <vector>
 #include <cmath>
 #include "Eigen/Dense"
 #include "Eigen/Geometry"
 //#include "Eigen"
+#include "grAlgorithm.h"
+
 
 using Eigen::Vector3d;
 using Eigen::Quaterniond;
@@ -13,7 +17,7 @@ using  namespace Eigen;
 using namespace std;
 
 #define G  9.80665  // 9.000416 need to be 9.80665
-#define ACC_MULT 0.00409836065574 //0.244 //0.061
+#define ACC_MULT  0.061 //0.061
 #define FILTER_LOW 0
 
 class GRTrajectory
@@ -47,8 +51,18 @@ class GRTrajectory
         Eigen::Matrix4d _correctionMatrix; // correction matrix for callibration of accelerometer
         Eigen::Matrix4d _desiredMatrix; // desired matrix for calibration of accelerometer
         Eigen::Matrix4d _realMatrix;//matrix with real raw data from accelerometer
-
+        
+        Eigen::Vector3d _rotateVectorByQuaternion(Eigen::Vector3d , Eigen::Quaterniond );
         bool _setupGravityMatrices(); // setup method for correction matrix for accelerometer
+
+        GRAlgorithm _alg;
+
+        Eigen::Vector3d _drift_offset = Eigen::Vector3d(0.174, 0.0130, 0.208);
+        double _treshold;
+        std::vector<Eigen::Vector3d> _stationaryVelocities;
+        bool _stationary;
+        Eigen::Vector3d _drifRate;
+        
 };
 
 #endif
