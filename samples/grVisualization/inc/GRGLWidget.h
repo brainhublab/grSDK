@@ -13,36 +13,28 @@ class GRGLWidget : public QGLWidget
 public:
 	explicit GRGLWidget(QWidget *parent = 0);
 
-	void initializeGL();
+    void initializeGL(); // init properties as background color
+    void paintGL(); // set which items renderer needs to paint
+    void resizeGL(int w, int h); // resize and optimize image in renderer
 
-	void paintGL();
+    void renderTrajectory(bool b); // set new value to renderWithTrajectory variable
+    void renderLeftHand(bool b); // set new value to renderLeftHand variable
+    void renderRightHand(bool b); // set new value to renderRightHand variable
 
-	void resizeGL(int w, int h);
+    GRRenderer *getRenderer(); // returns pointer to renderer
 
-	void renderTrajectory(bool b);
+    // Like data keepers for each arm
+    GRHand leftArm = GRHand(true);
+    GRHand rightArm = GRHand(false);
 
-	void renderLeftHand(bool b);
-
-	void renderRightHand(bool b);
-
-	GRRenderer *getRenderer();
-
-	int R;
-	float x, y, z;
-	bool wired;
-	float ang;
-
-
-	GRHand leftArm = GRHand(true);
-	GRHand rightArm = GRHand(false);
 private:
 
-	GRRenderer renderer;
-	QTimer timer;
+    GRRenderer renderer; // paints scenes, hands, fingers etc.
+    QTimer updateTimer;
 	bool renderWithTrajectory = false,
 			renderWithLeftHand = true,
-			renderWithRightHand = true;
-	float angleX = 0.f, angleY = 0.f, angleZ = 0.f;
+            renderWithRightHand = true;
+    float angleX = 0.f, angleY = 0.f, angleZ = 0.f;
 
 };
 

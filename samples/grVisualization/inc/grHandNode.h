@@ -16,12 +16,12 @@ struct GRHandNode
 
 		struct GRHandNode *children = nullptr;
 
-		bool isLeft;
+        bool isLeft; // if this node is a node of left hand
+        // current euler angles of node
         float angleX = 0.f;
         float angleY = 0.f;
         float angleZ = 0.f;
-
-
+        // current rotation matrix of node
 		GLfloat matrix[16];
 
         float maxAngleX = 0, maxAngleY = 0, maxAngleZ = 0;

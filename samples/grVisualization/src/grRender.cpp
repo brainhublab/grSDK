@@ -11,11 +11,14 @@
 }
 */
 // class methods
+
+
 GRRenderer::GRRenderer()
 {
         initGL( );
         setViewport( SCREEN_WIDTH, SCREEN_HEIGHT );
 }
+
 bool GRRenderer::initGL()
 {
         glShadeModel( GL_SMOOTH );
@@ -26,6 +29,9 @@ bool GRRenderer::initGL()
         glHint( GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST );
         return true;
 }
+/*
+ * Sets viewport window
+*/
 bool GRRenderer::setViewport( int width, int height )
 {
         GLfloat ratio;
@@ -52,9 +58,13 @@ bool GRRenderer::setViewport( int width, int height )
         // enabling transparency
         glEnable (GL_BLEND);
         glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-glLineWidth(2.f);
+        glLineWidth(2.f);
         return true;
 }
+
+/*
+ * Viewport data accessors
+*/
 int GRRenderer::getWidth()
 {
         return data.screen.width;
@@ -63,11 +73,18 @@ int GRRenderer::getHeight()
 {
         return data.screen.height;
 }
-;
+/*
+ * just update caller
+*/
 bool GRRenderer::update()
 {
     return true;
 }
+
+/*
+ * arm is GRHand pointer with
+ * renders Trajectory of arm in perspective of passed angles
+*/
 bool GRRenderer::renderTrajectory( GRHand *arm, float angleX, float angleY, float angleZ )
 {
         const std::vector< std::map< char, float> > & trajectory = arm->getTrajectoryAngles();
@@ -95,6 +112,10 @@ bool GRRenderer::renderTrajectory( GRHand *arm, float angleX, float angleY, floa
         }
         return true;
 }
+
+/*
+ * Draws scene in perspective of passed angles
+*/
 bool GRRenderer::drawScene(float angleX, float angleY, float angleZ)
 {
         glLoadIdentity( );
@@ -182,6 +203,12 @@ bool GRRenderer::drawScene(float angleX, float angleY, float angleZ)
         glEnd();
         return true;
 }
+
+/*
+ * hand is a pointer to Node of GRHand which represents hand
+ * Draws fingers of this hand
+*/
+
 bool GRRenderer::drawFingers(GRHandNode *hand)
 {
   if(!hand)
@@ -223,6 +250,12 @@ bool GRRenderer::drawFingers(GRHandNode *hand)
   drawFinger(hand, fingerDistance, 4);
   return true;
 }
+
+
+/*
+ * arm is a pointer to Node of GRHand which represents arm
+ * Draws arm, hand and fingers using methods above
+*/
 bool GRRenderer::renderArm( GRHandNode *arm, float angleX, float angleY, float angleZ)
 {
         if(!arm)
@@ -280,6 +313,12 @@ bool GRRenderer::renderArm( GRHandNode *arm, float angleX, float angleY, float a
         glPopMatrix();
         return true;
 }
+
+/*
+ * Draws fingers of this hand.
+ * hand is a pointer to Node of GRHand which represents hand,
+ * fingerDistance is distance between fingers
+*/
 bool GRRenderer::drawFinger( GRHandNode *hand, float fingerDistance, int fingerIndex )
 {
         struct GRHandNode *phalange = &( *hand ).children[ fingerIndex ];
@@ -321,6 +360,9 @@ bool GRRenderer::drawFinger( GRHandNode *hand, float fingerDistance, int fingerI
         glTranslatef( fingerDistance, 0.f, 0.f );
         return true;
 }
+/*
+ * Draws a cube with x y z size.
+*/
 bool GRRenderer::createCube( float x, float y, float z )
 {
         float halfX = x / 2, halfZ = z / 2;
@@ -380,6 +422,9 @@ bool GRRenderer::createCube( float x, float y, float z )
         glEnd( );
         return true;
 }
+/*
+ * Draws right hand with (x y z) size
+*/
 bool GRRenderer::drawRightHand( float x, float y, float z )
 {
         float halfBase = 0.25f * x; // base is slightly narrower than full hand's width
@@ -466,6 +511,10 @@ bool GRRenderer::drawRightHand( float x, float y, float z )
         glEnd( );
         return true;
 }
+
+/*
+ * Draws left hand with (x y z) size
+*/
 bool GRRenderer::drawLeftHand( float x, float y, float z )
 {
         float halfBase = 0.25f * x; // base is slightly narrower than full hand's width
@@ -558,6 +607,16 @@ bool GRRenderer::drawLeftHand( float x, float y, float z )
         glEnd( );
         return true;
 }
+
+/*
+ * Changes width of rendered lines
+*/
+bool GRRenderer::setLineWidth(float f)
+{
+    glLineWidth(f);
+    return true;
+}
+
 bool GRRenderer::createSphere( float radius, int slices, int stacks )
 {
         GLUquadric *quad = gluNewQuadric( );
@@ -638,6 +697,10 @@ bool GRRenderer::createFrustum( float radius, float height, float ratio = 1 ) //
         return true;
 }
 
+/*
+ * Sets Hand Lines color
+ * red, green, blue, alpha
+*/
 bool GRRenderer::setLinesColor(int r, int g, int b, int a)
 {
     data.linesColor.a = r;
@@ -647,6 +710,11 @@ bool GRRenderer::setLinesColor(int r, int g, int b, int a)
     return true;
 }
 
+
+/*
+ * Sets Hand Planes color
+ * red, green, blue, alpha
+*/
 bool GRRenderer::setPlaneColor(int r, int g, int b, int a)
 {
     data.planeColor.a = r;

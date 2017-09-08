@@ -1567,6 +1567,7 @@ build/grAlgorithm.o: ../../src/grAlgorithm.cpp ../../inc/grAlgorithm.h \
 		../../externAssets/grt/include/GRT/ClusteringModules/ClusterTree/ClusterTreeNode.h \
 		../../externAssets/grt/include/GRT/ClusteringModules/HierarchicalClustering/HierarchicalClustering.h \
 		../../externAssets/grt/include/GRT/ContextModules/Gate.h \
+		../../inc/grConnection.h \
 		../../inc/grDevice.h \
 		../../inc/grMadgwick.h \
 		../../inc/grGrt.h \

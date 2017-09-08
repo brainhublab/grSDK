@@ -4,13 +4,8 @@
 GRGLWidget::GRGLWidget(QWidget *parent) :
     QGLWidget(parent)
 {
-    this->R = 1;
-    this->wired = false;
-    this->ang = 0.5;
-
-
-    connect( &timer, SIGNAL(timeout()), this, SLOT(updateGL()) );
-    timer.start(16);
+    connect( &updateTimer, SIGNAL(timeout()), this, SLOT(updateGL()) );
+    updateTimer.start(16);
 }
 
 void GRGLWidget::initializeGL()
