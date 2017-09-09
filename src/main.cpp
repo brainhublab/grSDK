@@ -43,17 +43,24 @@ int main (int argc, const char * argv[])
     gr_alg_message alg_msg;
     //device.address = "98:D3:32:10:AC:59";
     std::map<int, device_t> devices;
-    conn.getAvalibleDevices();
-    conn.setActiveDevice(1);
-    conn.connectSocket(1);
+    int dev_id;
+    devices = conn.getAvalibleDevices();
+    for(std::map<int, device_t>::iterator it = devices.begin(); it != devices.end(); it++)
+    {
+        if(it->second.name == "GR[L]")
+        {
+            dev_id = it->first;
+        }
+    }
+    conn.setActiveDevice(dev_id);
+    conn.connectSocket(dev_id);
 
     GRAlgorithm alg;
     alg.setupMadgwick(140, 140, 140, 140, 140, 180); //need to check
-    
-    acc_k_vars k_vars;
-    alg.setUpKfilter(&conn, &k_vars, 1);
 
-    //
+    acc_k_vars k_vars;
+    // alg.setUpKfilter(&conn, &k_vars, dev_id);
+
     std::unordered_map<std::string, gr_message> data;
     FILE* f, *fa;
     f = fopen("firs.txt", "w");
@@ -67,8 +74,8 @@ int main (int argc, const char * argv[])
     {
 
         //      std::cout << "Getting data..\n";
-        conn.getData(1, &msg);
-      alg.kFilterStep(&msg, &k_vars);
+        conn.getData(dev_id, &msg);
+        // alg.kFilterStep(&msg, &k_vars);
         //        std::cout << "Got data!\n";
         if(!msg.imus["palm"]->acc.empty() && itr > 10)
         {
@@ -82,13 +89,13 @@ int main (int argc, const char * argv[])
                  }
 
                  std::cout<<std::endl;
-                 */  
+                 */
             trajectory = traj.getNewPosByIntegrating(msg.palm.acc, alg_msg.palm, msg.palm.time_stamp);
 
-      //      printf( "%s %f %f %f \n","trjectory", trajectory[0], trajectory[1], trajectory[2]); 
+            //      printf( "%s %f %f %f \n","trjectory", trajectory[0], trajectory[1], trajectory[2]);
             //   std::cout<<msg.palm.acc[0]<<" "<<msg.palm.acc[1]<<" "<<msg.palm.acc[2]<<std::endl;
-            fprintf(f, "%f %f %f \n", trajectory[0], trajectory[1], trajectory[2]); 
-            fprintf(fa, "%f %f %f \n", msg.palm.acc[0], msg.palm.acc[1], msg.palm.acc[2]); 
+            fprintf(f, "%f %f %f \n", trajectory[0], trajectory[1], trajectory[2]);
+            fprintf(fa, "%f %f %f \n", msg.palm.acc[0], msg.palm.acc[1], msg.palm.acc[2]);
             //    std::cout<<std::endl;
         }
         msg.palm.gyro.clear();
@@ -102,7 +109,7 @@ int main (int argc, const char * argv[])
            time =  data["palm"].time_stamp;
            trajectory = traj.getNewPosByVelocity(acc,time);
            std::cout<<acc[0]<<" "<<acc[1]<<" "<<acc[2]<<std::endl;
-           fprintf(f, "%f %f %f \n", trajectory[0], trajectory[1], trajectory[2]); 
+           fprintf(f, "%f %f %f \n", trajectory[0], trajectory[1], trajectory[2]);
            }
            */
 

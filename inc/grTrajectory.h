@@ -27,14 +27,15 @@ class GRTrajectory
         ~GRTrajectory(); //destructor
         bool calibrateGravityMatrix(std::vector<double>, int); //gravity matrix callibration method
         bool calculateCorrectionMatrix(); //calculation of correction graity matrix
-        vector<double> getNewPosByVelocity(vector<double>, vector<double>, unsigned long); //getting new position 
+        vector<double> getNewPosByVelocity(vector<double>, vector<double>, unsigned long); //getting new position
         vector<double> getNewPosByIntegrating(vector<double>, vector<double>, unsigned long); //getting of new position
         vector<double> getNewPos(vector<double> acc, vector<double>, unsigned long);//use both methods
     private:
         Eigen::Vector3d pos_last; //last stored position
+        Eigen::Vector3d pos_last_last; //last last stored position
         Eigen::Vector3d velocity_last; //last stored velocity
         unsigned long timestamp_last; //last stored timestamp
-        bool first_call; //arbitary variable for initialization of algorithms 
+        bool first_call; //arbitary variable for initialization of algorithms
 
         Eigen::Vector3d _getNewPosByVelocity(Eigen::Vector3d, unsigned long); //method in two step gettng of position
         Eigen::Vector3d _getNewPosByIntegrating(Eigen::Vector3d, unsigned long, Eigen::Quaterniond); //double integration position
@@ -51,7 +52,7 @@ class GRTrajectory
         Eigen::Matrix4d _correctionMatrix; // correction matrix for callibration of accelerometer
         Eigen::Matrix4d _desiredMatrix; // desired matrix for calibration of accelerometer
         Eigen::Matrix4d _realMatrix;//matrix with real raw data from accelerometer
-        
+
         Eigen::Vector3d _rotateVectorByQuaternion(Eigen::Vector3d , Eigen::Quaterniond );
         bool _setupGravityMatrices(); // setup method for correction matrix for accelerometer
 
@@ -62,7 +63,7 @@ class GRTrajectory
         std::vector<Eigen::Vector3d> _stationaryVelocities;
         bool _stationary;
         Eigen::Vector3d _drifRate;
-        
+
 };
 
 #endif

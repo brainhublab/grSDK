@@ -23,7 +23,7 @@ set(SOURCES "${SOURCE_DIR}/*.cpp")
 file(GLOB CPPS ${SOURCES})
 #TODO add entries for samples maeby
 set(CXX_COMPILE_FLAGS "-g -std=c++11 -std=gnu++11 -pthread" )
-set(CXX_LINK_FLAGS " -lncurses -ltinfo  -lstdc++ -lbluetooth -lboost_iostreams -lboost_system -lboost_filesystem")
+set(CXX_LINK_FLAGS " -lstdc++ -lbluetooth -lboost_iostreams -lboost_system -lboost_filesystem")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_COMPILE_FLAGS} ${CXX_LINK_FLAGS}")
 
 include_directories(${HEADER_DIR})
