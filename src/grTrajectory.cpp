@@ -161,7 +161,7 @@ Eigen::Vector3d GRTrajectory::_getNewPosByIntegrating(Eigen::Vector3d acc, unsig
     acc = this->_convertAccToG(acc);
     std::cout << "toG: " << acc(0) << " " << acc(1) << " " << acc(2) << std::endl;
     acc = acc * G; //converting from G units to M/s^2
-    // acc = _rotateVectorByQuaternion(acc, q);
+   // acc = _rotateVectorByQuaternion(acc, q);
 
     acc = acc - _gravity;
     acc_tmp = acc;
@@ -175,7 +175,7 @@ Eigen::Vector3d GRTrajectory::_getNewPosByIntegrating(Eigen::Vector3d acc, unsig
 
     velocity = this->velocity_last + acc* dt;
 
-    if(stationaryNew == false && this->_stationary == true)
+   if(stationaryNew == false && this->_stationary == true)
     {
         this->_drifRate =(this->_stationaryVelocities.back() ) / this->_stationaryVelocities.size();
         this->_stationaryVelocities.clear();

@@ -43,23 +43,25 @@ int main (int argc, const char * argv[])
     gr_alg_message alg_msg;
     //device.address = "98:D3:32:10:AC:59";
     std::map<int, device_t> devices;
-    int dev_id;
     devices = conn.getAvalibleDevices();
-    for(std::map<int, device_t>::iterator it = devices.begin(); it != devices.end(); it++)
+    int devId;
+    for(std::map<int, device_t>::iterator it=devices.begin(); it!=devices.end(); it++)
     {
-        if(it->second.name == "GR[L]")
+        if(it->second.name == "GR[R]")
         {
-            dev_id = it->first;
+            std::cout<<it->first<<" in iteration---------------------------------------------"<<std::endl;
+            devId = it->first;
         }
     }
-    conn.setActiveDevice(dev_id);
-    conn.connectSocket(dev_id);
 
+    std::cout<<devId<<"DEV ID"<<std::endl;
+    conn.setActiveDevice(devId);
+    conn.connectSocket(devId);
     GRAlgorithm alg;
     alg.setupMadgwick(140, 140, 140, 140, 140, 0); //need to check
 
     acc_k_vars k_vars;
-    // alg.setUpKfilter(&conn, &k_vars, dev_id);
+  //  alg.setUpKfilter(&conn, &k_vars, devId);
 
     std::unordered_map<std::string, gr_message> data;
     FILE* f, *fa;
@@ -74,9 +76,9 @@ int main (int argc, const char * argv[])
     {
 
         //      std::cout << "Getting data..\n";
-        conn.getData(dev_id, &msg);
-        // alg.kFilterStep(&msg, &k_vars);
-        //        std::cout << "Got data!\n";
+        conn.getData(devId, &msg);
+//      alg.kFilterStep(&msg, &k_vars);
+       //        std::cout << "Got data!\n";
         if(!msg.imus["palm"]->acc.empty() && itr > 10)
         {
             //       std::cout<<"data -->";
@@ -103,6 +105,8 @@ int main (int argc, const char * argv[])
         msg.palm.gyro.clear();
         msg.palm.acc.clear();
         msg.palm.mag.clear();
+
+        alg_msg.clear();
 
         /*
            if(!data.empty())
