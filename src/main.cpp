@@ -56,7 +56,7 @@ int main (int argc, const char * argv[])
     conn.connectSocket(dev_id);
 
     GRAlgorithm alg;
-    alg.setupMadgwick(140, 140, 140, 140, 140, 180); //need to check
+    alg.setupMadgwick(140, 140, 140, 140, 140, 0); //need to check
 
     acc_k_vars k_vars;
     // alg.setUpKfilter(&conn, &k_vars, dev_id);
@@ -81,6 +81,7 @@ int main (int argc, const char * argv[])
         {
             //       std::cout<<"data -->";
 
+            std::cout << msg.palm.gyro[0] << " " << msg.palm.gyro[1] << " " << msg.palm.gyro[2] << std::endl;
             alg.madgwickUpdate(&msg, &alg_msg, 1, "flag");
             //        std::cout<<"QUANTERNION---->";
             /*   for(int i =0;i<4;i++)
@@ -94,7 +95,8 @@ int main (int argc, const char * argv[])
 
             //      printf( "%s %f %f %f \n","trjectory", trajectory[0], trajectory[1], trajectory[2]);
             //   std::cout<<msg.palm.acc[0]<<" "<<msg.palm.acc[1]<<" "<<msg.palm.acc[2]<<std::endl;
-            fprintf(f, "%f %f %f \n", trajectory[0], trajectory[1], trajectory[2]);
+            fprintf(f, "%f %f %f %f %f %f %f \n", trajectory[0], trajectory[1], trajectory[2],
+                    alg_msg.palm[0], alg_msg.palm[1], alg_msg.palm[2], alg_msg.palm[3]);
             fprintf(fa, "%f %f %f \n", msg.palm.acc[0], msg.palm.acc[1], msg.palm.acc[2]);
             //    std::cout<<std::endl;
         }
