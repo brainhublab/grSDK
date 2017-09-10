@@ -34,7 +34,7 @@ struct k_filter_vars //variables needet from simplified kalman
     k_filter_vars()
     {
         volt = 0.0;
-        proccess = 0.5;
+        proccess = 0.05;
         pc = 0.0;
         g = 0.0;
         p = 1.0;

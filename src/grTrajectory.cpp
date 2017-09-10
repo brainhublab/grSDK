@@ -156,46 +156,48 @@ Eigen::Vector3d GRTrajectory::_getNewPosByIntegrating(Eigen::Vector3d acc, unsig
     acc = acc * G; //converting from G units to M/s^2
     acc = _rotateVectorByQuaternion(acc, q); 
     // acc = _rotateAcc(acc, q); //rotation
-    
+    std::cout<<dt<<std::endl;
     acc = acc - _gravity;
     acc_tmp = acc;
-   
+
     acc = acc - _acc_last;
 
     velocity = this->velocity_last + acc* dt;
-   
-   bool stationaryNew = acc.norm() < _treshold;
 
-  if(stationaryNew == false && _stationary == true)
-  {
-      
-       _drifRate =( _stationaryVelocities.back() ) / _stationaryVelocities.size();
-       _stationaryVelocities.clear();
-      
-  }
- else if(stationaryNew == true)
- {
-    _stationaryVelocities.push_back(velocity);
-    velocity -= velocity;
- } 
-// std::cout<<"stationaryNew "<<stationaryNew<<std::endl;
- //std::cout<<_drifRate<<std::endl;
-   _stationary = stationaryNew;
- 
-  // pos_next = this->pos_last + (velocity_last * dt + 0.5 * acc * (dt * dt));
-   pos_next = this->pos_last + velocity * dt;
-   pos_next -= pos_last;
+    bool stationaryNew = acc.norm() < _treshold;
+    if(stationaryNew == false && _stationary == true)
+    {
+        _drifRate =( _stationaryVelocities.back() ) / _stationaryVelocities.size();
+        _stationaryVelocities.clear();
+
+    }
+    else if(stationaryNew == true)
+    {
+        _stationaryVelocities.push_back(velocity);
+        velocity -= velocity;
+    } 
+    // std::cout<<"stationaryNew "<<stationaryNew<<std::endl;
+    //std::cout<<_drifRate<<std::endl;
+    _stationary = stationaryNew;
+    if(_stationary == false)
+    {
+        velocity -= _drifRate;
+    }
+    pos_next = this->pos_last + (velocity_last * dt + 0.5 * acc * (dt * dt));
+     //pos_next = this->pos_last + velocity * dt;
+    //pos_next = pos_last + velocity_last * dt + (acc * (dt * dt) / 2);
+    //pos_next -= pos_last;
     this->velocity_last = velocity;//this->velocity_last + acc_ms * dt;
     _acc_last = acc_tmp;
     this->pos_last = pos_next;
     this->timestamp_last = timestamp;
-    
+
 
     return pos_next;// -= _drift_offset);
 }
 
 /* Private method for converting of Eigen::Vector3d to sdt::vector
- */
+*/
 vector<double> GRTrajectory::_toStdVector(Eigen::Vector3d in)
 {
     vector<double> out = {in(0), in(1), in(2)};

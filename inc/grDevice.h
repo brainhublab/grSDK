@@ -153,6 +153,19 @@ struct gr_alg_message//gr message for algorithms
         nodes["palm"] = &palm;
     }
 
+    bool clear()
+    {
+
+        pinky.clear();
+        ring.clear();
+        middle.clear();
+        index.clear();
+        thumb.clear();
+        palm.clear();
+
+        return true;
+    }
+
 };
 
 #endif

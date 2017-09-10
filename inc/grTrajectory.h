@@ -17,7 +17,7 @@ using  namespace Eigen;
 using namespace std;
 
 #define G  9.80665  // 9.000416 need to be 9.80665
-#define ACC_MULT  0.061 //0.061
+#define ACC_MULT  0.061
 #define FILTER_LOW 0
 
 class GRTrajectory
