@@ -17,7 +17,7 @@ GRTrajectory::GRTrajectory() //constructor
     this->velocity_last(2) = 0;
     _setupGravityMatrices();
     _stationary = false;
-    _treshold = 0.07;
+    _treshold = 0.7;
 }
 /*destructor
  * */
@@ -98,15 +98,12 @@ Eigen::Vector3d GRTrajectory::_convertAccToG(Eigen::Vector3d in) //TODO need to 
 Eigen::Vector3d GRTrajectory::_rotateAcc(Eigen::Vector3d acc, Eigen::Quaterniond q)
 {
 
-    Eigen::Quaterniond acc_q, inversed_q;
-   q = q.conjugate();
-   inversed_q = q;
-   inversed_q = inversed_q.conjugate();
+    Eigen::Quaterniond acc_q;
 
     acc_q.w() = 0;
     acc_q.vec() = acc;
 
-    Eigen::Quaterniond out_q = (q * acc_q) * inversed_q;
+    Eigen::Quaterniond out_q = q * acc_q * q.conjugate();
     Eigen::Vector3d out = out_q.vec();
     // std::cout<<"out quanternion ----------> "<<out_q.vec()<<std::endl;
     // std::cout<<"out vector ------->>>>>"<<out<<std::endl;
@@ -156,44 +153,46 @@ Eigen::Vector3d GRTrajectory::_getNewPosByIntegrating(Eigen::Vector3d acc, unsig
     Vector4d acc4d;
     Eigen::Vector3d velocity, pos_next, acc_tmp;
     double dt = (timestamp - this->timestamp_last) / 1000.f;
-
-    std::cout << "raw: " << acc(0) << " " << acc(1) << " " << acc(2) << std::endl;
+//    std::cout << "raw: " << acc(0) << " " << acc(1) << " " << acc(2) << std::endl;
     acc = this->_convertAccToG(acc);
-    std::cout << "toG: " << acc(0) << " " << acc(1) << " " << acc(2) << std::endl;
+//    std::cout << "toG: " << acc(0) << " " << acc(1) << " " << acc(2) << std::endl;
     acc = acc * G; //converting from G units to M/s^2
-   // acc = _rotateVectorByQuaternion(acc, q);
-
+//    acc = _rotateVectorByQuaternion(acc, q);
+    acc = _rotateAcc(acc, q);
+  //  std::cout << "rotate acc : " << acc(0) << " " << acc(1) << " " << acc(2) << std::endl;
     acc = acc - _gravity;
+//   std::cout << "extract gravityto : " << acc(0) << " " << acc(1) << " " << acc(2) << std::endl;
     acc_tmp = acc;
-    acc = acc - _acc_last;
-
+    std::cout<<acc(0)<<" ";
+    // acc = acc - _acc_last;
+    std::cout<<acc(0)<<std::endl;
     bool stationaryNew = acc.norm() < this->_treshold;
 
-    std::cout << "st: " << stationaryNew << std::endl;
+   // std::cout << "st: " << acc.norm() << std::endl;
+   // std::cout << "st: " << stationaryNew << std::endl;
 
     this->_stationary = stationaryNew;
 
     velocity = this->velocity_last + acc* dt;
 
-   if(stationaryNew == false && this->_stationary == true)
-    {
-        this->_drifRate =(this->_stationaryVelocities.back() ) / this->_stationaryVelocities.size();
-        this->_stationaryVelocities.clear();
-    }
-    else if(stationaryNew == true)
-    {
-        this->_stationaryVelocities.push_back(velocity);
-        velocity -= velocity;
-    }
+    // if(stationaryNew == false && this->_stationary == true)
+    // {
+    //     this->_drifRate =(this->_stationaryVelocities.back() ) / this->_stationaryVelocities.size();
+    //     this->_stationaryVelocities.clear();
+    // }
+    // else if(stationaryNew == true)
+    // {
+    //     this->_stationaryVelocities.push_back(velocity);
+    //     velocity -= velocity;
+    // }
 
-    if(!stationaryNew)
-    {
-        velocity -= this->_drifRate;
-    }
+    // if(!stationaryNew)
+    // {
+    //     velocity -= this->_drifRate;
+    // }
 
     pos_next = this->pos_last + velocity * dt;
-
-    // pos_next = 2 * this->pos_last - this->pos_last_last + (dt * dt) * acc;
+    //pos_next = 2 * this->pos_last - this->pos_last_last + (dt * dt) * acc;
 
     this->velocity_last = velocity;
     this->_acc_last = acc_tmp;
@@ -268,7 +267,7 @@ vector<double> GRTrajectory::getNewPosByVelocity(vector<double> acc, vector<doub
  */
 vector<double> GRTrajectory::getNewPosByIntegrating(vector<double> acc, vector<double> q, unsigned long timestamp)
 {
-    std::cout << "rawraw: " << acc[0] << " " << acc[1] << " " << acc[2] << std::endl;
+    //  std::cout << "rawraw: " << acc[0] << " " << acc[1] << " " << acc[2] << std::endl;
     if(this->timestamp_last == 0)
     {
         this->timestamp_last = timestamp;

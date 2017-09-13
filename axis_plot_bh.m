@@ -1,15 +1,16 @@
 pkg load quaternion;
 close all;
-DATA_FILE = "/home/peio/src/gestusSDK/build/firs.txt";
+DATA_FILE = "/home/h3lgi/code/grSDK/build/firs.txt";
 data = load(DATA_FILE);
-plot3(0, 0, 0, '-o')
+plot3(data(1), data(2), data(3), '-o');
 line(data(:,1), data(:,2), data(:,3));
 
-x = quaternion(1, 0, 0);
-y = quaternion(0, 1, 0);
-z = quaternion(0, 0, 1);
 
-for i=1:rows(data)
+x = quaternion(0.02, 0, 0);
+y = quaternion(0, 0.02, 0);
+z = quaternion(0, 0, 0.02);
+
+for i=1:2:rows(data)
   d = data(i,:);
   q = quaternion(d(:,4), d(:,5), d(:,6), d(:,7));
 
@@ -30,8 +31,11 @@ for i=1:rows(data)
   line(axis_x(:,1), axis_x(:,2), axis_x(:,3), 'Color', 'red');
   line(axis_y(:,1), axis_y(:,2), axis_y(:,3), 'Color', 'green');
   line(axis_z(:,1), axis_z(:,2), axis_z(:,3), 'Color', 'blue');
+
 end
 
+
+axis("equal");
 ylabel("y axis");
 xlabel("x axis");
 zlabel("z axis");

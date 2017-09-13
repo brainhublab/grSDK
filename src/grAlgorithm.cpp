@@ -74,7 +74,6 @@ bool GRAlgorithm::madgwickUpdate(gr_message* message, gr_alg_message* result, in
         else if(it->first == "palm")
         {
             result->palm = rotations;
-            std::cout<<it->first<<"IN palm reading of madgwick rotations"<<std::endl;
         }
         else
         {

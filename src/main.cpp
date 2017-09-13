@@ -49,7 +49,7 @@ int main (int argc, const char * argv[])
     {
         if(it->second.name == "GR[R]")
         {
-            std::cout<<it->first<<" in iteration---------------------------------------------"<<std::endl;
+        //    std::cout<<it->first<<" in iteration---------------------------------------------"<<std::endl;
             devId = it->first;
         }
     }
@@ -58,7 +58,7 @@ int main (int argc, const char * argv[])
     conn.setActiveDevice(devId);
     conn.connectSocket(devId);
     GRAlgorithm alg;
-    alg.setupMadgwick(140, 140, 140, 140, 140, 0); //need to check
+    alg.setupMadgwick(140, 140, 140, 140, 140, 220); //need to check
 
     acc_k_vars k_vars;
   //  alg.setUpKfilter(&conn, &k_vars, devId);
@@ -83,7 +83,7 @@ int main (int argc, const char * argv[])
         {
             //       std::cout<<"data -->";
 
-            std::cout << msg.palm.gyro[0] << " " << msg.palm.gyro[1] << " " << msg.palm.gyro[2] << std::endl;
+         //   std::cout << msg.palm.gyro[0] << " " << msg.palm.gyro[1] << " " << msg.palm.gyro[2] << std::endl;
             alg.madgwickUpdate(&msg, &alg_msg, 1, "flag");
             //        std::cout<<"QUANTERNION---->";
             /*   for(int i =0;i<4;i++)
