@@ -153,23 +153,23 @@ Eigen::Vector3d GRTrajectory::_getNewPosByIntegrating(Eigen::Vector3d acc, unsig
     Vector4d acc4d;
     Eigen::Vector3d velocity, pos_next, acc_tmp;
     double dt = (timestamp - this->timestamp_last) / 1000.f;
-//    std::cout << "raw: " << acc(0) << " " << acc(1) << " " << acc(2) << std::endl;
+    // std::cout << "raw: " << acc(0) << " " << acc(1) << " " << acc(2) << std::endl;
     acc = this->_convertAccToG(acc);
-//    std::cout << "toG: " << acc(0) << " " << acc(1) << " " << acc(2) << std::endl;
+    // std::cout << "toG: " << acc(0) << " " << acc(1) << " " << acc(2) << std::endl;
     acc = acc * G; //converting from G units to M/s^2
-//    acc = _rotateVectorByQuaternion(acc, q);
+    // acc = _rotateVectorByQuaternion(acc, q);
     acc = _rotateAcc(acc, q);
-  //  std::cout << "rotate acc : " << acc(0) << " " << acc(1) << " " << acc(2) << std::endl;
+    // std::cout << "rotate acc : " << acc(0) << " " << acc(1) << " " << acc(2) << std::endl;
     acc = acc - _gravity;
-//   std::cout << "extract gravityto : " << acc(0) << " " << acc(1) << " " << acc(2) << std::endl;
+    std::cout << "acc: " << acc(0) << " " << acc(1) << " " << acc(2) << std::endl;
     acc_tmp = acc;
-    std::cout<<acc(0)<<" ";
+    // std::cout<<acc(0)<<" ";
     // acc = acc - _acc_last;
-    std::cout<<acc(0)<<std::endl;
+    // std::cout<<acc(0)<<std::endl;
     bool stationaryNew = acc.norm() < this->_treshold;
 
-   // std::cout << "st: " << acc.norm() << std::endl;
-   // std::cout << "st: " << stationaryNew << std::endl;
+    // std::cout << "st: " << acc.norm() << std::endl;
+    // std::cout << "st: " << stationaryNew << std::endl;
 
     this->_stationary = stationaryNew;
 
@@ -191,8 +191,8 @@ Eigen::Vector3d GRTrajectory::_getNewPosByIntegrating(Eigen::Vector3d acc, unsig
     //     velocity -= this->_drifRate;
     // }
 
-    pos_next = this->pos_last + velocity * dt;
-    //pos_next = 2 * this->pos_last - this->pos_last_last + (dt * dt) * acc;
+    // pos_next = this->pos_last + velocity * dt;
+    pos_next = 2 * this->pos_last - this->pos_last_last + (dt * dt) * acc;
 
     this->velocity_last = velocity;
     this->_acc_last = acc_tmp;
@@ -201,7 +201,7 @@ Eigen::Vector3d GRTrajectory::_getNewPosByIntegrating(Eigen::Vector3d acc, unsig
     this->timestamp_last = timestamp;
 
 
-    return pos_next;// -= _drift_offset);
+    return pos_next; // -= _drift_offset);
 }
 
 /* Private method for converting of Eigen::Vector3d to sdt::vector
