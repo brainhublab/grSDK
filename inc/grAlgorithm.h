@@ -18,6 +18,9 @@
 #include <grDevice.h>
 #include <grMadgwick.h>
 #include <grGrt.h>
+
+
+#include "Eigen/Dense"
 using namespace std;
 struct k_filter_vars //variables needet from simplified kalman 
 {
@@ -67,8 +70,8 @@ class GRAlgorithm :public GRGrt
 
         //simplified Kalman
         
-        bool setUpKfilter(GRConnection*, acc_k_vars*, int );//TODO implement for fingers
-        bool kFilterStep(gr_message*, acc_k_vars*);
+        bool setUpKfilter(std::vector<Eigen::Vector3d>, acc_k_vars*);//TODO implement for fingers
+        Eigen::Vector3d kFilterStep(Eigen::Vector3d, acc_k_vars*);
 //        bool setUpKfilterCoord(std::vector<std::vector<double> >, acc_k_vars* );
 //        bool kFilterStepCoord(std::vector<double>, acc_k_vars*);
              

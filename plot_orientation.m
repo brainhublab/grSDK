@@ -1,6 +1,6 @@
 pkg load quaternion;
 close all;
-DATA_FILE = "/home/peio/src/gestusSDK/build/firs.txt";
+DATA_FILE = "/home/h3lgi/code/grSDK/build/firs.txt";
 data = load(DATA_FILE);
 
 axis equal

@@ -18,6 +18,8 @@ GRTrajectory::GRTrajectory() //constructor
     _setupGravityMatrices();
     _stationary = false;
     _treshold = 0.7;
+    isComplete = false;
+    isready = false;
 }
 /*destructor
  * */
@@ -204,6 +206,83 @@ Eigen::Vector3d GRTrajectory::_getNewPosByIntegrating(Eigen::Vector3d acc, unsig
     return pos_next; // -= _drift_offset);
 }
 
+vector<double> GRTrajectory::getNewPosByRunge(vector<double> acc_in, vector<double> q_in, unsigned long timestamp)
+{
+     if(this->timestamp_last == 0)
+    {
+        this->timestamp_last = timestamp;
+        Eigen::Quaterniond q_tmp;
+        q_tmp = _toQuaterniond(q_in);
+        Eigen::Vector3d acc_tmp;
+        acc_tmp = _toVector3d(acc_in);
+        acc_tmp = this->_convertAccToG(acc_tmp);
+        acc_tmp = acc_tmp * G; //converting from G units to M/s^2
+       // acc_tmp = _rotateVectorByQuaternion(acc_tmp, q_tmp);
+         acc_tmp = _rotateAcc(acc_tmp, q_tmp); //rotation
+
+        acc_tmp = acc_tmp - _gravity;
+
+        this->_acc_last = acc_tmp;
+        pos_last *= 0;
+        return this->_toStdVector(this->pos_last);
+    }
+    Eigen::Vector3d acc;
+    Eigen::Quaterniond q;
+
+    acc = this->_toVector3d(acc_in);
+    q = this->_toQuaterniond(q_in);
+
+    Eigen::Vector3d acc_tmp;
+    //std::cout << "Position last: " << pos_last << std::endl;
+    double dt = (timestamp - this->timestamp_last) / 1000.f;
+    // std::cout << "raw: " << acc(0) << " " << acc(1) << " " << acc(2) << std::endl;
+  //  acc = this->_convertAccToG(acc);
+     std::cout << "toG: " << acc(0) << " " << acc(1) << " " << acc(2) << std::endl;
+   // acc = acc * G; //converting from G units to M/s^2
+    //std::cout << "toG: " << acc(0) << " " << acc(1) << " " << acc(2) << std::endl;
+    // acc = _rotateVectorByQuaternion(acc, q);
+   // acc = _rotateAcc(acc, q);
+    // std::cout << "rotate acc : " << acc(0) << " " << acc(1) << " " << acc(2) << std::endl;
+   // acc = acc - _gravity;
+ //   std::cout << "acc: " << acc(0) << " " << acc(1) << " " << acc(2) << std::endl;
+    acc_tmp = acc;
+   
+ //   acc -=_acc_last;
+  
+    runge_vars integr;
+    integr = rk4(acc, p1, dt); 
+    p1 = integr;
+
+    this->_acc_last = acc_tmp;
+    this->timestamp_last = timestamp;
+
+return _toStdVector(integr.pos);// pos_next;
+
+}
+
+runge_vars GRTrajectory::rk4(Eigen::Vector3d accIn, runge_vars rungeIn, double dt)
+{
+    runge_vars r1, r2, r3, r4, out;
+    r1 = this->p1;
+    r2.pos = r1.pos + 0.5* r1.vel*dt;
+    r2.vel = r1.vel + 0.5* r1.acc*dt;
+    r2.acc = r1.acc + 0.33 * (accIn - r1.acc);
+
+    r3.pos = r1.pos + 0.5* r2.vel*dt;
+    r3.vel = r1.vel + 0.5* r2.acc*dt;
+    r3.acc = r1.acc + 0.66 * (accIn - r1.acc);
+
+    r4.pos = r1.pos +  r3.vel*dt;
+    r4.vel = r1.vel +  r3.acc*dt;
+    r4.acc = accIn;
+
+    out.pos = r1.pos + (dt/6.0)*(r1.vel +2*r2.vel + 2*r3.vel + r4.vel);
+    out.vel = r1.vel + (dt/6.0)*(r1.acc + 2*r2.acc + 2*r3.acc + r4.acc);
+    out.acc = accIn;
+
+    return out;
+
+}
 /* Private method for converting of Eigen::Vector3d to sdt::vector
 */
 vector<double> GRTrajectory::_toStdVector(Eigen::Vector3d in)

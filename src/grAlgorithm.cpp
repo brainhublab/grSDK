@@ -46,38 +46,41 @@ bool GRAlgorithm::madgwickUpdate(gr_message* message, gr_alg_message* result, in
     // std::cout<<"\nbefore madgwickUpdate() Q :"<<q0<<" "<<q1<<" "<<q2<<" "<<q3<<std::endl;
     for(it=message->imus.begin(); it!=message->imus.end(); it++ )
     {
-        _madgwickObjects[it->first]->MadgwickAHRSupdate(
-                message->imus[it->first]->gyro[0], message->imus[it->first]->gyro[1], message->imus[it->first]->gyro[2], 
-                message->imus[it->first]->acc[0], message->imus[it->first]->acc[1], message->imus[it->first]->acc[2], 
-                message->imus[it->first]->mag[0], message->imus[it->first]->mag[1], message->imus[it->first]->mag[2], 
-                &rotations);
-        if(it->first == "pinky")
+        if(!message->imus[it->first]->gyro.empty())
         {
-            result->pinky = rotations;
-        }
-        else if(it->first == "ring")
-        {
-            result->ring = rotations;
-        }
-        else if(it->first == "middle")
-        {
-            result->middle = rotations;
-        }
-        else if(it->first == "index")
-        {
-            result->index = rotations;
-        }
-        else if(it->first == "thumb")
-        {
-            result->thumb = rotations;
-        }
-        else if(it->first == "palm")
-        {
-            result->palm = rotations;
-        }
-        else
-        {
-            std::cout<<"Wow you have some random readings please debug me:"<<it->first<<std::endl;
+            _madgwickObjects[it->first]->MadgwickAHRSupdate(
+                    message->imus[it->first]->gyro[0], message->imus[it->first]->gyro[1], message->imus[it->first]->gyro[2], 
+                    message->imus[it->first]->acc[0], message->imus[it->first]->acc[1], message->imus[it->first]->acc[2], 
+                    message->imus[it->first]->mag[0], message->imus[it->first]->mag[1], message->imus[it->first]->mag[2], 
+                    &rotations);
+            if(it->first == "pinky")
+            {
+                result->pinky = rotations;
+            }
+            else if(it->first == "ring")
+            {
+                result->ring = rotations;
+            }
+            else if(it->first == "middle")
+            {
+                result->middle = rotations;
+            }
+            else if(it->first == "index")
+            {
+                result->index = rotations;
+            }
+            else if(it->first == "thumb")
+            {
+                result->thumb = rotations;
+            }
+            else if(it->first == "palm")
+            {
+                result->palm = rotations;
+            }
+            else
+            {
+                std::cout<<"Wow you have some random readings please debug me:"<<it->first<<std::endl;
+            }
         }
     }
     rotations.clear();
@@ -107,28 +110,25 @@ void GRAlgorithm::madgwickUpdateThr(imu* imu, int freqCallibration, std::string 
 /* setUp method for simplified kalman filter
  * It's take a grConnection object make some iterations and calkulate variables needet for filter
  */
-bool GRAlgorithm::setUpKfilter(GRConnection* conn, acc_k_vars* k_vars, int devId)
+bool GRAlgorithm::setUpKfilter(std::vector<Eigen::Vector3d> data, acc_k_vars* k_vars )
 {
-    int i = 0;
-    gr_message msg;
+    int i=0;
     std::vector<double> acc_x;
     std::vector<double> acc_y;
     std::vector<double> acc_z;
     std::cout<<"starting kamlman initialization"<<std::endl;
-    while(i < 50)
+    while(i < data.size())
     {
-        conn->getData( devId, &msg);
         
-        acc_x.push_back(msg.palm.acc[0]);
-        acc_y.push_back(msg.palm.acc[1]);
-        acc_z.push_back(msg.palm.acc[2]);
+        acc_x.push_back(data[i](0));
+        acc_y.push_back(data[i](1));
+        acc_z.push_back(data[i](2));
         if(i> 46)
         {
-            k_vars->acc_k_x.accumulated.push_back(acc_x.back());
-            k_vars->acc_k_y.accumulated.push_back(acc_y.back());
-            k_vars->acc_k_z.accumulated.push_back(acc_z.back());
+            k_vars->acc_k_x.accumulated.push_back(data[i](0));
+            k_vars->acc_k_y.accumulated.push_back(data[i](1));
+            k_vars->acc_k_z.accumulated.push_back(data[i](2));
         }
-        msg.clear();
         i++;
         std::cout<<i<<std::endl;
 
@@ -140,13 +140,14 @@ bool GRAlgorithm::setUpKfilter(GRConnection* conn, acc_k_vars* k_vars, int devId
 
 }
 
-bool GRAlgorithm::kFilterStep(gr_message* msg, acc_k_vars* k_vars)
+Eigen::Vector3d GRAlgorithm::kFilterStep(Eigen::Vector3d data, acc_k_vars* k_vars)
 {
-    std::vector<double> tmpData;
-   _correctKFilter(msg->palm.acc, k_vars);
-    msg->palm.acc[0] = _kFilter(msg->palm.acc[0], &(k_vars->acc_k_x));
-    msg->palm.acc[0] = _kFilter(msg->palm.acc[1], &(k_vars->acc_k_y));
-    msg->palm.acc[0] = _kFilter(msg->palm.acc[2], &(k_vars->acc_k_z));
+    Eigen::Vector3d result;
+//   _correctKFilter(msg->palm.acc, k_vars);
+    result(0) = _kFilter(data(0), &(k_vars->acc_k_x));
+    result(1) = _kFilter(data(1), &(k_vars->acc_k_y));
+    result(2) = _kFilter(data(2), &(k_vars->acc_k_z));
+    return result;
 }
 /*
 bool GRAlgorithm::setUpKfilterCoord(std::vector<std::vector<double> > acumulated_data, acc_k_vars* k_vars)

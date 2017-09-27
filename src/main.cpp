@@ -47,7 +47,7 @@ int main (int argc, const char * argv[])
     int devId;
     for(std::map<int, device_t>::iterator it=devices.begin(); it!=devices.end(); it++)
     {
-        if(it->second.name == "GR[R]")
+        if(it->second.name == "HC-06")
         {
         //    std::cout<<it->first<<" in iteration---------------------------------------------"<<std::endl;
             devId = it->first;
@@ -58,10 +58,10 @@ int main (int argc, const char * argv[])
     conn.setActiveDevice(devId);
     conn.connectSocket(devId);
     GRAlgorithm alg;
-    alg.setupMadgwick(140, 140, 140, 140, 140, 220); //need to check
+  alg.setupMadgwick(140, 140, 140, 140, 140, 220); //need to check
 
     acc_k_vars k_vars;
-  //  alg.setUpKfilter(&conn, &k_vars, devId);
+//   alg.setUpKfilter(&conn, &k_vars, devId);
 
     std::unordered_map<std::string, gr_message> data;
     FILE* f, *fa;
@@ -85,7 +85,7 @@ int main (int argc, const char * argv[])
 
          //   std::cout << msg.palm.gyro[0] << " " << msg.palm.gyro[1] << " " << msg.palm.gyro[2] << std::endl;
             alg.madgwickUpdate(&msg, &alg_msg, 1, "flag");
-            //        std::cout<<"QUANTERNION---->";
+        //        std::cout<<"QUANTERNION---->";
             /*   for(int i =0;i<4;i++)
                  {
                  std::cout<<alg_msg.palm[i];
@@ -93,7 +93,7 @@ int main (int argc, const char * argv[])
 
                  std::cout<<std::endl;
                  */
-            trajectory = traj.getNewPosByIntegrating(msg.palm.acc, alg_msg.palm, msg.palm.time_stamp);
+            trajectory = traj.getNewPosByRunge(msg.palm.acc, alg_msg.palm, msg.palm.time_stamp);
 
             //      printf( "%s %f %f %f \n","trjectory", trajectory[0], trajectory[1], trajectory[2]);
             //   std::cout<<msg.palm.acc[0]<<" "<<msg.palm.acc[1]<<" "<<msg.palm.acc[2]<<std::endl;

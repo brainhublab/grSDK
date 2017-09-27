@@ -19,7 +19,12 @@ using namespace std;
 #define G  9.80665  // 9.000416 need to be 9.80665
 #define ACC_MULT 3.9// 0.061//0.975 //3.9//0.244
 #define FILTER_LOW 0
-
+struct runge_vars
+{
+    Eigen::Vector3d vel;
+    Eigen::Vector3d pos;
+    Eigen::Vector3d acc;
+};
 class GRTrajectory
 {
     public:
@@ -30,6 +35,7 @@ class GRTrajectory
         vector<double> getNewPosByVelocity(vector<double>, vector<double>, unsigned long); //getting new position
         vector<double> getNewPosByIntegrating(vector<double>, vector<double>, unsigned long); //getting of new position
         vector<double> getNewPos(vector<double> acc, vector<double>, unsigned long);//use both methods
+        vector<double> getNewPosByRunge(vector<double>, vector<double>, unsigned long);
     private:
         Eigen::Vector3d pos_last; //last stored position
         Eigen::Vector3d pos_last_last; //last last stored position
@@ -55,14 +61,22 @@ class GRTrajectory
 
         Eigen::Vector3d _rotateVectorByQuaternion(Eigen::Vector3d , Eigen::Quaterniond );
         bool _setupGravityMatrices(); // setup method for correction matrix for accelerometer
-
+        //trying kalman
         GRAlgorithm _alg;
+        bool isComplete;
+        bool isready;
+        std::vector<Eigen::Vector3d> kalmanDataSet;
+        int k=0;
+        acc_k_vars kalmanVars;
 
         Eigen::Vector3d _drift_offset = Eigen::Vector3d(0.174, 0.0130, 0.208);
         double _treshold;
         std::vector<Eigen::Vector3d> _stationaryVelocities;
         bool _stationary;
         Eigen::Vector3d _drifRate;
+        //runge kutta
+       runge_vars rk4(Eigen::Vector3d, runge_vars, double );
+       runge_vars p1;
 
 };
 
