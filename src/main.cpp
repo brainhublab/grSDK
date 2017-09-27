@@ -47,7 +47,7 @@ int main (int argc, const char * argv[])
     int devId;
     for(std::map<int, device_t>::iterator it=devices.begin(); it!=devices.end(); it++)
     {
-        if(it->second.name == "HC-06")
+        if(it->second.name == "GR[R]")
         {
         //    std::cout<<it->first<<" in iteration---------------------------------------------"<<std::endl;
             devId = it->first;
