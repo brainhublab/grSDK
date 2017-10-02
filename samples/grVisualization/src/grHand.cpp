@@ -15,6 +15,9 @@ bool isAllocated( GRHandNode *ptr )
 
 // class methods
 
+/*
+ * bool left recognizes if this hand will be left or not
+*/
 GRHand::GRHand(bool left)
 {
         // todo: get mins and maxes from config
@@ -28,7 +31,7 @@ GRHand::GRHand(bool left)
         isAllocated( this->children );
 
 		struct GRHandNode *hand = &(this->children[0]);
-    hand->isLeft = left;
+        hand->isLeft = left;
 //        hand->setMaxAngles(130.f, 0.f, 80.f);
 //        hand->setMinAngles(0.f, 0.f, -40.f);
 
@@ -104,7 +107,9 @@ GRHand::~GRHand()
         delete [] hand;
 }
 
-
+/*
+ * Bends arm with angles and writes angles to trajectory array
+*/
 bool GRHand::bendArm( float angleX, float angleY, float angleZ )
 {
         if(bend(this, angleX, angleY, angleZ))
@@ -128,7 +133,9 @@ bool GRHand::bendArm( float angleX, float angleY, float angleZ )
 
         return false;
 }
-
+/*
+ * Bends palm with angles
+*/
 bool GRHand::bendHand( float angleX, float angleY, float angleZ )
 {
 		struct GRHandNode *hand = &(this->children[0]);
@@ -137,6 +144,9 @@ bool GRHand::bendHand( float angleX, float angleY, float angleZ )
         return bended;
 }
 
+/*
+ * Bends only first phalange of [index]-th finger with angles
+*/
 bool GRHand::bendFirstPhalange(int index, float angleX, float angleY, float angleZ )
 {
   struct GRHandNode *phalange = &this->children[ 0 ].children[ index ];
@@ -152,6 +162,9 @@ bool GRHand::bendFirstPhalange(int index, float angleX, float angleY, float angl
       return success;
 }
 
+/*
+ * Bends each phalange of [index]-th finger with angles
+*/
 bool GRHand::bendFinger( int index, float angleX, float angleY, float angleZ )
 {
 		struct GRHandNode *phalange = &this->children[ 0 ].children[ index ];
@@ -178,7 +191,9 @@ bool GRHand::bendFinger( int index, float angleX, float angleY, float angleZ )
         return success;
 }
 
-
+/*
+ * Bends palm with rotation matrix
+*/
 bool GRHand::bendHandWithMatrix(GLfloat mat[16])
 {
 		struct GRHandNode *hand = &(this->children[0]);
@@ -189,6 +204,10 @@ bool GRHand::bendHandWithMatrix(GLfloat mat[16])
 
 		return true;
 };
+
+/*
+ * Bends every phalange of [index]-th finger with matrix
+*/
 bool GRHand::bendFingerWithMatrix( int index, GLfloat mat[16] )
 {
 		struct GRHandNode *phalange = &this->children[ 0 ].children[ index ];
@@ -221,6 +240,10 @@ bool GRHand::bendFingerWithMatrix( int index, GLfloat mat[16] )
 		return success;
 }
 
+/*
+ * node is a pointer to Hand node
+ * Bends some node of hand structure with angles
+*/
 bool GRHand::bend( GRHandNode *node, float angleX, float angleY, float angleZ )
 {
         // check if bending is possible
@@ -257,6 +280,7 @@ bool GRHand::bend( GRHandNode *node, float angleX, float angleY, float angleZ )
 
 // todo: maybe for every GRHand separate motions?
 // changed break; to return true;
+
 
 const std::vector<std::map<char, float>>& GRHand::getTrajectoryAngles() const
 {

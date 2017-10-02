@@ -1,19 +1,25 @@
 #include "grConnection.h"
-
+#include <sys/socket.h>
 //constructor
 GRConnection::GRConnection()
 {
-    rfcommPath = "/dev/rfcomm0";
-    setUpRfcomm(rfcommPath);
+    this->_start = std::chrono::high_resolution_clock::now();
+    /*will be useful if use rfcomm virtula descriptor
+     * rfcommPath = "/dev/rfcomm0";
+     setUpRfcomm(rfcommPath);
+     */
+    firstIteration = true;
 }
 
 
 //destructor
 GRConnection::~GRConnection()
 {
-    close(portDescriptor);
+    for(int i=1; i <= _deviceSockets.size(); i++)
+    {
+        close(_deviceSockets[i].sock);
+    }
 }
-
 
 //copy constructor
 GRConnection::GRConnection(const GRConnection& t)
@@ -27,18 +33,14 @@ GRConnection& GRConnection::operator=(const GRConnection& t)
 }
 
 
-//TODO later maybe we will implement his function in lower layer
-bool GRConnection::findDevices()
-{
-}
 
-
-//TODO need to be implemented later
-std::vector<device_t> GRConnection::getAvalibleDevices()
+/*Return map of avalible for connecting GR devices
+ */
+std::map<int, device_t> GRConnection::getAvalibleDevices()
 {
     dev_names deviceNames;
     device_t device;
-    std::vector<device_t> devices;
+    //std::map<int, device_t> devices;
 
     inquiry_info *inqInfo = NULL;
     int maxRsp, numRsp;
@@ -76,341 +78,386 @@ std::vector<device_t> GRConnection::getAvalibleDevices()
         }
         else if(deviceNames.left == name || deviceNames.right == name || deviceNames.test == name )
         {
-            device.id = i;
-            device.name = (std::string(name));
-            device.addr = (std::string(addr));
+          //  device.id = i;
 
-            devices.push_back(device);
+            std::cout<<name<<" "<<addr<<std::endl;
+
+            device.name.assign(name, strlen(name));
+            device.address.assign(addr, strlen(addr));
+
+            std::cout<<"Finded device with address: "<<device.address;
+            std::cout<<" and name "<<device.name<<std::endl;
+            if(!_deviceIsIn(device.address))
+            {
+                device.id = (_avalibleDevices.size() + 1);
+                this->_avalibleDevices[device.id] = device;
+            }
+            std::cout<<"stored in avalibleDevices device with addres "<<_avalibleDevices[device.id].address;
+            std::cout<<" and name "<< _avalibleDevices[device.id].name<<std::endl;
 
             device.clear_attributes();
         }
     }
-    std::cout<< devices.size()<<std::endl;
 
+    return _avalibleDevices;
 }
 
+/*Set GR device from avalible to active and make it ready for connection
+ */
+bool GRConnection::setActiveDevice(int devId)
+{
+    std::unordered_map<int, device_t>::iterator it = this->_activeDevices.begin();
+    while(it != this->_activeDevices.end()) 
+    {
+        if(devId == it->first)
+        {
+            std::cout<<"ERROR: could not ad device with id: "<<devId<<" because is exists"<<std::endl;
+            return false;
+        }
+        it++;
+    }
+    this->_activeDevices[devId] = this->_avalibleDevices[devId];
+    _asignDeviceWithSocket(devId);
+    _bufferedData[devId] = "";
+    std::cout<<"Set device with address in active: "<<_activeDevices[devId].address<<std::endl;
+
+}
 
 //TODO needs to be implemented later
-int GRConnection::getDeviceId(device_t dev)
+int GRConnection::getDeviceId(device_t device)
 {
+    return device.id;
 }
 
 
-//TODO add mor rfcomm devices and need to bee imlemented later
-bool GRConnection::connect(std::string serial_dev, std::string addr, std::string  chanel)
+device_t* GRConnection::getDevice(int devId)
 {
-    //temporary
-    int status;
-    std::string command;
+    return &(_activeDevices[devId]);
+}
 
-    command += "sudo rfcomm bind ";
-    command += " ";
-    command += serial_dev;
-    command += " ";
-    command += addr;
-    command += " ";
-    command += chanel;
+/*Select device by ID and fill message with one peace of data 
+ * Need to be use in loop
+ */
+bool GRConnection::getData(int devId, gr_message* message)
+{
+    int sock, status, bytes_read;
+    int id;
+    char buf[1] = {0};
 
-    status = system(command.c_str());
-    if(status != 0)
-    {
-        std::cout << "GRConnection::connect failes to run command with status " << status << std::endl;
-        return false;
+    std::string rawMessage;
+
+    sock = _getDeviceSocketById(devId); //= socket(AF_BLUETOOTH, SOCK_STREAM, BTPROTO_RFCOMM);
+
+    bool messageAvalible = false;
+
+    std::string readyMessage;
+
+    int iter = 0;
+    while(iter<6)
+    { 
+
+        bytes_read = read(sock, buf, sizeof(buf));
+        if(bytes_read >0)
+        {
+                if(buf[0] != '\n')
+                {   
+                        rawMessage += buf[0];
+                }
+                else 
+                {  
+                    messageAvalible = true;
+                    // std::cout<<"message "<<rawMessage<<std::endl;
+                    iter++;
+                    if(firstIteration)
+                    {
+                        this->_checkConnectedImus(rawMessage, message);
+                        
+                    }
+                    else
+                    {
+                        _asignMessageWithImu(rawMessage, message);
+                    }
+                    rawMessage.clear();
+                }
+        }
     }
-
-    sleep(3);
-
-    std::cout << "succssesfuly bind device: " << addr << std::endl;
-    return true;
-}
-
-
-bool GRConnection::release(std::string serial_dev, std::string addr, std::string chanel)
-{
-    int status;
-    std::string command;
-
-    command += "sudo rfcomm release ";
-    command += " ";
-    command += serial_dev;
-    command += " ";
-    command += addr;
-    command += " ";
-    command += chanel;
-
-    status = system(command.c_str());
-    if(status != 0)
+    if(firstIteration)
     {
-        std::cout << "GRConnection::release failed to execute command with status " << status << std::endl;
-        return false;
+        firstIteration = false;
     }
-
-    sleep(3);
-
-    std::cout<<"succssesfuly release device: "<<addr<<std::endl;
-    return true;
-}
-
-
-bool GRConnection::getDataThr(device_t* device)
-{
-    std::thread thr(&GRConnection::getData, this, device);
-    std::thread::id thrId;
-
-    thrId = thr.get_id();
-    thr.detach();
-
-    std::cout<<"connection thread is running"<<std::endl;
-
-    return true;
-}
-
-
-bool GRConnection::getData(device_t* device)
-{
-    int id, i = 0;
-    std::string msg;
-    bool f0, f1, f2, f3, f4, f5;
-    f0 = f1 = f2 = f3 = f4 = f5 = false;
-    while(i<6)//!(f0==true && f1==true && f2==true && f3==true && f4==true && f5==true))
-    {
-       // std::cout<<"in read while"<<std::endl;
-        msg = getNext();
-        std::stringstream ss(msg);
-
-        ss >> id;
-        if(id == 0)
+       
+    /*
+       if(!this->activeDevices[devId].palm.data.empty())
+       {
+    // std::cout << "==" << iter << std::endl;
+        for(int i=0; i<3; i++)
+        {
+            std::cout << this->activeDevices[devId].palm.data.front().gyro[i]<<" "; 
+        }
+        for(int i=0; i<3; i++)
         {
         
-                    splitData(msg, &device->pinky);//TODO add if statement
+            std::cout << this->activeDevices[devId].palm.data.front().acc[i]<<" ";
         }
-        else if(id ==1)
+        for(int i=0;i<3;i++)
         {
         
-                    splitData(msg, &device->ring);
+            std::cout << this->activeDevices[devId].palm.data.front().mag[i]<<" ";
         }
-        else if(id == 2)
-        {
-        
-                    splitData(msg, &device->middle);
-        }
-        else if(id == 3)
-        {
-        
-                    splitData(msg, &device->index);
-        }
-        else if(id==4)
-        {
-        
-                    splitData(msg, &device->thumb);
-        }
-        else if(id==5)
-        {
-        
-                
-                    splitData(msg, &(device->palm));
-        }
-/*
-        switch(id)
-        {
-            case 0:
-                if(!f0)
-                {
-                    splitData(msg, &device->pinky);//TODO add if statement
-                    f0 = true;
-                }
-                break;
-            case 1:
-                if(!f1)
-                {
-                    splitData(msg, &device->ring);
-                    f1 = true;
-                }
-                break;
-            case 2:
-                if(!f2)
-                {
-                    splitData(msg, &device->middle);
-                    f2 = true;
-                }
-                break;
-            case 3:
-                if(!f3)
-                {
-                    splitData(msg, &device->index);
-                    f3 = true;
-                }
-                break;
-            case 4:
-                if(!f4)
-                {
-                    splitData(msg, &device->thumb);
-                    f4 = true;
-                }
-                break;
-            case 5:
-                if(!f5)
-                {
-                    splitData(msg, &(device->palm));
-                    //std::cout<<msg;
-                    f5 = true;
-                }
-                break;
-        }
-*/
-        msg.clear();
-        i++;
-    }
-//    std::cout<<"reading is OK"<<std::endl;
+        //std::cout<<std::endl;
+        std::cout <<" ---- "<< this->activeDevices[devId].palm.data.front().time_stamp << std::endl;
+        std::cout <<"size--:   "<< this->activeDevices[devId].palm.data.size()<<std::endl;
+        this->activeDevices[devId].palm.data.pop_front();
 
-    return true;
+    }
+    */
+
+   // rawMessage.clear();
+return true;
 }
 
-
-//private helper methods
-bool GRConnection::setUpRfcomm(std::string src)
+/*Split raw device data in peaces and push them into structure
+ */
+bool GRConnection::_splitData(std::string data, imu* sensor)
 {
-    this->portDescriptor = openPort(src);
-    if(portDescriptor < 0)
-    {
-        return false;
-    }
-
-    if(!setTerm())
-    {
-        return false;
-    }
-
-    return true;
-}
-
-
-bool GRConnection::setTerm()
-{
-    struct termios tOptions;
-
-    // check if fd points to TTY device
-    if(!isatty(portDescriptor))
-    {
-        std::cout << "GRConnection::setTerm fd does not point to a TTY" << std::endl;
-        return false;
-    }
-
-    // get current configuration of fd
-    if(tcgetattr(portDescriptor, &tOptions) < 0)
-    {
-        std::cout << "GRConnection::setTerm failed to get default config of fd" << std::endl;
-        return false;
-    }
-
-    // set correct baud rates for input and output
-    if(cfsetispeed(&tOptions, B115200) < 0 || cfsetospeed(&tOptions, B115200) < 0)
-    {
-        std::cout << "GRConnection::setTerm failed to set baud rates" << std::endl;
-        return false;
-    }
-
-    // apply new config to fd
-    if(tcsetattr(portDescriptor, TCSAFLUSH, &tOptions) < 0)
-    {
-        std::cout << "GRConnection::setTerm failed to apply new config" << std::endl;
-        return false;
-    }
-
-    return true;
-}
-
-
-std::string GRConnection::getNext()
-{
-    char buf[2];
-    ssize_t n;
-    std::string res;
-
-    while(true)
-    {
-        n = read(portDescriptor, buf, 1);
-        if(n < 0)
-        {
-            std::cout << "GRConnection::getNext read failed" << std::endl;
-            return std::string("");
-        }
-        if(buf[0]!= '\n')
-        {
-            res += buf[0];
-        }
-        else
-        {
-            return res;
-        }
-    }
-}
-
-
-int GRConnection::openPort(std::string path)
-{
-    int fd;
-
-    fd = open(path.c_str(), O_RDWR | O_NOCTTY | O_NDELAY);
-    if(fd == -1)
-    {
-        std::cout << "GRConnection::openPort error openning " << path << std::endl;
-        return -1;
-    }
-
-    if(fcntl(fd, F_SETFL, 0) < 0)
-    {
-        std::cout << "GRConnection::openPort fcntl failed" << std::endl;
-        return -1;
-    }
-
-    return fd;
-}
-
-
-bool GRConnection::splitData(std::string data, imu* sensor)
-{
+    sensor->gyro.clear();
+    sensor->acc.clear();
+    sensor->mag.clear();
     int i = 0;
-    float n, arr[10];
+    int id;
+    double n, arr[11];
     std::stringstream ss(data);
-    std::vector<float> gyro, acc, mag;
+    // std::vector<double> gyro, acc, mag;
 
-    while(ss >> n && i<10)
+    //gr_message msg;
+    while(ss >> n && i<11)
     {
         arr[i] = n;
         i++;
     }
 
-    for(int i=1;i<10;i++)
+
+    for(int i=1;i<11;i++)
     {
         if(i <= 3)
         {
-            gyro.push_back(arr[i]);
+            sensor->gyro.push_back(arr[i]);
         }
         else if(i > 3 && i <= 6)
         {
-            acc.push_back(arr[i]);
+            sensor->acc.push_back(arr[i]);
         }
-        else if(i > 6 )
+        else if(i > 6 && i<=9)
         {
-            mag.push_back(arr[i]);
+            sensor->mag.push_back(arr[i]);
+        }
+        else if(i > 9)
+        {
+           sensor->time_stamp = arr[i];
+        }
+
+    }
+    //std::cout<<"from split data "<<sensor.gyro[0]<<std::endl;
+    return 1;
+ }
+
+/* Return local time stamp which starts with starting of program
+ */
+double GRConnection::_getTimeStamp()
+{
+    this->_timeStamp = 0.0;
+
+    this->_end = std::chrono::high_resolution_clock::now();
+    _timeStamp = std::chrono::duration_cast<std::chrono::milliseconds>
+        (_end-_start).count();
+
+    _timeStamp = (_timeStamp * 0.001f);
+
+    return _timeStamp;
+}
+
+/*Check id device in avalible device
+ */
+bool GRConnection::_deviceIsIn(std::string addr)
+{
+    int i=1;
+
+    while(i <= _avalibleDevices.size())
+    {
+        if(addr != _avalibleDevices[i].address)
+        {
+            i++; 
+        }
+        else if(addr == _avalibleDevices[i].address) 
+        {
+
+            return true;
         }
     }
-    if(gyro.size() == 3 && acc.size() == 3 && mag.size() == 3)
+
+    return false;
+}
+
+/* Asigning device with socke and redurn socket
+ */
+int GRConnection::_asignDeviceWithSocket(int devId)
+{
+
+    struct sockaddr_rc addr = { 0 };
+    
+    dev_socket deviceSocket;
+
+
+    std::unordered_map<int, dev_socket>::iterator it = _deviceSockets.begin();
+
+    while(it != this->_deviceSockets.end())
     {
-        sensor->gyro.push_back(gyro);
-        sensor->acc.push_back(acc);
-        sensor->mag.push_back(mag);
-        return true;
+        if(devId == it->first)
+        {
+            std::cout<<"ERROR this id: "<<devId<<" is already in use"<<std::endl;
+            return 0; 
+        }
+        it++;
+    }
+    deviceSocket.sock = socket(AF_BLUETOOTH, SOCK_STREAM, BTPROTO_RFCOMM);
+
+    addr.rc_family = AF_BLUETOOTH;
+    addr.rc_channel = (uint8_t) 1; //TODO maeby need to be changet with device id
+
+    std::cout<<"Asigning device with addres: "<<this->_activeDevices[devId].address<<std::endl;
+    
+    str2ba(this->_activeDevices[devId].address.c_str(), &addr.rc_bdaddr);
+    
+    deviceSocket.addr = addr;
+    this->_deviceSockets[devId] = deviceSocket;
+
+    //connectSocket(devId);//TODO need to implement in another method
+    
+    std::cout<<"device with addres: "<<this->_activeDevices[devId].address<<"with socket"<<deviceSocket.sock<<std::endl;
+
+    return deviceSocket.sock;
+}
+
+/*Return device by ID
+ */
+device_t GRConnection::_getDeviceById(int id)
+{
+    if(this->_activeDevices.find(id)->first != 0)
+    {
+        return this->_activeDevices[id];
     }
     else
     {
-        return false;
+        std::cout<<"ERROR: No such device with id: "<<id<<std::endl;
+        //        return; TODO need to ad empty device or error
     }
-    gyro.clear();
-    acc.clear();
-    mag.clear();
-    
 }
 
+/*Return device socket
+ */
+int GRConnection::_getDeviceSocketById(int id)
+{
+    int devSock = this->_deviceSockets[id].sock;
+    return devSock;
+}
 
+bool GRConnection::_asignMessageWithImu(std::string rawMessage, gr_message* message)
+{   
+    int id;
+    bool messageAvalible = false;
+    std::stringstream ss(rawMessage);
+
+    ss >> id;
+    if(id == 0)
+    {
+        _splitData(rawMessage, &message->pinky);
+        //message->pinky.time_stamp = getTimeStamp();//TODO add if statement
+    }
+    else if(id ==1)
+    {
+        _splitData(rawMessage, &message->ring);
+        //message->ring.time_stamp = getTimeStamp();
+    }
+    else if(id == 2)
+    {
+        _splitData(rawMessage, &message->middle);
+        //message->middle.time_stamp = getTimeStamp();
+    }
+    else if(id == 3)
+    {
+        _splitData(rawMessage, &message->index);
+        //message->index.time_stamp = getTimeStamp();
+    }
+    else if(id==4)
+    {
+        _splitData(rawMessage, &message->thumb);
+        //message->thumb.time_stamp = getTimeStamp();
+    }
+    else if(id==5)
+    {
+       // std::cout<<rawMessage<<std::endl;
+        _splitData(rawMessage, &message->palm);
+        //message->palm.time_stamp = getTimeStamp();
+
+    }
+    //rawMessage.clear();
+    //TODO need to comment
+    if(!message->palm.gyro.empty())
+    {   
+        //std::cout<<device->palm.data.front().gyro[1]<<std::endl;
+        //device->palm.data.pop_front();
+    }
+
+}
+bool GRConnection::_checkConnectedImus(std::string rawMessage, gr_message* msg)
+{
+    
+    int id;
+    bool messageAvalible = false;
+    std::stringstream ss(rawMessage);
+
+    ss >> id;
+    if(id == 0)
+    {
+       msg->pinky.is_connected = true; 
+    }
+    else if(id ==1)
+    {
+        msg->ring.is_connected = true;
+    }
+    else if(id == 2)
+    {
+        msg->middle.is_connected = true;
+    }
+    else if(id == 3)
+    {
+        msg->index.is_connected = true;
+    }
+    else if(id==4)
+    {
+        msg->thumb.is_connected = true;
+    }
+    else if(id==5)
+    {
+        msg->palm.is_connected = true;
+    }
+    return true;
+}
+/*Make connection to socket of device
+ */
+bool GRConnection::connectSocket(int devId)
+{
+    int status;
+
+    status = connect(this->_deviceSockets[devId].sock, 
+            (struct sockaddr *)(this->_deviceSockets[devId].getAddrRef()), sizeof(this->_deviceSockets[devId].addr));
+
+    std::cout<<"Status of connection of socket=  "<<status<<std::endl;
+    if(status == -1)
+    {
+        printf("Oh dear, something went wrong with connect! %s\n", strerror(errno));
+    }
+
+    return true;
+
+}

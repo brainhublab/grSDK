@@ -5,6 +5,8 @@
 bin/*
 build/*
 externAssets/*.zip
+*/**/*.zip
+*/**/*.tar.gz
 externAssets/grt
 externAssets/eigen
 data/*

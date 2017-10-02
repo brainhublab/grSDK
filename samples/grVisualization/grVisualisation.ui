@@ -69,21 +69,6 @@
             <string>Connected GR Devices</string>
            </property>
           </column>
-          <item>
-           <property name="text">
-            <string>Device Name</string>
-           </property>
-           <item>
-            <property name="text">
-             <string>ID</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Path</string>
-            </property>
-           </item>
-          </item>
          </widget>
         </item>
         <item row="0" column="0">
@@ -204,7 +189,7 @@
             </rect>
            </property>
            <property name="text">
-            <string>Logging</string>
+            <string>More</string>
            </property>
            <property name="checked">
             <bool>false</bool>

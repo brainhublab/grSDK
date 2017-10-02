@@ -24,12 +24,11 @@ public slots:
     void fetchData(); // pops front element from buffer and adds it to plot
 
 private:
-
-	void splitSensorData(std::string str, double arr[3]);
-
-    QCustomPlot* plot = nullptr;
+    void splitSensorData(std::string str, double arr[3]);
+    int fetchFrequency = 50;
+    QCustomPlot* plot = nullptr; // pointer to plot GUI element
     QTimer *dataTimer = nullptr;
-    std::deque<std::vector<float>> *buffer = nullptr;
+    std::deque<std::vector<float>> *buffer = nullptr; // pointer to buffer of data
 };
 
 #endif // DATAPLOTTER_H

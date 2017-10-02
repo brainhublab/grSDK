@@ -8,72 +8,97 @@
 #include <deque>
 #include <math.h>
 #include <thread>
-
-//#include <eigen3/Eigen/Dense>
-//#include <eigen3/Eigen/Geometry>
+#include <numeric>
+#include <functional>
+#include <algorithm>
 
 #include "GRT/GRT.h"
 
+#include <grConnection.h>
 #include <grDevice.h>
-using namespace std;
-//using namespace Eigen;
+#include <grMadgwick.h>
+#include <grGrt.h>
 
-class GRAlgorithm 
+
+#include "Eigen/Dense"
+using namespace std;
+struct k_filter_vars //variables needet from simplified kalman 
+{
+    double volt;
+    double proccess;
+    double pc;
+    double g;
+    double p;
+    double xp;
+    double zp;
+    double xe;
+
+    std::vector<double> accumulated;
+    k_filter_vars()
+    {
+        volt = 0.0;
+        proccess = 0.05;
+        pc = 0.0;
+        g = 0.0;
+        p = 1.0;
+        xp = 0.0;
+        zp = 0.0;
+        xe = 0.0;
+    }
+};
+
+struct acc_k_vars //arbitary accelerometer vars for kalman
+{
+    k_filter_vars acc_k_x;
+    k_filter_vars acc_k_y;
+    k_filter_vars acc_k_z;
+};
+
+class GRAlgorithm :public GRGrt
 {
 
     public:
-        GRAlgorithm();
-        ~GRAlgorithm();
-        GRAlgorithm(const GRAlgorithm& );
-        GRAlgorithm& operator=(const GRAlgorithm&);
-        void grInitAlgorithms();
+        GRAlgorithm(); //constructor
+        ~GRAlgorithm();//destructor
+        GRAlgorithm(const GRAlgorithm& );//copy constructor
+        GRAlgorithm& operator=(const GRAlgorithm&);//operator=
+        void grInitAlgorithms(); //initialise of algorithms
         //madgwick
-        void madgwickUpdateBuffer(imu*, std::deque<std::vector<float>>*, int, std::string flag);
-        void madgwickUpdateThr(device_t*, alg_device_t*, int, std::string flag);
-        //gesture recognition
-        // Loads training data from .grt file
-        bool loadTrainingData(string filepath);
-        // Loads test data from .grt file
-        bool loadTestData(string filepath);
-        // Takes `size`% from training data to use for testing accuracy
-        bool setTestDataFromTraining(int size);
-        // Traing the algorithm
-        bool train();
-        // Test the algorithm with testData and return accuracy
-        double test();
-        double getTestAccuracy();
-        // Used for saving/loading trained model of the algorithm
-        bool saveModel(string filepath);
-        bool loadModel(string filepath);
-        // Predictions functions
-        bool predict(GRT::MatrixDouble timeseries);
-        GRT::UINT getPredictedClassLabel();
-        double getMaximumLikelihood();
+        bool madgwickUpdate(gr_message*, gr_alg_message*, int, std::string flag); //Update iterative data of madgwick algorithm
+        //void madgwickUpdateThr(device_t*, alg_device_t*, int, std::string flag);//TODO need to implement
+        bool setupMadgwick(int, int, int, int, int, int);//precondition Madgwick algorithm
 
+        //simplified Kalman
+        
+        bool setUpKfilter(std::vector<Eigen::Vector3d>, acc_k_vars*);//TODO implement for fingers
+        Eigen::Vector3d kFilterStep(Eigen::Vector3d, acc_k_vars*);
+//        bool setUpKfilterCoord(std::vector<std::vector<double> >, acc_k_vars* );
+//        bool kFilterStepCoord(std::vector<double>, acc_k_vars*);
+             
     private:
-        //helper methods
-        double constrain(double , double , double );
-        double gravity = 256;
-        //madgwick algorithm vars and methods
-        float q0 , q1, q2, q3;  // quaternion of sensor frame relative to auxiliary frame
-        float beta;
-        float roll, pitch, yaw;
-        std::vector<float> angles;
-        char anglesComputed;
+        double _roll, _pitch, _yaw;
+        std::vector<double> _angles;//vector with computed from quaternion angles
+        std::vector<double> _computeAngles(std::vector<double>);//calculation of angles from quaternion method
 
-        std::vector<float> computeAngles();
-        float invSqrt(float x);            // algorithm gain
-        void MadgwickAHRSupdate(float gx, float gy, float gz, float ax, float ay, float az, 
-                float mx, float my, float mz, std::deque<std::vector<float>>*, int, std::string);
-        void MadgwickAHRSupdateIMU(float gx, float gy, float gz, float ax, float ay, float az, 
-                std::deque<std::vector<float>>*, int, std::string);
+        //grMadgwick objects
+        GRMadgwick _pinkyMadgwick;
+        GRMadgwick _ringMadgwick;
+        GRMadgwick _middleMadgwick;
+        GRMadgwick _indexMadgwick;
+        GRMadgwick _thumbMadgwick;
+        GRMadgwick _palmMadgwick;
 
-        //gesture recognition vars and methods
-        GRT::DTW dtw;
-        GRT::TimeSeriesClassificationData trainingData;
-        GRT::TimeSeriesClassificationData testData;
+        std::unordered_map<std::string, GRMadgwick*> _madgwickObjects; //map for easier access of objects
 
-        double testAccuracy = 0.0;
+        //kFilter help methods
+        double _kFilter(double, k_filter_vars*);//simplified kalman 
+        double _stDev(std::vector<double>*);//standart deviation
+        double _average(std::vector<double>*);//average
+        double _stdErr(std::vector<double>*);
+        bool _correctKFilter(std::vector<double>, acc_k_vars*);
+        bool _sliceAndPush(std::vector<double>*, double);
+
+
 
 };
 

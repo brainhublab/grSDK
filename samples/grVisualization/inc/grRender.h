@@ -28,10 +28,11 @@ public:
         // accessors
         int getWidth();
         int getHeight();
+        bool setLineWidth(float f);
         bool setLinesColor(int r = 255, int g = 0, int b = 0, int a = 200);
         bool setPlaneColor(int r = 255, int g = 255, int b = 255, int a = 200);
 private:
-        render_data data;
+        render_data data; // config for rendering
         bool initGL();
 
         // Geometric

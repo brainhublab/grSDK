@@ -1,123 +1,206 @@
-#include <iostream>
 #include "grTrajectory.h"
 
 GRTrajectory::GRTrajectory()
 {
-    this->timestamp_last = 0;
-    this->pos_last(0) = 0;
-    this->pos_last(1) = 0;
-    this->pos_last(2) = 0;
-
-    this->velocity_last(0) = 0;
-    this->velocity_last(1) = 0;
-    this->velocity_last(2) = 0;
+    this->_timestampLast = 0;
 }
 
 GRTrajectory::~GRTrajectory()
 {}
 
-Vector3d GRTrajectory::_getNewPosByVelocity(Vector3d acc, int timestamp)
+/*
+ * Private method which convert's raw accelerometer data units to G
+ * It's take one argument Eigen::Vector3d with raw accelerometer data
+ * and return Eigen::Vector3d with accelerometer data in G units
+ */
+Eigen::Vector3d GRTrajectory::_convertAccToG(Eigen::Vector3d in)
 {
-    Vector3d velocity, distance, pos_next;
-    int time_elapsed = timestamp - this->timestamp_last;
+    Eigen::Vector3d out;
 
-    velocity = this->velocity_last + ((acc * G) * time_elapsed);
-    distance = velocity * time_elapsed;
+    out = ((in * ACC_MULT) / 1000);
 
-    pos_next = this->pos_last + distance;
-
-    return pos_next;
+    return out;
 }
 
-Vector3d GRTrajectory::_getNewPosByIntegrating(Vector3d acc, int timestamp)
+/*
+ * Private method which convert's raw accelerometer data units to m/s^2
+ * It's take one argument Eigen::Vector3d with raw accelerometer data
+ * and return Eigen::Vector3d with accelerometer data in m/s^2 units
+ */
+Eigen::Vector3d GRTrajectory::_convertAccToMS(Eigen::Vector3d in)
 {
-    Vector3d pos_next;
-    int time_elapsed = timestamp - this->timestamp_last;
+    Eigen::Vector3d out;
 
-    pos_next = this->pos_last + this->velocity_last * time_elapsed + 0.5 * (acc * G) * (time_elapsed * time_elapsed);
+    out = ((in * ACC_MULT) / 1000) * G;
 
-    return pos_next;
+    return out;
 }
 
-vector<double> GRTrajectory::_toStdVector(Vector3d in)
+/*
+ * Private method for rotation accelerometer vector by quaternion
+ * This is needed for removing of gravity from calculations
+ * It's take two arguments Eigen::Vector3d woth raw accelerometer data and
+ * Eigen::Quaterniond with quaternion and it's return rotated Eigen::Vector3d vector
+ */
+Eigen::Vector3d GRTrajectory::_rotateAcc(Eigen::Vector3d acc, Eigen::Quaterniond q)
+{
+    Eigen::Quaterniond accQ, outQ;
+    Eigen::Vector3d out;
+
+    accQ.w() = 0;
+    accQ.vec() = acc;
+
+    outQ = q * accQ * q.conjugate();
+    out = outQ.vec();
+
+    return out;
+}
+
+Eigen::Vector3d GRTrajectory::_correctVector(Eigen::Vector3d accIn)
+{
+    Eigen::Vector3d dirs, lastDirs, out;
+
+    lastDirs = accIn - _accLast;
+
+    for(int i=0; i<3; i++)
+    {
+        
+        dirs(i) = accIn(i) / abs(accIn(i));
+        lastDirs(i) /= abs(lastDirs(i));
+        out(i) = dirs(i) * lastDirs(i);
+    }
+    return out;
+
+}
+vector<double> GRTrajectory::getNewPosByRunge(vector<double> accIn, vector<double> qIn, unsigned long timestamp)
+{
+    //std::cout << "progress..." << std::endl;
+
+    if(this->_timestampLast == 0)
+    {
+        Eigen::Vector3d acc;
+        Eigen::Quaterniond q;
+        std::vector<double> initialPos;
+
+        this->_timestampLast = timestamp;
+
+        q = this->_toQuaterniond(qIn);
+        acc = this->_toVector3d(accIn);
+        acc = this->_convertAccToG(acc);
+        acc *= G;
+        acc = this->_rotateAcc(acc, q);
+
+        acc = acc - this->_gravity;
+
+        this->_accLast = acc;
+
+        initialPos = {0.0, 0.0, 0.0};
+
+        return initialPos;
+    }
+
+    Eigen::Vector3d acc, accTmp, correctionVector;
+    Eigen::Quaterniond q;
+    runge_vars rungeNew;
+    double dt;
+
+    acc = this->_toVector3d(accIn);
+    q = this->_toQuaterniond(qIn);
+
+    dt = (timestamp - this->_timestampLast) / 1000.f;
+    this->_timestampLast = timestamp;
+
+    acc = this->_convertAccToG(acc);
+    acc *= G;
+    acc = this->_rotateAcc(acc, q);
+    acc = acc - this->_gravity;
+    accTmp = acc;
+
+    acc -= this->_accLast;
+    correctionVector = _correctVector(accTmp);
+   // std::cout<<"correctionVector "<<correctionVector<<std::endl;
+   /* for(int i=0; i<3; i++)
+    {
+        acc(i) *= correctionVector(i);
+    } 
+    */
+    //std::cout << dt << std::endl;
+    //std::cout << acc(0) << " " << acc(1) << " " << acc(2) << std::endl;
+
+    rungeNew = this->_rk4(acc, this->_rungeLast, dt);
+
+    this->_rungeLast = rungeNew;
+    this->_accLast = accTmp;
+
+    return _toStdVector(rungeNew.pos);
+}
+
+std::vector<double> GRTrajectory::getAccelerations(std::vector<double> acc_in, std::vector<double> q_in)
+{
+    Eigen::Vector3d acc;
+    Eigen::Quaterniond q;
+    acc = this->_toVector3d(acc_in);
+    q = this->_toQuaterniond(q_in);
+    acc = this->_convertAccToG(acc);
+    acc *= G;
+    acc = this->_rotateAcc(acc, q);
+    acc = acc - this->_gravity;
+
+    return _toStdVector(acc);
+  
+}
+runge_vars GRTrajectory::_rk4(Eigen::Vector3d accIn, runge_vars rungeIn, double dt)
+{
+    runge_vars r1, r2, r3, r4, out;
+
+    r1 = this->_rungeLast;
+
+    r2.pos = r1.pos + 0.5 * r1.vel * dt;
+    r2.vel = r1.vel + 0.5 * r1.acc * dt;
+    r2.acc = r1.acc + 0.33 * (accIn - r1.acc);
+
+    r3.pos = r1.pos + 0.5 * r2.vel * dt;
+    r3.vel = r1.vel + 0.5 * r2.acc * dt;
+    r3.acc = r1.acc + 0.66 * (accIn - r1.acc);
+
+    r4.pos = r1.pos + r3.vel * dt;
+    r4.vel = r1.vel + r3.acc * dt;
+    r4.acc = accIn;
+
+    out.pos = r1.pos + (dt / 6.0) * (r1.vel + 2 * r2.vel + 2 * r3.vel + r4.vel);
+    out.vel = r1.vel + (dt / 6.0) * (r1.acc + 2 * r2.acc + 2 * r3.acc + r4.acc);
+    out.acc = accIn;
+
+    return out;
+
+}
+
+/*
+ * Private method for converting of Eigen::Vector3d to sdt::vector
+ */
+vector<double> GRTrajectory::_toStdVector(Eigen::Vector3d in)
 {
     vector<double> out = {in(0), in(1), in(2)};
     return out;
 }
 
-Vector3d GRTrajectory::_toVector3d(vector<double> in)
+/*
+ * Private method for converting of std::vector to Eigen::Vector3d
+ */
+Eigen::Vector3d GRTrajectory::_toVector3d(vector<double> in)
 {
-    Vector3d out(in[0], in[1], in[2]);
+    Eigen::Vector3d out(in[0], in[1], in[2]);
     return out;
 }
 
-Quaterniond GRTrajectory::_toQuaterniond(vector<double> in)
+/*
+ * Private method for converting std::vector with Madgwick quaternion to
+ * Eigen::Quaterniond
+ */
+Eigen::Quaterniond GRTrajectory::_toQuaterniond(vector<double> in)
 {
-    Quaterniond out(in[0], in[1], in[2], in[3]);
+    Eigen::Quaterniond out(in[0], in[1], in[2], in[3]);
     return out;
 }
 
-Vector3d GRTrajectory::_rotateAcc(Vector3d acc, Quaterniond q)
-{
-    q.normalize();
 
-    Quaterniond acc_q;
-    acc_q.w() = 0;
-    acc_q.vec() = acc;
-
-    Quaterniond out_q = q * acc_q * q.inverse();
-    Vector3d out = out_q.vec();
-    return out;
-}
-
-vector<double> GRTrajectory::getNewPosByVelocity(vector<double> acc, vector<double> q, int timestamp)
-{
-    Vector3d acc_v, acc_fixed, pos_next;
-    Quaterniond q_q;
-
-    acc_v = this->_toVector3d(acc);
-    q_q = this->_toQuaterniond(q);
-    acc_fixed = this->_rotateAcc(acc_v, q_q);
-
-    pos_next = this->_getNewPosByVelocity(acc_fixed, timestamp);
-    this->pos_last = pos_next;
-    this->timestamp_last = timestamp;
-
-    return this->_toStdVector(pos_next);
-}
-
-vector<double> GRTrajectory::getNewPosByIntegrating(vector<double> acc, vector<double> q, int timestamp)
-{
-    Vector3d acc_v, acc_fixed, pos_next;
-    Quaterniond q_q;
-
-    acc_v = this->_toVector3d(acc);
-    q_q = this->_toQuaterniond(q);
-    acc_fixed = this->_rotateAcc(acc_v, q_q);
-
-    pos_next = this->_getNewPosByIntegrating(acc_fixed, timestamp);
-    this->pos_last = pos_next;
-    this->timestamp_last = timestamp;
-
-    return this->_toStdVector(pos_next);
-}
-
-vector<double> GRTrajectory::getNewPos(vector<double> acc, vector<double> q, int timestamp)
-{
-    Vector3d acc_v, acc_fixed, speed_pos, integrated_pos, pos_next;
-    Quaterniond q_q;
-
-    acc_v = this->_toVector3d(acc);
-    q_q = this->_toQuaterniond(q);
-    acc_fixed = this->_rotateAcc(acc_v, q_q);
-
-    speed_pos = this->_getNewPosByVelocity(acc_fixed, timestamp);
-    integrated_pos = this->_getNewPosByIntegrating(acc_fixed, timestamp);
-
-    pos_next = (speed_pos + integrated_pos) / 2;
-
-    this->pos_last = pos_next;
-    this->timestamp_last = timestamp;
-
-    return this->_toStdVector(pos_next);
-}

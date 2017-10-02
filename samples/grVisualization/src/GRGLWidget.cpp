@@ -4,19 +4,14 @@
 GRGLWidget::GRGLWidget(QWidget *parent) :
     QGLWidget(parent)
 {
-    this->R = 1;
-    this->wired = false;
-    this->ang = 0.5;
-
-
-    connect( &timer, SIGNAL(timeout()), this, SLOT(updateGL()) );
-    timer.start(16);
+    connect( &updateTimer, SIGNAL(timeout()), this, SLOT(updateGL()) );
+    updateTimer.start(16);
 }
 
 void GRGLWidget::initializeGL()
 {
 
-    glClearColor( 0.0f, 0.5f, 0.5f, 0.0f );
+    glClearColor( 0.463f, 0.722f, 0.863f, 0.0f );
     glEnable(GL_DEPTH_TEST);
 //    glEnable(GL_LIGHT0);
 //    glEnable(GL_LIGHTING);

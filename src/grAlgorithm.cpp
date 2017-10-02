@@ -5,17 +5,14 @@
 
 GRAlgorithm::GRAlgorithm()
 {
-    this->beta = betaDef;
-    this->q0 = 1.0f;
-    this->q1 = 0.0f;
-    this->q2 = 0.0f;
-    this->q3 = 0.0f;
-    printf("\nInitialized algor %f %f %f %f\n" , q0, q1, q2, q3);
-    //invSampleFreq = 1.0f / sampleFreqDef;
-    this->roll = 0.0f;
-    this->pitch = 0.0f;
-    this->yaw = 0.0f;
-    this->anglesComputed = 0;
+    
+    _madgwickObjects["pinky"] = &(this->_pinkyMadgwick);
+    _madgwickObjects["ring"] = &(this->_ringMadgwick);
+    _madgwickObjects["middle"] = &(this->_middleMadgwick);
+    _madgwickObjects["index"] = &(this->_indexMadgwick);
+    _madgwickObjects["thumb"] = &(this->_thumbMadgwick);
+    _madgwickObjects["palm"] = &(this->_palmMadgwick);
+ 
 }
 
 GRAlgorithm::~GRAlgorithm()
@@ -25,465 +22,239 @@ GRAlgorithm::~GRAlgorithm()
 
 GRAlgorithm::GRAlgorithm(const GRAlgorithm& t)
 {
-    this->dtw = GRT::DTW(t.dtw);
-    this->trainingData = GRT::TimeSeriesClassificationData(t.trainingData);
-    this->testData = GRT::TimeSeriesClassificationData(t.testData);
 
-    this->testAccuracy = t.testAccuracy;
 }
 
 GRAlgorithm& GRAlgorithm::operator=(const GRAlgorithm& t)
 {
-    this->dtw = GRT::DTW(t.dtw);
-    this->trainingData = GRT::TimeSeriesClassificationData(t.trainingData);
-    this->testData = GRT::TimeSeriesClassificationData(t.testData);
 
-    this->testAccuracy = t.testAccuracy;
 }
 
+/* Initialize algorithms and variables needed for them
+ */
 void grInitAlgorithms()
 {
 }
 
-void GRAlgorithm::MadgwickAHRSupdate(float gx, float gy, float gz, float ax, float ay, float az, 
-        float mx, float my, float mz, std::deque<std::vector<float>>* results, int freqCallibration, 
-        std::string flag)
+/*Update step of Madgwick algorithm
+ * Takes gr_message and return quaternion 
+ */
+bool GRAlgorithm::madgwickUpdate(gr_message* message, gr_alg_message* result, int freqCallibration, std::string flag)
 {
-    float recipNorm;
-    float s0, s1, s2, s3;
-    float qDot1, qDot2, qDot3, qDot4;
-    float hx, hy;
-    float _2q0mx, _2q0my, _2q0mz, _2q1mx, _2bx, _2bz, _4bx, _4bz, _2q0, _2q1, _2q2, _2q3, _2q0q2, _2q2q3, q0q0, q0q1, q0q2, q0q3, q1q1, q1q2, q1q3, q2q2, q2q3, q3q3;
-
-    // Use IMU algorithm if magnetometer measurement invalid (avoids NaN in magnetometer normalisation)
-    if((mx == 0.0f) && (my == 0.0f) && (mz == 0.0f)) {
-        MadgwickAHRSupdateIMU(gx, gy, gz, ax, ay, az, results, freqCallibration, flag);
-        return;
-    }
-
-    gx *= 0.0174533f;
-    gy *= 0.0174533f;
-    gz *= 0.0174533f;
-
-	//std::cout<<"Pre-Middle Q :"<<q0<<" "<<q1<<" "<<q2<<" "<<q3<<std::endl;
-    // Rate of change of quaternion from gyroscope
-    qDot1 = 0.5f * (-q1 * gx - q2 * gy - q3 * gz);
-    qDot2 = 0.5f * (q0 * gx + q2 * gz - q3 * gy);
-    qDot3 = 0.5f * (q0 * gy - q1 * gz + q3 * gx);
-    qDot4 = 0.5f * (q0 * gz + q1 * gy - q2 * gx);
-
-    if(!((ax == 0.0f) && (ay == 0.0f) && (az == 0.0f))) {
-
-        // Normalise accelerometer measurement
-        recipNorm = invSqrt(ax * ax + ay * ay + az * az);
-        ax *= recipNorm;
-        ay *= recipNorm;
-        az *= recipNorm;
-
-        // Normalise magnetometer measurement
-        recipNorm = invSqrt(mx * mx + my * my + mz * mz);
-        mx *= recipNorm;
-        my *= recipNorm;
-        mz *= recipNorm;
-
-        // Auxiliary variables to avoid repeated arithmetic
-        _2q0mx = 2.0f * q0 * mx;
-        _2q0my = 2.0f * q0 * my;
-        _2q0mz = 2.0f * q0 * mz;
-        _2q1mx = 2.0f * q1 * mx;
-        _2q0 = 2.0f * q0;
-        _2q1 = 2.0f * q1;
-        _2q2 = 2.0f * q2;
-        _2q3 = 2.0f * q3;
-        _2q0q2 = 2.0f * q0 * q2;
-        _2q2q3 = 2.0f * q2 * q3;
-        q0q0 = q0 * q0;
-        q0q1 = q0 * q1;
-        q0q2 = q0 * q2;
-        q0q3 = q0 * q3;
-        q1q1 = q1 * q1;
-        q1q2 = q1 * q2;
-        q1q3 = q1 * q3;
-        q2q2 = q2 * q2;
-        q2q3 = q2 * q3;
-        q3q3 = q3 * q3;
-
-        // Reference direction of Earth's magnetic field
-        hx = mx * q0q0 - _2q0my * q3 + _2q0mz * q2 + mx * q1q1 + _2q1 * my * q2 + _2q1 * mz * q3 - mx * q2q2 - mx * q3q3;
-        hy = _2q0mx * q3 + my * q0q0 - _2q0mz * q1 + _2q1mx * q2 - my * q1q1 + my * q2q2 + _2q2 * mz * q3 - my * q3q3;
-        _2bx = sqrtf(hx * hx + hy * hy);
-        _2bz = -_2q0mx * q2 + _2q0my * q1 + mz * q0q0 + _2q1mx * q3 - mz * q1q1 + _2q2 * my * q3 - mz * q2q2 + mz * q3q3;
-        _4bx = 2.0f * _2bx;
-        _4bz = 2.0f * _2bz;
-
-        // Gradient decent algorithm corrective step
-        s0 = -_2q2 * (2.0f * q1q3 - _2q0q2 - ax) + _2q1 * (2.0f * q0q1 + _2q2q3 - ay) - _2bz * q2 * (_2bx * (0.5f - q2q2 - q3q3) + _2bz * (q1q3 - q0q2) - mx) + (-_2bx * q3 + _2bz * q1) * (_2bx * (q1q2 - q0q3) + _2bz * (q0q1 + q2q3) - my) + _2bx * q2 * (_2bx * (q0q2 + q1q3) + _2bz * (0.5f - q1q1 - q2q2) - mz);
-        s1 = _2q3 * (2.0f * q1q3 - _2q0q2 - ax) + _2q0 * (2.0f * q0q1 + _2q2q3 - ay) - 4.0f * q1 * (1 - 2.0f * q1q1 - 2.0f * q2q2 - az) + _2bz * q3 * (_2bx * (0.5f - q2q2 - q3q3) + _2bz * (q1q3 - q0q2) - mx) + (_2bx * q2 + _2bz * q0) * (_2bx * (q1q2 - q0q3) + _2bz * (q0q1 + q2q3) - my) + (_2bx * q3 - _4bz * q1) * (_2bx * (q0q2 + q1q3) + _2bz * (0.5f - q1q1 - q2q2) - mz);
-        s2 = -_2q0 * (2.0f * q1q3 - _2q0q2 - ax) + _2q3 * (2.0f * q0q1 + _2q2q3 - ay) - 4.0f * q2 * (1 - 2.0f * q1q1 - 2.0f * q2q2 - az) + (-_4bx * q2 - _2bz * q0) * (_2bx * (0.5f - q2q2 - q3q3) + _2bz * (q1q3 - q0q2) - mx) + (_2bx * q1 + _2bz * q3) * (_2bx * (q1q2 - q0q3) + _2bz * (q0q1 + q2q3) - my) + (_2bx * q0 - _4bz * q2) * (_2bx * (q0q2 + q1q3) + _2bz * (0.5f - q1q1 - q2q2) - mz);
-        s3 = _2q1 * (2.0f * q1q3 - _2q0q2 - ax) + _2q2 * (2.0f * q0q1 + _2q2q3 - ay) + (-_4bx * q3 + _2bz * q1) * (_2bx * (0.5f - q2q2 - q3q3) + _2bz * (q1q3 - q0q2) - mx) + (-_2bx * q0 + _2bz * q2) * (_2bx * (q1q2 - q0q3) + _2bz * (q0q1 + q2q3) - my) + _2bx * q1 * (_2bx * (q0q2 + q1q3) + _2bz * (0.5f - q1q1 - q2q2) - mz);
-        recipNorm = invSqrt(s0 * s0 + s1 * s1 + s2 * s2 + s3 * s3); // normalise step magnitude
-        s0 *= recipNorm;
-        s1 *= recipNorm;
-        s2 *= recipNorm;
-        s3 *= recipNorm;
-
-        // Apply feedback step
-        qDot1 -= beta * s0;
-        qDot2 -= beta * s1;
-        qDot3 -= beta * s2;
-        qDot4 -= beta * s3;
-    }
-
-    // Integrate rate of change of quaternion to yield quaternion
-    q0 += qDot1 * (1.0f / (sampleFreq + freqCallibration));
-    q1 += qDot2 * (1.0f / (sampleFreq + freqCallibration));
-    q2 += qDot3 * (1.0f / (sampleFreq + freqCallibration));
-    q3 += qDot4 * (1.0f / (sampleFreq + freqCallibration));
-
-    // Normalise quaternion
-    recipNorm = invSqrt(q0 * q0 + q1 * q1 + q2 * q2 + q3 * q3);
-    q0 *= recipNorm;
-    q1 *= recipNorm;
-    q2 *= recipNorm;
-    q3 *= recipNorm;
-
-    anglesComputed = 0;
-
-    std::vector<float> new_result = {q0, q1, q2, q3};
-    if(flag == "QATERNION")
+    std::vector<double> rotations;
+    std::unordered_map<std::string, imu*>::iterator it;
+    // std::cout<<"\nbefore madgwickUpdate() Q :"<<q0<<" "<<q1<<" "<<q2<<" "<<q3<<std::endl;
+    for(it=message->imus.begin(); it!=message->imus.end(); it++ )
     {
-        results->push_back(new_result);
-    }
-    else if(flag == "EULER")
-    {
-        if(!anglesComputed)
+        if(message->imus[it->first]->is_connected)
         {
-            results->push_back(computeAngles());
+            _madgwickObjects[it->first]->MadgwickAHRSupdate(
+                    message->imus[it->first]->gyro[0], message->imus[it->first]->gyro[1], message->imus[it->first]->gyro[2], 
+                    message->imus[it->first]->acc[0], message->imus[it->first]->acc[1], message->imus[it->first]->acc[2], 
+                    message->imus[it->first]->mag[0], message->imus[it->first]->mag[1], message->imus[it->first]->mag[2], 
+                    &rotations);
+            if(it->first == "pinky")
+            {
+                result->pinky = rotations;
+            }
+            else if(it->first == "ring")
+            {
+                result->ring = rotations;
+            }
+            else if(it->first == "middle")
+            {
+                result->middle = rotations;
+            }
+            else if(it->first == "index")
+            {
+                result->index = rotations;
+            }
+            else if(it->first == "thumb")
+            {
+                result->thumb = rotations;
+            }
+            else if(it->first == "palm")
+            {
+                result->palm = rotations;
+            }
+            else
+            {
+                std::cout<<"Wow you have some random readings please debug me:"<<it->first<<std::endl;
+            }
         }
     }
-    else
-    {
-        std::cout<<"ERROR: No such flag "<<flag<<std::endl;
-    }
+    rotations.clear();
+
 }
-void GRAlgorithm::MadgwickAHRSupdateIMU(float gx, float gy, float gz, float ax, float ay, float az, 
-        std::deque<std::vector<float>>* results, int freqCallibration, std::string flag) 
+
+/*SetUp method for Madgwick algorithm 
+ */
+bool GRAlgorithm::setupMadgwick(int pCallib, int rCallib, int mCallib, int iCallib, int tCallib, int paCallib)
 {
-    float recipNorm;
-    float s0, s1, s2, s3;
-    float qDot1, qDot2, qDot3, qDot4;
-    float _2q0, _2q1, _2q2, _2q3, _4q0, _4q1, _4q2 ,_8q1, _8q2, q0q0, q1q1, q2q2, q3q3;
-
-    // Rate of change of quaternion from gyroscope
-    qDot1 = 0.5f * (-q1 * gx - q2 * gy - q3 * gz);
-    qDot2 = 0.5f * (q0 * gx + q2 * gz - q3 * gy);
-    qDot3 = 0.5f * (q0 * gy - q1 * gz + q3 * gx);
-    qDot4 = 0.5f * (q0 * gz + q1 * gy - q2 * gx);
-
-    // Compute feedback only if accelerometer measurement valid (avoids NaN in accelerometer normalisation)
-    if(!((ax == 0.0f) && (ay == 0.0f) && (az == 0.0f))) {
-
-        // Normalise accelerometer measurement
-        recipNorm = invSqrt(ax * ax + ay * ay + az * az);
-        ax *= recipNorm;
-        ay *= recipNorm;
-        az *= recipNorm;
-
-        // Auxiliary variables to avoid repeated arithmetic
-        _2q0 = 2.0f * q0;
-        _2q1 = 2.0f * q1;
-        _2q2 = 2.0f * q2;
-        _2q3 = 2.0f * q3;
-        _4q0 = 4.0f * q0;
-        _4q1 = 4.0f * q1;
-        _4q2 = 4.0f * q2;
-        _8q1 = 8.0f * q1;
-        _8q2 = 8.0f * q2;
-        q0q0 = q0 * q0;
-        q1q1 = q1 * q1;
-        q2q2 = q2 * q2;
-        q3q3 = q3 * q3;
-
-        // Gradient decent algorithm corrective step
-        s0 = _4q0 * q2q2 + _2q2 * ax + _4q0 * q1q1 - _2q1 * ay;
-        s1 = _4q1 * q3q3 - _2q3 * ax + 4.0f * q0q0 * q1 - _2q0 * ay - _4q1 + _8q1 * q1q1 + _8q1 * q2q2 + _4q1 * az;
-        s2 = 4.0f * q0q0 * q2 + _2q0 * ax + _4q2 * q3q3 - _2q3 * ay - _4q2 + _8q2 * q1q1 + _8q2 * q2q2 + _4q2 * az;
-        s3 = 4.0f * q1q1 * q3 - _2q1 * ax + 4.0f * q2q2 * q3 - _2q2 * ay;
-        recipNorm = invSqrt(s0 * s0 + s1 * s1 + s2 * s2 + s3 * s3); // normalise step magnitude
-        s0 *= recipNorm;
-        s1 *= recipNorm;
-        s2 *= recipNorm;
-        s3 *= recipNorm;
-
-        // Apply feedback step
-        qDot1 -= beta * s0;
-        qDot2 -= beta * s1;
-        qDot3 -= beta * s2;
-        qDot4 -= beta * s3;
-    }
-
-    // Integrate rate of change of quaternion to yield quaternion
-    q0 += qDot1 * (1.0f / (sampleFreq + freqCallibration));
-    q1 += qDot2 * (1.0f / (sampleFreq + freqCallibration));
-    q2 += qDot3 * (1.0f / (sampleFreq + freqCallibration));
-    q3 += qDot4 * (1.0f / (sampleFreq + freqCallibration));
-
-    // Normalise quaternion
-    recipNorm = invSqrt(q0 * q0 + q1 * q1 + q2 * q2 + q3 * q3);
-    q0 *= recipNorm;
-    q1 *= recipNorm;
-    q2 *= recipNorm;
-    q3 *= recipNorm;
-
-    anglesComputed = 0;
-    //    std::cout<<"Q :"<<q0<<q1<<q2<<q3<<std::endl;
-
-    std::vector<float> new_result = {q0, q1, q2, q3};
-    if(flag == "QATERNION")
-    {
-        results->push_back(new_result);
-    }
-    else if(flag == "EULER")
-    {
-        if(!anglesComputed)
-        {
-            results->push_back(computeAngles());
-        }
-    }
-    else
-    {
-        std::cout<<"ERROR: No such flag "<<flag<<std::endl;
-    }
-
+    _madgwickObjects["pinky"]->setFreqCalibration(pCallib);
+    _madgwickObjects["ring"]->setFreqCalibration(rCallib);
+    _madgwickObjects["middle"]->setFreqCalibration(mCallib);
+    _madgwickObjects["index"]->setFreqCalibration(iCallib);
+    _madgwickObjects["thumb"]->setFreqCalibration(tCallib);
+    _madgwickObjects["palm"]->setFreqCalibration(paCallib);
 }
-
-// Fast inverse square-root
-
-float GRAlgorithm::invSqrt(float x) {
-    float halfx = 0.5f * x;
-    float y = x;
-    long i = *(long*)&y;
-    i = 0x5f3759df - (i>>1);
-    y = *(float*)&i;
-    y = y * (1.5f - (halfx * y * y));
-    y = y * (1.5f - (halfx * y * y));
-    return y;
-}
-
-// helper private methods
-double GRAlgorithm::constrain(double x, double a, double b)
+/* TODO implement in thread madgwick update
+void GRAlgorithm::madgwickUpdateThr(imu* imu, int freqCallibration, std::string flag)
 {
-    if(x < a)
-    {
-        return a;
-    }
-    else if(b < x)
-    {
-        return b;
-    }
-    else
-        return x;
-}
-
-void GRAlgorithm::madgwickUpdateBuffer(imu* imu, std::deque<std::vector<float>>* rotations, 
-        int freqCallibration, std::string flag)
-{
-    std::vector<float> gyro, accel, mag;
-
-    while(!imu->gyro.empty() && imu->gyro.front().size() == 3 && 
-            !imu->acc.empty() && imu->acc.front().size() == 3 && 
-            !imu->mag.empty() && imu->mag.front().size() == 3)
-    {
-        // std::cout<<"in alg while"<<endl;
-        gyro = imu->gyro.front();
-        imu->gyro.pop_front();
-        accel = imu->acc.front();
-        imu->acc.pop_front();
-        mag = imu->mag.front();
-        imu->mag.pop_front();
-
-	   // std::cout<<"\nbefore madgwickUpdate() Q :"<<q0<<" "<<q1<<" "<<q2<<" "<<q3<<std::endl;
-        MadgwickAHRSupdate(gyro[0], gyro[1], gyro[2], accel[0], accel[1], accel[2], mag[0], mag[1], mag[2], 
-                rotations, freqCallibration, flag);
-    }
-
-}
-void GRAlgorithm::madgwickUpdateThr(device_t* inDevice, alg_device_t* outDevice, 
-        int freqCallibration, std::string flag)
-{
-    std::thread pinky(&GRAlgorithm::madgwickUpdateBuffer, this, &inDevice->pinky,  &outDevice->pinky, freqCallibration, flag);
+    std::thread madgwick(&GRAlgorithm::madgwickUpdate, this, imu,  freqCallibration, flag);
     pinky.detach();
     std::cout<<"run MadgwickAHRSupdate thread for pinky"<<endl;
-
-    std::thread ring(&GRAlgorithm::madgwickUpdateBuffer, this, &inDevice->ring,  &outDevice->ring, freqCallibration, flag);
-    ring.detach();
-    std::cout<<"run MadgwickAHRSupdate thread for ring"<<endl;
-
-    std::thread middle(&GRAlgorithm::madgwickUpdateBuffer, this, &inDevice->middle,  &outDevice->middle, freqCallibration, flag);
-    middle.detach();
-    std::cout<<"run MadgwickAHRSupdate thread for middle"<<endl;
-
-    std::thread index(&GRAlgorithm::madgwickUpdateBuffer, this, &inDevice->index,  &outDevice->index, freqCallibration, flag);
-    index.detach();
-    std::cout<<"run MadgwickAHRSupdate thread for index"<<endl;
-
-    std::thread thumb(&GRAlgorithm::madgwickUpdateBuffer, this, &inDevice->thumb,  &outDevice->thumb, freqCallibration, flag);
-    thumb.detach();
-    std::cout<<"run MadgwickAHRSupdate thread for thumb"<<endl;
-
-    std::thread palm(&GRAlgorithm::madgwickUpdateBuffer, this, &inDevice->palm,  &outDevice->palm, freqCallibration, flag);
-    palm.detach();
-    std::cout<<"run MadgwickAHRSupdate thread for palm"<<endl;
 }
+*/
 
-std::vector<float> GRAlgorithm::computeAngles()
+/* setUp method for simplified kalman filter
+ * It's take a grConnection object make some iterations and calkulate variables needet for filter
+ */
+bool GRAlgorithm::setUpKfilter(std::vector<Eigen::Vector3d> data, acc_k_vars* k_vars )
 {
-    this->angles.clear();
-    this->roll = atan2f(q0*q1 + q2*q3, 0.5f - q1*q1 - q2*q2);
-    this->pitch = asinf(-2.0*(q1*q3 - q0*q2));
-    this->yaw = atan2f(q1*q2 + q0*q3, 0.5f - q2*q2 - q3*q3);
-
-    this->roll = this->roll * 57.29578f;
-    this->pitch = this->pitch * 57.29578f;
-    this->yaw = this->yaw * 57.29578f + 180.0f;
-
-    this->angles.push_back(0.0f);
-    this->angles.push_back(this->roll);
-    this->angles.push_back(this->pitch);
-    this->angles.push_back(this->yaw);
-    this->anglesComputed = 1;
-    return angles;
-}
-
-bool GRAlgorithm::loadTrainingData(string filepath)
-{
-    if(!this->trainingData.load(filepath))
+    int i=0;
+    std::vector<double> acc_x;
+    std::vector<double> acc_y;
+    std::vector<double> acc_z;
+    std::cout<<"starting kamlman initialization"<<std::endl;
+    while(i < data.size())
     {
-        cout << "Failed to load training data!\n";
-        return false;
-    }
-
-    return true;
-}
-
-bool GRAlgorithm::loadTestData(string filepath)
-{
-    if(!this->testData.load(filepath))
-    {
-        cout << "Failed to load test data!\n";
-        return false;
-    }
-
-    return true;
-}
-
-bool GRAlgorithm::setTestDataFromTraining(int size)
-{
-    if(this->trainingData.getNumSamples() == 0)
-    {
-        cout << "No trainig data to use!\n";
-        return false;
-    }
-
-    if(size < 0 || size > 100)
-    {
-        cout << "Incorrect size!\n";
-        return false;
-    }
-
-    this->testData = this->trainingData.split(100 - size);
-
-    return true;
-}
-
-bool GRAlgorithm::train()
-{
-    if(!this->dtw.train(this->trainingData))
-    {
-        cout << "Failed to train classifier!\n";
-        return false;
-    }
-
-    return true;
-}
-
-double GRAlgorithm::test()
-{
-    double accuracy = 0;
-    for(GRT::UINT i=0; i<this->testData.getNumSamples(); i++){
-        //Get the i'th test sample - this is a timeseries
-        GRT::UINT classLabel = this->testData[i].getClassLabel();
-        GRT::MatrixDouble timeseries = this->testData[i].getData();
-
-        //Perform a prediction using the classifier
-        if( !this->dtw.predict( timeseries ) ){
-            cout << "Failed to perform prediction for test sampel: " << i <<"\n";
-            return EXIT_FAILURE;
+        
+        acc_x.push_back(data[i](0));
+        acc_y.push_back(data[i](1));
+        acc_z.push_back(data[i](2));
+        if(i> 46)
+        {
+            k_vars->acc_k_x.accumulated.push_back(data[i](0));
+            k_vars->acc_k_y.accumulated.push_back(data[i](1));
+            k_vars->acc_k_z.accumulated.push_back(data[i](2));
         }
+        i++;
+        std::cout<<i<<std::endl;
 
-        //Get the predicted class label
-        GRT::UINT predictedClassLabel = this->dtw.getPredictedClassLabel();
-        double maximumLikelihood = this->dtw.getMaximumLikelihood();
-        GRT::VectorDouble classLikelihoods = this->dtw.getClassLikelihoods();
-        GRT::VectorDouble classDistances = this->dtw.getClassDistances();
-
-        //Update the accuracy
-        if( classLabel == predictedClassLabel ) accuracy++;
-        cout << "TestSample: " << i <<  "\tClassLabel: " << classLabel << "\tPredictedClassLabel: " << predictedClassLabel << "\tMaximumLikelihood: " << maximumLikelihood << endl;
     }
+    k_vars->acc_k_x.volt = _stDev(&acc_x);
+    k_vars->acc_k_y.volt = _stDev(&acc_y);
+    k_vars->acc_k_z.volt = _stDev(&acc_z);
+    std::cout<<"done with kalman setup"<<std::endl;
 
-    this->testAccuracy = (double(accuracy) / double(testData.getNumSamples())) * 100.0;
-
-    cout << "Test Accuracy: " << this->testAccuracy << "%" << endl;
-
-    return this->testAccuracy;
 }
 
-double GRAlgorithm::getTestAccuracy()
+Eigen::Vector3d GRAlgorithm::kFilterStep(Eigen::Vector3d data, acc_k_vars* k_vars)
 {
-    return this->testAccuracy;
+    Eigen::Vector3d result;
+//   _correctKFilter(msg->palm.acc, k_vars);
+    result(0) = _kFilter(data(0), &(k_vars->acc_k_x));
+    result(1) = _kFilter(data(1), &(k_vars->acc_k_y));
+    result(2) = _kFilter(data(2), &(k_vars->acc_k_z));
+    return result;
+}
+/*
+bool GRAlgorithm::setUpKfilterCoord(std::vector<std::vector<double> > acumulated_data, acc_k_vars* k_vars)
+{
+
+}
+bool kFilterStepCoord(std::vector<double> coord, )*/
+/*compute pitch roll and yaw from quaternion
+ */
+std::vector<double> GRAlgorithm::_computeAngles(std::vector<double> q)
+{
+
+    std::vector<double> angles;
+    angles.clear();
+    double roll = 0.0f;
+    double pitch = 0.0f;
+    double yaw = 0.0f;
+    roll = atan2f(q[0]*q[1] + q[2]*q[3], 0.5f - q[1]*q[1] - q[2]*q[2]);
+    pitch = asinf(-2.0*(q[1]*q[3] - q[0]*q[2]));
+    yaw = atan2f(q[1]*q[2] + q[0]*q[3], 0.5f - q[2]*q[2] - q[3]*q[3]);
+
+    roll = roll * 57.29578f;
+    pitch = pitch * 57.29578f;
+    yaw = yaw * 57.29578f + 180.0f;
+
+    angles.push_back(0.0f);
+    angles.push_back(roll);
+    angles.push_back(pitch);
+    angles.push_back(yaw);
+    return _angles;
 }
 
-bool GRAlgorithm::saveModel(string filepath)
+/*Simplified kalman filter 
+ */
+double GRAlgorithm::_kFilter(double input, k_filter_vars* k_vars)
 {
-    if(!this->dtw.save(filepath))
+    k_vars->pc = k_vars->p + k_vars->proccess;
+    k_vars->g = k_vars->pc / (k_vars->pc + k_vars->volt);
+    k_vars->p = (1 - k_vars->g) * k_vars->pc;
+    k_vars->xp = k_vars->xe;
+    k_vars->zp = k_vars->xp;
+    k_vars->xe = k_vars->g * (input - k_vars->zp) + k_vars->xp;
+    
+    return k_vars->xe;
+}
+
+//Kfilter private help methods
+/* Standard deviation calculation
+ */
+double GRAlgorithm::_stDev(std::vector<double>* input)
+{
+    double sum = std::accumulate(input->begin(), input->end(), 0.0);
+    double mean = sum / input->size();
+
+    std::vector<double> diff(input->size());
+    std::transform(input->begin(), input->end(), diff.begin(),
+            std::bind2nd(std::minus<double>(), mean));
+
+    double sq_sum = std::inner_product(diff.begin(), diff.end(), diff.begin(), 0.0);
+    double stdev = std::sqrt(sq_sum / input->size());
+
+    return stdev;
+}
+
+/*Average
+ */
+double GRAlgorithm::_average(std::vector<double>* input)
+{
+    double average = std::accumulate(input->begin(), input->end(), 0.0);
+}
+
+double GRAlgorithm::_stdErr(std::vector<double>* input)
+{
+    double tmpVar = 0.0;
+    tmpVar = _stDev(input);
+    return (tmpVar/sqrt((double)input->size()));
+}
+
+bool GRAlgorithm::_correctKFilter(std::vector<double> data, acc_k_vars* k_vars)
+{
+    _sliceAndPush(&(k_vars->acc_k_x.accumulated), data[0]);
+    k_vars->acc_k_x.accumulated;
+    _sliceAndPush(&(k_vars->acc_k_y.accumulated), data[1]);
+    k_vars->acc_k_y.accumulated;
+    _sliceAndPush(&(k_vars->acc_k_z.accumulated), data[2]);
+    k_vars->acc_k_z.accumulated;
+
+    k_vars->acc_k_x.volt = _stDev(&(k_vars->acc_k_x.accumulated));
+    k_vars->acc_k_y.volt = _stDev(&(k_vars->acc_k_y.accumulated));
+    k_vars->acc_k_z.volt = _stDev(&(k_vars->acc_k_z.accumulated));
+    
+    return 1;    
+}
+
+bool GRAlgorithm::_sliceAndPush(std::vector<double>* data, double val)
+{
+   // std::cout<<"slice data size  -->"<<data->size()<<std::endl;
+
+    for(int i=0; i<data->size(); i++)
     {
-        cout << "Failed to save the classifier model!\n";
-        return false;
-    }
-
-    return true;
+        if(i<2)
+        {    
+            data->at(i) = data->at(i+1);
+        }
+        else
+        {
+            data->at(i) = val;
+        }
+    }   
 }
-
-bool GRAlgorithm::loadModel(string filepath)
-{
-    if(!this->dtw.load(filepath))
-    {
-        cout << "Failed to load the classifier model!\n";
-        return false;
-    }
-
-    return true;
-}
-
-bool GRAlgorithm::predict(GRT::MatrixDouble timeseries)
-{
-    if(!dtw.predict(timeseries))
-    {
-        cout << "Failed to perform prediction!\n";
-        return false;
-    }
-
-    return true;
-}
-
-GRT::UINT GRAlgorithm::getPredictedClassLabel()
-{
-    return this->dtw.getPredictedClassLabel();
-}
-
-double GRAlgorithm::getMaximumLikelihood()
-{
-    return this->dtw.getMaximumLikelihood();
-}
-

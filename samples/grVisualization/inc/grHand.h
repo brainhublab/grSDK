@@ -17,14 +17,13 @@ public:
 
         // benging with matrix
 		bool bendHandWithMatrix(GLfloat mat[16]);
-		bool bendFingerWithMatrix( int index, GLfloat mat[16] );
+        bool bendFingerWithMatrix( int index, GLfloat mat[16] );
+
         // bending with euler angles
         bool bendArm( float angleX, float angleY, float angleZ );
         bool bendHand( float angleX, float angleY, float angleZ );
         bool bendFinger( int index, float angleX, float angleY, float angleZ );
         bool bendFirstPhalange(int index, float angleX, float angleY, float angleZ);
-
-
 
         const std::vector<std::map<char, float>> & getTrajectoryAngles() const;
 private:
