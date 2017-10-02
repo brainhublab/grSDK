@@ -21,7 +21,10 @@ struct GRHandNode
         float angleX = 0.f;
         float angleY = 0.f;
         float angleZ = 0.f;
-        // current rotation matrix of node
+	float posX = 0.f;
+	float posY = 0.f;
+	float posZ = 0.f;
+	// current rotation matrix of node
 		GLfloat matrix[16];
 
         float maxAngleX = 0, maxAngleY = 0, maxAngleZ = 0;

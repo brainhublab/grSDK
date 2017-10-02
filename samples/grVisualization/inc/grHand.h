@@ -21,7 +21,8 @@ public:
 
         // bending with euler angles
         bool bendArm( float angleX, float angleY, float angleZ );
-        bool bendHand( float angleX, float angleY, float angleZ );
+ 	bool setHandPosition( float x, float y, float z );
+	bool bendHand( float angleX, float angleY, float angleZ );
         bool bendFinger( int index, float angleX, float angleY, float angleZ );
         bool bendFirstPhalange(int index, float angleX, float angleY, float angleZ);
 

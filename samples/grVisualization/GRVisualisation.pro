@@ -44,7 +44,6 @@ HEADERS += ./inc/grVisualization.h \
 ./inc/grDataPlotter.h \
 ../../inc/grConnection.h \
 ../../inc/grAlgorithm.h \
-../../inc/grDataAttributes.h \
 ../../inc/grDevice.h \
 ../../inc/grGrt.h \
 ../../inc/grMadgwick.h \

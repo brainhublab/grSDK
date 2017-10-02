@@ -134,6 +134,20 @@ bool GRHand::bendArm( float angleX, float angleY, float angleZ )
         return false;
 }
 /*
+ * Moves hand
+*/
+bool GRHand::setHandPosition( float x, float y, float z )
+{
+		struct GRHandNode *hand = &(this->children[0]);
+
+        hand->posX = x;
+        hand->posY = y;
+        hand->posZ = z;
+        return true;
+}
+
+
+/*
  * Bends palm with angles
 */
 bool GRHand::bendHand( float angleX, float angleY, float angleZ )

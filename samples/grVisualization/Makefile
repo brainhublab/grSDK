@@ -180,7 +180,6 @@ DIST          = /usr/lib64/qt5/mkspecs/features/spec_pre.prf \
 		inc/grDataPlotter.h \
 		../../inc/grConnection.h \
 		../../inc/grAlgorithm.h \
-		../../inc/grDataAttributes.h \
 		../../inc/grDevice.h \
 		../../inc/grGrt.h \
 		../../inc/grMadgwick.h \
@@ -404,7 +403,7 @@ dist: distdir FORCE
 distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
-	$(COPY_FILE) --parents inc/grVisualization.h inc/ui_GRVisualization.h inc/grDataApplier.h inc/GRGLWidget.h inc/grHandNode.h inc/grHand.h inc/renderConfig.h inc/grRender.h ../../externAssets/qcustomplot/qcustomplot.h inc/grDataPlotter.h ../../inc/grConnection.h ../../inc/grAlgorithm.h ../../inc/grDataAttributes.h ../../inc/grDevice.h ../../inc/grGrt.h ../../inc/grMadgwick.h ../../inc/grTrajectory.h ../../inc/grUtilities.h $(DISTDIR)/
+	$(COPY_FILE) --parents inc/grVisualization.h inc/ui_GRVisualization.h inc/grDataApplier.h inc/GRGLWidget.h inc/grHandNode.h inc/grHand.h inc/renderConfig.h inc/grRender.h ../../externAssets/qcustomplot/qcustomplot.h inc/grDataPlotter.h ../../inc/grConnection.h ../../inc/grAlgorithm.h ../../inc/grDevice.h ../../inc/grGrt.h ../../inc/grMadgwick.h ../../inc/grTrajectory.h ../../inc/grUtilities.h $(DISTDIR)/
 	$(COPY_FILE) --parents src/main.cpp src/grVisualization.cpp src/grDataApplier.cpp src/GRGLWidget.cpp src/grHand.cpp src/grRender.cpp ../../externAssets/qcustomplot/qcustomplot.cpp src/grDataPlotter.cpp ../../src/grConnection.cpp ../../src/grAlgorithm.cpp ../../src/grGrt.cpp ../../src/grMadgwick.cpp ../../src/grTrajectory.cpp ../../src/grUtilities.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents grVisualisation.ui $(DISTDIR)/
 
@@ -613,7 +612,6 @@ build/generated_files/moc_grVisualization.cpp: inc/GRGLWidget.h \
 		../../externAssets/grt/include/GRT/ContextModules/Gate.h \
 		../../inc/grMadgwick.h \
 		../../inc/grGrt.h \
-		../../inc/grDataAttributes.h \
 		../../externAssets/eigen/Eigen/Dense \
 		../../externAssets/eigen/Eigen/Core \
 		../../externAssets/eigen/Eigen/src/Core/util/DisableStupidWarnings.h \
@@ -820,6 +818,7 @@ build/generated_files/moc_grVisualization.cpp: inc/GRGLWidget.h \
 		../../externAssets/eigen/Eigen/src/Eigenvalues/RealSchur_LAPACKE.h \
 		../../externAssets/eigen/Eigen/src/Eigenvalues/ComplexSchur_LAPACKE.h \
 		../../externAssets/eigen/Eigen/src/Eigenvalues/SelfAdjointEigenSolver_LAPACKE.h \
+		../../inc/grTrajectory.h \
 		inc/grVisualization.h
 	/usr/lib64/qt5/bin/moc $(DEFINES) -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/vlad/projects/brainhub/gestusSDK/samples/grVisualization -I/home/vlad/projects/brainhub/gestusSDK/externAssets/grt/include -I/home/vlad/projects/brainhub/gestusSDK/externAssets/grt/lib -I/home/vlad/projects/brainhub/gestusSDK/externAssets/eigen -I/usr/include/dbus-1.0 -I/usr/lib64/dbus-1.0/include -I/home/vlad/projects/brainhub/gestusSDK/samples/grVisualization/inc -I/home/vlad/projects/brainhub/gestusSDK/externAssets/qcustomplot -I/home/vlad/projects/brainhub/gestusSDK/externAssets -I/home/vlad/projects/brainhub/gestusSDK/inc -I/home/vlad/projects/brainhub/gestusSDK/samples/grVisualization -I/usr/include/qt5 -I/usr/include/qt5/QtOpenGL -I/usr/include/qt5/QtPrintSupport -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtCore -I/usr/include/c++/4.8 -I/usr/include/c++/4.8/x86_64-suse-linux -I/usr/include/c++/4.8/backward -I/usr/lib64/gcc/x86_64-suse-linux/4.8/include -I/usr/local/include -I/usr/lib64/gcc/x86_64-suse-linux/4.8/include-fixed -I/usr/x86_64-suse-linux/include -I/usr/include inc/grVisualization.h -o build/generated_files/moc_grVisualization.cpp
 
@@ -999,7 +998,6 @@ build/generated_files/moc_grDataApplier.cpp: ../../externAssets/plog/Log.h \
 		../../externAssets/grt/include/GRT/ContextModules/Gate.h \
 		../../inc/grMadgwick.h \
 		../../inc/grGrt.h \
-		../../inc/grDataAttributes.h \
 		../../externAssets/eigen/Eigen/Dense \
 		../../externAssets/eigen/Eigen/Core \
 		../../externAssets/eigen/Eigen/src/Core/util/DisableStupidWarnings.h \
@@ -1206,6 +1204,7 @@ build/generated_files/moc_grDataApplier.cpp: ../../externAssets/plog/Log.h \
 		../../externAssets/eigen/Eigen/src/Eigenvalues/RealSchur_LAPACKE.h \
 		../../externAssets/eigen/Eigen/src/Eigenvalues/ComplexSchur_LAPACKE.h \
 		../../externAssets/eigen/Eigen/src/Eigenvalues/SelfAdjointEigenSolver_LAPACKE.h \
+		../../inc/grTrajectory.h \
 		inc/grDataApplier.h
 	/usr/lib64/qt5/bin/moc $(DEFINES) -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/vlad/projects/brainhub/gestusSDK/samples/grVisualization -I/home/vlad/projects/brainhub/gestusSDK/externAssets/grt/include -I/home/vlad/projects/brainhub/gestusSDK/externAssets/grt/lib -I/home/vlad/projects/brainhub/gestusSDK/externAssets/eigen -I/usr/include/dbus-1.0 -I/usr/lib64/dbus-1.0/include -I/home/vlad/projects/brainhub/gestusSDK/samples/grVisualization/inc -I/home/vlad/projects/brainhub/gestusSDK/externAssets/qcustomplot -I/home/vlad/projects/brainhub/gestusSDK/externAssets -I/home/vlad/projects/brainhub/gestusSDK/inc -I/home/vlad/projects/brainhub/gestusSDK/samples/grVisualization -I/usr/include/qt5 -I/usr/include/qt5/QtOpenGL -I/usr/include/qt5/QtPrintSupport -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtCore -I/usr/include/c++/4.8 -I/usr/include/c++/4.8/x86_64-suse-linux -I/usr/include/c++/4.8/backward -I/usr/lib64/gcc/x86_64-suse-linux/4.8/include -I/usr/local/include -I/usr/lib64/gcc/x86_64-suse-linux/4.8/include-fixed -I/usr/x86_64-suse-linux/include -I/usr/include inc/grDataApplier.h -o build/generated_files/moc_grDataApplier.cpp
 
@@ -1427,396 +1426,6 @@ build/main.o: src/main.cpp inc/grVisualization.h \
 		../../externAssets/grt/include/GRT/ContextModules/Gate.h \
 		../../inc/grMadgwick.h \
 		../../inc/grGrt.h \
-		../../inc/grDataAttributes.h \
-		../../externAssets/eigen/Eigen/Dense \
-		../../externAssets/eigen/Eigen/Core \
-		../../externAssets/eigen/Eigen/src/Core/util/DisableStupidWarnings.h \
-		../../externAssets/eigen/Eigen/src/Core/util/Macros.h \
-		../../externAssets/eigen/Eigen/src/Core/util/MKL_support.h \
-		../../externAssets/eigen/Eigen/src/misc/blas.h \
-		../../externAssets/eigen/Eigen/src/Core/util/Constants.h \
-		../../externAssets/eigen/Eigen/src/Core/util/Meta.h \
-		../../externAssets/eigen/Eigen/src/Core/util/ForwardDeclarations.h \
-		../../externAssets/eigen/Eigen/src/Core/util/StaticAssert.h \
-		../../externAssets/eigen/Eigen/src/Core/util/XprHelper.h \
-		../../externAssets/eigen/Eigen/src/Core/util/Memory.h \
-		../../externAssets/eigen/Eigen/src/Core/NumTraits.h \
-		../../externAssets/eigen/Eigen/src/Core/MathFunctions.h \
-		../../externAssets/eigen/Eigen/src/Core/GenericPacketMath.h \
-		../../externAssets/eigen/Eigen/src/Core/MathFunctionsImpl.h \
-		../../externAssets/eigen/Eigen/src/Core/arch/SSE/PacketMath.h \
-		../../externAssets/eigen/Eigen/src/Core/arch/AVX/PacketMath.h \
-		../../externAssets/eigen/Eigen/src/Core/arch/AVX512/PacketMath.h \
-		../../externAssets/eigen/Eigen/src/Core/arch/AVX512/MathFunctions.h \
-		../../externAssets/eigen/Eigen/src/Core/arch/SSE/Complex.h \
-		../../externAssets/eigen/Eigen/src/Core/arch/SSE/MathFunctions.h \
-		../../externAssets/eigen/Eigen/src/Core/arch/AVX/MathFunctions.h \
-		../../externAssets/eigen/Eigen/src/Core/arch/AVX/Complex.h \
-		../../externAssets/eigen/Eigen/src/Core/arch/AVX/TypeCasting.h \
-		../../externAssets/eigen/Eigen/src/Core/arch/SSE/TypeCasting.h \
-		../../externAssets/eigen/Eigen/src/Core/arch/AltiVec/PacketMath.h \
-		../../externAssets/eigen/Eigen/src/Core/arch/AltiVec/MathFunctions.h \
-		../../externAssets/eigen/Eigen/src/Core/arch/AltiVec/Complex.h \
-		../../externAssets/eigen/Eigen/src/Core/arch/NEON/PacketMath.h \
-		../../externAssets/eigen/Eigen/src/Core/arch/NEON/MathFunctions.h \
-		../../externAssets/eigen/Eigen/src/Core/arch/NEON/Complex.h \
-		../../externAssets/eigen/Eigen/src/Core/arch/ZVector/PacketMath.h \
-		../../externAssets/eigen/Eigen/src/Core/arch/ZVector/MathFunctions.h \
-		../../externAssets/eigen/Eigen/src/Core/arch/ZVector/Complex.h \
-		../../externAssets/eigen/Eigen/src/Core/arch/CUDA/Half.h \
-		../../externAssets/eigen/Eigen/src/Core/arch/CUDA/PacketMathHalf.h \
-		../../externAssets/eigen/Eigen/src/Core/arch/CUDA/TypeCasting.h \
-		../../externAssets/eigen/Eigen/src/Core/arch/CUDA/PacketMath.h \
-		../../externAssets/eigen/Eigen/src/Core/arch/CUDA/MathFunctions.h \
-		../../externAssets/eigen/Eigen/src/Core/arch/Default/Settings.h \
-		../../externAssets/eigen/Eigen/src/Core/functors/TernaryFunctors.h \
-		../../externAssets/eigen/Eigen/src/Core/functors/BinaryFunctors.h \
-		../../externAssets/eigen/Eigen/src/Core/functors/UnaryFunctors.h \
-		../../externAssets/eigen/Eigen/src/Core/functors/NullaryFunctors.h \
-		../../externAssets/eigen/Eigen/src/Core/functors/StlFunctors.h \
-		../../externAssets/eigen/Eigen/src/Core/functors/AssignmentFunctors.h \
-		../../externAssets/eigen/Eigen/src/Core/arch/CUDA/Complex.h \
-		../../externAssets/eigen/Eigen/src/Core/IO.h \
-		../../externAssets/eigen/Eigen/src/Core/DenseCoeffsBase.h \
-		../../externAssets/eigen/Eigen/src/Core/DenseBase.h \
-		../../externAssets/eigen/Eigen/src/plugins/BlockMethods.h \
-		../../externAssets/eigen/Eigen/src/Core/MatrixBase.h \
-		../../externAssets/eigen/Eigen/src/plugins/CommonCwiseUnaryOps.h \
-		../../externAssets/eigen/Eigen/src/plugins/CommonCwiseBinaryOps.h \
-		../../externAssets/eigen/Eigen/src/plugins/MatrixCwiseUnaryOps.h \
-		../../externAssets/eigen/Eigen/src/plugins/MatrixCwiseBinaryOps.h \
-		../../externAssets/eigen/Eigen/src/Core/EigenBase.h \
-		../../externAssets/eigen/Eigen/src/Core/Product.h \
-		../../externAssets/eigen/Eigen/src/Core/CoreEvaluators.h \
-		../../externAssets/eigen/Eigen/src/Core/AssignEvaluator.h \
-		../../externAssets/eigen/Eigen/src/Core/Assign.h \
-		../../externAssets/eigen/Eigen/src/Core/ArrayBase.h \
-		../../externAssets/eigen/Eigen/src/plugins/ArrayCwiseUnaryOps.h \
-		../../externAssets/eigen/Eigen/src/plugins/ArrayCwiseBinaryOps.h \
-		../../externAssets/eigen/Eigen/src/Core/util/BlasUtil.h \
-		../../externAssets/eigen/Eigen/src/Core/DenseStorage.h \
-		../../externAssets/eigen/Eigen/src/Core/NestByValue.h \
-		../../externAssets/eigen/Eigen/src/Core/ReturnByValue.h \
-		../../externAssets/eigen/Eigen/src/Core/NoAlias.h \
-		../../externAssets/eigen/Eigen/src/Core/PlainObjectBase.h \
-		../../externAssets/eigen/Eigen/src/Core/Matrix.h \
-		../../externAssets/eigen/Eigen/src/Core/Array.h \
-		../../externAssets/eigen/Eigen/src/Core/CwiseTernaryOp.h \
-		../../externAssets/eigen/Eigen/src/Core/CwiseBinaryOp.h \
-		../../externAssets/eigen/Eigen/src/Core/CwiseUnaryOp.h \
-		../../externAssets/eigen/Eigen/src/Core/CwiseNullaryOp.h \
-		../../externAssets/eigen/Eigen/src/Core/CwiseUnaryView.h \
-		../../externAssets/eigen/Eigen/src/Core/SelfCwiseBinaryOp.h \
-		../../externAssets/eigen/Eigen/src/Core/Dot.h \
-		../../externAssets/eigen/Eigen/src/Core/StableNorm.h \
-		../../externAssets/eigen/Eigen/src/Core/Stride.h \
-		../../externAssets/eigen/Eigen/src/Core/MapBase.h \
-		../../externAssets/eigen/Eigen/src/Core/Map.h \
-		../../externAssets/eigen/Eigen/src/Core/Ref.h \
-		../../externAssets/eigen/Eigen/src/Core/Block.h \
-		../../externAssets/eigen/Eigen/src/Core/VectorBlock.h \
-		../../externAssets/eigen/Eigen/src/Core/Transpose.h \
-		../../externAssets/eigen/Eigen/src/Core/DiagonalMatrix.h \
-		../../externAssets/eigen/Eigen/src/Core/Diagonal.h \
-		../../externAssets/eigen/Eigen/src/Core/DiagonalProduct.h \
-		../../externAssets/eigen/Eigen/src/Core/Redux.h \
-		../../externAssets/eigen/Eigen/src/Core/Visitor.h \
-		../../externAssets/eigen/Eigen/src/Core/Fuzzy.h \
-		../../externAssets/eigen/Eigen/src/Core/Swap.h \
-		../../externAssets/eigen/Eigen/src/Core/CommaInitializer.h \
-		../../externAssets/eigen/Eigen/src/Core/GeneralProduct.h \
-		../../externAssets/eigen/Eigen/src/Core/Solve.h \
-		../../externAssets/eigen/Eigen/src/Core/Inverse.h \
-		../../externAssets/eigen/Eigen/src/Core/SolverBase.h \
-		../../externAssets/eigen/Eigen/src/Core/PermutationMatrix.h \
-		../../externAssets/eigen/Eigen/src/Core/Transpositions.h \
-		../../externAssets/eigen/Eigen/src/Core/TriangularMatrix.h \
-		../../externAssets/eigen/Eigen/src/Core/SelfAdjointView.h \
-		../../externAssets/eigen/Eigen/src/Core/products/GeneralBlockPanelKernel.h \
-		../../externAssets/eigen/Eigen/src/Core/products/Parallelizer.h \
-		../../externAssets/eigen/Eigen/src/Core/ProductEvaluators.h \
-		../../externAssets/eigen/Eigen/src/Core/products/GeneralMatrixVector.h \
-		../../externAssets/eigen/Eigen/src/Core/products/GeneralMatrixMatrix.h \
-		../../externAssets/eigen/Eigen/src/Core/SolveTriangular.h \
-		../../externAssets/eigen/Eigen/src/Core/products/GeneralMatrixMatrixTriangular.h \
-		../../externAssets/eigen/Eigen/src/Core/products/SelfadjointMatrixVector.h \
-		../../externAssets/eigen/Eigen/src/Core/products/SelfadjointMatrixMatrix.h \
-		../../externAssets/eigen/Eigen/src/Core/products/SelfadjointProduct.h \
-		../../externAssets/eigen/Eigen/src/Core/products/SelfadjointRank2Update.h \
-		../../externAssets/eigen/Eigen/src/Core/products/TriangularMatrixVector.h \
-		../../externAssets/eigen/Eigen/src/Core/products/TriangularMatrixMatrix.h \
-		../../externAssets/eigen/Eigen/src/Core/products/TriangularSolverMatrix.h \
-		../../externAssets/eigen/Eigen/src/Core/products/TriangularSolverVector.h \
-		../../externAssets/eigen/Eigen/src/Core/BandMatrix.h \
-		../../externAssets/eigen/Eigen/src/Core/CoreIterators.h \
-		../../externAssets/eigen/Eigen/src/Core/ConditionEstimator.h \
-		../../externAssets/eigen/Eigen/src/Core/BooleanRedux.h \
-		../../externAssets/eigen/Eigen/src/Core/Select.h \
-		../../externAssets/eigen/Eigen/src/Core/VectorwiseOp.h \
-		../../externAssets/eigen/Eigen/src/Core/Random.h \
-		../../externAssets/eigen/Eigen/src/Core/Replicate.h \
-		../../externAssets/eigen/Eigen/src/Core/Reverse.h \
-		../../externAssets/eigen/Eigen/src/Core/ArrayWrapper.h \
-		../../externAssets/eigen/Eigen/src/Core/products/GeneralMatrixMatrix_BLAS.h \
-		../../externAssets/eigen/Eigen/src/Core/products/GeneralMatrixVector_BLAS.h \
-		../../externAssets/eigen/Eigen/src/Core/products/GeneralMatrixMatrixTriangular_BLAS.h \
-		../../externAssets/eigen/Eigen/src/Core/products/SelfadjointMatrixMatrix_BLAS.h \
-		../../externAssets/eigen/Eigen/src/Core/products/SelfadjointMatrixVector_BLAS.h \
-		../../externAssets/eigen/Eigen/src/Core/products/TriangularMatrixMatrix_BLAS.h \
-		../../externAssets/eigen/Eigen/src/Core/products/TriangularMatrixVector_BLAS.h \
-		../../externAssets/eigen/Eigen/src/Core/products/TriangularSolverMatrix_BLAS.h \
-		../../externAssets/eigen/Eigen/src/Core/Assign_MKL.h \
-		../../externAssets/eigen/Eigen/src/Core/GlobalFunctions.h \
-		../../externAssets/eigen/Eigen/src/Core/util/ReenableStupidWarnings.h \
-		../../externAssets/eigen/Eigen/LU \
-		../../externAssets/eigen/Eigen/src/misc/Kernel.h \
-		../../externAssets/eigen/Eigen/src/misc/Image.h \
-		../../externAssets/eigen/Eigen/src/LU/FullPivLU.h \
-		../../externAssets/eigen/Eigen/src/LU/PartialPivLU.h \
-		../../externAssets/eigen/Eigen/src/misc/lapacke.h \
-		../../externAssets/eigen/Eigen/src/misc/lapacke_mangling.h \
-		../../externAssets/eigen/Eigen/src/LU/PartialPivLU_LAPACKE.h \
-		../../externAssets/eigen/Eigen/src/LU/Determinant.h \
-		../../externAssets/eigen/Eigen/src/LU/InverseImpl.h \
-		../../externAssets/eigen/Eigen/src/LU/arch/Inverse_SSE.h \
-		../../externAssets/eigen/Eigen/Cholesky \
-		../../externAssets/eigen/Eigen/src/Cholesky/LLT.h \
-		../../externAssets/eigen/Eigen/src/Cholesky/LDLT.h \
-		../../externAssets/eigen/Eigen/src/Cholesky/LLT_LAPACKE.h \
-		../../externAssets/eigen/Eigen/QR \
-		../../externAssets/eigen/Eigen/Jacobi \
-		../../externAssets/eigen/Eigen/src/Jacobi/Jacobi.h \
-		../../externAssets/eigen/Eigen/Householder \
-		../../externAssets/eigen/Eigen/src/Householder/Householder.h \
-		../../externAssets/eigen/Eigen/src/Householder/HouseholderSequence.h \
-		../../externAssets/eigen/Eigen/src/Householder/BlockHouseholder.h \
-		../../externAssets/eigen/Eigen/src/QR/HouseholderQR.h \
-		../../externAssets/eigen/Eigen/src/QR/FullPivHouseholderQR.h \
-		../../externAssets/eigen/Eigen/src/QR/ColPivHouseholderQR.h \
-		../../externAssets/eigen/Eigen/src/QR/CompleteOrthogonalDecomposition.h \
-		../../externAssets/eigen/Eigen/src/QR/HouseholderQR_LAPACKE.h \
-		../../externAssets/eigen/Eigen/src/QR/ColPivHouseholderQR_LAPACKE.h \
-		../../externAssets/eigen/Eigen/SVD \
-		../../externAssets/eigen/Eigen/src/misc/RealSvd2x2.h \
-		../../externAssets/eigen/Eigen/src/SVD/UpperBidiagonalization.h \
-		../../externAssets/eigen/Eigen/src/SVD/SVDBase.h \
-		../../externAssets/eigen/Eigen/src/SVD/JacobiSVD.h \
-		../../externAssets/eigen/Eigen/src/SVD/BDCSVD.h \
-		../../externAssets/eigen/Eigen/src/SVD/JacobiSVD_LAPACKE.h \
-		../../externAssets/eigen/Eigen/Geometry \
-		../../externAssets/eigen/Eigen/src/Geometry/OrthoMethods.h \
-		../../externAssets/eigen/Eigen/src/Geometry/EulerAngles.h \
-		../../externAssets/eigen/Eigen/src/Geometry/Homogeneous.h \
-		../../externAssets/eigen/Eigen/src/Geometry/RotationBase.h \
-		../../externAssets/eigen/Eigen/src/Geometry/Rotation2D.h \
-		../../externAssets/eigen/Eigen/src/Geometry/Quaternion.h \
-		../../externAssets/eigen/Eigen/src/Geometry/AngleAxis.h \
-		../../externAssets/eigen/Eigen/src/Geometry/Transform.h \
-		../../externAssets/eigen/Eigen/src/Geometry/Translation.h \
-		../../externAssets/eigen/Eigen/src/Geometry/Scaling.h \
-		../../externAssets/eigen/Eigen/src/Geometry/Hyperplane.h \
-		../../externAssets/eigen/Eigen/src/Geometry/ParametrizedLine.h \
-		../../externAssets/eigen/Eigen/src/Geometry/AlignedBox.h \
-		../../externAssets/eigen/Eigen/src/Geometry/Umeyama.h \
-		../../externAssets/eigen/Eigen/src/Geometry/arch/Geometry_SSE.h \
-		../../externAssets/eigen/Eigen/Eigenvalues \
-		../../externAssets/eigen/Eigen/src/Eigenvalues/Tridiagonalization.h \
-		../../externAssets/eigen/Eigen/src/Eigenvalues/RealSchur.h \
-		../../externAssets/eigen/Eigen/src/Eigenvalues/HessenbergDecomposition.h \
-		../../externAssets/eigen/Eigen/src/Eigenvalues/EigenSolver.h \
-		../../externAssets/eigen/Eigen/src/Eigenvalues/SelfAdjointEigenSolver.h \
-		../../externAssets/eigen/Eigen/src/Eigenvalues/GeneralizedSelfAdjointEigenSolver.h \
-		../../externAssets/eigen/Eigen/src/Eigenvalues/ComplexSchur.h \
-		../../externAssets/eigen/Eigen/src/Eigenvalues/ComplexEigenSolver.h \
-		../../externAssets/eigen/Eigen/src/Eigenvalues/RealQZ.h \
-		../../externAssets/eigen/Eigen/src/Eigenvalues/GeneralizedEigenSolver.h \
-		../../externAssets/eigen/Eigen/src/Eigenvalues/MatrixBaseEigenvalues.h \
-		../../externAssets/eigen/Eigen/src/Eigenvalues/RealSchur_LAPACKE.h \
-		../../externAssets/eigen/Eigen/src/Eigenvalues/ComplexSchur_LAPACKE.h \
-		../../externAssets/eigen/Eigen/src/Eigenvalues/SelfAdjointEigenSolver_LAPACKE.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/main.o src/main.cpp
-
-build/grVisualization.o: src/grVisualization.cpp inc/grVisualization.h \
-		inc/GRGLWidget.h \
-		inc/grRender.h \
-		inc/grHand.h \
-		inc/grHandNode.h \
-		inc/renderConfig.h \
-		inc/grDataPlotter.h \
-		../../externAssets/qcustomplot/qcustomplot.h \
-		inc/grDataApplier.h \
-		../../externAssets/plog/Log.h \
-		../../externAssets/plog/Record.h \
-		../../externAssets/plog/Util.h \
-		../../externAssets/plog/Severity.h \
-		../../externAssets/plog/Logger.h \
-		../../externAssets/plog/Appenders/IAppender.h \
-		../../externAssets/plog/Init.h \
-		../../externAssets/plog/Formatters/CsvFormatter.h \
-		../../externAssets/plog/Formatters/TxtFormatter.h \
-		../../externAssets/plog/Appenders/RollingFileAppender.h \
-		../../externAssets/plog/Converters/UTF8Converter.h \
-		../../inc/grConnection.h \
-		../../inc/grDevice.h \
-		../../inc/grAlgorithm.h \
-		../../externAssets/grt/include/GRT/GRT.h \
-		../../externAssets/grt/include/GRT/Util/GRTVersionInfo.h \
-		../../externAssets/grt/include/GRT/Util/GRTCommon.h \
-		../../externAssets/grt/include/GRT/Util/GRTTypedefs.h \
-		../../externAssets/grt/include/GRT/Util/GRTException.h \
-		../../externAssets/grt/include/GRT/Util/MinMax.h \
-		../../externAssets/grt/include/GRT/Util/ClassTracker.h \
-		../../externAssets/grt/include/GRT/Util/IndexedDouble.h \
-		../../externAssets/grt/include/GRT/Util/DebugLog.h \
-		../../externAssets/grt/include/GRT/Util/Log.h \
-		../../externAssets/grt/include/GRT/Util/ObserverManager.h \
-		../../externAssets/grt/include/GRT/Util/Observer.h \
-		../../externAssets/grt/include/GRT/DataStructures/Vector.h \
-		../../externAssets/grt/include/GRT/Util/ErrorLog.h \
-		../../externAssets/grt/include/GRT/Util/InfoLog.h \
-		../../externAssets/grt/include/GRT/Util/TrainingLog.h \
-		../../externAssets/grt/include/GRT/Util/TestingLog.h \
-		../../externAssets/grt/include/GRT/Util/WarningLog.h \
-		../../externAssets/grt/include/GRT/DataStructures/VectorFloat.h \
-		../../externAssets/grt/include/GRT/DataStructures/MatrixFloat.h \
-		../../externAssets/grt/include/GRT/DataStructures/Matrix.h \
-		../../externAssets/grt/include/GRT/Util/FileParser.h \
-		../../externAssets/grt/include/GRT/Util/TrainingResult.h \
-		../../externAssets/grt/include/GRT/Util/TestInstanceResult.h \
-		../../externAssets/grt/include/GRT/Util/TestResult.h \
-		../../externAssets/grt/include/GRT/Util/CircularBuffer.h \
-		../../externAssets/grt/include/GRT/Util/Timer.h \
-		../../externAssets/grt/include/GRT/Util/TimeStamp.h \
-		../../externAssets/grt/include/GRT/Util/Random.h \
-		../../externAssets/grt/include/GRT/Util/Util.h \
-		../../externAssets/grt/include/GRT/Util/EigenvalueDecomposition.h \
-		../../externAssets/grt/include/GRT/Util/Cholesky.h \
-		../../externAssets/grt/include/GRT/Util/LUDecomposition.h \
-		../../externAssets/grt/include/GRT/Util/SVD.h \
-		../../externAssets/grt/include/GRT/Util/ThreadPool.h \
-		../../externAssets/grt/include/GRT/Util/DataType.h \
-		../../externAssets/grt/include/GRT/Util/DynamicType.h \
-		../../externAssets/grt/include/GRT/Util/Dict.h \
-		../../externAssets/grt/include/GRT/Util/Metrics.h \
-		../../externAssets/grt/include/GRT/Util/RangeTracker.h \
-		../../externAssets/grt/include/GRT/Util/TrainingDataRecordingTimer.h \
-		../../externAssets/grt/include/GRT/Util/ClassificationResult.h \
-		../../externAssets/grt/include/GRT/Util/PeakDetection.h \
-		../../externAssets/grt/include/GRT/PreProcessingModules/DoubleMovingAverageFilter.h \
-		../../externAssets/grt/include/GRT/CoreModules/PreProcessing.h \
-		../../externAssets/grt/include/GRT/CoreModules/MLBase.h \
-		../../externAssets/grt/include/GRT/CoreModules/GRTBase.h \
-		../../externAssets/grt/include/GRT/DataStructures/UnlabelledData.h \
-		../../externAssets/grt/include/GRT/DataStructures/ClassificationData.h \
-		../../externAssets/grt/include/GRT/DataStructures/ClassificationSample.h \
-		../../externAssets/grt/include/GRT/DataStructures/RegressionData.h \
-		../../externAssets/grt/include/GRT/DataStructures/RegressionSample.h \
-		../../externAssets/grt/include/GRT/DataStructures/ClassificationDataStream.h \
-		../../externAssets/grt/include/GRT/DataStructures/TimeSeriesPositionTracker.h \
-		../../externAssets/grt/include/GRT/DataStructures/TimeSeriesClassificationData.h \
-		../../externAssets/grt/include/GRT/DataStructures/TimeSeriesClassificationSample.h \
-		../../externAssets/grt/include/GRT/PreProcessingModules/MovingAverageFilter.h \
-		../../externAssets/grt/include/GRT/PreProcessingModules/DeadZone.h \
-		../../externAssets/grt/include/GRT/Util/ThresholdCrossingDetector.h \
-		../../externAssets/grt/include/GRT/PreProcessingModules/Derivative.h \
-		../../externAssets/grt/include/GRT/Util/CommandLineParser.h \
-		../../externAssets/grt/include/GRT/CoreAlgorithms/BernoulliRBM/BernoulliRBM.h \
-		../../externAssets/grt/include/GRT/CoreAlgorithms/EvolutionaryAlgorithm/EvolutionaryAlgorithm.h \
-		../../externAssets/grt/include/GRT/CoreAlgorithms/EvolutionaryAlgorithm/Individual.h \
-		../../externAssets/grt/include/GRT/CoreAlgorithms/LeastSquares/LinearLeastSquares.h \
-		../../externAssets/grt/include/GRT/CoreAlgorithms/MovementDetector/MovementDetector.h \
-		../../externAssets/grt/include/GRT/CoreAlgorithms/ParticleFilter/ParticleFilter.h \
-		../../externAssets/grt/include/GRT/CoreAlgorithms/ParticleFilter/Particle.h \
-		../../externAssets/grt/include/GRT/CoreAlgorithms/ParticleSwarmOptimization/ParticleSwarmOptimization.h \
-		../../externAssets/grt/include/GRT/CoreAlgorithms/ParticleSwarmOptimization/PSOParticle.h \
-		../../externAssets/grt/include/GRT/CoreAlgorithms/PrincipalComponentAnalysis/PrincipalComponentAnalysis.h \
-		../../externAssets/grt/include/GRT/CoreAlgorithms/Tree/Tree.h \
-		../../externAssets/grt/include/GRT/CoreAlgorithms/Tree/Node.h \
-		../../externAssets/grt/include/GRT/CoreAlgorithms/MeanShift/MeanShift.h \
-		../../externAssets/grt/include/GRT/CoreAlgorithms/GridSearch/GridSearch.h \
-		../../externAssets/grt/include/GRT/CoreModules/GestureRecognitionPipeline.h \
-		../../externAssets/grt/include/GRT/CoreModules/FeatureExtraction.h \
-		../../externAssets/grt/include/GRT/CoreModules/Classifier.h \
-		../../externAssets/grt/include/GRT/CoreModules/Regressifier.h \
-		../../externAssets/grt/include/GRT/CoreModules/Clusterer.h \
-		../../externAssets/grt/include/GRT/CoreModules/PostProcessing.h \
-		../../externAssets/grt/include/GRT/CoreModules/Context.h \
-		../../externAssets/grt/include/GRT/PreProcessingModules/LeakyIntegrator.h \
-		../../externAssets/grt/include/GRT/PreProcessingModules/LowPassFilter.h \
-		../../externAssets/grt/include/GRT/PreProcessingModules/FIRFilter.h \
-		../../externAssets/grt/include/GRT/PreProcessingModules/HighPassFilter.h \
-		../../externAssets/grt/include/GRT/PreProcessingModules/MedianFilter.h \
-		../../externAssets/grt/include/GRT/PreProcessingModules/RMSFilter.h \
-		../../externAssets/grt/include/GRT/PreProcessingModules/SavitzkyGolayFilter.h \
-		../../externAssets/grt/include/GRT/PreProcessingModules/WeightedAverageFilter.h \
-		../../externAssets/grt/include/GRT/FeatureExtractionModules/ZeroCrossingCounter/ZeroCrossingCounter.h \
-		../../externAssets/grt/include/GRT/FeatureExtractionModules/EnvelopeExtractor/EnvelopeExtractor.h \
-		../../externAssets/grt/include/GRT/FeatureExtractionModules/FFT/FFT.h \
-		../../externAssets/grt/include/GRT/FeatureExtractionModules/FFT/FastFourierTransform.h \
-		../../externAssets/grt/include/GRT/FeatureExtractionModules/FFT/FFTFeatures.h \
-		../../externAssets/grt/include/GRT/FeatureExtractionModules/MovementTrajectoryFeatures/MovementTrajectoryFeatures.h \
-		../../externAssets/grt/include/GRT/FeatureExtractionModules/MovementIndex/MovementIndex.h \
-		../../externAssets/grt/include/GRT/FeatureExtractionModules/TimeDomainFeatures/TimeDomainFeatures.h \
-		../../externAssets/grt/include/GRT/FeatureExtractionModules/KMeansQuantizer/KMeansQuantizer.h \
-		../../externAssets/grt/include/GRT/ClusteringModules/KMeans/KMeans.h \
-		../../externAssets/grt/include/GRT/FeatureExtractionModules/KMeansFeatures/KMeansFeatures.h \
-		../../externAssets/grt/include/GRT/FeatureExtractionModules/RBMQuantizer/RBMQuantizer.h \
-		../../externAssets/grt/include/GRT/FeatureExtractionModules/SOMQuantizer/SOMQuantizer.h \
-		../../externAssets/grt/include/GRT/ClusteringModules/SelfOrganizingMap/SelfOrganizingMap.h \
-		../../externAssets/grt/include/GRT/FeatureExtractionModules/TimeseriesBuffer/TimeseriesBuffer.h \
-		../../externAssets/grt/include/GRT/PostProcessingModules/ClassLabelFilter.h \
-		../../externAssets/grt/include/GRT/PostProcessingModules/ClassLabelTimeoutFilter.h \
-		../../externAssets/grt/include/GRT/PostProcessingModules/ClassLabelChangeFilter.h \
-		../../externAssets/grt/include/GRT/ClassificationModules/AdaBoost/AdaBoost.h \
-		../../externAssets/grt/include/GRT/ClassificationModules/AdaBoost/AdaBoostClassModel.h \
-		../../externAssets/grt/include/GRT/ClassificationModules/AdaBoost/WeakClassifiers/WeakClassifier.h \
-		../../externAssets/grt/include/GRT/ClassificationModules/AdaBoost/WeakClassifiers/DecisionStump.h \
-		../../externAssets/grt/include/GRT/ClassificationModules/AdaBoost/WeakClassifiers/RadialBasisFunction.h \
-		../../externAssets/grt/include/GRT/ClassificationModules/ANBC/ANBC.h \
-		../../externAssets/grt/include/GRT/ClassificationModules/ANBC/ANBC_Model.h \
-		../../externAssets/grt/include/GRT/ClassificationModules/BAG/BAG.h \
-		../../externAssets/grt/include/GRT/ClassificationModules/DecisionTree/DecisionTree.h \
-		../../externAssets/grt/include/GRT/ClassificationModules/DecisionTree/DecisionTreeNode.h \
-		../../externAssets/grt/include/GRT/ClassificationModules/DecisionTree/DecisionTreeThresholdNode.h \
-		../../externAssets/grt/include/GRT/ClassificationModules/DecisionTree/DecisionTreeClusterNode.h \
-		../../externAssets/grt/include/GRT/ClassificationModules/DecisionTree/DecisionTreeTripleFeatureNode.h \
-		../../externAssets/grt/include/GRT/ClassificationModules/DTW/DTW.h \
-		../../externAssets/grt/include/GRT/Util/TimeSeriesClassificationSampleTrimmer.h \
-		../../externAssets/grt/include/GRT/ClassificationModules/FiniteStateMachine/FiniteStateMachine.h \
-		../../externAssets/grt/include/GRT/ClassificationModules/FiniteStateMachine/FSMParticleFilter.h \
-		../../externAssets/grt/include/GRT/ClassificationModules/FiniteStateMachine/FSMParticle.h \
-		../../externAssets/grt/include/GRT/ClassificationModules/GMM/GMM.h \
-		../../externAssets/grt/include/GRT/ClusteringModules/GaussianMixtureModels/GaussianMixtureModels.h \
-		../../externAssets/grt/include/GRT/ClassificationModules/GMM/MixtureModel.h \
-		../../externAssets/grt/include/GRT/ClassificationModules/HMM/HMM.h \
-		../../externAssets/grt/include/GRT/ClassificationModules/HMM/HMMEnums.h \
-		../../externAssets/grt/include/GRT/ClassificationModules/HMM/DiscreteHiddenMarkovModel.h \
-		../../externAssets/grt/include/GRT/ClassificationModules/HMM/ContinuousHiddenMarkovModel.h \
-		../../externAssets/grt/include/GRT/ClassificationModules/KNN/KNN.h \
-		../../externAssets/grt/include/GRT/ClassificationModules/MinDist/MinDist.h \
-		../../externAssets/grt/include/GRT/ClassificationModules/MinDist/MinDistModel.h \
-		../../externAssets/grt/include/GRT/ClassificationModules/ParticleClassifier/ParticleClassifier.h \
-		../../externAssets/grt/include/GRT/ClassificationModules/ParticleClassifier/ParticleClassifierParticleFilter.h \
-		../../externAssets/grt/include/GRT/ClassificationModules/RandomForests/RandomForests.h \
-		../../externAssets/grt/include/GRT/ClassificationModules/Softmax/Softmax.h \
-		../../externAssets/grt/include/GRT/ClassificationModules/Softmax/SoftmaxModel.h \
-		../../externAssets/grt/include/GRT/ClassificationModules/SVM/SVM.h \
-		../../externAssets/grt/include/GRT/ClassificationModules/SVM/LIBSVM/libsvm.h \
-		../../externAssets/grt/include/GRT/ClassificationModules/SwipeDetector/SwipeDetector.h \
-		../../externAssets/grt/include/GRT/RegressionModules/ArtificialNeuralNetworks/MLP/MLP.h \
-		../../externAssets/grt/include/GRT/RegressionModules/ArtificialNeuralNetworks/MLP/Neuron.h \
-		../../externAssets/grt/include/GRT/RegressionModules/LinearRegression/LinearRegression.h \
-		../../externAssets/grt/include/GRT/RegressionModules/LogisticRegression/LogisticRegression.h \
-		../../externAssets/grt/include/GRT/RegressionModules/MultidimensionalRegression/MultidimensionalRegression.h \
-		../../externAssets/grt/include/GRT/RegressionModules/RegressionTree/RegressionTree.h \
-		../../externAssets/grt/include/GRT/RegressionModules/RegressionTree/RegressionTreeNode.h \
-		../../externAssets/grt/include/GRT/ClusteringModules/ClusterTree/ClusterTree.h \
-		../../externAssets/grt/include/GRT/ClusteringModules/ClusterTree/ClusterTreeNode.h \
-		../../externAssets/grt/include/GRT/ClusteringModules/HierarchicalClustering/HierarchicalClustering.h \
-		../../externAssets/grt/include/GRT/ContextModules/Gate.h \
-		../../inc/grMadgwick.h \
-		../../inc/grGrt.h \
-		../../inc/grDataAttributes.h \
 		../../externAssets/eigen/Eigen/Dense \
 		../../externAssets/eigen/Eigen/Core \
 		../../externAssets/eigen/Eigen/src/Core/util/DisableStupidWarnings.h \
@@ -2023,10 +1632,18 @@ build/grVisualization.o: src/grVisualization.cpp inc/grVisualization.h \
 		../../externAssets/eigen/Eigen/src/Eigenvalues/RealSchur_LAPACKE.h \
 		../../externAssets/eigen/Eigen/src/Eigenvalues/ComplexSchur_LAPACKE.h \
 		../../externAssets/eigen/Eigen/src/Eigenvalues/SelfAdjointEigenSolver_LAPACKE.h \
-		ui_grVisualisation.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/grVisualization.o src/grVisualization.cpp
+		../../inc/grTrajectory.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/main.o src/main.cpp
 
-build/grDataApplier.o: src/grDataApplier.cpp inc/grDataApplier.h \
+build/grVisualization.o: src/grVisualization.cpp inc/grVisualization.h \
+		inc/GRGLWidget.h \
+		inc/grRender.h \
+		inc/grHand.h \
+		inc/grHandNode.h \
+		inc/renderConfig.h \
+		inc/grDataPlotter.h \
+		../../externAssets/qcustomplot/qcustomplot.h \
+		inc/grDataApplier.h \
 		../../externAssets/plog/Log.h \
 		../../externAssets/plog/Record.h \
 		../../externAssets/plog/Util.h \
@@ -2038,11 +1655,6 @@ build/grDataApplier.o: src/grDataApplier.cpp inc/grDataApplier.h \
 		../../externAssets/plog/Formatters/TxtFormatter.h \
 		../../externAssets/plog/Appenders/RollingFileAppender.h \
 		../../externAssets/plog/Converters/UTF8Converter.h \
-		inc/GRGLWidget.h \
-		inc/grRender.h \
-		inc/grHand.h \
-		inc/grHandNode.h \
-		inc/renderConfig.h \
 		../../inc/grConnection.h \
 		../../inc/grDevice.h \
 		../../inc/grAlgorithm.h \
@@ -2203,7 +1815,6 @@ build/grDataApplier.o: src/grDataApplier.cpp inc/grDataApplier.h \
 		../../externAssets/grt/include/GRT/ContextModules/Gate.h \
 		../../inc/grMadgwick.h \
 		../../inc/grGrt.h \
-		../../inc/grDataAttributes.h \
 		../../externAssets/eigen/Eigen/Dense \
 		../../externAssets/eigen/Eigen/Core \
 		../../externAssets/eigen/Eigen/src/Core/util/DisableStupidWarnings.h \
@@ -2409,7 +2020,395 @@ build/grDataApplier.o: src/grDataApplier.cpp inc/grDataApplier.h \
 		../../externAssets/eigen/Eigen/src/Eigenvalues/MatrixBaseEigenvalues.h \
 		../../externAssets/eigen/Eigen/src/Eigenvalues/RealSchur_LAPACKE.h \
 		../../externAssets/eigen/Eigen/src/Eigenvalues/ComplexSchur_LAPACKE.h \
-		../../externAssets/eigen/Eigen/src/Eigenvalues/SelfAdjointEigenSolver_LAPACKE.h
+		../../externAssets/eigen/Eigen/src/Eigenvalues/SelfAdjointEigenSolver_LAPACKE.h \
+		../../inc/grTrajectory.h \
+		ui_grVisualisation.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/grVisualization.o src/grVisualization.cpp
+
+build/grDataApplier.o: src/grDataApplier.cpp inc/grDataApplier.h \
+		../../externAssets/plog/Log.h \
+		../../externAssets/plog/Record.h \
+		../../externAssets/plog/Util.h \
+		../../externAssets/plog/Severity.h \
+		../../externAssets/plog/Logger.h \
+		../../externAssets/plog/Appenders/IAppender.h \
+		../../externAssets/plog/Init.h \
+		../../externAssets/plog/Formatters/CsvFormatter.h \
+		../../externAssets/plog/Formatters/TxtFormatter.h \
+		../../externAssets/plog/Appenders/RollingFileAppender.h \
+		../../externAssets/plog/Converters/UTF8Converter.h \
+		inc/GRGLWidget.h \
+		inc/grRender.h \
+		inc/grHand.h \
+		inc/grHandNode.h \
+		inc/renderConfig.h \
+		../../inc/grConnection.h \
+		../../inc/grDevice.h \
+		../../inc/grAlgorithm.h \
+		../../externAssets/grt/include/GRT/GRT.h \
+		../../externAssets/grt/include/GRT/Util/GRTVersionInfo.h \
+		../../externAssets/grt/include/GRT/Util/GRTCommon.h \
+		../../externAssets/grt/include/GRT/Util/GRTTypedefs.h \
+		../../externAssets/grt/include/GRT/Util/GRTException.h \
+		../../externAssets/grt/include/GRT/Util/MinMax.h \
+		../../externAssets/grt/include/GRT/Util/ClassTracker.h \
+		../../externAssets/grt/include/GRT/Util/IndexedDouble.h \
+		../../externAssets/grt/include/GRT/Util/DebugLog.h \
+		../../externAssets/grt/include/GRT/Util/Log.h \
+		../../externAssets/grt/include/GRT/Util/ObserverManager.h \
+		../../externAssets/grt/include/GRT/Util/Observer.h \
+		../../externAssets/grt/include/GRT/DataStructures/Vector.h \
+		../../externAssets/grt/include/GRT/Util/ErrorLog.h \
+		../../externAssets/grt/include/GRT/Util/InfoLog.h \
+		../../externAssets/grt/include/GRT/Util/TrainingLog.h \
+		../../externAssets/grt/include/GRT/Util/TestingLog.h \
+		../../externAssets/grt/include/GRT/Util/WarningLog.h \
+		../../externAssets/grt/include/GRT/DataStructures/VectorFloat.h \
+		../../externAssets/grt/include/GRT/DataStructures/MatrixFloat.h \
+		../../externAssets/grt/include/GRT/DataStructures/Matrix.h \
+		../../externAssets/grt/include/GRT/Util/FileParser.h \
+		../../externAssets/grt/include/GRT/Util/TrainingResult.h \
+		../../externAssets/grt/include/GRT/Util/TestInstanceResult.h \
+		../../externAssets/grt/include/GRT/Util/TestResult.h \
+		../../externAssets/grt/include/GRT/Util/CircularBuffer.h \
+		../../externAssets/grt/include/GRT/Util/Timer.h \
+		../../externAssets/grt/include/GRT/Util/TimeStamp.h \
+		../../externAssets/grt/include/GRT/Util/Random.h \
+		../../externAssets/grt/include/GRT/Util/Util.h \
+		../../externAssets/grt/include/GRT/Util/EigenvalueDecomposition.h \
+		../../externAssets/grt/include/GRT/Util/Cholesky.h \
+		../../externAssets/grt/include/GRT/Util/LUDecomposition.h \
+		../../externAssets/grt/include/GRT/Util/SVD.h \
+		../../externAssets/grt/include/GRT/Util/ThreadPool.h \
+		../../externAssets/grt/include/GRT/Util/DataType.h \
+		../../externAssets/grt/include/GRT/Util/DynamicType.h \
+		../../externAssets/grt/include/GRT/Util/Dict.h \
+		../../externAssets/grt/include/GRT/Util/Metrics.h \
+		../../externAssets/grt/include/GRT/Util/RangeTracker.h \
+		../../externAssets/grt/include/GRT/Util/TrainingDataRecordingTimer.h \
+		../../externAssets/grt/include/GRT/Util/ClassificationResult.h \
+		../../externAssets/grt/include/GRT/Util/PeakDetection.h \
+		../../externAssets/grt/include/GRT/PreProcessingModules/DoubleMovingAverageFilter.h \
+		../../externAssets/grt/include/GRT/CoreModules/PreProcessing.h \
+		../../externAssets/grt/include/GRT/CoreModules/MLBase.h \
+		../../externAssets/grt/include/GRT/CoreModules/GRTBase.h \
+		../../externAssets/grt/include/GRT/DataStructures/UnlabelledData.h \
+		../../externAssets/grt/include/GRT/DataStructures/ClassificationData.h \
+		../../externAssets/grt/include/GRT/DataStructures/ClassificationSample.h \
+		../../externAssets/grt/include/GRT/DataStructures/RegressionData.h \
+		../../externAssets/grt/include/GRT/DataStructures/RegressionSample.h \
+		../../externAssets/grt/include/GRT/DataStructures/ClassificationDataStream.h \
+		../../externAssets/grt/include/GRT/DataStructures/TimeSeriesPositionTracker.h \
+		../../externAssets/grt/include/GRT/DataStructures/TimeSeriesClassificationData.h \
+		../../externAssets/grt/include/GRT/DataStructures/TimeSeriesClassificationSample.h \
+		../../externAssets/grt/include/GRT/PreProcessingModules/MovingAverageFilter.h \
+		../../externAssets/grt/include/GRT/PreProcessingModules/DeadZone.h \
+		../../externAssets/grt/include/GRT/Util/ThresholdCrossingDetector.h \
+		../../externAssets/grt/include/GRT/PreProcessingModules/Derivative.h \
+		../../externAssets/grt/include/GRT/Util/CommandLineParser.h \
+		../../externAssets/grt/include/GRT/CoreAlgorithms/BernoulliRBM/BernoulliRBM.h \
+		../../externAssets/grt/include/GRT/CoreAlgorithms/EvolutionaryAlgorithm/EvolutionaryAlgorithm.h \
+		../../externAssets/grt/include/GRT/CoreAlgorithms/EvolutionaryAlgorithm/Individual.h \
+		../../externAssets/grt/include/GRT/CoreAlgorithms/LeastSquares/LinearLeastSquares.h \
+		../../externAssets/grt/include/GRT/CoreAlgorithms/MovementDetector/MovementDetector.h \
+		../../externAssets/grt/include/GRT/CoreAlgorithms/ParticleFilter/ParticleFilter.h \
+		../../externAssets/grt/include/GRT/CoreAlgorithms/ParticleFilter/Particle.h \
+		../../externAssets/grt/include/GRT/CoreAlgorithms/ParticleSwarmOptimization/ParticleSwarmOptimization.h \
+		../../externAssets/grt/include/GRT/CoreAlgorithms/ParticleSwarmOptimization/PSOParticle.h \
+		../../externAssets/grt/include/GRT/CoreAlgorithms/PrincipalComponentAnalysis/PrincipalComponentAnalysis.h \
+		../../externAssets/grt/include/GRT/CoreAlgorithms/Tree/Tree.h \
+		../../externAssets/grt/include/GRT/CoreAlgorithms/Tree/Node.h \
+		../../externAssets/grt/include/GRT/CoreAlgorithms/MeanShift/MeanShift.h \
+		../../externAssets/grt/include/GRT/CoreAlgorithms/GridSearch/GridSearch.h \
+		../../externAssets/grt/include/GRT/CoreModules/GestureRecognitionPipeline.h \
+		../../externAssets/grt/include/GRT/CoreModules/FeatureExtraction.h \
+		../../externAssets/grt/include/GRT/CoreModules/Classifier.h \
+		../../externAssets/grt/include/GRT/CoreModules/Regressifier.h \
+		../../externAssets/grt/include/GRT/CoreModules/Clusterer.h \
+		../../externAssets/grt/include/GRT/CoreModules/PostProcessing.h \
+		../../externAssets/grt/include/GRT/CoreModules/Context.h \
+		../../externAssets/grt/include/GRT/PreProcessingModules/LeakyIntegrator.h \
+		../../externAssets/grt/include/GRT/PreProcessingModules/LowPassFilter.h \
+		../../externAssets/grt/include/GRT/PreProcessingModules/FIRFilter.h \
+		../../externAssets/grt/include/GRT/PreProcessingModules/HighPassFilter.h \
+		../../externAssets/grt/include/GRT/PreProcessingModules/MedianFilter.h \
+		../../externAssets/grt/include/GRT/PreProcessingModules/RMSFilter.h \
+		../../externAssets/grt/include/GRT/PreProcessingModules/SavitzkyGolayFilter.h \
+		../../externAssets/grt/include/GRT/PreProcessingModules/WeightedAverageFilter.h \
+		../../externAssets/grt/include/GRT/FeatureExtractionModules/ZeroCrossingCounter/ZeroCrossingCounter.h \
+		../../externAssets/grt/include/GRT/FeatureExtractionModules/EnvelopeExtractor/EnvelopeExtractor.h \
+		../../externAssets/grt/include/GRT/FeatureExtractionModules/FFT/FFT.h \
+		../../externAssets/grt/include/GRT/FeatureExtractionModules/FFT/FastFourierTransform.h \
+		../../externAssets/grt/include/GRT/FeatureExtractionModules/FFT/FFTFeatures.h \
+		../../externAssets/grt/include/GRT/FeatureExtractionModules/MovementTrajectoryFeatures/MovementTrajectoryFeatures.h \
+		../../externAssets/grt/include/GRT/FeatureExtractionModules/MovementIndex/MovementIndex.h \
+		../../externAssets/grt/include/GRT/FeatureExtractionModules/TimeDomainFeatures/TimeDomainFeatures.h \
+		../../externAssets/grt/include/GRT/FeatureExtractionModules/KMeansQuantizer/KMeansQuantizer.h \
+		../../externAssets/grt/include/GRT/ClusteringModules/KMeans/KMeans.h \
+		../../externAssets/grt/include/GRT/FeatureExtractionModules/KMeansFeatures/KMeansFeatures.h \
+		../../externAssets/grt/include/GRT/FeatureExtractionModules/RBMQuantizer/RBMQuantizer.h \
+		../../externAssets/grt/include/GRT/FeatureExtractionModules/SOMQuantizer/SOMQuantizer.h \
+		../../externAssets/grt/include/GRT/ClusteringModules/SelfOrganizingMap/SelfOrganizingMap.h \
+		../../externAssets/grt/include/GRT/FeatureExtractionModules/TimeseriesBuffer/TimeseriesBuffer.h \
+		../../externAssets/grt/include/GRT/PostProcessingModules/ClassLabelFilter.h \
+		../../externAssets/grt/include/GRT/PostProcessingModules/ClassLabelTimeoutFilter.h \
+		../../externAssets/grt/include/GRT/PostProcessingModules/ClassLabelChangeFilter.h \
+		../../externAssets/grt/include/GRT/ClassificationModules/AdaBoost/AdaBoost.h \
+		../../externAssets/grt/include/GRT/ClassificationModules/AdaBoost/AdaBoostClassModel.h \
+		../../externAssets/grt/include/GRT/ClassificationModules/AdaBoost/WeakClassifiers/WeakClassifier.h \
+		../../externAssets/grt/include/GRT/ClassificationModules/AdaBoost/WeakClassifiers/DecisionStump.h \
+		../../externAssets/grt/include/GRT/ClassificationModules/AdaBoost/WeakClassifiers/RadialBasisFunction.h \
+		../../externAssets/grt/include/GRT/ClassificationModules/ANBC/ANBC.h \
+		../../externAssets/grt/include/GRT/ClassificationModules/ANBC/ANBC_Model.h \
+		../../externAssets/grt/include/GRT/ClassificationModules/BAG/BAG.h \
+		../../externAssets/grt/include/GRT/ClassificationModules/DecisionTree/DecisionTree.h \
+		../../externAssets/grt/include/GRT/ClassificationModules/DecisionTree/DecisionTreeNode.h \
+		../../externAssets/grt/include/GRT/ClassificationModules/DecisionTree/DecisionTreeThresholdNode.h \
+		../../externAssets/grt/include/GRT/ClassificationModules/DecisionTree/DecisionTreeClusterNode.h \
+		../../externAssets/grt/include/GRT/ClassificationModules/DecisionTree/DecisionTreeTripleFeatureNode.h \
+		../../externAssets/grt/include/GRT/ClassificationModules/DTW/DTW.h \
+		../../externAssets/grt/include/GRT/Util/TimeSeriesClassificationSampleTrimmer.h \
+		../../externAssets/grt/include/GRT/ClassificationModules/FiniteStateMachine/FiniteStateMachine.h \
+		../../externAssets/grt/include/GRT/ClassificationModules/FiniteStateMachine/FSMParticleFilter.h \
+		../../externAssets/grt/include/GRT/ClassificationModules/FiniteStateMachine/FSMParticle.h \
+		../../externAssets/grt/include/GRT/ClassificationModules/GMM/GMM.h \
+		../../externAssets/grt/include/GRT/ClusteringModules/GaussianMixtureModels/GaussianMixtureModels.h \
+		../../externAssets/grt/include/GRT/ClassificationModules/GMM/MixtureModel.h \
+		../../externAssets/grt/include/GRT/ClassificationModules/HMM/HMM.h \
+		../../externAssets/grt/include/GRT/ClassificationModules/HMM/HMMEnums.h \
+		../../externAssets/grt/include/GRT/ClassificationModules/HMM/DiscreteHiddenMarkovModel.h \
+		../../externAssets/grt/include/GRT/ClassificationModules/HMM/ContinuousHiddenMarkovModel.h \
+		../../externAssets/grt/include/GRT/ClassificationModules/KNN/KNN.h \
+		../../externAssets/grt/include/GRT/ClassificationModules/MinDist/MinDist.h \
+		../../externAssets/grt/include/GRT/ClassificationModules/MinDist/MinDistModel.h \
+		../../externAssets/grt/include/GRT/ClassificationModules/ParticleClassifier/ParticleClassifier.h \
+		../../externAssets/grt/include/GRT/ClassificationModules/ParticleClassifier/ParticleClassifierParticleFilter.h \
+		../../externAssets/grt/include/GRT/ClassificationModules/RandomForests/RandomForests.h \
+		../../externAssets/grt/include/GRT/ClassificationModules/Softmax/Softmax.h \
+		../../externAssets/grt/include/GRT/ClassificationModules/Softmax/SoftmaxModel.h \
+		../../externAssets/grt/include/GRT/ClassificationModules/SVM/SVM.h \
+		../../externAssets/grt/include/GRT/ClassificationModules/SVM/LIBSVM/libsvm.h \
+		../../externAssets/grt/include/GRT/ClassificationModules/SwipeDetector/SwipeDetector.h \
+		../../externAssets/grt/include/GRT/RegressionModules/ArtificialNeuralNetworks/MLP/MLP.h \
+		../../externAssets/grt/include/GRT/RegressionModules/ArtificialNeuralNetworks/MLP/Neuron.h \
+		../../externAssets/grt/include/GRT/RegressionModules/LinearRegression/LinearRegression.h \
+		../../externAssets/grt/include/GRT/RegressionModules/LogisticRegression/LogisticRegression.h \
+		../../externAssets/grt/include/GRT/RegressionModules/MultidimensionalRegression/MultidimensionalRegression.h \
+		../../externAssets/grt/include/GRT/RegressionModules/RegressionTree/RegressionTree.h \
+		../../externAssets/grt/include/GRT/RegressionModules/RegressionTree/RegressionTreeNode.h \
+		../../externAssets/grt/include/GRT/ClusteringModules/ClusterTree/ClusterTree.h \
+		../../externAssets/grt/include/GRT/ClusteringModules/ClusterTree/ClusterTreeNode.h \
+		../../externAssets/grt/include/GRT/ClusteringModules/HierarchicalClustering/HierarchicalClustering.h \
+		../../externAssets/grt/include/GRT/ContextModules/Gate.h \
+		../../inc/grMadgwick.h \
+		../../inc/grGrt.h \
+		../../externAssets/eigen/Eigen/Dense \
+		../../externAssets/eigen/Eigen/Core \
+		../../externAssets/eigen/Eigen/src/Core/util/DisableStupidWarnings.h \
+		../../externAssets/eigen/Eigen/src/Core/util/Macros.h \
+		../../externAssets/eigen/Eigen/src/Core/util/MKL_support.h \
+		../../externAssets/eigen/Eigen/src/misc/blas.h \
+		../../externAssets/eigen/Eigen/src/Core/util/Constants.h \
+		../../externAssets/eigen/Eigen/src/Core/util/Meta.h \
+		../../externAssets/eigen/Eigen/src/Core/util/ForwardDeclarations.h \
+		../../externAssets/eigen/Eigen/src/Core/util/StaticAssert.h \
+		../../externAssets/eigen/Eigen/src/Core/util/XprHelper.h \
+		../../externAssets/eigen/Eigen/src/Core/util/Memory.h \
+		../../externAssets/eigen/Eigen/src/Core/NumTraits.h \
+		../../externAssets/eigen/Eigen/src/Core/MathFunctions.h \
+		../../externAssets/eigen/Eigen/src/Core/GenericPacketMath.h \
+		../../externAssets/eigen/Eigen/src/Core/MathFunctionsImpl.h \
+		../../externAssets/eigen/Eigen/src/Core/arch/SSE/PacketMath.h \
+		../../externAssets/eigen/Eigen/src/Core/arch/AVX/PacketMath.h \
+		../../externAssets/eigen/Eigen/src/Core/arch/AVX512/PacketMath.h \
+		../../externAssets/eigen/Eigen/src/Core/arch/AVX512/MathFunctions.h \
+		../../externAssets/eigen/Eigen/src/Core/arch/SSE/Complex.h \
+		../../externAssets/eigen/Eigen/src/Core/arch/SSE/MathFunctions.h \
+		../../externAssets/eigen/Eigen/src/Core/arch/AVX/MathFunctions.h \
+		../../externAssets/eigen/Eigen/src/Core/arch/AVX/Complex.h \
+		../../externAssets/eigen/Eigen/src/Core/arch/AVX/TypeCasting.h \
+		../../externAssets/eigen/Eigen/src/Core/arch/SSE/TypeCasting.h \
+		../../externAssets/eigen/Eigen/src/Core/arch/AltiVec/PacketMath.h \
+		../../externAssets/eigen/Eigen/src/Core/arch/AltiVec/MathFunctions.h \
+		../../externAssets/eigen/Eigen/src/Core/arch/AltiVec/Complex.h \
+		../../externAssets/eigen/Eigen/src/Core/arch/NEON/PacketMath.h \
+		../../externAssets/eigen/Eigen/src/Core/arch/NEON/MathFunctions.h \
+		../../externAssets/eigen/Eigen/src/Core/arch/NEON/Complex.h \
+		../../externAssets/eigen/Eigen/src/Core/arch/ZVector/PacketMath.h \
+		../../externAssets/eigen/Eigen/src/Core/arch/ZVector/MathFunctions.h \
+		../../externAssets/eigen/Eigen/src/Core/arch/ZVector/Complex.h \
+		../../externAssets/eigen/Eigen/src/Core/arch/CUDA/Half.h \
+		../../externAssets/eigen/Eigen/src/Core/arch/CUDA/PacketMathHalf.h \
+		../../externAssets/eigen/Eigen/src/Core/arch/CUDA/TypeCasting.h \
+		../../externAssets/eigen/Eigen/src/Core/arch/CUDA/PacketMath.h \
+		../../externAssets/eigen/Eigen/src/Core/arch/CUDA/MathFunctions.h \
+		../../externAssets/eigen/Eigen/src/Core/arch/Default/Settings.h \
+		../../externAssets/eigen/Eigen/src/Core/functors/TernaryFunctors.h \
+		../../externAssets/eigen/Eigen/src/Core/functors/BinaryFunctors.h \
+		../../externAssets/eigen/Eigen/src/Core/functors/UnaryFunctors.h \
+		../../externAssets/eigen/Eigen/src/Core/functors/NullaryFunctors.h \
+		../../externAssets/eigen/Eigen/src/Core/functors/StlFunctors.h \
+		../../externAssets/eigen/Eigen/src/Core/functors/AssignmentFunctors.h \
+		../../externAssets/eigen/Eigen/src/Core/arch/CUDA/Complex.h \
+		../../externAssets/eigen/Eigen/src/Core/IO.h \
+		../../externAssets/eigen/Eigen/src/Core/DenseCoeffsBase.h \
+		../../externAssets/eigen/Eigen/src/Core/DenseBase.h \
+		../../externAssets/eigen/Eigen/src/plugins/BlockMethods.h \
+		../../externAssets/eigen/Eigen/src/Core/MatrixBase.h \
+		../../externAssets/eigen/Eigen/src/plugins/CommonCwiseUnaryOps.h \
+		../../externAssets/eigen/Eigen/src/plugins/CommonCwiseBinaryOps.h \
+		../../externAssets/eigen/Eigen/src/plugins/MatrixCwiseUnaryOps.h \
+		../../externAssets/eigen/Eigen/src/plugins/MatrixCwiseBinaryOps.h \
+		../../externAssets/eigen/Eigen/src/Core/EigenBase.h \
+		../../externAssets/eigen/Eigen/src/Core/Product.h \
+		../../externAssets/eigen/Eigen/src/Core/CoreEvaluators.h \
+		../../externAssets/eigen/Eigen/src/Core/AssignEvaluator.h \
+		../../externAssets/eigen/Eigen/src/Core/Assign.h \
+		../../externAssets/eigen/Eigen/src/Core/ArrayBase.h \
+		../../externAssets/eigen/Eigen/src/plugins/ArrayCwiseUnaryOps.h \
+		../../externAssets/eigen/Eigen/src/plugins/ArrayCwiseBinaryOps.h \
+		../../externAssets/eigen/Eigen/src/Core/util/BlasUtil.h \
+		../../externAssets/eigen/Eigen/src/Core/DenseStorage.h \
+		../../externAssets/eigen/Eigen/src/Core/NestByValue.h \
+		../../externAssets/eigen/Eigen/src/Core/ReturnByValue.h \
+		../../externAssets/eigen/Eigen/src/Core/NoAlias.h \
+		../../externAssets/eigen/Eigen/src/Core/PlainObjectBase.h \
+		../../externAssets/eigen/Eigen/src/Core/Matrix.h \
+		../../externAssets/eigen/Eigen/src/Core/Array.h \
+		../../externAssets/eigen/Eigen/src/Core/CwiseTernaryOp.h \
+		../../externAssets/eigen/Eigen/src/Core/CwiseBinaryOp.h \
+		../../externAssets/eigen/Eigen/src/Core/CwiseUnaryOp.h \
+		../../externAssets/eigen/Eigen/src/Core/CwiseNullaryOp.h \
+		../../externAssets/eigen/Eigen/src/Core/CwiseUnaryView.h \
+		../../externAssets/eigen/Eigen/src/Core/SelfCwiseBinaryOp.h \
+		../../externAssets/eigen/Eigen/src/Core/Dot.h \
+		../../externAssets/eigen/Eigen/src/Core/StableNorm.h \
+		../../externAssets/eigen/Eigen/src/Core/Stride.h \
+		../../externAssets/eigen/Eigen/src/Core/MapBase.h \
+		../../externAssets/eigen/Eigen/src/Core/Map.h \
+		../../externAssets/eigen/Eigen/src/Core/Ref.h \
+		../../externAssets/eigen/Eigen/src/Core/Block.h \
+		../../externAssets/eigen/Eigen/src/Core/VectorBlock.h \
+		../../externAssets/eigen/Eigen/src/Core/Transpose.h \
+		../../externAssets/eigen/Eigen/src/Core/DiagonalMatrix.h \
+		../../externAssets/eigen/Eigen/src/Core/Diagonal.h \
+		../../externAssets/eigen/Eigen/src/Core/DiagonalProduct.h \
+		../../externAssets/eigen/Eigen/src/Core/Redux.h \
+		../../externAssets/eigen/Eigen/src/Core/Visitor.h \
+		../../externAssets/eigen/Eigen/src/Core/Fuzzy.h \
+		../../externAssets/eigen/Eigen/src/Core/Swap.h \
+		../../externAssets/eigen/Eigen/src/Core/CommaInitializer.h \
+		../../externAssets/eigen/Eigen/src/Core/GeneralProduct.h \
+		../../externAssets/eigen/Eigen/src/Core/Solve.h \
+		../../externAssets/eigen/Eigen/src/Core/Inverse.h \
+		../../externAssets/eigen/Eigen/src/Core/SolverBase.h \
+		../../externAssets/eigen/Eigen/src/Core/PermutationMatrix.h \
+		../../externAssets/eigen/Eigen/src/Core/Transpositions.h \
+		../../externAssets/eigen/Eigen/src/Core/TriangularMatrix.h \
+		../../externAssets/eigen/Eigen/src/Core/SelfAdjointView.h \
+		../../externAssets/eigen/Eigen/src/Core/products/GeneralBlockPanelKernel.h \
+		../../externAssets/eigen/Eigen/src/Core/products/Parallelizer.h \
+		../../externAssets/eigen/Eigen/src/Core/ProductEvaluators.h \
+		../../externAssets/eigen/Eigen/src/Core/products/GeneralMatrixVector.h \
+		../../externAssets/eigen/Eigen/src/Core/products/GeneralMatrixMatrix.h \
+		../../externAssets/eigen/Eigen/src/Core/SolveTriangular.h \
+		../../externAssets/eigen/Eigen/src/Core/products/GeneralMatrixMatrixTriangular.h \
+		../../externAssets/eigen/Eigen/src/Core/products/SelfadjointMatrixVector.h \
+		../../externAssets/eigen/Eigen/src/Core/products/SelfadjointMatrixMatrix.h \
+		../../externAssets/eigen/Eigen/src/Core/products/SelfadjointProduct.h \
+		../../externAssets/eigen/Eigen/src/Core/products/SelfadjointRank2Update.h \
+		../../externAssets/eigen/Eigen/src/Core/products/TriangularMatrixVector.h \
+		../../externAssets/eigen/Eigen/src/Core/products/TriangularMatrixMatrix.h \
+		../../externAssets/eigen/Eigen/src/Core/products/TriangularSolverMatrix.h \
+		../../externAssets/eigen/Eigen/src/Core/products/TriangularSolverVector.h \
+		../../externAssets/eigen/Eigen/src/Core/BandMatrix.h \
+		../../externAssets/eigen/Eigen/src/Core/CoreIterators.h \
+		../../externAssets/eigen/Eigen/src/Core/ConditionEstimator.h \
+		../../externAssets/eigen/Eigen/src/Core/BooleanRedux.h \
+		../../externAssets/eigen/Eigen/src/Core/Select.h \
+		../../externAssets/eigen/Eigen/src/Core/VectorwiseOp.h \
+		../../externAssets/eigen/Eigen/src/Core/Random.h \
+		../../externAssets/eigen/Eigen/src/Core/Replicate.h \
+		../../externAssets/eigen/Eigen/src/Core/Reverse.h \
+		../../externAssets/eigen/Eigen/src/Core/ArrayWrapper.h \
+		../../externAssets/eigen/Eigen/src/Core/products/GeneralMatrixMatrix_BLAS.h \
+		../../externAssets/eigen/Eigen/src/Core/products/GeneralMatrixVector_BLAS.h \
+		../../externAssets/eigen/Eigen/src/Core/products/GeneralMatrixMatrixTriangular_BLAS.h \
+		../../externAssets/eigen/Eigen/src/Core/products/SelfadjointMatrixMatrix_BLAS.h \
+		../../externAssets/eigen/Eigen/src/Core/products/SelfadjointMatrixVector_BLAS.h \
+		../../externAssets/eigen/Eigen/src/Core/products/TriangularMatrixMatrix_BLAS.h \
+		../../externAssets/eigen/Eigen/src/Core/products/TriangularMatrixVector_BLAS.h \
+		../../externAssets/eigen/Eigen/src/Core/products/TriangularSolverMatrix_BLAS.h \
+		../../externAssets/eigen/Eigen/src/Core/Assign_MKL.h \
+		../../externAssets/eigen/Eigen/src/Core/GlobalFunctions.h \
+		../../externAssets/eigen/Eigen/src/Core/util/ReenableStupidWarnings.h \
+		../../externAssets/eigen/Eigen/LU \
+		../../externAssets/eigen/Eigen/src/misc/Kernel.h \
+		../../externAssets/eigen/Eigen/src/misc/Image.h \
+		../../externAssets/eigen/Eigen/src/LU/FullPivLU.h \
+		../../externAssets/eigen/Eigen/src/LU/PartialPivLU.h \
+		../../externAssets/eigen/Eigen/src/misc/lapacke.h \
+		../../externAssets/eigen/Eigen/src/misc/lapacke_mangling.h \
+		../../externAssets/eigen/Eigen/src/LU/PartialPivLU_LAPACKE.h \
+		../../externAssets/eigen/Eigen/src/LU/Determinant.h \
+		../../externAssets/eigen/Eigen/src/LU/InverseImpl.h \
+		../../externAssets/eigen/Eigen/src/LU/arch/Inverse_SSE.h \
+		../../externAssets/eigen/Eigen/Cholesky \
+		../../externAssets/eigen/Eigen/src/Cholesky/LLT.h \
+		../../externAssets/eigen/Eigen/src/Cholesky/LDLT.h \
+		../../externAssets/eigen/Eigen/src/Cholesky/LLT_LAPACKE.h \
+		../../externAssets/eigen/Eigen/QR \
+		../../externAssets/eigen/Eigen/Jacobi \
+		../../externAssets/eigen/Eigen/src/Jacobi/Jacobi.h \
+		../../externAssets/eigen/Eigen/Householder \
+		../../externAssets/eigen/Eigen/src/Householder/Householder.h \
+		../../externAssets/eigen/Eigen/src/Householder/HouseholderSequence.h \
+		../../externAssets/eigen/Eigen/src/Householder/BlockHouseholder.h \
+		../../externAssets/eigen/Eigen/src/QR/HouseholderQR.h \
+		../../externAssets/eigen/Eigen/src/QR/FullPivHouseholderQR.h \
+		../../externAssets/eigen/Eigen/src/QR/ColPivHouseholderQR.h \
+		../../externAssets/eigen/Eigen/src/QR/CompleteOrthogonalDecomposition.h \
+		../../externAssets/eigen/Eigen/src/QR/HouseholderQR_LAPACKE.h \
+		../../externAssets/eigen/Eigen/src/QR/ColPivHouseholderQR_LAPACKE.h \
+		../../externAssets/eigen/Eigen/SVD \
+		../../externAssets/eigen/Eigen/src/misc/RealSvd2x2.h \
+		../../externAssets/eigen/Eigen/src/SVD/UpperBidiagonalization.h \
+		../../externAssets/eigen/Eigen/src/SVD/SVDBase.h \
+		../../externAssets/eigen/Eigen/src/SVD/JacobiSVD.h \
+		../../externAssets/eigen/Eigen/src/SVD/BDCSVD.h \
+		../../externAssets/eigen/Eigen/src/SVD/JacobiSVD_LAPACKE.h \
+		../../externAssets/eigen/Eigen/Geometry \
+		../../externAssets/eigen/Eigen/src/Geometry/OrthoMethods.h \
+		../../externAssets/eigen/Eigen/src/Geometry/EulerAngles.h \
+		../../externAssets/eigen/Eigen/src/Geometry/Homogeneous.h \
+		../../externAssets/eigen/Eigen/src/Geometry/RotationBase.h \
+		../../externAssets/eigen/Eigen/src/Geometry/Rotation2D.h \
+		../../externAssets/eigen/Eigen/src/Geometry/Quaternion.h \
+		../../externAssets/eigen/Eigen/src/Geometry/AngleAxis.h \
+		../../externAssets/eigen/Eigen/src/Geometry/Transform.h \
+		../../externAssets/eigen/Eigen/src/Geometry/Translation.h \
+		../../externAssets/eigen/Eigen/src/Geometry/Scaling.h \
+		../../externAssets/eigen/Eigen/src/Geometry/Hyperplane.h \
+		../../externAssets/eigen/Eigen/src/Geometry/ParametrizedLine.h \
+		../../externAssets/eigen/Eigen/src/Geometry/AlignedBox.h \
+		../../externAssets/eigen/Eigen/src/Geometry/Umeyama.h \
+		../../externAssets/eigen/Eigen/src/Geometry/arch/Geometry_SSE.h \
+		../../externAssets/eigen/Eigen/Eigenvalues \
+		../../externAssets/eigen/Eigen/src/Eigenvalues/Tridiagonalization.h \
+		../../externAssets/eigen/Eigen/src/Eigenvalues/RealSchur.h \
+		../../externAssets/eigen/Eigen/src/Eigenvalues/HessenbergDecomposition.h \
+		../../externAssets/eigen/Eigen/src/Eigenvalues/EigenSolver.h \
+		../../externAssets/eigen/Eigen/src/Eigenvalues/SelfAdjointEigenSolver.h \
+		../../externAssets/eigen/Eigen/src/Eigenvalues/GeneralizedSelfAdjointEigenSolver.h \
+		../../externAssets/eigen/Eigen/src/Eigenvalues/ComplexSchur.h \
+		../../externAssets/eigen/Eigen/src/Eigenvalues/ComplexEigenSolver.h \
+		../../externAssets/eigen/Eigen/src/Eigenvalues/RealQZ.h \
+		../../externAssets/eigen/Eigen/src/Eigenvalues/GeneralizedEigenSolver.h \
+		../../externAssets/eigen/Eigen/src/Eigenvalues/MatrixBaseEigenvalues.h \
+		../../externAssets/eigen/Eigen/src/Eigenvalues/RealSchur_LAPACKE.h \
+		../../externAssets/eigen/Eigen/src/Eigenvalues/ComplexSchur_LAPACKE.h \
+		../../externAssets/eigen/Eigen/src/Eigenvalues/SelfAdjointEigenSolver_LAPACKE.h \
+		../../inc/grTrajectory.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/grDataApplier.o src/grDataApplier.cpp
 
 build/GRGLWidget.o: src/GRGLWidget.cpp inc/GRGLWidget.h \
@@ -2601,7 +2600,6 @@ build/grAlgorithm.o: ../../src/grAlgorithm.cpp ../../inc/grAlgorithm.h \
 		../../inc/grDevice.h \
 		../../inc/grMadgwick.h \
 		../../inc/grGrt.h \
-		../../inc/grDataAttributes.h \
 		../../externAssets/eigen/Eigen/Dense \
 		../../externAssets/eigen/Eigen/Core \
 		../../externAssets/eigen/Eigen/src/Core/util/DisableStupidWarnings.h \
@@ -2966,8 +2964,7 @@ build/grGrt.o: ../../src/grGrt.cpp ../../inc/grGrt.h \
 		../../externAssets/grt/include/GRT/ClusteringModules/ClusterTree/ClusterTreeNode.h \
 		../../externAssets/grt/include/GRT/ClusteringModules/HierarchicalClustering/HierarchicalClustering.h \
 		../../externAssets/grt/include/GRT/ContextModules/Gate.h \
-		../../inc/grDevice.h \
-		../../inc/grDataAttributes.h
+		../../inc/grDevice.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/grGrt.o ../../src/grGrt.cpp
 
 build/grMadgwick.o: ../../src/grMadgwick.cpp ../../inc/grMadgwick.h
@@ -3339,13 +3336,12 @@ build/grTrajectory.o: ../../src/grTrajectory.cpp ../../inc/grTrajectory.h \
 		../../inc/grConnection.h \
 		../../inc/grDevice.h \
 		../../inc/grMadgwick.h \
-		../../inc/grGrt.h \
-		../../inc/grDataAttributes.h
+		../../inc/grGrt.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/grTrajectory.o ../../src/grTrajectory.cpp
 
 build/grUtilities.o: ../../src/grUtilities.cpp ../../inc/grUtilities.h \
 		../../inc/grDevice.h \
-		../../inc/grDataAttributes.h \
+		../../inc/grGrt.h \
 		../../externAssets/grt/include/GRT/GRT.h \
 		../../externAssets/grt/include/GRT/Util/GRTVersionInfo.h \
 		../../externAssets/grt/include/GRT/Util/GRTCommon.h \
@@ -3500,8 +3496,7 @@ build/grUtilities.o: ../../src/grUtilities.cpp ../../inc/grUtilities.h \
 		../../externAssets/grt/include/GRT/ClusteringModules/ClusterTree/ClusterTree.h \
 		../../externAssets/grt/include/GRT/ClusteringModules/ClusterTree/ClusterTreeNode.h \
 		../../externAssets/grt/include/GRT/ClusteringModules/HierarchicalClustering/HierarchicalClustering.h \
-		../../externAssets/grt/include/GRT/ContextModules/Gate.h \
-		../../inc/grGrt.h
+		../../externAssets/grt/include/GRT/ContextModules/Gate.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/grUtilities.o ../../src/grUtilities.cpp
 
 build/moc_grVisualization.o: build/generated_files/moc_grVisualization.cpp 

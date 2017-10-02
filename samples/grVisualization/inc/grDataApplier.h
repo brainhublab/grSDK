@@ -12,7 +12,7 @@
 #include "GRGLWidget.h"
 #include "grConnection.h"
 #include "grAlgorithm.h"
-
+#include "grTrajectory.h"
 class GRDataApplier : public QObject
 {
 	Q_OBJECT
@@ -47,10 +47,12 @@ private:
     gr_message msg; // raw data
     GRAlgorithm alg; // madgwick algorithm for alg_msg producing
     gr_alg_message alg_msg; // madgwick updated data
-
+    GRTrajectory trajectory;
+	std::vector<double> last_position;
     bool processMsg(std::string); // gets data from msg variable, updates it with madgwick and writes to alg_msg
     bool fetchData(); // gets data from algdev, writes it to msg variable and apply msg for each arm node
 
+    bool moveHand(std::vector<double>&);
     bool applyToFinger(std::vector<double>&, int); // apply quaternion to [int] finger
     bool applyToHand(std::vector<double>&); // apply quaternion to hand
     std::vector<float>* nodeQuanternion; // current temporary quaternion
