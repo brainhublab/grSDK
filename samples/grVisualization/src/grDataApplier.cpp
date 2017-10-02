@@ -7,7 +7,6 @@
 #include "grRender.h"
 
 #include <cmath>
-
 /*void splitSensorData(std::vector<float> quat, double arr[4])
 {
 	arr[0] = data[1];
@@ -103,7 +102,7 @@ bool GRDataApplier::run()
 
     fetchTimer->start(fetchFrequency); // setting up fetchtimer frequency
 
-	  alg.setupMadgwick(200, 200, 200, 200, 200, 220); //need to check
+	  alg.setupMadgwick(500, 500, 500, 500, 500, 220); //need to check
     return true;
 }
 
@@ -119,10 +118,7 @@ bool GRDataApplier::addHistoryData(std::vector<double> quant)
     }
     // TODO: this for cycle is seamless
     std::vector<float> q;
-    for(int i = 0; i < quant.size(); i++)
-    {
-        q.push_back((float) quant[i]);
-    }
+    q.assign(quant.begin(), quant.end());
     targetQuanternionHistory->push_back(q);
     return true;
 }
@@ -310,11 +306,7 @@ bool GRDataApplier::applyToHand(std::vector<double> &quant)
     if (!quant.empty())
 	{
         nodeQuanternion->clear();
-	for(int i = 0; i < quant.size(); i++)
-        {
-
-            nodeQuanternion->push_back((float)quant[i]);
-        }
+	nodeQuanternion->assign(quant.begin(), quant.end());
 
         GLfloat mat[16];
         quaternionToRotation(*nodeQuanternion, mat);
@@ -369,11 +361,7 @@ bool GRDataApplier::applyToFinger(std::vector<double> &q, int index)
     if (!q.empty())
 	{
         nodeQuanternion->clear();
-        for(int i = 0; i < q.size(); i++)
-        {
-
-            nodeQuanternion->push_back((float)q[i]);
-        }
+	nodeQuanternion->assign(q.begin(), q.end());
 
 
 

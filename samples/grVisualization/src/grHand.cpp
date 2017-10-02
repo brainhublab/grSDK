@@ -1,6 +1,5 @@
 #include "grHand.h"
 
-
 // helpers
 bool isAllocated( GRHandNode *ptr )
 {
@@ -215,7 +214,6 @@ bool GRHand::bendHandWithMatrix(GLfloat mat[16])
 		{
 				hand->matrix[i] = mat[i];
 		};
-
 		return true;
 };
 
