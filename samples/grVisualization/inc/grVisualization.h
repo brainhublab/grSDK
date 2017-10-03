@@ -30,6 +30,8 @@ public:
 	~GRVisualization();
 
     bool runDataReading(); // runs dataAppliers for hands
+public slots:
+	bool fetchSignal();
 private slots:
 	void on_trajectoryCheckBox_toggled(bool checked);
 	void on_leftHandCheckBox_toggled(bool checked);
@@ -39,7 +41,13 @@ private slots:
 	void on_randomData_clicked();
 	void on_pausePlotCheckBox_toggled(bool checked);
 private:
+	bool fetchRunning = false;
 	bool initUiProps();
+	int fetchFrequency = 20; // ms
+	bool leftArmActivated = false;
+	bool rightArmActivated = false;
+    QTimer *fetchTimer; // a timer for fetchdata
+
 
     	GRConnection conn; // connection for data getting
 	std::map<int, device_t> activeDevices;	

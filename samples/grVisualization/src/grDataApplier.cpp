@@ -94,6 +94,19 @@ bool GRDataApplier::run()
 		printf("Arm pointer is not provided!\n");
 		return false;
 	}
+    if(deviceName == "GR[L]")
+    {
+	 leftFactor = -1;
+    }
+    else if(deviceName == "GR[R]")
+    {
+    	rightFactor = -1;
+    }
+	  
+	for( int i = 10; i != 0; i-- )
+	{
+		conn->getData(deviceId, &msg);
+	}
 //printf("Setting up.");
 // start timer for fetching data from source to separate copies
     fetchTimer = new QTimer();
@@ -103,7 +116,8 @@ bool GRDataApplier::run()
     fetchTimer->start(fetchFrequency); // setting up fetchtimer frequency
 
 	  alg.setupMadgwick(500, 500, 500, 500, 500, 220); //need to check
-    return true;
+
+	  return true;
 }
 
 /*
@@ -161,21 +175,24 @@ bool GRDataApplier::fetchData() // get data and call processMsg
 		return false;
 	}
 
+
+	printf("got data from %d\n", deviceId);
 	double tmp;
 // palm
 	tmp = msg.palm.gyro[0];
-	msg.palm.gyro[0] = -msg.palm.gyro[2];
-	msg.palm.gyro[2] = tmp;
+	msg.palm.gyro[0] = leftFactor*msg.palm.gyro[2];
+	//msg.palm.gyro[1] = msg.palm.gyro[1];
+	msg.palm.gyro[2] = rightFactor*tmp;
 
       	tmp = msg.palm.acc[0];
-	msg.palm.acc[0] = -msg.palm.acc[2];
-	msg.palm.acc[1] = msg.palm.acc[1];
-	msg.palm.acc[2] = tmp;
+	msg.palm.acc[0] = leftFactor*msg.palm.acc[2];
+	//msg.palm.acc[1] = msg.palm.acc[1];
+	msg.palm.acc[2] = rightFactor*tmp;
 
       	tmp = msg.palm.mag[0];
-	msg.palm.mag[0] = -msg.palm.mag[2];
-	msg.palm.mag[1] = msg.palm.mag[1];
-	msg.palm.mag[2] = tmp;
+	msg.palm.mag[0] = leftFactor*msg.palm.mag[2];
+	//msg.palm.mag[1] = msg.palm.mag[1];
+	msg.palm.mag[2] = rightFactor*tmp;
 	// fingers
 
 	/*changeFingerData(&msg.pinky);

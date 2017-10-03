@@ -106,6 +106,7 @@ bool GRVisualization::runDataReading()
 		leftArmApplier.setConnection(&conn);   
     		// for LEFT arm find device, activate it and start reading to OpenGL model
     		leftArmApplier.run();
+		leftArmActivated = true;
     		    printf("Activated device with name %s\n", leftArmApplier.deviceName.c_str());
 	}
 	else if( it->second.name == rightArmApplier.deviceName )
@@ -117,6 +118,7 @@ bool GRVisualization::runDataReading()
 		rightArmApplier.setConnection(&conn);   
 		// for RIGHT arm find device, activate it and start reading to OpenGL model
 		rightArmApplier.run();
+		rightArmActivated = true;
         	printf("Activated device with name %s\n", rightArmApplier.deviceName.c_str());
 	}
     }
@@ -155,12 +157,46 @@ bool GRVisualization::runDataReading()
         item->addChild(address);
         ui->devicesTree->addTopLevelItem(item);
     }
+    fetchTimer = new QTimer();
+    QObject::connect(fetchTimer, SIGNAL(timeout()), this, SLOT(fetchSignal())); // runs fetchSignal every timeout of fetch timer
+//	QObject::connect(this, SIGNAL(fetchSignal()), this, SLOT(fetchData()));
+
+    fetchTimer->start(fetchFrequency); // setting up fetchtimer frequency
+
+
+
 	return true;
 }
 
 //
 // Qt Slots
 //
+// runs fetchData
+bool GRVisualization::fetchSignal()
+{
+    if(!fetchRunning)
+	{
+        // ok, another fetch is not running at the moment
+		fetchRunning = true;
+		if ( rightArmActivated )
+		{
+			printf("!!Right arm fetch!\n");
+			rightArmApplier.fetchData();
+		}
+		
+		if ( leftArmActivated )
+		{
+			printf("!!Left arm fetch!\n");
+			leftArmApplier.fetchData();
+		}
+		
+		fetchRunning = false;
+		return true;
+
+	}
+    return false;
+};
+
 
 /*
  * Render or not trajectory

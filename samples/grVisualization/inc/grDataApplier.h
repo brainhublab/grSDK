@@ -32,10 +32,13 @@ public:
     bool isLoggingEnabled = false; // for logging to a file
     std::string deviceName = "";
 
+    bool fetchData(); // gets data from algdev, writes it to msg variable and apply msg for each arm node
 public slots:
     bool fetchSignal(); // this signal is called every 20 ms
 private:
-    int deviceId = -1;
+    int leftFactor = 1;
+    int rightFactor = 1;
+	int deviceId = -1;
     bool fetchRunning = false; // mutex analog
     int fetchFrequency = 20; // ms
     QTimer *fetchTimer; // a timer for fetchdata
@@ -50,7 +53,6 @@ private:
     GRTrajectory trajectory;
 	std::vector<double> last_position;
     bool processMsg(std::string); // gets data from msg variable, updates it with madgwick and writes to alg_msg
-    bool fetchData(); // gets data from algdev, writes it to msg variable and apply msg for each arm node
 
     bool moveHand(std::vector<double>&);
     bool applyToFinger(std::vector<double>&, int); // apply quaternion to [int] finger
