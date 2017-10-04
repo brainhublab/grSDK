@@ -1,9 +1,4 @@
 #include "grDataApplier.h"
-//
-// GRDataApplier definitions
-//
-
-
 #include "grRender.h"
 
 #include <cmath>
@@ -20,6 +15,10 @@
    //      }
 };
 */
+
+//
+// GRDataApplier definitions
+//
 
 GRDataApplier::GRDataApplier()
 {
@@ -102,22 +101,13 @@ bool GRDataApplier::run()
     {
     	rightFactor = -1;
     }
-	  
+	 /* 
 	for( int i = 10; i != 0; i-- )
 	{
 		conn->getData(deviceId, &msg);
-	}
-//printf("Setting up.");
-// start timer for fetching data from source to separate copies
-    fetchTimer = new QTimer();
-    QObject::connect(fetchTimer, SIGNAL(timeout()), this, SLOT(fetchSignal())); // runs fetchSignal every timeout of fetch timer
-//	QObject::connect(this, SIGNAL(fetchSignal()), this, SLOT(fetchData()));
-
-    fetchTimer->start(fetchFrequency); // setting up fetchtimer frequency
-
-	  alg.setupMadgwick(500, 500, 500, 500, 500, 220); //need to check
-
-	  return true;
+	}*/
+    alg.setupMadgwick(500, 500, 500, 500, 500, 220); //need to check
+    return true;
 }
 
 /*
@@ -172,6 +162,7 @@ bool GRDataApplier::fetchData() // get data and call processMsg
         conn->getData(deviceId, &msg); // read data to msg variable
 	if(msg.palm.empty())
 	{
+		printf("NO data from %d\n", deviceId);
 		return false;
 	}
 
@@ -194,13 +185,13 @@ bool GRDataApplier::fetchData() // get data and call processMsg
 	//msg.palm.mag[1] = msg.palm.mag[1];
 	msg.palm.mag[2] = rightFactor*tmp;
 	// fingers
-
-	/*changeFingerData(&msg.pinky);
+/*
+	changeFingerData(&msg.pinky);
 	changeFingerData(&msg.ring);
 	changeFingerData(&msg.middle);
 	changeFingerData(&msg.index);
 	changeFingerData(&msg.thumb);
-	*/
+*/	
 	// for each node prcess this msg
         processMsg("palm");
         processMsg("pinky");
@@ -209,6 +200,7 @@ bool GRDataApplier::fetchData() // get data and call processMsg
         processMsg("index");
         processMsg("thumb");
 
+	printf("Processed data from %d\n", deviceId);
 	return true;
 }
 
@@ -307,6 +299,10 @@ Eigen::Quaterniond quatMult(Eigen::Quaterniond q1, Eigen::Quaterniond q2) {
     return resultQ;
     return resultQ;
 }
+
+/* 
+ * moves OpenGL arm in a scene to new position (works bad now) TODO
+ */
 bool GRDataApplier::moveHand(std::vector<double>& position)
 {
 	if(position.empty()) return false;
@@ -339,9 +335,8 @@ bool GRDataApplier::applyToHand(std::vector<double> &quant)
 		}
         prevQuants[5] = *nodeQuanternion;
 
-//        node.pop_front();
         (*nodeQuanternion).clear();
-		return true;
+	return true;
 	}
 
 
@@ -359,7 +354,7 @@ float getYaw(std::vector<float> &q)
     float yaw = 0.0f;
 
     roll = atan2f(q[0]*q[1] + q[2]*q[3], 0.5f - q[1]*q[1] - q[2]*q[2]);
-//    pitch = asinf(-2.0*(q1*q3 - q0*q2));
+// TODO: WHY?   pitch = asinf(-2.0*(q1*q3 - q0*q2));
     yaw = atan2f(q[1]*q[2] + q[0]*q[3], 0.5f - q[2]*q[2] - q[3]*q[3]);
 
     roll = roll * 57.29578f;
@@ -384,13 +379,12 @@ bool GRDataApplier::applyToFinger(std::vector<double> &q, int index)
 
         GLfloat mat[16];
 /*
-		float yaw = getYaw(*nodeQuanternion);
-
+	float yaw = getYaw(*nodeQuanternion);
         float palmYaw = 0.0f;
 */
 
-            quaternionToRotation(*nodeQuanternion, mat);
-            arm->bendFingerWithMatrix(index, mat);
+	quaternionToRotation(*nodeQuanternion, mat);
+        arm->bendFingerWithMatrix(index, mat);
 
         (*nodeQuanternion).clear();
 

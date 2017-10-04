@@ -36,22 +36,24 @@ public:
 public slots:
     bool fetchSignal(); // this signal is called every 20 ms
 private:
-    int leftFactor = 1;
-    int rightFactor = 1;
-	int deviceId = -1;
+    int leftFactor = 1; // for orientation changes if this left hand = -1
+    int rightFactor = 1; // if this is right hand =-1
+    int deviceId = -1; // id of connected and activated device for getting data from connection
+    // TODO: clear fetch data from this class 
     bool fetchRunning = false; // mutex analog
     int fetchFrequency = 20; // ms
     QTimer *fetchTimer; // a timer for fetchdata
 
+
     GRHand *arm; // OpenGL model pointer
 
-    GRConnection* conn;
+    GRConnection* conn; // pointer to connection
     device_t* device;
     gr_message msg; // raw data
     GRAlgorithm alg; // madgwick algorithm for alg_msg producing
     gr_alg_message alg_msg; // madgwick updated data
     GRTrajectory trajectory;
-	std::vector<double> last_position;
+    std::vector<double> last_position; // position of palm from GRTrajectory
     bool processMsg(std::string); // gets data from msg variable, updates it with madgwick and writes to alg_msg
 
     bool moveHand(std::vector<double>&);

@@ -132,7 +132,9 @@ bool GRVisualization::runDataReading()
     
 
     //plotter_all_acc->runPlotting();
-
+    
+    
+    // UI
     // find devices and put them into UI devices tree
     
     device_t d;
@@ -157,11 +159,13 @@ bool GRVisualization::runDataReading()
         item->addChild(address);
         ui->devicesTree->addTopLevelItem(item);
     }
-    fetchTimer = new QTimer();
-    QObject::connect(fetchTimer, SIGNAL(timeout()), this, SLOT(fetchSignal())); // runs fetchSignal every timeout of fetch timer
-//	QObject::connect(this, SIGNAL(fetchSignal()), this, SLOT(fetchData()));
 
-    fetchTimer->start(fetchFrequency); // setting up fetchtimer frequency
+
+	//
+	// setting up fetching function calls
+	fetchTimer = new QTimer();
+	QObject::connect(fetchTimer, SIGNAL(timeout()), this, SLOT(fetchSignal())); // runs fetchSignal every timeout of fetch timer
+	fetchTimer->start(fetchFrequency); // setting up fetchtimer frequency
 
 
 
@@ -171,7 +175,7 @@ bool GRVisualization::runDataReading()
 //
 // Qt Slots
 //
-// runs fetchData
+// runs actual fetchData in dataAppliers
 bool GRVisualization::fetchSignal()
 {
     if(!fetchRunning)
