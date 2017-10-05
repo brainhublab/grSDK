@@ -167,10 +167,11 @@ bool GRDataApplier::fetchData() // get data and call processMsg
 	}
 
 
-	printf("got data from %d\n", deviceId);
+	//printf("got data from %d\n", deviceId);
+
 	double tmp;
 // palm
-/*	tmp = msg.palm.gyro[0];
+	tmp = msg.palm.gyro[0];
 	msg.palm.gyro[0] = leftFactor*msg.palm.gyro[2];
 	//msg.palm.gyro[1] = msg.palm.gyro[1];
 	msg.palm.gyro[2] = rightFactor*tmp;
@@ -184,7 +185,7 @@ bool GRDataApplier::fetchData() // get data and call processMsg
 	msg.palm.mag[0] = leftFactor*msg.palm.mag[2];
 	//msg.palm.mag[1] = msg.palm.mag[1];
 	msg.palm.mag[2] = rightFactor*tmp;
-*/	// fingers
+	// fingers
 /*
 	changeFingerData(&msg.pinky);
 	changeFingerData(&msg.ring);
@@ -200,7 +201,7 @@ bool GRDataApplier::fetchData() // get data and call processMsg
         processMsg("index");
         processMsg("thumb");
 
-	printf("Processed data from %d\n", deviceId);
+	//printf("Processed data from %d\n", deviceId);
 	return true;
 }
 
@@ -225,8 +226,8 @@ bool GRDataApplier::processMsg(std::string nodeName)
         if(nodeName == "palm")
         {
 		//get new position;
-		last_position = trajectory.getNewPosByRunge(msg.palm.acc, alg_msg.palm, msg.palm.time_stamp);
-    		moveHand(last_position);
+//		last_position = trajectory.getNewPosByRunge(msg.palm.acc, alg_msg.palm, msg.palm.time_stamp);
+    //		moveHand(last_position);
 		applyToHand(*alg_msg.nodes[nodeName]);
         	addHistoryData(*alg_msg.nodes[nodeName]);
         }

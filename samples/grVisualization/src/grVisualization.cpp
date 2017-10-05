@@ -184,13 +184,13 @@ bool GRVisualization::fetchSignal()
 		fetchRunning = true;
 		if ( rightArmActivated )
 		{
-			printf("!!Right arm fetch!\n");
+		//	printf("!!Right arm fetch!\n");
 			rightArmApplier.fetchData();
 		}
 		
 		if ( leftArmActivated )
 		{
-			printf("!!Left arm fetch!\n");
+		//	printf("!!Left arm fetch!\n");
 			leftArmApplier.fetchData();
 		}
 		
