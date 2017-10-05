@@ -5,18 +5,18 @@ using namespace std;
 
 int main (int argc, const char * argv[])
 {
-    GRAlgorithm grAlg;
+    GRGrt grt;
 
-    grAlg.loadTrainingData("./data/DTWTrainingData.grt");
-    grAlg.setTestDataFromTraining(20);
+    grt.loadTrainingData("../trainingData/grTrainingDTWtest.grt");
+    grt.setTestDataFromTraining(20);
 
     //grAlg.loadModel("./data/DTWModel.grt");
 
-    grAlg.train();
-    grAlg.test();
+    grt.train();
+    grt.test();
 
-    grAlg.saveModel("./data/DTWModel.grt");
-    cout << grAlg.getTestAccuracy() << endl;
+    grt.saveModel("../trainingData/DTWModel.grt");
+    cout << grt.getTestAccuracy() << endl;
 
     return 0;
 }

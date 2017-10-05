@@ -30,6 +30,8 @@ class GRTrajectory
         ~GRTrajectory(); //destructor
         std::vector<double> getNewPosByRunge(std::vector<double>, std::vector<double>, unsigned long);
         std::vector<double> getAccelerations(std::vector<double>, std::vector<double>);
+        bool isStationary();
+
     private:
         /* Storing some values from previous calculations */
         unsigned long _timestampLast;  //last stored timestamp
@@ -56,6 +58,10 @@ class GRTrajectory
         Eigen::Vector3d _correctVector(Eigen::Vector3d);
 
         Eigen::Vector3d _accLast;
+
+        bool _isStationary;
+
+        double _treshold;
 };
 
 #endif

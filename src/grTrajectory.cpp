@@ -3,6 +3,8 @@
 GRTrajectory::GRTrajectory()
 {
     this->_timestampLast = 0;
+    this->_isStationary = true;
+    this->_treshold = 0.6;
 }
 
 GRTrajectory::~GRTrajectory()
@@ -117,6 +119,14 @@ vector<double> GRTrajectory::getNewPosByRunge(vector<double> accIn, vector<doubl
     accTmp = acc;
 
     acc -= this->_accLast;
+    if(acc.norm() < _treshold)
+    {
+        _isStationary = true;
+    }
+    else
+    {
+        _isStationary = false;
+    }
     correctionVector = _correctVector(accTmp);
    // std::cout<<"correctionVector "<<correctionVector<<std::endl;
    /* for(int i=0; i<3; i++)
@@ -203,4 +213,7 @@ Eigen::Quaterniond GRTrajectory::_toQuaterniond(vector<double> in)
     return out;
 }
 
-
+bool GRTrajectory::isStationary()
+{
+   return _isStationary; 
+}
