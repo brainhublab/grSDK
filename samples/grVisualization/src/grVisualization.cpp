@@ -99,26 +99,28 @@ bool GRVisualization::runDataReading()
     {
 	if( it->second.name == leftArmApplier.deviceName )
 	{
-        	conn.setActiveDevice(it->first);
-        	conn.connectSocket(it->first);
-        	activeDevices[it->first] = it->second; // add information about active devices
+    		// for LEFT arm find device, activate it and start reading to OpenGL model
+        	//
 		leftArmApplier.setDeviceId(it->second.id);	
 		leftArmApplier.setConnection(&conn);   
-    		// for LEFT arm find device, activate it and start reading to OpenGL model
-    		leftArmApplier.run();
-		leftArmActivated = true;
-    		    printf("Activated device with name %s\n", leftArmApplier.deviceName.c_str());
+		
+        	activeDevices[it->first] = it->second; // add information about active devices
+		
+		leftArmApplier.run();
+    		
+		printf("Activated device with name %s\n", leftArmApplier.deviceName.c_str());
 	}
 	else if( it->second.name == rightArmApplier.deviceName )
 	{
-        	conn.setActiveDevice(it->first);
-        	conn.connectSocket(it->first);
-        	activeDevices[it->first] = it->second; // add information about active devices
+		// for RIGHT arm find device, activate it and start reading to OpenGL model
+		//
 		rightArmApplier.setDeviceId(it->second.id);	
 		rightArmApplier.setConnection(&conn);   
-		// for RIGHT arm find device, activate it and start reading to OpenGL model
+        	//
+        	activeDevices[it->first] = it->second; // add information about active devices
+		
 		rightArmApplier.run();
-		rightArmActivated = true;
+		// setting up fetching function calls
         	printf("Activated device with name %s\n", rightArmApplier.deviceName.c_str());
 	}
     }
@@ -160,28 +162,18 @@ bool GRVisualization::runDataReading()
         ui->devicesTree->addTopLevelItem(item);
     }
 
-
-	//
-	// setting up fetching function calls
-	fetchTimer = new QTimer();
-	QObject::connect(fetchTimer, SIGNAL(timeout()), this, SLOT(fetchSignal())); // runs fetchSignal every timeout of fetch timer
-	fetchTimer->start(fetchFrequency); // setting up fetchtimer frequency
-
-
-
 	return true;
 }
 
 //
 // Qt Slots
 //
-// runs actual fetchData in dataAppliers
-bool GRVisualization::fetchSignal()
-{
-    if(!fetchRunning)
-	{
+/*
+//if(!fetchRunning)
+//
+//	{
         // ok, another fetch is not running at the moment
-		fetchRunning = true;
+//		fetchRunning = true;
 		if ( rightArmActivated )
 		{
 		//	printf("!!Right arm fetch!\n");
@@ -194,13 +186,13 @@ bool GRVisualization::fetchSignal()
 			leftArmApplier.fetchData();
 		}
 		
-		fetchRunning = false;
+//		fetchRunning = false;
 		return true;
 
-	}
+//	}
     return false;
 };
-
+*/
 
 /*
  * Render or not trajectory

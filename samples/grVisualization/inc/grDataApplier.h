@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include <QTimer>
-
+#include <QThread>
 #include <iostream>
 #include <deque>
 #include <string>
@@ -35,7 +35,10 @@ public:
     bool fetchData(); // gets data from algdev, writes it to msg variable and apply msg for each arm node
 public slots:
     bool fetchSignal(); // this signal is called every 20 ms
+private slots:
+	bool runDataReading();
 private:
+		QThread thread;
     int leftFactor = 1; // for orientation changes if this left hand = -1
     int rightFactor = 1; // if this is right hand =-1
     int deviceId = -1; // id of connected and activated device for getting data from connection
@@ -43,7 +46,6 @@ private:
     bool fetchRunning = false; // mutex analog
     int fetchFrequency = 20; // ms
     QTimer *fetchTimer; // a timer for fetchdata
-
 
     GRHand *arm; // OpenGL model pointer
 

@@ -34,6 +34,7 @@ GRDataApplier::GRDataApplier()
 
 GRDataApplier::~GRDataApplier()
 {
+	thread.wait();
     delete nodeQuanternion;
 }
 
@@ -81,7 +82,15 @@ bool GRDataApplier::fetchSignal()
     return false;
 };
 
-
+bool GRDataApplier::runDataReading()
+{
+	printf("Inside rundata  reading\n");
+        conn->setActiveDevice(deviceId);
+	conn->connectSocket(deviceId);
+	fetchData();
+	//
+		// setting up fetching function calls
+}
 // method searches GR devices and connects to them
 bool GRDataApplier::run()
 {
@@ -106,7 +115,11 @@ bool GRDataApplier::run()
 	{
 		conn->getData(deviceId, &msg);
 	}*/
-    alg.setupMadgwick(500, 500, 500, 500, 500, 220); //need to check
+    	alg.setupMadgwick(500, 500, 500, 500, 500, 220); //need to check
+ 	moveToThread(&thread);
+	printf("moving to thread");
+	connect(&thread, SIGNAL(started()), this, SLOT(runDataReading()));
+	thread.start();
     return true;
 }
 
@@ -159,15 +172,17 @@ bool changeFingerData(imu* finger)
 */
 bool GRDataApplier::fetchData() // get data and call processMsg
 {
-        conn->getData(deviceId, &msg); // read data to msg variable
+	while(true)
+	{
+	conn->getData(deviceId, &msg); // read data to msg variable
 	if(msg.palm.empty())
 	{
 		printf("NO data from %d\n", deviceId);
-		return false;
+		continue;
 	}
 
 
-	//printf("got data from %d\n", deviceId);
+	printf("got data from %d\n", deviceId);
 
 	double tmp;
 // palm
@@ -200,7 +215,7 @@ bool GRDataApplier::fetchData() // get data and call processMsg
         processMsg("middle");
         processMsg("index");
         processMsg("thumb");
-
+	}
 	//printf("Processed data from %d\n", deviceId);
 	return true;
 }
