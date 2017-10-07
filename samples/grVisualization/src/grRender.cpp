@@ -268,11 +268,11 @@ bool GRRenderer::renderArm( GRHandNode *arm, float angleX, float angleY, float a
         // pos on screen
         if ( arm->isLeft )
         {
-                glTranslatef( -data.arm.initial_pos.x, data.arm.initial_pos.y, data.arm.initial_pos.z );
+                glTranslatef( -data.arm.initial_pos.x+hand->posX, data.arm.initial_pos.y+hand->posY, data.arm.initial_pos.z+hand->posZ );
         }
         else
         {
-                glTranslatef( data.arm.initial_pos.x, data.arm.initial_pos.y, data.arm.initial_pos.z );
+                glTranslatef( data.arm.initial_pos.x+hand->posX, data.arm.initial_pos.y+hand->posY, data.arm.initial_pos.z+hand->posZ );
         }
         glRotatef( angleX, 1.f, 0.f, 0.f );
         glRotatef( angleY, 0.f, 1.f, 0.f );

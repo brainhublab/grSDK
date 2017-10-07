@@ -29,6 +29,7 @@ GRDataApplier::GRDataApplier()
     fingers["middle"] = 2;
     fingers["index"] = 3;
     fingers["thumb"] = 4;
+    alg.setupMadgwick(2000, 2000, 2000, 2000, 2000, 1499); //need to check
 
 }
 
@@ -115,7 +116,6 @@ bool GRDataApplier::run()
 	{
 		conn->getData(deviceId, &msg);
 	}*/
-    	alg.setupMadgwick(500, 500, 500, 500, 500, 220); //need to check
  	moveToThread(&thread);
 	printf("moving to thread");
 	connect(&thread, SIGNAL(started()), this, SLOT(runDataReading()));
@@ -182,7 +182,7 @@ bool GRDataApplier::fetchData() // get data and call processMsg
 	}
 
 
-	printf("got data from %d\n", deviceId);
+//	printf("got data from %d\n", deviceId);
 
 	double tmp;
 // palm
@@ -241,8 +241,8 @@ bool GRDataApplier::processMsg(std::string nodeName)
         if(nodeName == "palm")
         {
 		//get new position;
-//		last_position = trajectory.getNewPosByRunge(msg.palm.acc, alg_msg.palm, msg.palm.time_stamp);
-    //		moveHand(last_position);
+		last_position = trajectory.getNewPosByRunge(msg.palm.acc, alg_msg.palm, msg.palm.time_stamp);
+    		moveHand(last_position);
 		applyToHand(*alg_msg.nodes[nodeName]);
         	addHistoryData(*alg_msg.nodes[nodeName]);
         }
@@ -326,6 +326,29 @@ bool GRDataApplier::moveHand(std::vector<double>& position)
     arm->setHandPosition(position[0], position[1], position[2]);
 	return true;
 }
+
+
+
+/*
+ * q is quaternion
+ * returns Euler yaw from q
+*/
+float getYaw(std::vector<float> &q)
+{
+   // float roll = 0.0f;
+ //   float pitch = 0.0f;
+    float yaw = 0.0f;
+
+//    roll = atan2f(q[0]*q[1] + q[2]*q[3], 0.5f - q[1]*q[1] - q[2]*q[2]);
+// TODO: WHY?   pitch = asinf(-2.0*(q1*q3 - q0*q2));
+    yaw = atan2f(q[1]*q[2] + q[0]*q[3], 0.5f - q[2]*q[2] - q[3]*q[3]);
+
+    //roll = roll * 57.29578f;
+    //pitch = pitch * 57.29578f;
+    yaw = yaw * 57.29578f + 180.0f;
+    return yaw;
+}
+
 /*
  * quant is quaternion with size 4
  * rotates palm with this quaternion
@@ -339,16 +362,19 @@ bool GRDataApplier::applyToHand(std::vector<double> &quant)
 
         GLfloat mat[16];
         quaternionToRotation(*nodeQuanternion, mat);
-
-        //printf("Hand Q: %f %f %f %f\n",  (*nodeQuanternion)[0], (*nodeQuanternion)[1], (*nodeQuanternion)[2], (*nodeQuanternion)[3]);
-
-        arm->bendHandWithMatrix(mat);
-        //arm->bendHand((*nodeQuanternion)[2], (*nodeQuanternion)[1], (*nodeQuanternion)[3]);
+	printf("Yaw %f\n", getYaw(*nodeQuanternion));
+        //printf("Hand Q: %f %f %f %f\n",  (*nodeQuanternion)[0], (*nodeQuanternion)[1], (*nodeQuanternion)[2], (*nodeQuanternion)[3]);	
+	
+	if( getYaw(*nodeQuanternion) > 100.f && getYaw(*nodeQuanternion) < 300.f)
+	{
+		arm->bendHandWithMatrix(mat);
+	}
+		//arm->bendHand((*nodeQuanternion)[2], (*nodeQuanternion)[1], (*nodeQuanternion)[3]);
 
         if(!prevQuants[5].empty())
-		{
-			prevQuants[5].clear();
-		}
+	{
+		prevQuants[5].clear();
+	}
         prevQuants[5] = *nodeQuanternion;
 
         (*nodeQuanternion).clear();
@@ -358,26 +384,6 @@ bool GRDataApplier::applyToHand(std::vector<double> &quant)
 
 	return false;
 };
-
-/*
- * q is quaternion
- * returns Euler yaw from q
-*/
-float getYaw(std::vector<float> &q)
-{
-    float roll = 0.0f;
-    float pitch = 0.0f;
-    float yaw = 0.0f;
-
-    roll = atan2f(q[0]*q[1] + q[2]*q[3], 0.5f - q[1]*q[1] - q[2]*q[2]);
-// TODO: WHY?   pitch = asinf(-2.0*(q1*q3 - q0*q2));
-    yaw = atan2f(q[1]*q[2] + q[0]*q[3], 0.5f - q[2]*q[2] - q[3]*q[3]);
-
-    roll = roll * 57.29578f;
-    pitch = pitch * 57.29578f;
-    yaw = yaw * 57.29578f + 180.0f;
-    return yaw;
-}
 
 
 /*
@@ -400,8 +406,11 @@ bool GRDataApplier::applyToFinger(std::vector<double> &q, int index)
 */
 
 	quaternionToRotation(*nodeQuanternion, mat);
-        arm->bendFingerWithMatrix(index, mat);
 
+	if( getYaw(*nodeQuanternion) > 150.f && getYaw(*nodeQuanternion) < 250.f)
+	{
+		arm->bendFingerWithMatrix(index, mat);
+	}
         (*nodeQuanternion).clear();
 
         return true;
