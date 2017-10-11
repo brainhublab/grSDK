@@ -199,7 +199,9 @@ bool GRVisualization::runDataReading()
 */
 void GRVisualization::on_trajectoryCheckBox_toggled(bool checked)
 {
-	ui->GLwidget->renderTrajectory(checked);
+	leftArmApplier.withTrajectory = checked;
+	rightArmApplier.withTrajectory = checked;
+//	ui->GLwidget->renderTrajectory(checked);
 }
 
 
@@ -287,3 +289,9 @@ void GRVisualization::on_pausePlotCheckBox_toggled(bool checked)
 	plotter_all_gyro->pause = checked;
 }
 
+
+void GRVisualization::on_rotationsCheckBox_toggled(bool checked)
+{
+	leftArmApplier.withRotations = checked;
+	rightArmApplier.withRotations = checked;
+}

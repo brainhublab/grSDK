@@ -50,6 +50,7 @@ public:
     QCheckBox *hackerModeCheckBox;
     QCheckBox *leftHandCheckBox;
     QCheckBox *pausePlotCheckBox;
+    QCheckBox *rotationsCheckBox;
     QTabWidget *Plots;
     QWidget *tab_all_data;
     QHBoxLayout *horizontalLayout_2;
@@ -118,11 +119,11 @@ public:
         randomData = new QPushButton(settings);
         randomData->setObjectName(QStringLiteral("randomData"));
         randomData->setEnabled(true);
-        randomData->setGeometry(QRect(0, 190, 109, 30));
+        randomData->setGeometry(QRect(0, 150, 109, 30));
         randomData->setMaximumSize(QSize(240, 30));
         rightHandCheckBox = new QCheckBox(settings);
         rightHandCheckBox->setObjectName(QStringLiteral("rightHandCheckBox"));
-        rightHandCheckBox->setGeometry(QRect(0, 40, 97, 22));
+        rightHandCheckBox->setGeometry(QRect(0, 50, 97, 22));
         QPalette palette;
         QBrush brush(QColor(59, 2, 51, 255));
         brush.setStyle(Qt::SolidPattern);
@@ -135,12 +136,12 @@ public:
         loggingCheckBox = new QCheckBox(settings);
         loggingCheckBox->setObjectName(QStringLiteral("loggingCheckBox"));
         loggingCheckBox->setEnabled(true);
-        loggingCheckBox->setGeometry(QRect(0, 160, 78, 22));
+        loggingCheckBox->setGeometry(QRect(0, 130, 78, 22));
         loggingCheckBox->setChecked(false);
         hackerModeCheckBox = new QCheckBox(settings);
         hackerModeCheckBox->setObjectName(QStringLiteral("hackerModeCheckBox"));
         hackerModeCheckBox->setEnabled(true);
-        hackerModeCheckBox->setGeometry(QRect(0, 130, 109, 22));
+        hackerModeCheckBox->setGeometry(QRect(0, 110, 109, 22));
         leftHandCheckBox = new QCheckBox(settings);
         leftHandCheckBox->setObjectName(QStringLiteral("leftHandCheckBox"));
         leftHandCheckBox->setGeometry(QRect(0, 70, 88, 22));
@@ -148,7 +149,10 @@ public:
         leftHandCheckBox->setChecked(true);
         pausePlotCheckBox = new QCheckBox(settings);
         pausePlotCheckBox->setObjectName(QStringLiteral("pausePlotCheckBox"));
-        pausePlotCheckBox->setGeometry(QRect(0, 100, 89, 22));
+        pausePlotCheckBox->setGeometry(QRect(0, 90, 89, 22));
+        rotationsCheckBox = new QCheckBox(settings);
+        rotationsCheckBox->setObjectName(QStringLiteral("rotationsCheckBox"));
+        rotationsCheckBox->setGeometry(QRect(0, 30, 89, 22));
 
         gridLayout->addWidget(settings, 0, 0, 1, 1);
 
@@ -251,6 +255,7 @@ public:
         hackerModeCheckBox->setText(QApplication::translate("GRVisualization", "Hacker Mode", 0));
         leftHandCheckBox->setText(QApplication::translate("GRVisualization", "Left Hand", 0));
         pausePlotCheckBox->setText(QApplication::translate("GRVisualization", "Pause Plot", 0));
+        rotationsCheckBox->setText(QApplication::translate("GRVisualization", "Rotations", 0));
         Plots->setTabText(Plots->indexOf(tab_all_data), QApplication::translate("GRVisualization", "All Sensors", 0));
         Plots->setTabText(Plots->indexOf(tab_accelerometer), QApplication::translate("GRVisualization", "Accelerometer", 0));
         Plots->setTabText(Plots->indexOf(tab_gyroscope), QApplication::translate("GRVisualization", "Gyroscope", 0));

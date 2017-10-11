@@ -105,7 +105,7 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>190</y>
+             <y>150</y>
              <width>109</width>
              <height>30</height>
             </rect>
@@ -124,7 +124,7 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>40</y>
+             <y>50</y>
              <width>97</width>
              <height>22</height>
             </rect>
@@ -183,7 +183,7 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>160</y>
+             <y>130</y>
              <width>78</width>
              <height>22</height>
             </rect>
@@ -202,7 +202,7 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>130</y>
+             <y>110</y>
              <width>109</width>
              <height>22</height>
             </rect>
@@ -234,13 +234,26 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>100</y>
+             <y>90</y>
              <width>89</width>
              <height>22</height>
             </rect>
            </property>
            <property name="text">
             <string>Pause Plot</string>
+           </property>
+          </widget>
+          <widget class="QCheckBox" name="rotationsCheckBox">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>30</y>
+             <width>89</width>
+             <height>22</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Rotations</string>
            </property>
           </widget>
          </widget>

@@ -242,14 +242,21 @@ bool GRDataApplier::processMsg(std::string nodeName)
         {
 		//get new position;
 		last_position = trajectory.getNewPosByRunge(msg.palm.acc, alg_msg.palm, msg.palm.time_stamp);
-    		moveHand(last_position);
-		applyToHand(*alg_msg.nodes[nodeName]);
-        	addHistoryData(*alg_msg.nodes[nodeName]);
-        }
+    		if(withTrajectory)
+			moveHand(last_position);
+		if(withRotations)
+		{
+			applyToHand(*alg_msg.nodes[nodeName]);
+        		addHistoryData(*alg_msg.nodes[nodeName]);
+        	}
+	}
         else
         {
-            applyToFinger(*alg_msg.nodes[nodeName], fingers[nodeName]);
-        }
+		if(withRotations){
+			applyToFinger(*alg_msg.nodes[nodeName], fingers[nodeName]);
+        
+		}
+	}
         // clear data
         msg.imus[nodeName]->gyro.clear();
         msg.imus[nodeName]->acc.clear();

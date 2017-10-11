@@ -32,6 +32,8 @@ public:
     bool isLoggingEnabled = false; // for logging to a file
     std::string deviceName = "";
 
+    bool withRotations = false;
+    bool withTrajectory = true;
     bool fetchData(); // gets data from algdev, writes it to msg variable and apply msg for each arm node
 public slots:
     bool fetchSignal(); // this signal is called every 20 ms

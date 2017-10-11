@@ -38,6 +38,8 @@ private slots:
 	void on_loggingCheckBox_toggled(bool checked);
 	void on_randomData_clicked();
 	void on_pausePlotCheckBox_toggled(bool checked);
+    void on_rotationsCheckBox_toggled(bool checked);
+
 private:
 	bool initUiProps();
 
@@ -45,7 +47,8 @@ private:
 	std::map<int, device_t> activeDevices;	
 	
 	Ui::GRVisualization *ui; // pointer to GUI
-
+	bool withTrajectory = true;
+	bool withRotations = true;
     GRDataApplier rightArmApplier; // applier for right hand
     GRDataApplier leftArmApplier; // applier for left hand
     std::deque<std::vector<float>>* buffer; // pointer to buffer of data

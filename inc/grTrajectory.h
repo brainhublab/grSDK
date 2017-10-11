@@ -18,9 +18,9 @@ using namespace std;
 
 struct runge_vars
 {
-    Eigen::Vector3d vel;
-    Eigen::Vector3d pos;
-    Eigen::Vector3d acc;
+    Eigen::Vector3d vel = Eigen::Vector3d(0.f, 0.f, 0.f);
+    Eigen::Vector3d pos = Eigen::Vector3d(0.f, 0.f, 0.f);
+    Eigen::Vector3d acc = Eigen::Vector3d(0.f, 0.f, 0.f);
 };
 
 class GRTrajectory
