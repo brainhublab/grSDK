@@ -241,8 +241,15 @@ bool GRDataApplier::processMsg(std::string nodeName)
         if(nodeName == "palm")
         {
 		//get new position;
-		last_position = trajectory.getNewPosByRunge(msg.palm.acc, alg_msg.palm, msg.palm.time_stamp);
     		if(withTrajectory)
+			last_position = trajectory.getNewPosByRunge(msg.palm.acc, alg_msg.palm, msg.palm.time_stamp);
+		else
+		{
+			last_position;
+			last_position[0] = 0;
+			last_position[1] = 0;
+			last_position[2] = 0;
+		}
 			moveHand(last_position);
 		if(withRotations)
 		{

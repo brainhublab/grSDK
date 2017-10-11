@@ -97,6 +97,9 @@
            <property name="text">
             <string>Trajectory</string>
            </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
           </widget>
           <widget class="QPushButton" name="randomData">
            <property name="enabled">
@@ -254,6 +257,9 @@
            </property>
            <property name="text">
             <string>Rotations</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
            </property>
           </widget>
          </widget>

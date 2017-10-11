@@ -116,6 +116,7 @@ public:
         trajectoryCheckBox = new QCheckBox(settings);
         trajectoryCheckBox->setObjectName(QStringLiteral("trajectoryCheckBox"));
         trajectoryCheckBox->setGeometry(QRect(0, 10, 89, 22));
+        trajectoryCheckBox->setChecked(true);
         randomData = new QPushButton(settings);
         randomData->setObjectName(QStringLiteral("randomData"));
         randomData->setEnabled(true);
@@ -153,6 +154,7 @@ public:
         rotationsCheckBox = new QCheckBox(settings);
         rotationsCheckBox->setObjectName(QStringLiteral("rotationsCheckBox"));
         rotationsCheckBox->setGeometry(QRect(0, 30, 89, 22));
+        rotationsCheckBox->setChecked(true);
 
         gridLayout->addWidget(settings, 0, 0, 1, 1);
 
