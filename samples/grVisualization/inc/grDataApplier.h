@@ -33,7 +33,7 @@ public:
     std::string deviceName = "";
 
     bool withRotations = true;
-    bool withTrajectory = true;
+    bool withTrajectory = false;
     bool fetchData(); // gets data from algdev, writes it to msg variable and apply msg for each arm node
 public slots:
     bool fetchSignal(); // this signal is called every 20 ms

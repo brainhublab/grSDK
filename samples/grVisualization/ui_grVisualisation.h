@@ -115,8 +115,9 @@ public:
         settings->setMaximumSize(QSize(130, 250));
         trajectoryCheckBox = new QCheckBox(settings);
         trajectoryCheckBox->setObjectName(QString::fromUtf8("trajectoryCheckBox"));
+        trajectoryCheckBox->setEnabled(true);
         trajectoryCheckBox->setGeometry(QRect(0, 10, 89, 22));
-        trajectoryCheckBox->setChecked(true);
+        trajectoryCheckBox->setChecked(false);
         randomData = new QPushButton(settings);
         randomData->setObjectName(QString::fromUtf8("randomData"));
         randomData->setEnabled(true);

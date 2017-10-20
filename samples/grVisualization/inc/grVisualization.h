@@ -47,7 +47,7 @@ private:
 	std::map<int, device_t> activeDevices;	
 	
 	Ui::GRVisualization *ui; // pointer to GUI
-	bool withTrajectory = true;
+	bool withTrajectory = false;
 	bool withRotations = true;
     GRDataApplier rightArmApplier; // applier for right hand
     GRDataApplier leftArmApplier; // applier for left hand

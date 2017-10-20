@@ -107,8 +107,8 @@ bool GRVisualization::runDataReading()
 		
         	activeDevices[it->first] = it->second; // add information about active devices
 		
-        conn->setActiveDevice(it->first);
-	    conn->connectSocket(it->first);
+        conn.setActiveDevice(it->first);
+	    conn.connectSocket(it->first);
 		//leftArmApplier.run();
     		l = it->first;
 		printf("Activated device with name %s\n", leftArmApplier.deviceName.c_str());
@@ -122,8 +122,8 @@ bool GRVisualization::runDataReading()
         	//
         	activeDevices[it->first] = it->second; // add information about active devices
 		
-        conn->setActiveDevice(it->first);
-	    conn->connectSocket(it->first);
+        conn.setActiveDevice(it->first);
+	    conn.connectSocket(it->first);
         r = it->first;
 		// setting up fetching function calls
         	printf("Activated device with name %s\n", rightArmApplier.deviceName.c_str());

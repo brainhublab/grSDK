@@ -11,7 +11,7 @@
 CC            = gcc
 CXX           = g++
 DEFINES       = -DQT_NO_DEBUG -DQT_OPENGL_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_SHARED
-CFLAGS        = -pipe -O2 -D_REENTRANT -Wall -W $(DEFINES)
+CFLAGS        = -pipe -O2 -D_REENTRANT  -W $(DEFINES)
 CXXFLAGS      = -pipe -g -std=c++11 -O2 -D_REENTRANT -Wall -W $(DEFINES)
 INCPATH       = -I/usr/share/qt4/mkspecs/default -I. -I/usr/include/QtCore -I/usr/include/QtGui -I/usr/include/QtOpenGL -I/usr/include -I../../externAssets/grt/include -I../../externAssets/grt/lib -I../../externAssets/eigen -I/usr/include/dbus-1.0 -I/usr/lib64/dbus-1.0/include -Iinc -I../../externAssets/qcustomplot -I../../externAssets -I../../inc -I. -I/usr/X11R6/include -Ibuild/generated_files -I.
 LINK          = g++
