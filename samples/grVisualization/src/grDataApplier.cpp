@@ -114,10 +114,9 @@ bool GRDataApplier::run()
 	{
 		conn->getData(deviceId, &msg);
 	}*/
-        conn->setActiveDevice(deviceId);
-	conn->connectSocket(deviceId);
  	moveToThread(&thread);
 	printf("moving to thread");
+	conn->connectSocket(deviceId);
 	connect(&thread, SIGNAL(started()), this, SLOT(runDataReading()));
 	thread.start();
     return true;
