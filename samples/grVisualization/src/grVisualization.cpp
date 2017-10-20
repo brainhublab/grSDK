@@ -94,8 +94,8 @@ bool GRVisualization::runDataReading()
 
     std::map<int, device_t> availableDevices;
     availableDevices = conn.getAvalibleDevices();
-    bool l = false;
-    bool r = false; 
+    int l = -1;
+    int r = -1; 
     for(std::map<int, device_t>::const_iterator it = availableDevices.begin(); it != availableDevices.end(); ++it)
     {
 	if( it->second.name == leftArmApplier.deviceName )
@@ -108,8 +108,9 @@ bool GRVisualization::runDataReading()
         	activeDevices[it->first] = it->second; // add information about active devices
 		
         conn->setActiveDevice(it->first);
-		leftArmApplier.run();
-    		l = true;
+	    conn->connectSocket(it->first);
+		//leftArmApplier.run();
+    		l = it->first;
 		printf("Activated device with name %s\n", leftArmApplier.deviceName.c_str());
 	}
 	else if( it->second.name == rightArmApplier.deviceName )
@@ -122,16 +123,17 @@ bool GRVisualization::runDataReading()
         	activeDevices[it->first] = it->second; // add information about active devices
 		
         conn->setActiveDevice(it->first);
-        r = true;
+	    conn->connectSocket(it->first);
+        r = it->first;
 		// setting up fetching function calls
         	printf("Activated device with name %s\n", rightArmApplier.deviceName.c_str());
 	}
     }
-    if(r)
+    if(r != -1)
     {
 		rightArmApplier.run();
     }
-    if(l)
+    if(l != -1)
     {
         leftArmApplier.run();
     }
