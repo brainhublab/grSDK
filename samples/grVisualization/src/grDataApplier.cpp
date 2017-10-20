@@ -86,8 +86,6 @@ bool GRDataApplier::fetchSignal()
 bool GRDataApplier::runDataReading()
 {
 	printf("Inside rundata  reading\n");
-        conn->setActiveDevice(deviceId);
-	conn->connectSocket(deviceId);
 	fetchData();
 	//
 		// setting up fetching function calls
@@ -116,6 +114,8 @@ bool GRDataApplier::run()
 	{
 		conn->getData(deviceId, &msg);
 	}*/
+        conn->setActiveDevice(deviceId);
+	conn->connectSocket(deviceId);
  	moveToThread(&thread);
 	printf("moving to thread");
 	connect(&thread, SIGNAL(started()), this, SLOT(runDataReading()));
@@ -226,9 +226,11 @@ bool GRDataApplier::fetchData() // get data and call processMsg
 */
 bool GRDataApplier::processMsg(std::string nodeName)
 {
+    std::cout << "Processing msg for " << nodeName << std::endl;
     if(!msg.imus[nodeName]->acc.empty()) //check if msg has data for current node
     {
         alg.madgwickUpdate(&msg, &alg_msg, 1, "flag");
+        std::cout << "\tInside if " << nodeName << std::endl;
 //        std::cout<<"QUANTERNION---->";
 
 //        for(int i = 0; i < 4; i++)
@@ -242,28 +244,29 @@ bool GRDataApplier::processMsg(std::string nodeName)
         {
 		//get new position;
     		if(withTrajectory)
-			last_position = trajectory.getNewPosByRunge(msg.palm.acc, alg_msg.palm, msg.palm.time_stamp);
-		else
-		{
+			    last_position = trajectory.getNewPosByRunge(msg.palm.acc, alg_msg.palm, msg.palm.time_stamp);
+		    else
+		    {
 			last_position;
 			last_position[0] = 0;
 			last_position[1] = 0;
 			last_position[2] = 0;
 		}
 			moveHand(last_position);
-		if(withRotations)
-		{
+		    if(withRotations)
+		    {
 			applyToHand(*alg_msg.nodes[nodeName]);
         		addHistoryData(*alg_msg.nodes[nodeName]);
         	}
-	}
+	    }
         else
         {
-		if(withRotations){
-			applyToFinger(*alg_msg.nodes[nodeName], fingers[nodeName]);
+		    if(withRotations){
+                std::cout << "\t\t Call applyToFinger " << nodeName << std::endl;
+		    	applyToFinger(*alg_msg.nodes[nodeName], fingers[nodeName]);
         
-		}
-	}
+		    }
+	    }
         // clear data
         msg.imus[nodeName]->gyro.clear();
         msg.imus[nodeName]->acc.clear();
@@ -406,7 +409,7 @@ bool GRDataApplier::applyToHand(std::vector<double> &quant)
 */
 bool GRDataApplier::applyToFinger(std::vector<double> &q, int index)
 {
-    if (!q.empty())
+    if (1)//(!q.empty())
 	{
         nodeQuanternion->clear();
 	nodeQuanternion->assign(q.begin(), q.end());
@@ -421,9 +424,11 @@ bool GRDataApplier::applyToFinger(std::vector<double> &q, int index)
 
 	quaternionToRotation(*nodeQuanternion, mat);
 
+        std::cout<<index<< getYaw(*nodeQuanternion) << std::endl;
 	if( getYaw(*nodeQuanternion) > 150.f && getYaw(*nodeQuanternion) < 250.f)
 	{
 		arm->bendFingerWithMatrix(index, mat);
+        std::cout<<index<< getYaw(*nodeQuanternion) << std::endl;
 	}
         (*nodeQuanternion).clear();
 
