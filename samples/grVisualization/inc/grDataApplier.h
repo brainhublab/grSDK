@@ -23,8 +23,8 @@ public:
     bool setArm(GRHand *arm); // sets OpenGL model of arm for data applying
     bool assignDeviceName(std::string);
     bool setDeviceId(int);
-    bool setConnection(GRConnection*);
-    bool run(); // connect device and run fetchdata every {fetchFrequency)
+    //bool setConnection(GRConnection*);
+    bool run(std::map<int, device_t> &availableDevices); // connect device and run fetchdata every {fetchFrequency)
 
     bool writeQuanternionHistory(std::deque<std::vector<float>>*); // start writing history to vector pointer
     bool addHistoryData(std::vector<double>); // adds new quaternion to history
@@ -51,7 +51,7 @@ private:
 
     GRHand *arm; // OpenGL model pointer
 
-    GRConnection* conn; // pointer to connection
+    GRConnection conn; // pointer to connection
     device_t* device;
     gr_message msg; // raw data
     GRAlgorithm alg; // madgwick algorithm for alg_msg producing

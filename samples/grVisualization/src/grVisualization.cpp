@@ -92,7 +92,7 @@ bool GRVisualization::runDataReading()
 
     // configuring connection to devices
 
-    std::map<int, device_t> availableDevices;
+/*     std::map<int, device_t> availableDevices;
     availableDevices = conn.getAvalibleDevices();
     int l = -1;
     int r = -1; 
@@ -129,14 +129,9 @@ bool GRVisualization::runDataReading()
         	printf("Activated device with name %s\n", rightArmApplier.deviceName.c_str());
 	}
     }
-    if(r != -1)
-    {
-		rightArmApplier.run();
-    }
-    if(l != -1)
-    {
-        leftArmApplier.run();
-    }
+    */
+		rightArmApplier.run(activeDevices);
+        leftArmApplier.run(activeDevices);
 
     // setting up buffer for plotter
    // plotter_all_acc->setupPlot(buffer);
@@ -153,14 +148,14 @@ bool GRVisualization::runDataReading()
     
     device_t d;
     
-    if(availableDevices.empty()) // if there are no activeDevices - show some sample data in UI devices tree
+    if(activeDevices.empty()) // if there are no activeDevices - show some sample data in UI devices tree
     {
         d.name = "SOME DEVICE";
         d.address = "08:FC:0S:SD:0P";
-        availableDevices[4] = d;
+        activeDevices[4] = d;
     }
     
-    for(std::map<int, device_t>::const_iterator it = availableDevices.begin(); it != availableDevices.end(); it++)
+    for(std::map<int, device_t>::const_iterator it = activeDevices.begin(); it != activeDevices.end(); it++)
     {
         d = it->second;
         QTreeWidgetItem* item = new QTreeWidgetItem();

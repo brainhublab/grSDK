@@ -43,7 +43,7 @@ private slots:
 private:
 	bool initUiProps();
 
-    	GRConnection conn; // connection for data getting
+    	//GRConnection conn; // connection for data getting
 	std::map<int, device_t> activeDevices;	
 	
 	Ui::GRVisualization *ui; // pointer to GUI

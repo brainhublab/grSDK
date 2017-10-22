@@ -29,7 +29,8 @@ GRDataApplier::GRDataApplier()
     fingers["middle"] = 2;
     fingers["index"] = 3;
     fingers["thumb"] = 4;
-    alg.setupMadgwick(2000, 2000, 2000, 2000, 2000, 1499); //need to check
+
+    alg.setupMadgwick(140, 140, 140, 140, 140, 220); //need to check
 
 }
 
@@ -60,13 +61,13 @@ bool GRDataApplier::setDeviceId(int id)
 	deviceId = id;
 	return true;
 }
-
+/*
 bool GRDataApplier::setConnection(GRConnection* c)
 {
 	conn = c;
 	return true;
 }
-
+*/
 // runs fetchData
 bool GRDataApplier::fetchSignal()
 {
@@ -86,12 +87,15 @@ bool GRDataApplier::fetchSignal()
 bool GRDataApplier::runDataReading()
 {
 	printf("Inside rundata  reading\n");
-	fetchData();
-	//
+	while(true)
+    {
+        fetchData();
+    }
+    //
 		// setting up fetching function calls
 }
 // method searches GR devices and connects to them
-bool GRDataApplier::run()
+bool GRDataApplier::run(std::map<int, device_t> &activeDevices)
 {
 #ifdef GR_VISUALIZATION_LOGGING_ENABLED
 	printf("DataApplier: setting up fetchtimer...\n");
@@ -109,11 +113,38 @@ bool GRDataApplier::run()
     {
     	rightFactor = -1;
     }
+
+   deviceId = -1;
+    std::map<int, device_t> availableDevices = conn.getAvalibleDevices();
+    for(std::map<int, device_t>::const_iterator it = availableDevices.begin(); it != availableDevices.end(); ++it)
+    {
+	    if( it->second.name == deviceName )
+	    {
+    		// for LEFT arm find device, activate it and start reading to OpenGL model
+        	//
+	        setDeviceId(it->second.id);	
+		
+        	activeDevices[it->first] = it->second; // add information about active devices
+		
+            conn.setActiveDevice(it->first);
+	        conn.connectSocket(it->first);
+		    //leftArmApplier.run();
+    	    deviceId = it->first;
+	    	printf("Activated device with name %s\n", deviceName.c_str());
+	    }
+    }
+ 
+
 	 /* 
 	for( int i = 10; i != 0; i-- )
 	{
 		conn->getData(deviceId, &msg);
 	}*/
+    if( deviceId == -1 )
+    {
+        std::cout << "No device with name " << deviceName << std::endl;
+        return false;
+    }
  	moveToThread(&thread);
 	printf("moving to thread");
 	connect(&thread, SIGNAL(started()), this, SLOT(runDataReading()));
@@ -170,15 +201,19 @@ bool changeFingerData(imu* finger)
 */
 bool GRDataApplier::fetchData() // get data and call processMsg
 {
-	while(true)
-	{
-	conn->getData(deviceId, &msg); // read data to msg variable
-	if(msg.palm.empty())
-	{
-		printf("NO data from %d\n", deviceId);
-		continue;
-	}
-
+	if(!conn.getData(deviceId, &msg))
+    {
+        return false;
+    }
+    
+        for ( auto &it : msg.imus )
+        {
+            if( !it.second->is_complite())
+            {
+		        printf("NO data from %d\n", deviceId);
+		        return false;
+            }
+	    }
 
 //	printf("got data from %d\n", deviceId);
 
@@ -206,6 +241,7 @@ bool GRDataApplier::fetchData() // get data and call processMsg
 	changeFingerData(&msg.index);
 	changeFingerData(&msg.thumb);
 */	
+        alg.madgwickUpdate(&msg, &alg_msg, 1, "flag");
 	// for each node prcess this msg
         processMsg("palm");
         processMsg("pinky");
@@ -213,8 +249,8 @@ bool GRDataApplier::fetchData() // get data and call processMsg
         processMsg("middle");
         processMsg("index");
         processMsg("thumb");
-	}
 	//printf("Processed data from %d\n", deviceId);
+        alg_msg.clear();
 	return true;
 }
 
@@ -224,18 +260,7 @@ bool GRDataApplier::fetchData() // get data and call processMsg
 */
 bool GRDataApplier::processMsg(std::string nodeName)
 {
-    std::cout << "Processing msg for " << nodeName << std::endl;
-    if(!msg.imus[nodeName]->acc.empty()) //check if msg has data for current node
-    {
-        alg.madgwickUpdate(&msg, &alg_msg, 1, "flag");
         std::cout << "\tInside if " << nodeName << std::endl;
-//        std::cout<<"QUANTERNION---->";
-
-//        for(int i = 0; i < 4; i++)
-//        {
-//            std::cout << (*alg_msg.nodes[nodeName])[i];
-//        }
-//        std::cout<<std::endl;
 
         // Apply this data to OpenGL 3d-model
         if(nodeName == "palm")
@@ -251,16 +276,9 @@ bool GRDataApplier::processMsg(std::string nodeName)
                 arm->setHandPosition(0, 0, 0);
             }
             
-            /*else
-		    {
-			//last_position;
-			last_position[0] = 0;
-			last_position[1] = 0;
-			last_position[2] = 0;
-		    }*/
 		    if(withRotations)
 		    {
-			applyToHand(*alg_msg.nodes[nodeName]);
+			    applyToHand(*alg_msg.nodes[nodeName]);
         		addHistoryData(*alg_msg.nodes[nodeName]);
         	}
 	    }
@@ -276,10 +294,8 @@ bool GRDataApplier::processMsg(std::string nodeName)
         msg.imus[nodeName]->gyro.clear();
         msg.imus[nodeName]->acc.clear();
         msg.imus[nodeName]->mag.clear();
-        return true;
-    }
 
-    return false;
+        return true;
 }
 
 /*
@@ -380,25 +396,15 @@ bool GRDataApplier::applyToHand(std::vector<double> &quant)
     if (!quant.empty())
 	{
         nodeQuanternion->clear();
-	nodeQuanternion->assign(quant.begin(), quant.end());
+	    nodeQuanternion->assign(quant.begin(), quant.end());
 
         GLfloat mat[16];
         quaternionToRotation(*nodeQuanternion, mat);
-	printf("Yaw %f\n", getYaw(*nodeQuanternion));
+	    printf("Yaw %f\n", getYaw(*nodeQuanternion));
         //printf("Hand Q: %f %f %f %f\n",  (*nodeQuanternion)[0], (*nodeQuanternion)[1], (*nodeQuanternion)[2], (*nodeQuanternion)[3]);	
 	
-	if( getYaw(*nodeQuanternion) > 100.f && getYaw(*nodeQuanternion) < 300.f)
-	{
 		arm->bendHandWithMatrix(mat);
-	}
 		//arm->bendHand((*nodeQuanternion)[2], (*nodeQuanternion)[1], (*nodeQuanternion)[3]);
-
-        if(!prevQuants[5].empty())
-	{
-		prevQuants[5].clear();
-	}
-        prevQuants[5] = *nodeQuanternion;
-
         (*nodeQuanternion).clear();
 	return true;
 	}
@@ -414,30 +420,17 @@ bool GRDataApplier::applyToHand(std::vector<double> &quant)
 */
 bool GRDataApplier::applyToFinger(std::vector<double> &q, int index)
 {
-    if (1)//(!q.empty())
-	{
         nodeQuanternion->clear();
-	nodeQuanternion->assign(q.begin(), q.end());
-
-
+	    nodeQuanternion->assign(q.begin(), q.end());
 
         GLfloat mat[16];
-/*
-	float yaw = getYaw(*nodeQuanternion);
-        float palmYaw = 0.0f;
-*/
 
-	quaternionToRotation(*nodeQuanternion, mat);
+	    quaternionToRotation(*nodeQuanternion, mat);
 
-        std::cout<<index<< getYaw(*nodeQuanternion) << std::endl;
-	if( getYaw(*nodeQuanternion) > 150.f && getYaw(*nodeQuanternion) < 250.f)
-	{
+        std::cout<< index << " finger of hand " << deviceId << " " << getYaw(*nodeQuanternion) << std::endl;
 		arm->bendFingerWithMatrix(index, mat);
-        std::cout<<index<< getYaw(*nodeQuanternion) << std::endl;
-	}
+      //  std::cout<<index<< getYaw(*nodeQuanternion) << std::endl;
         (*nodeQuanternion).clear();
 
         return true;
-	}
-	return false;
 }
