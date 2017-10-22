@@ -113,9 +113,10 @@ bool GRDataApplier::run(std::map<int, device_t> &activeDevices)
     {
     	rightFactor = -1;
     }
-
+usleep(3000000);
    deviceId = -1;
-    std::map<int, device_t> availableDevices = conn.getAvalibleDevices();
+   std::cout << "Searching available devices....\n"; 
+   std::map<int, device_t> availableDevices = conn.getAvalibleDevices();
     for(std::map<int, device_t>::const_iterator it = availableDevices.begin(); it != availableDevices.end(); ++it)
     {
 	    if( it->second.name == deviceName )
@@ -260,7 +261,7 @@ bool GRDataApplier::fetchData() // get data and call processMsg
 */
 bool GRDataApplier::processMsg(std::string nodeName)
 {
-        std::cout << "\tInside if " << nodeName << std::endl;
+        //std::cout << "\tInside if " << nodeName << std::endl;
 
         // Apply this data to OpenGL 3d-model
         if(nodeName == "palm")
@@ -285,7 +286,7 @@ bool GRDataApplier::processMsg(std::string nodeName)
         else
         {
 		    if(withRotations){
-                std::cout << "\t\t Call applyToFinger " << nodeName << std::endl;
+                //std::cout << "\t\t Call applyToFinger " << nodeName << std::endl;
 		    	applyToFinger(*alg_msg.nodes[nodeName], fingers[nodeName]);
         
 		    }
@@ -360,7 +361,7 @@ Eigen::Quaterniond quatMult(Eigen::Quaterniond q1, Eigen::Quaterniond q2) {
 bool GRDataApplier::moveHand(std::vector<double>& position)
 {
 	if(position.empty()) return false;
-    printf("position last: %f %f %f \n", last_position[0], last_position[1], last_position[2]);
+//    printf("position last: %f %f %f \n", last_position[0], last_position[1], last_position[2]);
     arm->setHandPosition(position[0], position[1], position[2]);
 	return true;
 }
@@ -400,7 +401,7 @@ bool GRDataApplier::applyToHand(std::vector<double> &quant)
 
         GLfloat mat[16];
         quaternionToRotation(*nodeQuanternion, mat);
-	    printf("Yaw %f\n", getYaw(*nodeQuanternion));
+	    //printf("Hand Yaw %f\n", getYaw(*nodeQuanternion));
         //printf("Hand Q: %f %f %f %f\n",  (*nodeQuanternion)[0], (*nodeQuanternion)[1], (*nodeQuanternion)[2], (*nodeQuanternion)[3]);	
 	
 		arm->bendHandWithMatrix(mat);
@@ -427,9 +428,9 @@ bool GRDataApplier::applyToFinger(std::vector<double> &q, int index)
 
 	    quaternionToRotation(*nodeQuanternion, mat);
 
-        std::cout<< index << " finger of hand " << deviceId << " " << getYaw(*nodeQuanternion) << std::endl;
+        //std::cout<< index << " finger of hand " << deviceId << " " << getYaw(*nodeQuanternion) << std::endl;
 		arm->bendFingerWithMatrix(index, mat);
-      //  std::cout<<index<< getYaw(*nodeQuanternion) << std::endl;
+      //  //std::cout<<index<< getYaw(*nodeQuanternion) << std::endl;
         (*nodeQuanternion).clear();
 
         return true;

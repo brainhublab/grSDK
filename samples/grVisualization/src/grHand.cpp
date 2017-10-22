@@ -138,7 +138,7 @@ bool GRHand::bendArm( float angleX, float angleY, float angleZ )
 bool GRHand::setHandPosition( float x, float y, float z )
 {
 	struct GRHandNode *hand = &(this->children[0]);
-	printf("setting %f %f %f\n", -z*50.f, x*50.f, y*50.f);
+//	printf("setting %f %f %f\n", -z*50.f, x*50.f, y*50.f);
 	hand->posX =-z*50.f;
 	hand->posY = x*50.f;
 	hand->posZ = y*50.f;
