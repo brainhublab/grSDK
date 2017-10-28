@@ -30,7 +30,7 @@ GRDataApplier::GRDataApplier()
     fingers["index"] = 3;
     fingers["thumb"] = 4;
 
-    alg.setupMadgwick(140, 140, 140, 140, 140, 220); //need to check
+    alg.setupMadgwick(280, 280, 280, 280, 280, 220); //need to check
 
 }
 
