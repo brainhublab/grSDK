@@ -61,7 +61,10 @@ class GRTrajectory
 
         bool _isStationary;
 
-        double _treshold;
+        double _accTreshold;
+        double _gyroTreshold;
+        double _varianceTreshold;
+        std::queue<int> _stationaryWindow;
 };
 
 #endif

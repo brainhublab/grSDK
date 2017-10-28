@@ -107,7 +107,7 @@ std::map<int, device_t> GRConnection::getAvalibleDevices()
 bool GRConnection::setActiveDevice(int devId)
 {
     std::unordered_map<int, device_t>::iterator it = this->_activeDevices.begin();
-    while(it != this->_activeDevices.end()) 
+    while(it != this->_activeDevices.end())
     {
         if(devId == it->first)
         {
@@ -135,7 +135,7 @@ device_t* GRConnection::getDevice(int devId)
     return &(_activeDevices[devId]);
 }
 
-/*Select device by ID and fill message with one peace of data 
+/*Select device by ID and fill message with one peace of data
  * Need to be use in loop
  */
 bool GRConnection::getData(int devId, gr_message* message)
@@ -154,24 +154,24 @@ bool GRConnection::getData(int devId, gr_message* message)
 
     int iter = 0;
     while(iter<6)
-    { 
+    {
 
         bytes_read = read(sock, buf, sizeof(buf));
         if(bytes_read >0)
         {
                 if(buf[0] != '\n')
-                {   
+                {
                         rawMessage += buf[0];
                 }
-                else 
-                {  
+                else
+                {
                     messageAvalible = true;
                     // std::cout<<"message "<<rawMessage<<std::endl;
                     iter++;
                     if(firstIteration)
                     {
                         this->_checkConnectedImus(rawMessage, message);
-                        
+
                     }
                     else
                     {
@@ -185,23 +185,23 @@ bool GRConnection::getData(int devId, gr_message* message)
     {
         firstIteration = false;
     }
-       
+
     /*
        if(!this->activeDevices[devId].palm.data.empty())
        {
     // std::cout << "==" << iter << std::endl;
         for(int i=0; i<3; i++)
         {
-            std::cout << this->activeDevices[devId].palm.data.front().gyro[i]<<" "; 
+            std::cout << this->activeDevices[devId].palm.data.front().gyro[i]<<" ";
         }
         for(int i=0; i<3; i++)
         {
-        
+
             std::cout << this->activeDevices[devId].palm.data.front().acc[i]<<" ";
         }
         for(int i=0;i<3;i++)
         {
-        
+
             std::cout << this->activeDevices[devId].palm.data.front().mag[i]<<" ";
         }
         //std::cout<<std::endl;
@@ -286,9 +286,9 @@ bool GRConnection::_deviceIsIn(std::string addr)
     {
         if(addr != _avalibleDevices[i].address)
         {
-            i++; 
+            i++;
         }
-        else if(addr == _avalibleDevices[i].address) 
+        else if(addr == _avalibleDevices[i].address)
         {
 
             return true;
@@ -304,7 +304,7 @@ int GRConnection::_asignDeviceWithSocket(int devId)
 {
 
     struct sockaddr_rc addr = { 0 };
-    
+
     dev_socket deviceSocket;
 
 
@@ -315,7 +315,7 @@ int GRConnection::_asignDeviceWithSocket(int devId)
         if(devId == it->first)
         {
             std::cout<<"ERROR this id: "<<devId<<" is already in use"<<std::endl;
-            return 0; 
+            return 0;
         }
         it++;
     }
@@ -325,14 +325,14 @@ int GRConnection::_asignDeviceWithSocket(int devId)
     addr.rc_channel = (uint8_t) 1; //TODO maeby need to be changet with device id
 
     std::cout<<"Asigning device with addres: "<<this->_activeDevices[devId].address<<std::endl;
-    
+
     str2ba(this->_activeDevices[devId].address.c_str(), &addr.rc_bdaddr);
-    
+
     deviceSocket.addr = addr;
     this->_deviceSockets[devId] = deviceSocket;
 
     //connectSocket(devId);//TODO need to implement in another method
-    
+
     std::cout<<"device with addres: "<<this->_activeDevices[devId].address<<"with socket"<<deviceSocket.sock<<std::endl;
 
     return deviceSocket.sock;
@@ -362,7 +362,7 @@ int GRConnection::_getDeviceSocketById(int id)
 }
 
 bool GRConnection::_asignMessageWithImu(std::string rawMessage, gr_message* message)
-{   
+{
     int id;
     bool messageAvalible = false;
     std::stringstream ss(rawMessage);
@@ -403,7 +403,7 @@ bool GRConnection::_asignMessageWithImu(std::string rawMessage, gr_message* mess
     //rawMessage.clear();
     //TODO need to comment
     if(!message->palm.gyro.empty())
-    {   
+    {
         //std::cout<<device->palm.data.front().gyro[1]<<std::endl;
         //device->palm.data.pop_front();
     }
@@ -411,7 +411,7 @@ bool GRConnection::_asignMessageWithImu(std::string rawMessage, gr_message* mess
 }
 bool GRConnection::_checkConnectedImus(std::string rawMessage, gr_message* msg)
 {
-    
+
     int id;
     bool messageAvalible = false;
     std::stringstream ss(rawMessage);
@@ -419,7 +419,7 @@ bool GRConnection::_checkConnectedImus(std::string rawMessage, gr_message* msg)
     ss >> id;
     if(id == 0)
     {
-       msg->pinky.is_connected = true; 
+       msg->pinky.is_connected = true;
     }
     else if(id ==1)
     {
@@ -449,7 +449,7 @@ bool GRConnection::connectSocket(int devId)
 {
     int status;
 
-    status = connect(this->_deviceSockets[devId].sock, 
+    status = connect(this->_deviceSockets[devId].sock,
             (struct sockaddr *)(this->_deviceSockets[devId].getAddrRef()), sizeof(this->_deviceSockets[devId].addr));
 
     std::cout<<"Status of connection of socket=  "<<status<<std::endl;
