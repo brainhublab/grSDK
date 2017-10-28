@@ -1,1 +1,0 @@
-For compile GR Visualization just qmake config/gestusVisualization.pro && make and run visualization from ./bin directory

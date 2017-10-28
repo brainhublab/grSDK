@@ -1,4 +1,4 @@
-﻿#include "grRender.h"
+#include "grRender.h"
 // helpers
 /*bool showPoint( float x, float y, float z )
 {
@@ -264,14 +264,15 @@ bool GRRenderer::renderArm( GRHandNode *arm, float angleX, float angleY, float a
           return false;
         }
         glLoadIdentity( );
+        struct GRHandNode *hand = &( *arm ).children[ 0 ];
         // pos on screen
         if ( arm->isLeft )
         {
-                glTranslatef( -data.arm.initial_pos.x, data.arm.initial_pos.y, data.arm.initial_pos.z );
+                glTranslatef( -data.arm.initial_pos.x+hand->posX, data.arm.initial_pos.y+hand->posY, data.arm.initial_pos.z+0*hand->posZ );
         }
         else
         {
-                glTranslatef( data.arm.initial_pos.x, data.arm.initial_pos.y, data.arm.initial_pos.z );
+                glTranslatef( data.arm.initial_pos.x+hand->posX, data.arm.initial_pos.y+hand->posY, data.arm.initial_pos.z+0*hand->posZ );
         }
         glRotatef( angleX, 1.f, 0.f, 0.f );
         glRotatef( angleY, 0.f, 1.f, 0.f );
@@ -286,7 +287,6 @@ bool GRRenderer::renderArm( GRHandNode *arm, float angleX, float angleY, float a
         // rotating by Y only only for hand
         glRotatef(( *arm ).angleY, 0.f, 1.f, 0.f );
         /** draw hand **/
-        struct GRHandNode *hand = &( *arm ).children[ 0 ];
         createSphere( 0.3f, 10, 10 );
 
 		// rotate with euler angles
@@ -309,7 +309,7 @@ bool GRRenderer::renderArm( GRHandNode *arm, float angleX, float angleY, float a
         /** draw fingers  **/
 
         drawFingers(hand);
-        
+
         glPopMatrix();
         return true;
 }

@@ -1,6 +1,5 @@
 #include "grHand.h"
 
-
 // helpers
 bool isAllocated( GRHandNode *ptr )
 {
@@ -134,6 +133,20 @@ bool GRHand::bendArm( float angleX, float angleY, float angleZ )
         return false;
 }
 /*
+ * Moves hand
+*/
+bool GRHand::setHandPosition( float x, float y, float z )
+{
+	struct GRHandNode *hand = &(this->children[0]);
+//	printf("setting %f %f %f\n", -z*50.f, x*50.f, y*50.f);
+	hand->posX =-z*50.f;
+	hand->posY = x*50.f;
+	hand->posZ = y*50.f;
+	 return true;
+}
+
+
+/*
  * Bends palm with angles
 */
 bool GRHand::bendHand( float angleX, float angleY, float angleZ )
@@ -201,7 +214,6 @@ bool GRHand::bendHandWithMatrix(GLfloat mat[16])
 		{
 				hand->matrix[i] = mat[i];
 		};
-
 		return true;
 };
 
@@ -218,26 +230,25 @@ bool GRHand::bendFingerWithMatrix( int index, GLfloat mat[16] )
 		  printf("\nUnable to find phanlange with %d index for bending!", index);
 		  return false;
 		};
-		bool success = false;
 
 		while ( phalange )
 		{
 				//success = bend(phalange, angleX, angleY, angleZ);
 			for(int i = 0; i < 16; ++i)
 			{
-					phalange->matrix[i] = mat[i];
+				phalange->matrix[i] = mat[i];
 			};
-				// angleY = 0.f;
-				if (( *phalange ).children != NULL )
-				{
-						phalange = &( *phalange ).children[ 0 ];
-				}
-				else
-				{
-						phalange = NULL;
-				}
+			// angleY = 0.f;
+			if (( *phalange ).children != NULL )
+			{
+				phalange = &( *phalange ).children[ 0 ];
+			}
+			else
+			{
+				phalange = NULL;
+			}
 		}
-		return success;
+		return true;
 }
 
 /*

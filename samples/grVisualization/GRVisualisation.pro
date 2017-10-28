@@ -3,7 +3,7 @@
 # Project created by QtCreator 2015-11-13T13:00:43
 #
 #-------------------------------------------------
-CONFIG += qt
+CONFIG += qt warn_off
 QT += widgets core gui opengl printsupport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -44,7 +44,6 @@ HEADERS += ./inc/grVisualization.h \
 ./inc/grDataPlotter.h \
 ../../inc/grConnection.h \
 ../../inc/grAlgorithm.h \
-../../inc/grDataAttributes.h \
 ../../inc/grDevice.h \
 ../../inc/grGrt.h \
 ../../inc/grMadgwick.h \

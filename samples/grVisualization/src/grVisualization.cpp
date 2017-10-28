@@ -92,35 +92,46 @@ bool GRVisualization::runDataReading()
 
     // configuring connection to devices
 
-    std::map<int, device_t> availableDevices;
+/*     std::map<int, device_t> availableDevices;
     availableDevices = conn.getAvalibleDevices();
- 
+    int l = -1;
+    int r = -1; 
     for(std::map<int, device_t>::const_iterator it = availableDevices.begin(); it != availableDevices.end(); ++it)
     {
 	if( it->second.name == leftArmApplier.deviceName )
 	{
-        	conn.setActiveDevice(it->first);
-        	conn.connectSocket(it->first);
-        	activeDevices[it->first] = it->second; // add information about active devices
+    		// for LEFT arm find device, activate it and start reading to OpenGL model
+        	//
 		leftArmApplier.setDeviceId(it->second.id);	
 		leftArmApplier.setConnection(&conn);   
-    		// for LEFT arm find device, activate it and start reading to OpenGL model
-    		leftArmApplier.run();
-    		    printf("Activated device with name %s\n", leftArmApplier.deviceName.c_str());
+		
+        	activeDevices[it->first] = it->second; // add information about active devices
+		
+        conn.setActiveDevice(it->first);
+	    conn.connectSocket(it->first);
+		//leftArmApplier.run();
+    		l = it->first;
+		printf("Activated device with name %s\n", leftArmApplier.deviceName.c_str());
 	}
 	else if( it->second.name == rightArmApplier.deviceName )
 	{
-        	conn.setActiveDevice(it->first);
-        	conn.connectSocket(it->first);
-        	activeDevices[it->first] = it->second; // add information about active devices
+		// for RIGHT arm find device, activate it and start reading to OpenGL model
+		//
 		rightArmApplier.setDeviceId(it->second.id);	
 		rightArmApplier.setConnection(&conn);   
-		// for RIGHT arm find device, activate it and start reading to OpenGL model
-		rightArmApplier.run();
+        	//
+        	activeDevices[it->first] = it->second; // add information about active devices
+		
+        conn.setActiveDevice(it->first);
+	    conn.connectSocket(it->first);
+        r = it->first;
+		// setting up fetching function calls
         	printf("Activated device with name %s\n", rightArmApplier.deviceName.c_str());
 	}
     }
-
+    */
+		rightArmApplier.run(activeDevices);
+        leftArmApplier.run(activeDevices);
 
     // setting up buffer for plotter
    // plotter_all_acc->setupPlot(buffer);
@@ -130,19 +141,21 @@ bool GRVisualization::runDataReading()
     
 
     //plotter_all_acc->runPlotting();
-
+    
+    
+    // UI
     // find devices and put them into UI devices tree
     
     device_t d;
     
-    if(availableDevices.empty()) // if there are no activeDevices - show some sample data in UI devices tree
+    if(activeDevices.empty()) // if there are no activeDevices - show some sample data in UI devices tree
     {
         d.name = "SOME DEVICE";
         d.address = "08:FC:0S:SD:0P";
-        availableDevices[4] = d;
+        activeDevices[4] = d;
     }
     
-    for(std::map<int, device_t>::const_iterator it = availableDevices.begin(); it != availableDevices.end(); it++)
+    for(std::map<int, device_t>::const_iterator it = activeDevices.begin(); it != activeDevices.end(); it++)
     {
         d = it->second;
         QTreeWidgetItem* item = new QTreeWidgetItem();
@@ -155,19 +168,47 @@ bool GRVisualization::runDataReading()
         item->addChild(address);
         ui->devicesTree->addTopLevelItem(item);
     }
+
 	return true;
 }
 
 //
 // Qt Slots
 //
+/*
+//if(!fetchRunning)
+//
+//	{
+        // ok, another fetch is not running at the moment
+//		fetchRunning = true;
+		if ( rightArmActivated )
+		{
+		//	printf("!!Right arm fetch!\n");
+			rightArmApplier.fetchData();
+		}
+		
+		if ( leftArmActivated )
+		{
+		//	printf("!!Left arm fetch!\n");
+			leftArmApplier.fetchData();
+		}
+		
+//		fetchRunning = false;
+		return true;
+
+//	}
+    return false;
+};
+*/
 
 /*
  * Render or not trajectory
 */
 void GRVisualization::on_trajectoryCheckBox_toggled(bool checked)
 {
-	ui->GLwidget->renderTrajectory(checked);
+	leftArmApplier.withTrajectory = checked;
+	rightArmApplier.withTrajectory = checked;
+//	ui->GLwidget->renderTrajectory(checked);
 }
 
 
@@ -255,3 +296,9 @@ void GRVisualization::on_pausePlotCheckBox_toggled(bool checked)
 	plotter_all_gyro->pause = checked;
 }
 
+
+void GRVisualization::on_rotationsCheckBox_toggled(bool checked)
+{
+	leftArmApplier.withRotations = checked;
+	rightArmApplier.withRotations = checked;
+}
