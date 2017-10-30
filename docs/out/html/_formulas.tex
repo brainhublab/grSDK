@@ -1,0 +1,227 @@
+\documentclass{article}
+\usepackage{epsfig}
+\pagestyle{empty}
+\begin{document}
+$ \vec x $
+\pagebreak
+
+$ \vec u $
+\pagebreak
+
+$ f $
+\pagebreak
+
+\[ \vec x_k = f \left( x_{k-1}, u_{k-1}, w_{k-1} \right) \]
+\pagebreak
+
+$ w $
+\pagebreak
+
+$ \vec z $
+\pagebreak
+
+\[ \vec z_k = h \left( x_{k-1}, v_{k-1} \right) \]
+\pagebreak
+
+$ v $
+\pagebreak
+
+\[ \ddot x = \frac{u}{m} - \frac{b_x}{m} \dot x^{2} \]
+\pagebreak
+
+\[ \ddot y = \frac{p}{m} \dot x^{2} - g \]
+\pagebreak
+
+$ m $
+\pagebreak
+
+$ b_{x} $
+\pagebreak
+
+$ p $
+\pagebreak
+
+$ g $
+\pagebreak
+
+$ u $
+\pagebreak
+
+\[\vec x_k = \left [ \begin{array}{c} x_k \\ \\ \dot x_k \\ \\ y_k \\ \\ \dot y_k \end{array} \right] = //! \left [ \begin{array}{c} //! x_{k-1} + T \dot x_{k-1} + \frac{T^{2}}{2} \left( \frac{u}{m} - \frac{b_x}{m} \dot x_{k-1}^{2} \right )\\ \\ //! \dot x_{k-1} + T \left ( \frac{u}{m} - \frac{b_x}{m} \dot x_{k-1}^{2} \right ) + w_{1} \\ \\ //! y_{k-1} + T \dot y_{k-1} + \frac{T^{2}}{2} \left( \frac{p}{m} \dot x_{k-1}^{2} - g \right )\\ \\ //! \dot y_{k-1} + T \left( \frac{p}{m} \dot x_{k-1}^{2} - g \right ) + w_{2} //! \end{array} \right ] \]
+\pagebreak
+
+$ w_{1} $
+\pagebreak
+
+$ w_{2} $
+\pagebreak
+
+\[\vec z_k = \left [ \begin{array}{c} \theta \\ \\ r \end{array} \right ] = //! \left [ \begin{array}{c} atan(\frac{y}{x}) +v_{1} \\ \\ \sqrt{x^{2}+y^{2}} + v_{2} \end{array} \right ] \]
+\pagebreak
+
+$ v_{1} $
+\pagebreak
+
+$ v_{2} $
+\pagebreak
+
+\[ A_{[i,j]} = \frac{\partial f_{[i]}}{\partial x_{[j]}} \]
+\pagebreak
+
+\[ W_{[i,j]} = \frac{\partial f_{[i]}}{\partial w_{[j]}} \]
+\pagebreak
+
+\[ H_{[i,j]} = \frac{\partial h_{[i]}}{\partial x_{[j]}} \]
+\pagebreak
+
+\[ V_{[i,j]} = \frac{\partial h_{[i]}}{\partial v_{[j]}} \]
+\pagebreak
+
+$ n $
+\pagebreak
+
+$ nw $
+\pagebreak
+
+$ nv $
+\pagebreak
+
+\[ A = \left [ \begin{array}{cccc} //! 1 & T-T^{2} \frac{b}{m} \dot x_{k-1} & 0 & 0 \\ \\ //! 0 & 1-2T \frac{b}{m} \dot x_{k-1} & 0 & 0 \\ \\ //! 0 & T^{2} \frac{p}{m} \dot x_{k-1} & 1 & T \\ \\ //! 0 & 2T \frac{p}{m} \dot x_{k-1} & 0 & 1 //! \end{array} \right ] \]
+\pagebreak
+
+\[ W = \left [ \begin{array}{cc} //! 0 & 0 \\ \\ //! 1 & 0 \\ \\ //! 0 & 0\\ \\ //! 0 & 1 //! \end{array} \right ] \]
+\pagebreak
+
+\[ H = \left [ \begin{array}{cccc} //! \frac{- \dot y_{k-1}}{x_{k-1}^{2}+y_{k-1}^{2}} & 0 \frac{ \dot x_{k-1}}{x_{k-1}^{2}+y_{k-1}^{2}} & 0 \\ \\ //! \frac{ \dot x_{k-1}}{\sqrt{x_{k-1}^{2}+y_{k-1}^{2}}} & 0 \frac{ \dot y_{k-1}}{\sqrt{x_{k-1}^{2}+y_{k-1}^{2}}} & 0 //! \end{array} \right ] \]
+\pagebreak
+
+\[ V = \left [ \begin{array}{cc} //! 1 & 0 \\ \\ //! 0 & 1 //! \end{array} \right ] \]
+\pagebreak
+
+\[\vec x = \left [ \begin{array}{c} r\cos\theta \\ 60 \\ r\sin\theta \\ 0 \end{array} \right] \]
+\pagebreak
+
+\[ P = \left [ \begin{array}{cccc} //! 100^2 & 0 & 0 & 0 \\ \\ //! 0 & 10^2 & 0 & 0 \\ \\ //! 0 & 0 & 25^2 & 0 \\ \\ //! 0 & 0 & 0 & 10^2 \\ \\ //! \end{array} \right ] \]
+\pagebreak
+
+\[ Q = \left [ \begin{array}{cc} //! 0.01^{2} & 0.01^{2}/10 \\ \\ //! 0.01^{2}/10 & 0.01^{2} //! \end{array} \right ] \]
+\pagebreak
+
+\[ R = \left [ \begin{array}{cc} //! 0.01^{2} & 0 \\ \\ //! 0 & 0.01^{2} //! \end{array} \right ] \]
+\pagebreak
+
+$ h $
+\pagebreak
+
+$ x $
+\pagebreak
+
+\[ x_k = f \left( x_{k-1}, u_{k-1}, w_{k-1} \right) \]
+\pagebreak
+
+\[ Q = E \left( w w^T \right) \]
+\pagebreak
+
+$ z $
+\pagebreak
+
+\[ z_k = h \left( x_k, v_k \right) \]
+\pagebreak
+
+\[ R = E \left( v v^T \right) \]
+\pagebreak
+
+$ \hat{x}_{k-1} $
+\pagebreak
+
+\[ \tilde{x}_k = f \left( \hat{x}_{k-1}, u_{k-1}, 0 \right) \]
+\pagebreak
+
+\[ \tilde{z}_k = h \left( \tilde{x}_k, 0 \right) \]
+\pagebreak
+
+$ \tilde{x}_k $
+\pagebreak
+
+\[ x_k \approx f \left( \hat{x}_{k-1}, u_{k-1}, 0 \right) //! + \frac{\partial f}{\partial x} \left( \hat{x}_{k-1}, u_{k-1}, 0 \right) //! \left( \Delta x \right) //! + \frac{\partial f}{\partial u} \left( \hat{x}_{k-1}, u_{k-1}, 0 \right) //! \left( \Delta u \right) //! + \frac{\partial f}{\partial w} \left( \hat{x}_{k-1}, u_{k-1}, 0 \right) //! \left( \Delta w \right) \]
+\pagebreak
+
+\[ \phantom{x_k} = \tilde{x}_k + A \left( x_{k-1} - \hat{x}_{k-1} //! \right) + W w_{k-1} \]
+\pagebreak
+
+\[ z_k \approx h \left( \tilde{x}_k, 0 \right) //! + \frac{\partial h}{\partial x} \left( \tilde{x}_k, 0 \right) //! \left( \Delta x \right) //! + \frac{\partial h}{\partial v} \left( \tilde{x}_k, 0 \right) //! \left( \Delta v \right) \]
+\pagebreak
+
+\[ \phantom{z_k} = \tilde{z}_k + H \left( x_k - \tilde{x}_k \right) //! + V v_k \]
+\pagebreak
+
+$ f(x, u, 0) $
+\pagebreak
+
+$ h(x, 0) $
+\pagebreak
+
+$ [-\pi, \pi] $
+\pagebreak
+
+\[ Q = E\left( w w^T \right) \]
+\pagebreak
+
+\[ R = E\left( v v^T \right) \]
+\pagebreak
+
+$ U D U^T $
+\pagebreak
+
+$ P = U D U^T $
+\pagebreak
+
+$ Q = U_q D_q U_q^T $
+\pagebreak
+
+$ = W U_q $
+\pagebreak
+
+$ = D_q $
+\pagebreak
+
+$ V R V^T $
+\pagebreak
+
+$ V R V^T = U_r D_r U_r^T $
+\pagebreak
+
+$ ( = D_r ) $
+\pagebreak
+
+$ = U_r^{-1} H $
+\pagebreak
+
+$ = U_r^{-1} dz $
+\pagebreak
+
+$ D_q $
+\pagebreak
+
+$ U_q $
+\pagebreak
+
+$ \left( U_q^{-1} \right)^T $
+\pagebreak
+
+$ nn = n + nw $
+\pagebreak
+
+\[ x_k = f \left( x_{k-1}, u_{k-1}, w_{k-1} \right) = //! A x_{k-1} + B u_{k-1} + W w_{k-1} \]
+\pagebreak
+
+\[ z_k = h \left( x_k, v_k \right) = //! H x_k + V v_k \]
+\pagebreak
+
+\[ \tilde{x}_k = f \left( \hat{x}_{k-1}, u_{k-1}, 0 \right) = //! A \hat{x}_{k-1} + B u_{k-1} \]
+\pagebreak
+
+\[ \tilde{z}_k = h \left( \tilde{x}_k, 0 \right) = //! H \tilde{x}_k \]
+\pagebreak
+
+\end{document}

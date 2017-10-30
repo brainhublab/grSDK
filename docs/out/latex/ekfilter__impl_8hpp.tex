@@ -1,0 +1,65 @@
+\hypertarget{ekfilter__impl_8hpp}{}\section{/home/vlad/projects/brainhub/gestus\+S\+D\+K/inc/kalman/ekfilter\+\_\+impl.hpp File Reference}
+\label{ekfilter__impl_8hpp}\index{/home/vlad/projects/brainhub/gestus\+S\+D\+K/inc/kalman/ekfilter\+\_\+impl.\+hpp@{/home/vlad/projects/brainhub/gestus\+S\+D\+K/inc/kalman/ekfilter\+\_\+impl.\+hpp}}
+
+
+Contains the implementation of the {\ttfamily E\+K\+Filter} base template class.  
+
+
+\subsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \mbox{\hyperlink{namespaceKalman}{Kalman}}
+\begin{DoxyCompactList}\small\item\em Contains all classes and functions related to \mbox{\hyperlink{namespaceKalman}{Kalman}} filtering. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{ekfilter__impl_8hpp_a5e1afed7d0a553791754b9ec64f57ea6}\label{ekfilter__impl_8hpp_a5e1afed7d0a553791754b9ec64f57ea6}} 
+\#define {\bfseries K\+A\+L\+M\+A\+N\+\_\+\+N\+\_\+\+M\+O\+D\+I\+F\+I\+ED}~1
+\item 
+\mbox{\Hypertarget{ekfilter__impl_8hpp_a44f32c638c5a378638eb349e8c027b39}\label{ekfilter__impl_8hpp_a44f32c638c5a378638eb349e8c027b39}} 
+\#define {\bfseries K\+A\+L\+M\+A\+N\+\_\+\+N\+U\+\_\+\+M\+O\+D\+I\+F\+I\+ED}~(1$<$$<$1)
+\item 
+\mbox{\Hypertarget{ekfilter__impl_8hpp_a5f20f9043bd5ebec8ec921f8e1ec1244}\label{ekfilter__impl_8hpp_a5f20f9043bd5ebec8ec921f8e1ec1244}} 
+\#define {\bfseries K\+A\+L\+M\+A\+N\+\_\+\+N\+W\+\_\+\+M\+O\+D\+I\+F\+I\+ED}~(1$<$$<$2)
+\item 
+\mbox{\Hypertarget{ekfilter__impl_8hpp_a54a530afa13ee3a3866725e4b81b9d30}\label{ekfilter__impl_8hpp_a54a530afa13ee3a3866725e4b81b9d30}} 
+\#define {\bfseries K\+A\+L\+M\+A\+N\+\_\+\+M\+\_\+\+M\+O\+D\+I\+F\+I\+ED}~(1$<$$<$3)
+\item 
+\mbox{\Hypertarget{ekfilter__impl_8hpp_a4609196681eb178a901b5876cc13a51b}\label{ekfilter__impl_8hpp_a4609196681eb178a901b5876cc13a51b}} 
+\#define {\bfseries K\+A\+L\+M\+A\+N\+\_\+\+N\+V\+\_\+\+M\+O\+D\+I\+F\+I\+ED}~(1$<$$<$4)
+\item 
+\mbox{\Hypertarget{ekfilter__impl_8hpp_afcfe377837a177ee48695ac59e81e905}\label{ekfilter__impl_8hpp_afcfe377837a177ee48695ac59e81e905}} 
+\#define {\bfseries K\+A\+L\+M\+A\+N\+\_\+\+P\+\_\+\+M\+O\+D\+I\+F\+I\+ED}~(1$<$$<$5)
+\item 
+\mbox{\Hypertarget{ekfilter__impl_8hpp_a4e06b90c20219a276ba3af5abe6319e5}\label{ekfilter__impl_8hpp_a4e06b90c20219a276ba3af5abe6319e5}} 
+\#define {\bfseries K\+A\+L\+M\+A\+N\+\_\+\+L\+O\+W\+M\+A\+SK}~((1$<$$<$8) -\/ 1)
+\item 
+\mbox{\Hypertarget{ekfilter__impl_8hpp_a0cc3f545ce0f6bf076403261e06f4695}\label{ekfilter__impl_8hpp_a0cc3f545ce0f6bf076403261e06f4695}} 
+\#define {\bfseries K\+A\+L\+M\+A\+N\+\_\+\+A\+\_\+\+M\+O\+D\+I\+F\+I\+ED}~(1$<$$<$8)
+\item 
+\mbox{\Hypertarget{ekfilter__impl_8hpp_a0289de2e4bb35743b87798d9f18533b8}\label{ekfilter__impl_8hpp_a0289de2e4bb35743b87798d9f18533b8}} 
+\#define {\bfseries K\+A\+L\+M\+A\+N\+\_\+\+W\+\_\+\+M\+O\+D\+I\+F\+I\+ED}~(1$<$$<$9)
+\item 
+\mbox{\Hypertarget{ekfilter__impl_8hpp_a95e431f8560a8869a804e13656b34eb5}\label{ekfilter__impl_8hpp_a95e431f8560a8869a804e13656b34eb5}} 
+\#define {\bfseries K\+A\+L\+M\+A\+N\+\_\+\+Q\+\_\+\+M\+O\+D\+I\+F\+I\+ED}~(1$<$$<$10)
+\item 
+\mbox{\Hypertarget{ekfilter__impl_8hpp_ab94b2d868c614c574e3b05a454a8c9a3}\label{ekfilter__impl_8hpp_ab94b2d868c614c574e3b05a454a8c9a3}} 
+\#define {\bfseries K\+A\+L\+M\+A\+N\+\_\+\+M\+I\+D\+M\+A\+SK}~( ((1$<$$<$4) -\/ 1) $<$$<$ 8 )
+\item 
+\mbox{\Hypertarget{ekfilter__impl_8hpp_a97a77cd456d0d263fedef5b85412d53d}\label{ekfilter__impl_8hpp_a97a77cd456d0d263fedef5b85412d53d}} 
+\#define {\bfseries K\+A\+L\+M\+A\+N\+\_\+\+H\+\_\+\+M\+O\+D\+I\+F\+I\+ED}~(1$<$$<$12)
+\item 
+\mbox{\Hypertarget{ekfilter__impl_8hpp_ab9d6ef4afd031fc2b372d73275c1b58a}\label{ekfilter__impl_8hpp_ab9d6ef4afd031fc2b372d73275c1b58a}} 
+\#define {\bfseries K\+A\+L\+M\+A\+N\+\_\+\+V\+\_\+\+M\+O\+D\+I\+F\+I\+ED}~(1$<$$<$13)
+\item 
+\mbox{\Hypertarget{ekfilter__impl_8hpp_afc3d5ef965159f925c4aa2043072d7d1}\label{ekfilter__impl_8hpp_afc3d5ef965159f925c4aa2043072d7d1}} 
+\#define {\bfseries K\+A\+L\+M\+A\+N\+\_\+\+R\+\_\+\+M\+O\+D\+I\+F\+I\+ED}~(1$<$$<$14)
+\item 
+\mbox{\Hypertarget{ekfilter__impl_8hpp_a8a0e051179a155ef81deb158dc599801}\label{ekfilter__impl_8hpp_a8a0e051179a155ef81deb158dc599801}} 
+\#define {\bfseries K\+A\+L\+M\+A\+N\+\_\+\+H\+I\+G\+H\+M\+A\+SK}~( ((1$<$$<$4) -\/ 1) $<$$<$ 12 )
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Contains the implementation of the {\ttfamily E\+K\+Filter} base template class. 
+

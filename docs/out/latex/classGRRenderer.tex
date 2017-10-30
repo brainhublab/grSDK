@@ -1,0 +1,61 @@
+\hypertarget{classGRRenderer}{}\section{G\+R\+Renderer Class Reference}
+\label{classGRRenderer}\index{G\+R\+Renderer@{G\+R\+Renderer}}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classGRRenderer_a4f7c9cb0d98cf3669f578b51cd381b6b}\label{classGRRenderer_a4f7c9cb0d98cf3669f578b51cd381b6b}} 
+{\bfseries G\+R\+Renderer} (const \mbox{\hyperlink{classGRRenderer}{G\+R\+Renderer}} \&)=delete
+\item 
+\mbox{\Hypertarget{classGRRenderer_aa82eaa735fa00c5767dff5efda99e7c9}\label{classGRRenderer_aa82eaa735fa00c5767dff5efda99e7c9}} 
+\mbox{\hyperlink{classGRRenderer}{G\+R\+Renderer}} \& {\bfseries operator=} (const \mbox{\hyperlink{classGRRenderer}{G\+R\+Renderer}} \&)=delete
+\item 
+\mbox{\Hypertarget{classGRRenderer_ad029322975174c8a281fc81fd81a79b1}\label{classGRRenderer_ad029322975174c8a281fc81fd81a79b1}} 
+bool {\bfseries draw\+Scene} (float, float, float)
+\item 
+\mbox{\Hypertarget{classGRRenderer_a8954384d0ca99754243a2b5e974413eb}\label{classGRRenderer_a8954384d0ca99754243a2b5e974413eb}} 
+bool {\bfseries set\+Viewport} (int, int)
+\item 
+\mbox{\Hypertarget{classGRRenderer_a498b5521a2e2193986cd635f3d7c8338}\label{classGRRenderer_a498b5521a2e2193986cd635f3d7c8338}} 
+bool {\bfseries update} ()
+\item 
+bool \mbox{\hyperlink{classGRRenderer_ad46d080a958497f815600edf60dee906}{render\+Arm}} (struct \mbox{\hyperlink{structGRHandNode}{G\+R\+Hand\+Node}} $\ast$, float, float, float)
+\item 
+\mbox{\Hypertarget{classGRRenderer_a0f1ff011fec65f15698946efdcb21d9b}\label{classGRRenderer_a0f1ff011fec65f15698946efdcb21d9b}} 
+bool {\bfseries render\+Trajectory} (\mbox{\hyperlink{classGRHand}{G\+R\+Hand}} $\ast$, float, float, float)
+\item 
+\mbox{\Hypertarget{classGRRenderer_adf8af5e57e6c45a9054d8143a189dce6}\label{classGRRenderer_adf8af5e57e6c45a9054d8143a189dce6}} 
+int {\bfseries get\+Width} ()
+\item 
+\mbox{\Hypertarget{classGRRenderer_a7eff97767b489645255548347b67ead5}\label{classGRRenderer_a7eff97767b489645255548347b67ead5}} 
+int {\bfseries get\+Height} ()
+\item 
+\mbox{\Hypertarget{classGRRenderer_ad98d078424c97e582890a9b91ff5a67e}\label{classGRRenderer_ad98d078424c97e582890a9b91ff5a67e}} 
+bool {\bfseries set\+Line\+Width} (float f)
+\item 
+\mbox{\Hypertarget{classGRRenderer_a4024bbd950f9c1a2dceb276859c6a1b3}\label{classGRRenderer_a4024bbd950f9c1a2dceb276859c6a1b3}} 
+bool {\bfseries set\+Lines\+Color} (int r=255, int g=0, int b=0, int a=200)
+\item 
+\mbox{\Hypertarget{classGRRenderer_a4ac14e24760c8111ffc31c3f1750f59e}\label{classGRRenderer_a4ac14e24760c8111ffc31c3f1750f59e}} 
+bool {\bfseries set\+Plane\+Color} (int r=255, int g=255, int b=255, int a=200)
+\end{DoxyCompactItemize}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classGRRenderer_ad46d080a958497f815600edf60dee906}\label{classGRRenderer_ad46d080a958497f815600edf60dee906}} 
+\index{G\+R\+Renderer@{G\+R\+Renderer}!render\+Arm@{render\+Arm}}
+\index{render\+Arm@{render\+Arm}!G\+R\+Renderer@{G\+R\+Renderer}}
+\subsubsection{\texorpdfstring{render\+Arm()}{renderArm()}}
+{\footnotesize\ttfamily bool G\+R\+Renderer\+::render\+Arm (\begin{DoxyParamCaption}\item[{struct \mbox{\hyperlink{structGRHandNode}{G\+R\+Hand\+Node}} $\ast$}]{arm,  }\item[{float}]{angleX,  }\item[{float}]{angleY,  }\item[{float}]{angleZ }\end{DoxyParamCaption})}
+
+draw arm ~\newline
+~\newline
+~\newline
+ translating to hand drawing ~\newline
+~\newline
+ draw hand ~\newline
+ draw fingers 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/home/vlad/projects/brainhub/gestus\+S\+D\+K/samples/gr\+Visualization/inc/gr\+Render.\+h\item 
+/home/vlad/projects/brainhub/gestus\+S\+D\+K/samples/gr\+Visualization/src/gr\+Render.\+cpp\end{DoxyCompactItemize}
