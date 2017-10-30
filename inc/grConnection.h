@@ -38,18 +38,27 @@ struct dev_socket //grDevice socket structure
     }
 };
 
-
+/**
+ * GRConnection - a class description
+ */
 class GRConnection
 {
     public:
-        GRConnection();//constructor
+	    /**
+	     * constructor descpription
+	     */
+        GRConnection();
         ~GRConnection();//destructor
         GRConnection(const GRConnection&);//copy constructor
         GRConnection& operator=(const GRConnection&);//operator = 
-
-        std::map<int, device_t> getAvalibleDevices();//return map of devices which are avalible for connection 
-        bool setActiveDevice(int); //add selected device to active devices and make precondition for connection
-
+	/**
+	 * return map of devices which are avalible for connection
+	 */ 
+        std::map<int, device_t> getAvalibleDevices();
+ 	/**
+	 * add selected device to active devices and make precondition for connection
+	 */
+	bool setActiveDevice(int); 
         int getDeviceId(device_t);//returns Id of devise
 
         gr_message getMassage(int);//returns gr_message bi Id
