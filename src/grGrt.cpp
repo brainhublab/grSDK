@@ -9,7 +9,7 @@ GRGrt::GRGrt()
     //datasetDTW.trainingData.setNumDimensions(datasetDTW.dimensions);
     //datasetDTW.trainingData.setDatasetName("grDTWTrainingData"); //TODO later add relative name 
     //datasetDTW.trainingData.setInfoText("Thisdataset contains some GR data"); //later add relative info text
-
+    _dtw.enableNullRejection(true);
 
 }
 /*destructor
@@ -208,7 +208,7 @@ void GRGrt::setDatasetProperties(std::string dataSetName, std::string infoText, 
     _trainingData.setNumDimensions(_dimensions);
     _trainingData.setDatasetName(dataSetName);
     _trainingData.setInfoText(infoText);
-    _fileProp = fProp;
+    _fileProp = fProp + ".grt";
 
 }
 

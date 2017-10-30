@@ -3,6 +3,9 @@
 GRTrajectory::GRTrajectory()
 {
     this->_timestampLast = 0;
+    this->_isStationary = true;
+    this->_accTreshold = 0.6;
+    this->_gyroTreshold = 0.6;
 }
 
 GRTrajectory::~GRTrajectory()
@@ -64,7 +67,7 @@ Eigen::Vector3d GRTrajectory::_correctVector(Eigen::Vector3d accIn)
 
     for(int i=0; i<3; i++)
     {
-        
+
         dirs(i) = accIn(i) / abs(accIn(i));
         lastDirs(i) /= abs(lastDirs(i));
         out(i) = dirs(i) * lastDirs(i);
@@ -117,12 +120,20 @@ vector<double> GRTrajectory::getNewPosByRunge(vector<double> accIn, vector<doubl
     accTmp = acc;
 
     acc -= this->_accLast;
+    if(acc.norm() < _accTreshold)
+    {
+        _isStationary = true;
+    }
+    else
+    {
+        _isStationary = false;
+    }
     correctionVector = _correctVector(accTmp);
    // std::cout<<"correctionVector "<<correctionVector<<std::endl;
    /* for(int i=0; i<3; i++)
     {
         acc(i) *= correctionVector(i);
-    } 
+    }
     */
     //std::cout << dt << std::endl;
     //std::cout << acc(0) << " " << acc(1) << " " << acc(2) << std::endl;
@@ -137,17 +148,36 @@ vector<double> GRTrajectory::getNewPosByRunge(vector<double> accIn, vector<doubl
 
 std::vector<double> GRTrajectory::getAccelerations(std::vector<double> acc_in, std::vector<double> q_in)
 {
-    Eigen::Vector3d acc;
+    Eigen::Vector3d acc, gravity={0, 0, 1};
     Eigen::Quaterniond q;
     acc = this->_toVector3d(acc_in);
     q = this->_toQuaterniond(q_in);
     acc = this->_convertAccToG(acc);
-    acc *= G;
+    // acc *= G;
     acc = this->_rotateAcc(acc, q);
-    acc = acc - this->_gravity;
+    // acc = acc - this->_gravity;
+    acc = acc - gravity;
+
+    // // quantization of data, 0 to g = 1 to 10, g to 2g = 11 to 15,
+    // // over 2g = 16, same for negatives
+    // for(int i = 0; i < 3; i++)
+    // {
+    //     if(abs(acc(i)) <= 1)
+    //     {
+    //         acc(i) = round(acc(i) * 9) + 1;
+    //     }
+    //     else if(abs(acc(i)) <= 2)
+    //     {
+    //         acc(i) = round((acc(i) - 1) * 4) + 11;
+    //     }
+    //     else
+    //     {
+    //         acc(i) = 16 * (acc(i) / abs(acc(i)));
+    //     }
+    // }
 
     return _toStdVector(acc);
-  
+
 }
 runge_vars GRTrajectory::_rk4(Eigen::Vector3d accIn, runge_vars rungeIn, double dt)
 {
@@ -203,4 +233,7 @@ Eigen::Quaterniond GRTrajectory::_toQuaterniond(vector<double> in)
     return out;
 }
 
-
+bool GRTrajectory::isStationary()
+{
+   return _isStationary;
+}

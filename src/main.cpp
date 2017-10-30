@@ -21,6 +21,22 @@
 
 int main (int argc, const char * argv[])
 {
+
+    //Gnuplot gp;
+    /*
+       GRAlgorithm grAlg;
+
+       grAlg.loadTrainingData("./data/grTrainingDTWtest.grt");
+       grAlg.setTestDataFromTraining(20);
+
+    //grAlg.loadModel("./data/DTWModel.grt");
+
+    grAlg.train();
+    grAlg.test();
+
+    grAlg.saveModel("./data/DTWModel.grt");
+    cout << grAlg.getTestAccuracy() << endl;
+    */
     GRConnection conn;
     device_t* device;
     gr_message msg;
@@ -33,6 +49,7 @@ int main (int argc, const char * argv[])
     {
         if(it->second.name == "GR[R]")
         {
+        //    std::cout<<it->first<<" in iteration---------------------------------------------"<<std::endl;
             devId = it->first;
         }
     }
@@ -41,9 +58,10 @@ int main (int argc, const char * argv[])
     conn.setActiveDevice(devId);
     conn.connectSocket(devId);
     GRAlgorithm alg;
-    alg.setupMadgwick(140, 140, 140, 140, 140, 220); //need to check
+  alg.setupMadgwick(140, 140, 140, 140, 140, 220); //need to check
 
-    GRGrt grt;
+    acc_k_vars k_vars;
+//   alg.setUpKfilter(&conn, &k_vars, devId);
 
     std::unordered_map<std::string, gr_message> data;
     FILE* f, *fa;
@@ -53,69 +71,60 @@ int main (int argc, const char * argv[])
     double time;
     GRTrajectory traj;
     int itr = 0;
-    
-    int ch;
-    initscr();
-    cbreak();
-    noecho();
-    nodelay(stdscr,TRUE);
-    
-    grt.setDatasetProperties("testDataset", "test n text", "test", 7);
-    while(ch!='q')
-    {   
-       // endwin();
-        ch=getch();
 
-        if(ch== 'r')
+    while(1)
+    {
+
+        //      std::cout << "Getting data..\n";
+        conn.getData(devId, &msg);
+//      alg.kFilterStep(&msg, &k_vars);
+       //        std::cout << "Got data!\n";
+        if(!msg.imus["palm"]->acc.empty() && itr > 10)
         {
-            //std::cout<<"saving"<<std::endl;
-            clrtoeol(); 
-            mvprintw(0, 0, "saving");
-            
-            while(ch != 's' && conn.getData(devId, &msg))
-            {
+            //       std::cout<<"data -->";
 
-                //std::cout<<"reading"<<std::endl;
-                clrtoeol();
-                mvprintw(0, 0, "reading");
-                
-                //endwin();
-                ch=getch();    
-                if(!msg.imus["palm"]->acc.empty() && itr > 10)
-                {
-                    alg.madgwickUpdate(&msg, &alg_msg, 1, "flag");
-                    trajectory = traj.getNewPosByRunge(msg.palm.acc, alg_msg.palm, msg.palm.time_stamp);
-                    grt.addSample(&trajectory, &alg_msg.palm);
+         //   std::cout << msg.palm.gyro[0] << " " << msg.palm.gyro[1] << " " << msg.palm.gyro[2] << std::endl;
+            alg.madgwickUpdate(&msg, &alg_msg, 1, "flag");
+        //        std::cout<<"QUANTERNION---->";
+            /*   for(int i =0;i<4;i++)
+                 {
+                 std::cout<<alg_msg.palm[i];
+                 }
 
-                    //      printf( "%s %f %f %f \n","trjectory", trajectory[0], trajectory[1], trajectory[2]);
-                    fprintf(f, "%f %f %f %f %f %f %f \n", trajectory[0], trajectory[1], trajectory[2],
-                            alg_msg.palm[0], alg_msg.palm[1], alg_msg.palm[2], alg_msg.palm[3]);
-                    fprintf(fa, "%f %f %f \n", msg.palm.acc[0], msg.palm.acc[1], msg.palm.acc[2]);
-                }
-                msg.palm.gyro.clear();
-                msg.palm.acc.clear();
-                msg.palm.mag.clear();
+                 std::cout<<std::endl;
+                 */
+            // trajectory = traj.getNewPosByRunge(msg.palm.acc, alg_msg.palm, msg.palm.time_stamp);
+            trajectory = traj.getAccelerations(msg.palm.acc, alg_msg.palm);
 
-                alg_msg.clear();
-
-                itr ++;
-            }
-            clrtoeol();
-            mvprintw(0, 0, "saving");
-            grt.pushGesture();
+            //      printf( "%s %f %f %f \n","trjectory", trajectory[0], trajectory[1], trajectory[2]);
+            //   std::cout<<msg.palm.acc[0]<<" "<<msg.palm.acc[1]<<" "<<msg.palm.acc[2]<<std::endl;
+            printf("writing...\n");
+            fprintf(f, "%f %f %f %f %f %f\n", trajectory[0], trajectory[1], trajectory[2], msg.palm.gyro[0], msg.palm.gyro[1], msg.palm.gyro[2]);
+            fprintf(fa, "%f %f %f \n", msg.palm.acc[0], msg.palm.acc[1], msg.palm.acc[2]);
+            //    std::cout<<std::endl;
         }
-        else if(ch == 'n')
-        {
-            grt.setNextLabel();
-            // std::cout<<"AALLAAAAARM NEXT LABEL"<<std::endl;
-            clrtoeol();
-            mvprintw(0, 0, " NEXT LABEL");
-        }
-        
+        msg.palm.gyro.clear();
+        msg.palm.acc.clear();
+        msg.palm.mag.clear();
+
+        alg_msg.clear();
+
+        /*
+           if(!data.empty())
+           {
+           acc = data["palm"].acc;
+           time =  data["palm"].time_stamp;
+           trajectory = traj.getNewPosByVelocity(acc,time);
+           std::cout<<acc[0]<<" "<<acc[1]<<" "<<acc[2]<<std::endl;
+           fprintf(f, "%f %f %f \n", trajectory[0], trajectory[1], trajectory[2]);
+           }
+           */
+
+        //conn.readData(1);
+        itr ++;
 
     }
-    grt.saveDataset();
 
-    endwin();
     return 0;
 }
+

@@ -42,6 +42,7 @@ public:
         bool addSample(std::vector<double>* , std::vector<double>* );
 		bool pushGesture();//push dataset to DTW //TODO vector trajectory & quanternion
 		bool saveDataset();//saving in path 
+       
 
 private:
 

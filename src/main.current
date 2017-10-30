@@ -1,5 +1,6 @@
 #include "GRT/GRT.h"
-#include "grAlgorithmNew.h"
+#include "grAlgorithm.h"
+#include "grGrt.h"
 using namespace GRT;
 using namespace std;
 
@@ -8,7 +9,7 @@ int main (int argc, const char * argv[])
     GRGrt grt;
 
     grt.loadTrainingData("../trainingData/grTrainingDTWtest.grt");
-    grt.setTestDataFromTraining(20);
+    grt.setTestDataFromTraining(80);
 
     //grAlg.loadModel("./data/DTWModel.grt");
 
