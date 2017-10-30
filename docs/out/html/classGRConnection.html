@@ -83,10 +83,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a6ff6ab57a748653da2f1f34f3dbbf8ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa5d61eeb78fdc791f1c2f72c758cd7b4"><td class="memItemLeft" align="right" valign="top">std::map&lt; int, <a class="el" href="structdevice__t.html">device_t</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGRConnection.html#aa5d61eeb78fdc791f1c2f72c758cd7b4">getAvalibleDevices</a> ()</td></tr>
 <tr class="separator:aa5d61eeb78fdc791f1c2f72c758cd7b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3a64dcc39afe096f83f3c6a6476359f3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGRConnection.html#a3a64dcc39afe096f83f3c6a6476359f3">setActiveDevice</a> (int)</td></tr>
-<tr class="separator:a3a64dcc39afe096f83f3c6a6476359f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2cafff531babf3c0e11f1b37a2e0a35c"><td class="memItemLeft" align="right" valign="top"><a id="a2cafff531babf3c0e11f1b37a2e0a35c"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>getDeviceId</b> (<a class="el" href="structdevice__t.html">device_t</a>)</td></tr>
+<tr class="memitem:ab075d8ff7c621990bdf4c17ae302e9dc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGRConnection.html#ab075d8ff7c621990bdf4c17ae302e9dc">setActiveDevice</a> (int id)</td></tr>
+<tr class="separator:ab075d8ff7c621990bdf4c17ae302e9dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2cafff531babf3c0e11f1b37a2e0a35c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGRConnection.html#a2cafff531babf3c0e11f1b37a2e0a35c">getDeviceId</a> (<a class="el" href="structdevice__t.html">device_t</a>)</td></tr>
 <tr class="separator:a2cafff531babf3c0e11f1b37a2e0a35c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6dbdd7852ad0c77990ef6c7c0888f3b9"><td class="memItemLeft" align="right" valign="top"><a id="a6dbdd7852ad0c77990ef6c7c0888f3b9"></a>
 <a class="el" href="structgr__message.html">gr_message</a>&#160;</td><td class="memItemRight" valign="bottom"><b>getMassage</b> (int)</td></tr>
@@ -141,8 +140,34 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>connectSocket</b> (in
 
 </div>
 </div>
-<a id="a3a64dcc39afe096f83f3c6a6476359f3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3a64dcc39afe096f83f3c6a6476359f3">&#9670;&nbsp;</a></span>setActiveDevice()</h2>
+<a id="a2cafff531babf3c0e11f1b37a2e0a35c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2cafff531babf3c0e11f1b37a2e0a35c">&#9670;&nbsp;</a></span>getDeviceId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int GRConnection::getDeviceId </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structdevice__t.html">device_t</a>&#160;</td>
+          <td class="paramname"><em>device</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>a getter of id </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">device</td><td>is <a class="el" href="structdevice__t.html">device_t</a> structure </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>id of device </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="structdevice__t.html">device_t</a> </dd></dl>
+
+</div>
+</div>
+<a id="ab075d8ff7c621990bdf4c17ae302e9dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab075d8ff7c621990bdf4c17ae302e9dc">&#9670;&nbsp;</a></span>setActiveDevice()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -151,12 +176,19 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>connectSocket</b> (in
           <td class="memname">bool GRConnection::setActiveDevice </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>devId</em></td><td>)</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>add selected device to active devices and make precondition for connection </p>
+<p>add selected device to active devices and make precondition for connection </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">id</td><td>is id of device </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>result of activating device </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classGRConnection.html#a2cafff531babf3c0e11f1b37a2e0a35c">getDeviceId()</a> </dd></dl>
 
 </div>
 </div>

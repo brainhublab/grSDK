@@ -1,6 +1,7 @@
 var searchData=
 [
   ['getavalibledevices',['getAvalibleDevices',['../classGRConnection.html#aa5d61eeb78fdc791f1c2f72c758cd7b4',1,'GRConnection']]],
+  ['getdeviceid',['getDeviceId',['../classGRConnection.html#a2cafff531babf3c0e11f1b37a2e0a35c',1,'GRConnection']]],
   ['gnuplot',['GNUPlot',['../classGNUPlot.html',1,'']]],
   ['gr_5falg_5fmessage',['gr_alg_message',['../structgr__alg__message.html',1,'']]],
   ['gr_5fmessage',['gr_message',['../structgr__message.html',1,'']]],

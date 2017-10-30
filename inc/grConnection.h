@@ -57,8 +57,17 @@ class GRConnection
         std::map<int, device_t> getAvalibleDevices();
  	/**
 	 * add selected device to active devices and make precondition for connection
+	 * @param id is id of device
+	 * @return result of activating device
+	 * @see getDeviceId()
 	 */
-	bool setActiveDevice(int); 
+	bool setActiveDevice(int id);
+        /**
+	 * a getter of id
+	 * @param device is device_t structure
+	 * @return id of device
+	 * @see device_t
+	 */
         int getDeviceId(device_t);//returns Id of devise
 
         gr_message getMassage(int);//returns gr_message bi Id
