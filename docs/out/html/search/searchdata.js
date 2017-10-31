@@ -1,9 +1,9 @@
 var indexSectionsWithContent =
 {
-  0: "adgikrstw",
+  0: "adgiklrstw",
   1: "adgikr",
   2: "gs",
-  3: "rtw"
+  3: "lrtw"
 };
 
 var indexSectionNames =
