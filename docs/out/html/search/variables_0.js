@@ -1,10 +1,19 @@
 var searchData=
 [
   ['_5factivedevices',['_activeDevices',['../classGRConnection.html#abab8dd564f928da7ec42ff10076e78ff',1,'GRConnection']]],
+  ['_5fangles',['_angles',['../classGRAlgorithm.html#aa54eee36f7fa0732a44e46b0bd00de2a',1,'GRAlgorithm']]],
   ['_5favalibledevices',['_avalibleDevices',['../classGRConnection.html#a38cdc9b8949ddd59b29003ff5f53b2e5',1,'GRConnection']]],
   ['_5fbuf',['_buf',['../classGRConnection.html#a9e96b76993b7fb08541d5d4a574ffda9',1,'GRConnection']]],
   ['_5fbuffereddata',['_bufferedData',['../classGRConnection.html#a014a86fa13ea2ff3125391bdc489b1cc',1,'GRConnection']]],
   ['_5fdevicesockets',['_deviceSockets',['../classGRConnection.html#a626bbe4acbdab8588edcba6d10f4eab7',1,'GRConnection']]],
+  ['_5findexmadgwick',['_indexMadgwick',['../classGRAlgorithm.html#a782fdb9c324a073732bea17e4c616ebd',1,'GRAlgorithm']]],
+  ['_5fmadgwickobjects',['_madgwickObjects',['../classGRAlgorithm.html#a815abb07d9c15af495a8b88bfc7300de',1,'GRAlgorithm']]],
+  ['_5fmiddlemadgwick',['_middleMadgwick',['../classGRAlgorithm.html#a898ef631b16a6b02603ab476a138579b',1,'GRAlgorithm']]],
+  ['_5fpalmmadgwick',['_palmMadgwick',['../classGRAlgorithm.html#aa8b6502b0459d172d41279256befcfe2',1,'GRAlgorithm']]],
+  ['_5fpinkymadgwick',['_pinkyMadgwick',['../classGRAlgorithm.html#a0c5cc4190803137add57bf6ae486c022',1,'GRAlgorithm']]],
+  ['_5fringmadgwick',['_ringMadgwick',['../classGRAlgorithm.html#acbba33dee3ab0ea0cc83296453ed73e7',1,'GRAlgorithm']]],
+  ['_5froll',['_roll',['../classGRAlgorithm.html#a36717fbbde48b98ff4670c478aadf4ed',1,'GRAlgorithm']]],
   ['_5fstart',['_start',['../classGRConnection.html#ac209a4906f2febd3944ae827ab3205b2',1,'GRConnection']]],
+  ['_5fthumbmadgwick',['_thumbMadgwick',['../classGRAlgorithm.html#ae8fd716c3c6a1b78f91f41d84330fc76',1,'GRAlgorithm']]],
   ['_5ftimestamp',['_timeStamp',['../classGRConnection.html#a8851229a99a4e1bc69cbf4787990c417',1,'GRConnection']]]
 ];

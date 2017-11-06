@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['operator_3d',['operator=',['../classGRConnection.html#a6ff6ab57a748653da2f1f34f3dbbf8ff',1,'GRConnection']]]
+  ['madgwickupdate',['madgwickUpdate',['../classGRAlgorithm.html#a99d42de12749f53522f0bb3b470b876c',1,'GRAlgorithm']]]
 ];
