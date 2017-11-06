@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['samples',['Samples',['../samplespage.html',1,'']]],
-  ['setactivedevice',['setActiveDevice',['../classGRConnection.html#ab075d8ff7c621990bdf4c17ae302e9dc',1,'GRConnection']]]
+  ['k_5ffilter_5fvars',['k_filter_vars',['../structk__filter__vars.html',1,'']]]
 ];

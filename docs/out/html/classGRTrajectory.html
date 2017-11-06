@@ -64,6 +64,8 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pri-methods">Private Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="classGRTrajectory-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">GRTrajectory Class Reference</div>  </div>
@@ -81,6 +83,63 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 <tr class="memitem:a49090aa434aaf201dc94100d75b262b6"><td class="memItemLeft" align="right" valign="top"><a id="a49090aa434aaf201dc94100d75b262b6"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>isStationary</b> ()</td></tr>
 <tr class="separator:a49090aa434aaf201dc94100d75b262b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
+Private Member Functions</h2></td></tr>
+<tr class="memitem:acd1c2d2cecbb107f4782c71cb8bda31e"><td class="memItemLeft" align="right" valign="top"><a id="acd1c2d2cecbb107f4782c71cb8bda31e"></a>
+Eigen::Vector3d&#160;</td><td class="memItemRight" valign="bottom"><b>_rotateAcc</b> (Eigen::Vector3d, Eigen::Quaterniond)</td></tr>
+<tr class="separator:acd1c2d2cecbb107f4782c71cb8bda31e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a887169e4414f5c1a753d017938a274dc"><td class="memItemLeft" align="right" valign="top"><a id="a887169e4414f5c1a753d017938a274dc"></a>
+Eigen::Vector3d&#160;</td><td class="memItemRight" valign="bottom"><b>_convertAccToG</b> (Eigen::Vector3d)</td></tr>
+<tr class="separator:a887169e4414f5c1a753d017938a274dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8bcf717dbb6fdaa7c21e641545f3fd66"><td class="memItemLeft" align="right" valign="top"><a id="a8bcf717dbb6fdaa7c21e641545f3fd66"></a>
+Eigen::Vector3d&#160;</td><td class="memItemRight" valign="bottom"><b>_convertAccToMS</b> (Eigen::Vector3d)</td></tr>
+<tr class="separator:a8bcf717dbb6fdaa7c21e641545f3fd66"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae57b7a3849fd9ec68faa49abfd26991f"><td class="memItemLeft" align="right" valign="top"><a id="ae57b7a3849fd9ec68faa49abfd26991f"></a>
+vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>_toStdVector</b> (Eigen::Vector3d)</td></tr>
+<tr class="separator:ae57b7a3849fd9ec68faa49abfd26991f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92353b97c9d033cdd1b4900827710771"><td class="memItemLeft" align="right" valign="top"><a id="a92353b97c9d033cdd1b4900827710771"></a>
+Eigen::Vector3d&#160;</td><td class="memItemRight" valign="bottom"><b>_toVector3d</b> (vector&lt; double &gt;)</td></tr>
+<tr class="separator:a92353b97c9d033cdd1b4900827710771"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c1d30b86849599629d941f0872bcda3"><td class="memItemLeft" align="right" valign="top"><a id="a6c1d30b86849599629d941f0872bcda3"></a>
+Eigen::Quaterniond&#160;</td><td class="memItemRight" valign="bottom"><b>_toQuaterniond</b> (vector&lt; double &gt;)</td></tr>
+<tr class="separator:a6c1d30b86849599629d941f0872bcda3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a089d205ff9c925b20d704dcc1b5a1aa6"><td class="memItemLeft" align="right" valign="top"><a id="a089d205ff9c925b20d704dcc1b5a1aa6"></a>
+<a class="el" href="structrunge__vars.html">runge_vars</a>&#160;</td><td class="memItemRight" valign="bottom"><b>_rk4</b> (Eigen::Vector3d, <a class="el" href="structrunge__vars.html">runge_vars</a>, double)</td></tr>
+<tr class="separator:a089d205ff9c925b20d704dcc1b5a1aa6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8171649d7caca4bfa64cbd2d495aa91f"><td class="memItemLeft" align="right" valign="top"><a id="a8171649d7caca4bfa64cbd2d495aa91f"></a>
+Eigen::Vector3d&#160;</td><td class="memItemRight" valign="bottom"><b>_correctVector</b> (Eigen::Vector3d)</td></tr>
+<tr class="separator:a8171649d7caca4bfa64cbd2d495aa91f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a25d08ae18dbb8b16a1eac7e024217f14"><td class="memItemLeft" align="right" valign="top"><a id="a25d08ae18dbb8b16a1eac7e024217f14"></a>
+unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>_timestampLast</b></td></tr>
+<tr class="separator:a25d08ae18dbb8b16a1eac7e024217f14"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a6499929a9b6acdbde66451cf94c902"><td class="memItemLeft" align="right" valign="top"><a id="a5a6499929a9b6acdbde66451cf94c902"></a>
+<a class="el" href="structrunge__vars.html">runge_vars</a>&#160;</td><td class="memItemRight" valign="bottom"><b>_rungeLast</b></td></tr>
+<tr class="separator:a5a6499929a9b6acdbde66451cf94c902"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a21def5c6e3b1be21a86c02f8a9b8bb"><td class="memItemLeft" align="right" valign="top"><a id="a2a21def5c6e3b1be21a86c02f8a9b8bb"></a>
+const Eigen::Vector3d&#160;</td><td class="memItemRight" valign="bottom"><b>_gravity</b> = Eigen::Vector3d(0.0, 0.0, G)</td></tr>
+<tr class="separator:a2a21def5c6e3b1be21a86c02f8a9b8bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee4f168eb1ae6b1e878b79f4422bd0bc"><td class="memItemLeft" align="right" valign="top"><a id="aee4f168eb1ae6b1e878b79f4422bd0bc"></a>
+Eigen::Vector3d&#160;</td><td class="memItemRight" valign="bottom"><b>_accLast</b></td></tr>
+<tr class="separator:aee4f168eb1ae6b1e878b79f4422bd0bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca0a97d50b3f73295d2da54b85c59ea4"><td class="memItemLeft" align="right" valign="top"><a id="aca0a97d50b3f73295d2da54b85c59ea4"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>_isStationary</b></td></tr>
+<tr class="separator:aca0a97d50b3f73295d2da54b85c59ea4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ffdf6736ade0bbdb38c60c994352fbc"><td class="memItemLeft" align="right" valign="top"><a id="a0ffdf6736ade0bbdb38c60c994352fbc"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>_accTreshold</b></td></tr>
+<tr class="separator:a0ffdf6736ade0bbdb38c60c994352fbc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8cf21114bdb808b3933609a0f3483249"><td class="memItemLeft" align="right" valign="top"><a id="a8cf21114bdb808b3933609a0f3483249"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>_gyroTreshold</b></td></tr>
+<tr class="separator:a8cf21114bdb808b3933609a0f3483249"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a794591d9ac0f07470e01d940dbbec836"><td class="memItemLeft" align="right" valign="top"><a id="a794591d9ac0f07470e01d940dbbec836"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>_varianceTreshold</b></td></tr>
+<tr class="separator:a794591d9ac0f07470e01d940dbbec836"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac74c3d7f25f9fd83863b9f8cee767dc3"><td class="memItemLeft" align="right" valign="top"><a id="ac74c3d7f25f9fd83863b9f8cee767dc3"></a>
+std::queue&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>_stationaryWindow</b></td></tr>
+<tr class="separator:ac74c3d7f25f9fd83863b9f8cee767dc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>/home/vlad/projects/brainhub/grSDK/inc/<a class="el" href="grTrajectory_8h_source.html">grTrajectory.h</a></li>

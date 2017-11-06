@@ -64,6 +64,8 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pri-methods">Private Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="classGRAlgorithm-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">GRAlgorithm Class Reference</div>  </div>
@@ -160,6 +162,66 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>pushGesture</b> ()</t
 <tr class="memitem:a32cc6ef6833fe314702451731a8aee10 inherit pub_methods_classGRGrt"><td class="memItemLeft" align="right" valign="top"><a id="a32cc6ef6833fe314702451731a8aee10"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>saveDataset</b> ()</td></tr>
 <tr class="separator:a32cc6ef6833fe314702451731a8aee10 inherit pub_methods_classGRGrt"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
+Private Member Functions</h2></td></tr>
+<tr class="memitem:a301ad56fd7287019ce4b2d95dab0fb8f"><td class="memItemLeft" align="right" valign="top"><a id="a301ad56fd7287019ce4b2d95dab0fb8f"></a>
+std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>_computeAngles</b> (std::vector&lt; double &gt;)</td></tr>
+<tr class="separator:a301ad56fd7287019ce4b2d95dab0fb8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a481750de988aff555046e44125cc8585"><td class="memItemLeft" align="right" valign="top"><a id="a481750de988aff555046e44125cc8585"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>_kFilter</b> (double, <a class="el" href="structk__filter__vars.html">k_filter_vars</a> *)</td></tr>
+<tr class="separator:a481750de988aff555046e44125cc8585"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2c090d9f300fe7d6dff3aa8e5b68aac"><td class="memItemLeft" align="right" valign="top"><a id="ad2c090d9f300fe7d6dff3aa8e5b68aac"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>_stDev</b> (std::vector&lt; double &gt; *)</td></tr>
+<tr class="separator:ad2c090d9f300fe7d6dff3aa8e5b68aac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a963688367a2dc031f6e62724a6a44468"><td class="memItemLeft" align="right" valign="top"><a id="a963688367a2dc031f6e62724a6a44468"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>_average</b> (std::vector&lt; double &gt; *)</td></tr>
+<tr class="separator:a963688367a2dc031f6e62724a6a44468"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02a0b7e5f2d24b7fcaa2d0a4f2ed8d94"><td class="memItemLeft" align="right" valign="top"><a id="a02a0b7e5f2d24b7fcaa2d0a4f2ed8d94"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>_stdErr</b> (std::vector&lt; double &gt; *)</td></tr>
+<tr class="separator:a02a0b7e5f2d24b7fcaa2d0a4f2ed8d94"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96957de73bcbd3e5fab245d6c4c9bfd5"><td class="memItemLeft" align="right" valign="top"><a id="a96957de73bcbd3e5fab245d6c4c9bfd5"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>_correctKFilter</b> (std::vector&lt; double &gt;, <a class="el" href="structacc__k__vars.html">acc_k_vars</a> *)</td></tr>
+<tr class="separator:a96957de73bcbd3e5fab245d6c4c9bfd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57580f4102a2ce5e8dafb8b43bb8cfed"><td class="memItemLeft" align="right" valign="top"><a id="a57580f4102a2ce5e8dafb8b43bb8cfed"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>_sliceAndPush</b> (std::vector&lt; double &gt; *, double)</td></tr>
+<tr class="separator:a57580f4102a2ce5e8dafb8b43bb8cfed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a36717fbbde48b98ff4670c478aadf4ed"><td class="memItemLeft" align="right" valign="top"><a id="a36717fbbde48b98ff4670c478aadf4ed"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>_roll</b></td></tr>
+<tr class="separator:a36717fbbde48b98ff4670c478aadf4ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76d87670c553713282f02c01c9831847"><td class="memItemLeft" align="right" valign="top"><a id="a76d87670c553713282f02c01c9831847"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>_pitch</b></td></tr>
+<tr class="separator:a76d87670c553713282f02c01c9831847"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c3867e0e2767fbe80e5d92317617427"><td class="memItemLeft" align="right" valign="top"><a id="a5c3867e0e2767fbe80e5d92317617427"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>_yaw</b></td></tr>
+<tr class="separator:a5c3867e0e2767fbe80e5d92317617427"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa54eee36f7fa0732a44e46b0bd00de2a"><td class="memItemLeft" align="right" valign="top"><a id="aa54eee36f7fa0732a44e46b0bd00de2a"></a>
+std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>_angles</b></td></tr>
+<tr class="separator:aa54eee36f7fa0732a44e46b0bd00de2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c5cc4190803137add57bf6ae486c022"><td class="memItemLeft" align="right" valign="top"><a id="a0c5cc4190803137add57bf6ae486c022"></a>
+<a class="el" href="classGRMadgwick.html">GRMadgwick</a>&#160;</td><td class="memItemRight" valign="bottom"><b>_pinkyMadgwick</b></td></tr>
+<tr class="separator:a0c5cc4190803137add57bf6ae486c022"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acbba33dee3ab0ea0cc83296453ed73e7"><td class="memItemLeft" align="right" valign="top"><a id="acbba33dee3ab0ea0cc83296453ed73e7"></a>
+<a class="el" href="classGRMadgwick.html">GRMadgwick</a>&#160;</td><td class="memItemRight" valign="bottom"><b>_ringMadgwick</b></td></tr>
+<tr class="separator:acbba33dee3ab0ea0cc83296453ed73e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a898ef631b16a6b02603ab476a138579b"><td class="memItemLeft" align="right" valign="top"><a id="a898ef631b16a6b02603ab476a138579b"></a>
+<a class="el" href="classGRMadgwick.html">GRMadgwick</a>&#160;</td><td class="memItemRight" valign="bottom"><b>_middleMadgwick</b></td></tr>
+<tr class="separator:a898ef631b16a6b02603ab476a138579b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a782fdb9c324a073732bea17e4c616ebd"><td class="memItemLeft" align="right" valign="top"><a id="a782fdb9c324a073732bea17e4c616ebd"></a>
+<a class="el" href="classGRMadgwick.html">GRMadgwick</a>&#160;</td><td class="memItemRight" valign="bottom"><b>_indexMadgwick</b></td></tr>
+<tr class="separator:a782fdb9c324a073732bea17e4c616ebd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8fd716c3c6a1b78f91f41d84330fc76"><td class="memItemLeft" align="right" valign="top"><a id="ae8fd716c3c6a1b78f91f41d84330fc76"></a>
+<a class="el" href="classGRMadgwick.html">GRMadgwick</a>&#160;</td><td class="memItemRight" valign="bottom"><b>_thumbMadgwick</b></td></tr>
+<tr class="separator:ae8fd716c3c6a1b78f91f41d84330fc76"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa8b6502b0459d172d41279256befcfe2"><td class="memItemLeft" align="right" valign="top"><a id="aa8b6502b0459d172d41279256befcfe2"></a>
+<a class="el" href="classGRMadgwick.html">GRMadgwick</a>&#160;</td><td class="memItemRight" valign="bottom"><b>_palmMadgwick</b></td></tr>
+<tr class="separator:aa8b6502b0459d172d41279256befcfe2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a815abb07d9c15af495a8b88bfc7300de"><td class="memItemLeft" align="right" valign="top"><a id="a815abb07d9c15af495a8b88bfc7300de"></a>
+std::unordered_map&lt; std::string, <a class="el" href="classGRMadgwick.html">GRMadgwick</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>_madgwickObjects</b></td></tr>
+<tr class="separator:a815abb07d9c15af495a8b88bfc7300de"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>/home/vlad/projects/brainhub/grSDK/inc/<a class="el" href="grAlgorithm_8h_source.html">grAlgorithm.h</a></li>
