@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['_7egralgorithm',['~GRAlgorithm',['../classGRAlgorithm.html#a02c162517829467634e87ba7406a4ba9',1,'GRAlgorithm']]],
-  ['_7egrconnection',['~GRConnection',['../classGRConnection.html#abfd6b3c21aa502d05038eba1aafc19fe',1,'GRConnection']]]
+  ['loadmodel',['loadModel',['../classGRGrt.html#a09f32336a2b089dadbf1c6e72ee55f2a',1,'GRGrt']]],
+  ['loadtestdata',['loadTestData',['../classGRGrt.html#ac254a3cd3a2057665da563de0f763f87',1,'GRGrt']]],
+  ['loadtrainingdata',['loadTrainingData',['../classGRGrt.html#a734acc0c43d8a1a326c8107f1b5d8ed3',1,'GRGrt']]]
 ];

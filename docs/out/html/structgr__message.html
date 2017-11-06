@@ -70,20 +70,29 @@ $(function() {
 <div class="title">gr_message Struct Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="grDevice_8h_source.html">grDevice.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a467c2d2c5679ade3a681ab5061fdfc8f"><td class="memItemLeft" align="right" valign="top"><a id="a467c2d2c5679ade3a681ab5061fdfc8f"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structgr__message.html#a467c2d2c5679ade3a681ab5061fdfc8f">gr_message</a> ()</td></tr>
+<tr class="memdesc:a467c2d2c5679ade3a681ab5061fdfc8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">constructor <br /></td></tr>
+<tr class="separator:a467c2d2c5679ade3a681ab5061fdfc8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab1df69a5188f8c594e5c3116bc1e2f2a"><td class="memItemLeft" align="right" valign="top"><a id="ab1df69a5188f8c594e5c3116bc1e2f2a"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>clear</b> ()</td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structgr__message.html#ab1df69a5188f8c594e5c3116bc1e2f2a">clear</a> ()</td></tr>
+<tr class="memdesc:ab1df69a5188f8c594e5c3116bc1e2f2a"><td class="mdescLeft">&#160;</td><td class="mdescRight">cleaner <br /></td></tr>
 <tr class="separator:ab1df69a5188f8c594e5c3116bc1e2f2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:a3725100d9e5d207cceecc5f5308d78a0"><td class="memItemLeft" align="right" valign="top"><a id="a3725100d9e5d207cceecc5f5308d78a0"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>id</b></td></tr>
+int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structgr__message.html#a3725100d9e5d207cceecc5f5308d78a0">id</a></td></tr>
+<tr class="memdesc:a3725100d9e5d207cceecc5f5308d78a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">message id <br /></td></tr>
 <tr class="separator:a3725100d9e5d207cceecc5f5308d78a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a89059be54c454b6e595ec1edc2221e09"><td class="memItemLeft" align="right" valign="top"><a id="a89059be54c454b6e595ec1edc2221e09"></a>
-<a class="el" href="structimu.html">imu</a>&#160;</td><td class="memItemRight" valign="bottom"><b>pinky</b></td></tr>
+<a class="el" href="structimu.html">imu</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structgr__message.html#a89059be54c454b6e595ec1edc2221e09">pinky</a></td></tr>
+<tr class="memdesc:a89059be54c454b6e595ec1edc2221e09"><td class="mdescLeft">&#160;</td><td class="mdescRight">imus for each finger <br /></td></tr>
 <tr class="separator:a89059be54c454b6e595ec1edc2221e09"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a46cf80604fac242307667a5b84191d8c"><td class="memItemLeft" align="right" valign="top"><a id="a46cf80604fac242307667a5b84191d8c"></a>
 <a class="el" href="structimu.html">imu</a>&#160;</td><td class="memItemRight" valign="bottom"><b>ring</b></td></tr>
@@ -101,10 +110,13 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>id</b></td></tr>
 <a class="el" href="structimu.html">imu</a>&#160;</td><td class="memItemRight" valign="bottom"><b>palm</b></td></tr>
 <tr class="separator:a2cba19162c0f25b6191827ea20c55d29"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6d67d3ee727d1ed7bd28cd765ed9cb72"><td class="memItemLeft" align="right" valign="top"><a id="a6d67d3ee727d1ed7bd28cd765ed9cb72"></a>
-std::unordered_map&lt; std::string, <a class="el" href="structimu.html">imu</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>imus</b></td></tr>
+std::unordered_map&lt; std::string, <a class="el" href="structimu.html">imu</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structgr__message.html#a6d67d3ee727d1ed7bd28cd765ed9cb72">imus</a></td></tr>
+<tr class="memdesc:a6d67d3ee727d1ed7bd28cd765ed9cb72"><td class="mdescLeft">&#160;</td><td class="mdescRight">imu map with pairs &lt;"imu name", imu structure pointer&gt; <br /></td></tr>
 <tr class="separator:a6d67d3ee727d1ed7bd28cd765ed9cb72"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<hr/>The documentation for this struct was generated from the following file:<ul>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>device message datastructure </p>
+</div><hr/>The documentation for this struct was generated from the following file:<ul>
 <li>/home/vlad/projects/brainhub/grSDK/inc/<a class="el" href="grDevice_8h_source.html">grDevice.h</a></li>
 </ul>
 </div><!-- contents -->

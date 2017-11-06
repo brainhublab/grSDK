@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['madgwickupdate',['madgwickUpdate',['../classGRAlgorithm.html#a99d42de12749f53522f0bb3b470b876c',1,'GRAlgorithm']]]
+  ['k_5ffilter_5fvars',['k_filter_vars',['../structk__filter__vars.html',1,'']]]
 ];

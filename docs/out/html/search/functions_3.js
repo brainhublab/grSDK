@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['madgwickupdate',['madgwickUpdate',['../classGRAlgorithm.html#a99d42de12749f53522f0bb3b470b876c',1,'GRAlgorithm']]]
+  ['empty',['empty',['../structimu.html#aad015d789f4184b8e3f398a910965947',1,'imu']]]
 ];

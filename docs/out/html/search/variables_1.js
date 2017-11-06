@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['firstiteration',['firstIteration',['../classGRConnection.html#a328e580016b3cc85871cc50af41ad270',1,'GRConnection']]]
+  ['acc',['acc',['../structimu.html#adac97b95e4d1161816b78ff3ff14dddb',1,'imu']]],
+  ['address',['address',['../structdevice__t.html#a3ebddb374c44b31ada528da828e0bcdf',1,'device_t']]]
 ];
