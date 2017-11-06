@@ -8,54 +8,144 @@
 
 #include "grDevice.h"
 
+
+/**
+ * GR GRT class descr
+ */
 class GRGrt
 {
 public:
 
-		GRGrt();//constructor
-		~GRGrt();//destructor
-		GRGrt(const GRGrt& );//copy constructor
-		GRGrt& operator=(const GRGrt& );//operator=
-		bool loadTrainingData(std::string filepath);//loading training data by path
-        // Loads test data from .grt file
-        bool loadTestData(std::string filepath);//loading test data by path
-        // Takes `size`% from training data to use for testing accuracy
-        bool setTestDataFromTraining(int size);
-        // Traing the algorithm
-        bool train();
-        // Test the algorithm with testData and return accuracy
-        double test();
+	/**
+	 * @brief constructor
+	 */
+	GRGrt();
+	/**
+	 * @brief destructor
+	 */
+	~GRGrt();
+	/**
+	 * @brief copy constructor
+	 */
+	GRGrt(const GRGrt& );
+	/**
+	 * @brief assigment operator
+	 */
+	GRGrt& operator=(const GRGrt& );
+	/**
+	 * @brief loads training data by path
+	 * @param filepath is path to training data
+	 */
+	bool loadTrainingData(std::string filepath);
+	/**
+	 * @brief loads test data from .grt file
+	 * @param filepath if .grt file
+         */
+	bool loadTestData(std::string filepath);
+	/**
+	 * @brief Takes size from training data to use for testing accuracy
+	 * @param size is a size from training data
+         */
+	bool setTestDataFromTraining(int size);
+	/**
+	 * @brief Traing the algorithm
+       	 */ 
+	bool train();
+	/**
+	 * @brief Test the algorithm with testData and return accuracy
+         */
+	double test();
+	/**
+	 * @brief returns test accuracy
+	 */
         double getTestAccuracy();
-        // Used for saving/loading trained model of the algorithm
-        bool saveModel(std::string filepath);
+	/**
+	 * @brief saving trained model of the algorithm
+         * @param filepath is a path to result-file 
+	 */
+	bool saveModel(std::string filepath);
+	/**
+	 * @brief loading trained model of the algorithm
+	 * @param filepath is a path to file with model
+	 */
         bool loadModel(std::string filepath);
-        // Predictions functions
+        
+	// Predictions functions
+	
+	/**
+	 * @brief
+	 */
         bool predict(GRT::MatrixDouble timeseries);
+	/**
+	 * @brief
+	 */
         GRT::UINT getPredictedClassLabel();
+	/**
+	 * @brief
+	 */
         double getMaximumLikelihood();
 
         //utils
-		void setDatasetProperties(std::string, std::string, std::string, int);//properties of dataset
-		void setNextLabel();//nex label of dataset in training data 
-		void clearTrainingData(); //clear
+	/**
+	 * @brief properties of dataset
+	 */
+	void setDatasetProperties(std::string, std::string, std::string, int);
+	/**
+	 * @brief next label of dataset in training data
+	 */
+	void setNextLabel();
+	/**
+	 * @brief cleaner
+	 */
+	void clearTrainingData();
         
         bool addSample(std::vector<double>* , std::vector<double>* );
-		bool pushGesture();//push dataset to DTW //TODO vector trajectory & quanternion
-		bool saveDataset();//saving in path 
+	/**
+	 * @brief push dataset to DTW
+	 * TODO vector trajectory & quanternion
+	 */
+	bool pushGesture();
+	/**
+	 * @brief saving in path
+	 */
+	bool saveDataset(); 
        
 
 private:
 
+	/**
+	 * @brief dtw object
+	 */
+	GRT::DTW _dtw;
+	/**
+	 * @brief test data
+	 */
+        GRT::TimeSeriesClassificationData _testData;
 
-		GRT::DTW _dtw;//dtw object
-        GRT::TimeSeriesClassificationData _testData;//test data
+	/**
+	 * @brief
+	 */
+        double _testAccuracy = 0.0;
 
-        double _testAccuracy = 0.0;//
-
+	/**
+	 * @brief
+	 */
         GRT::UINT _gestureLabel;
+	/**
+	 * @brief
+	 */
         int _dimensions;
+	/**
+	 * @brief
+	 */
         GRT::MatrixDouble _gestureSample;
+	/**
+	 * @brief
+	 */
         GRT::TimeSeriesClassificationData _trainingData;
+	/**
+	 * @brief
+	 */
         std::string _fileProp;
 };
 #endif
