@@ -8,6 +8,71 @@ div.vertical-line{
 					        if this fits better with your design */
     }
 
+.flex-container 
+{
+
+  display: -webkit-flex; /* Safari */
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
+  align-content: stretch;
+}
+.flex-container a {
+	opacity: 0.5;
+}
+.flex-container a:hover
+{
+	text-decoration: none;
+	opacity: 1;
+}
+#MSearchBox {
+	width: 270px;
+}
+#MSearchField {
+	width: 215px;
+}
+
+/* fa fa*/
+#social-buttons {
+//	height: 20px;
+}
+#social-buttons a:hover {
+	text-decoration: none;
+}
+/* Style all font awesome icons */
+.fa {
+	padding: 10px;
+    font-size: 20px;
+    width: 20px; 
+    text-align: center;
+    text-decoration: none;
+    border-radius: 50%;
+}
+
+/* Add a hover effect if you want */
+.fa:hover {
+        opacity: 0.7;
+	text-decoration: none;
+}
+/* Set a specific color for each brand */
+/* Facebook */
+.fa-facebook {
+	color: #3B5998;
+        background: transparent;
+}
+
+.fa-instagram {
+    background: transparent;
+    color: black;
+}
+
+.fa-globe {
+    color: #213824;
+    background: transparent;
+}
+				
 body, table, div, p, dl {
 	font: 400 14px/22px Roboto,sans-serif;
 }
@@ -1202,7 +1267,7 @@ dl.section dd {
 
 #titlearea
 {
-	padding: 0px;
+  padding: 0px;
 	margin: 0px;
 	width: 100%;
 	border-bottom: 1px solid #5373B4;
