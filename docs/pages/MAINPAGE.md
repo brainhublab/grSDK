@@ -1,12 +1,12 @@
 Welcome to GR SDK Documentation! {#mainpage}
 =========
+## Intro to GR SDK
+
 The GR SDK`s function is to be a library layer (.so .dll), which layer provides easy communication with GR palm-bracelets. The SDK will also implement the basic features that can be achieved in device interaction.
 
 ---
 
-// HERE WE CAN MAKE ONLY LINKS TO PAGES with decomposition, licenses, etc.
-
-## Decomposition
+### Decomposition
 
 The main ones (there are also auxiliary classes and libraries but you can see them in the description of the code) modules of which are shown in the diagram below
 
@@ -33,6 +33,10 @@ __samples__ - provides examples of usage GR SDK
 
 ---
 
-## Licensing
-We`re using **NAME** license. [Click here](@ref licensepage) for more information
+## Samples
+[Click here](@ref samplespage) for review of some examples use GR SDK
 
+---
+
+## Licensing
+We`re using **LGPL** license. [Click here](@ref licensepage) for more information. ![license](https://www.gnu.org/graphics/lgplv3-147x51.png)

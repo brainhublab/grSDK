@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['license',['LICENSE',['../licensepage.html',1,'']]]
+  ['gr_20visualization',['GR Visualization',['../grvisualizationpage.html',1,'']]]
 ];
