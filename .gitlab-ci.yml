@@ -19,7 +19,7 @@ pages:
   - cd docs/
   - doxygen Doxyfile
   - cd ../
-  - mv docs/out/html/ public/
+  - mv docs/out/html/ /home/gitlab-runner/public/
   artifacts:
     paths:
     - public
