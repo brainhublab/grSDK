@@ -1,5 +1,5 @@
 image: alpine
-
+#just for tests
 #before_script:
 #- apk update
 #- apk add doxygen
