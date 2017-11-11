@@ -1,8 +1,8 @@
 image: alpine
 
-before_script:
-- apk update
-- apk add doxygen
+#before_script:
+#- apk update
+#- apk add doxygen
 ## Uncomment the following line if you use graphviz dot graphs
 #- apk add ttf-freefont graphviz
 
@@ -10,6 +10,7 @@ test:
   script:
   - cd docs/
   - doxygen doxygen/Doxyfile
+  - cd ../
 #  except:
 #  - master
 
