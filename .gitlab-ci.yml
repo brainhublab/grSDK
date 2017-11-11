@@ -5,16 +5,16 @@ image: alpine
 #- apk add doxygen
 ## Uncomment the following line if you use graphviz dot graphs
 #- apk add ttf-freefont graphviz
+#
+# test:
+#   script:
+#   - cd docs/
+#   - doxygen -v
+#   - cd ../
+# #  except:
+# #  - master
 
-test:
-  script:
-  - cd docs/
-  - doxygen -v
-  - cd ../
-#  except:
-#  - master
-
-pages:
+docs:
   script:
   - cd docs/
   - doxygen Doxyfile
@@ -23,5 +23,5 @@ pages:
   artifacts:
     paths:
     - public
-#  only:
-#  - master
+# only:
+# - master
