@@ -19,7 +19,7 @@ pages:
   - cd docs/
   - doxygen Doxyfile
   - cd ../
-  - mv docs/out/html/ /home/gitlab-runner/public/
+  - mv docs/out/html/ /srv/www/htdocs/docs.brainhub.co/sdk/html
   artifacts:
     paths:
     - public
