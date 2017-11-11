@@ -1,3 +1,5 @@
+image: alpine
+
 docs:
   script:
   - cd docs/
