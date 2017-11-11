@@ -6,9 +6,9 @@ docs:
   - doxygen Doxyfile
   - cd ../
   - cp -r /srv/www/htdocs/docs.brainhub.co/sdk/html/ /srv/www/htdocs/docs.brainhub.co/sdk/backup/
-  - mv docs/out/html/* /srv/www/htdocs/docs.brainhub.co/sdk/html/
+  - cp docs/out/html/* /srv/www/htdocs/docs.brainhub.co/sdk/html/
   artifacts:
     paths:
-    - public
+    - docs/out/html/
 # only:
 # - master
