@@ -9,7 +9,7 @@ image: alpine
 test:
   script:
   - cd docs/
-  - doxygen doxygen/Doxyfile
+  - doxygen -v
   - cd ../
 #  except:
 #  - master
