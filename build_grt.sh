@@ -2,7 +2,7 @@
 
 BASEDIR=$(dirname $(realpath -s "$0"))
 EXTERNAL_DIR=${BASEDIR}/externAssets
-BUILD_DIR=${EXTERNAL_DIR}/sources/grt/build
+BUILD_DIR=${EXTERNAL_DIR}/sources/grt_source/build
 TMP_DIR=${BUILD_DIR}/tmp
 PREFIX=${EXTERNAL_DIR}/grt
 EXAMPLES=OFF

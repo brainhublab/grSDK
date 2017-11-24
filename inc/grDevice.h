@@ -186,7 +186,15 @@ struct device_t
     {
         id = 0;
     }
+    
+    device_t& operator=(const device_t& t)
+    {
+        this->id = t.id;
+        this->name = t.name;
+        this->address = t.address;
 
+        return *this;
+    }
     /**
      * @brief cleaner
      */

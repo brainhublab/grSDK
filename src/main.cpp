@@ -1,5 +1,6 @@
 #include "GRT/GRT.h"
 #include "grAlgorithm.h"
+#include "grDevScanner.h"
 #include "grConnection.h"
 #include "grDevice.h"
 #include "grTrajectory.h"
@@ -37,31 +38,38 @@ int main (int argc, const char * argv[])
     grAlg.saveModel("./data/DTWModel.grt");
     cout << grAlg.getTestAccuracy() << endl;
     */
-    GRConnection conn;
+    GRDevScanner conn;
+    GRConnection* devConn;
     device_t* device;
     gr_message msg;
     gr_alg_message alg_msg;
     //device.address = "98:D3:32:10:AC:59";
-    std::map<int, device_t> devices;
+    std::unordered_map<int, device_t> devices;
     devices = conn.getAvalibleDevices();
-    int devId;
-    for(std::map<int, device_t>::iterator it=devices.begin(); it!=devices.end(); it++)
+    int devId=-1;
+    for(std::unordered_map<int, device_t>::iterator it=devices.begin(); it!=devices.end(); it++)
     {
-        if(it->second.name == "GR[R]")
+        if(it->second.name == "GR[L]")
         {
-        //    std::cout<<it->first<<" in iteration---------------------------------------------"<<std::endl;
+            //    std::cout<<it->first<<" in iteration---------------------------------------------"<<std::endl;
             devId = it->first;
         }
     }
 
-    std::cout<<devId<<"DEV ID"<<std::endl;
-    conn.setActiveDevice(devId);
-    conn.connectSocket(devId);
+    if(devId == -1)
+    {
+        std::cout << "Device not found" << std::endl;
+        return 0;
+    }
+
+    std::cout<<"devId: "<<devId<<std::endl;
+    devConn = conn.setActiveDevice(devId);
+    devConn->connectSocket();
     GRAlgorithm alg;
-  alg.setupMadgwick(140, 140, 140, 140, 140, 220); //need to check
+    alg.setupMadgwick(140, 140, 140, 140, 140, 220); //need to check
 
     acc_k_vars k_vars;
-//   alg.setUpKfilter(&conn, &k_vars, devId);
+    //   alg.setUpKfilter(&conn, &k_vars, devId);
 
     std::unordered_map<std::string, gr_message> data;
     FILE* f, *fa;
@@ -74,18 +82,18 @@ int main (int argc, const char * argv[])
 
     while(1)
     {
-
+        std::cout << "asd" << std::endl;
         //      std::cout << "Getting data..\n";
-        conn.getData(devId, &msg);
-//      alg.kFilterStep(&msg, &k_vars);
-       //        std::cout << "Got data!\n";
+        devConn->getData(&msg);
+        //      alg.kFilterStep(&msg, &k_vars);
+        //        std::cout << "Got data!\n";
         if(!msg.imus["palm"]->acc.empty() && itr > 10)
         {
             //       std::cout<<"data -->";
 
-         //   std::cout << msg.palm.gyro[0] << " " << msg.palm.gyro[1] << " " << msg.palm.gyro[2] << std::endl;
+            //   std::cout << msg.palm.gyro[0] << " " << msg.palm.gyro[1] << " " << msg.palm.gyro[2] << std::endl;
             alg.madgwickUpdate(&msg, &alg_msg, 1, "flag");
-        //        std::cout<<"QUANTERNION---->";
+            //        std::cout<<"QUANTERNION---->";
             /*   for(int i =0;i<4;i++)
                  {
                  std::cout<<alg_msg.palm[i];
@@ -97,7 +105,7 @@ int main (int argc, const char * argv[])
             trajectory = traj.getAccelerations(msg.palm.acc, alg_msg.palm);
 
             //      printf( "%s %f %f %f \n","trjectory", trajectory[0], trajectory[1], trajectory[2]);
-            //   std::cout<<msg.palm.acc[0]<<" "<<msg.palm.acc[1]<<" "<<msg.palm.acc[2]<<std::endl;
+              std::cout<<msg.palm.acc[0]<<" "<<msg.palm.acc[1]<<" "<<msg.palm.acc[2]<<std::endl;
             printf("writing...\n");
             fprintf(f, "%f %f %f %f %f %f\n", trajectory[0], trajectory[1], trajectory[2], msg.palm.gyro[0], msg.palm.gyro[1], msg.palm.gyro[2]);
             fprintf(fa, "%f %f %f \n", msg.palm.acc[0], msg.palm.acc[1], msg.palm.acc[2]);
@@ -126,5 +134,6 @@ int main (int argc, const char * argv[])
     }
 
     return 0;
+
 }
 
