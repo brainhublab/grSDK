@@ -35,35 +35,41 @@ class GRDevManager
     public:
         /**
          * @brief constructor
-         * constructor descpription
          */
         GRDevManager();
+        
         /**
          * @brief Destructor
          */
         ~GRDevManager();
+        
         /**
          * @brief Copy constructor
          */
         GRDevManager(const GRDevManager&);
+        
         /**
          * @brief Assignment operator
          */
         GRDevManager& operator=(const GRDevManager&); 
+        
         /**
-         * @brief returns available devices
+         * @brief returns available devices in range
          * @return map of id's and devices which are avalible for connection
          * @see device_t
          */ 
         std::unordered_map<int, device_t> getAvalibleDevices();
+        
         /**
          * @brief activates device
-         * add selected device to active devices and make precondition for connection
+         * add selected device from _avalibleDevices to _activeDevices and make precondition for connection
          * @param id is id of device
-         * @return result of activating device
+         * @return pointer to GRConnection object
          * @see getDeviceId()
+         * @see GRConnection 
          */
         GRConnection*  setActiveDevice(int );
+
         /**
          * @brief returns id of device
          * a getter of id
