@@ -68,7 +68,7 @@ class GRDevManager
          * @see getDeviceId()
          * @see GRConnection 
          */
-        GRConnection*  setActiveDevice(int );
+        GRConnection*  setActiveDevice(int);
 
         /**
          * @brief returns id of device
@@ -77,7 +77,8 @@ class GRDevManager
          * @return id of device
          * @see device_t
          */
-        GRConnection* getDeviceById(int);
+        GRConnection* getActiveDeviceById(int);
+
     private:
         /**
          * @brief map of available devices

@@ -253,17 +253,27 @@ bool GRConnection::_checkConnectedImus(std::string rawMessage, gr_message* msg)
 */
 bool GRConnection::connectSocket()
 {
-    int status;
-
-    status = connect(this->_deviceSocket.sock,
-            (struct sockaddr *)(this->_deviceSocket.getAddrRef()), sizeof(this->_deviceSocket.addr));
-
-    std::cout<<"Status of connection of socket: "<<status<<std::endl;
-    if(status == -1)
+    int status = 0;
+    int attempts = 3;
+    
+    while(attempts != 0)
     {
-        printf("Oh dear, something went wrong with connect! %s\n", strerror(errno));
-    }
+        status = connect(this->_deviceSocket.sock,
+                (struct sockaddr *)(this->_deviceSocket.getAddrRef()), sizeof(this->_deviceSocket.addr));
 
+        if(status == -1)
+        {
+            attempts--;
+            std::cout<<"Oh dear, something went wrong with connect! "<< strerror(errno)<<std::endl;
+            std::cout<<"Trying to make new attempt for connection"<<std::endl;            
+        }
+        else if(status == 0)
+        {
+            attempts *= 0;
+
+        std::cout<<"Status of connection of socket: "<<status<<std::endl;
+        }
+    }
     return true;
 
 }

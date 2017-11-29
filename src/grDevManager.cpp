@@ -119,7 +119,7 @@ GRConnection* GRDevManager::setActiveDevice(int devId)
 //TODO needs to be implemented later
 /*Return device by ID
 */
-GRConnection* GRDevManager::getDeviceById(int id)
+GRConnection* GRDevManager::getActiveDeviceById(int id)
 {
     if(this->_activeDevices.find(id)->first != 0)
     {
