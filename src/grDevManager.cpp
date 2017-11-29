@@ -1,13 +1,13 @@
-#include "grDevScanner.h"
+#include "grDevManager.h"
 #include <sys/socket.h>
 //constructor
-GRDevScanner::GRDevScanner()
+GRDevManager::GRDevManager()
 {
 }
 
 
 //destructor
-GRDevScanner::~GRDevScanner()
+GRDevManager::~GRDevManager()
 {
     //  for(int i=1; i <= _deviceSockets.size(); i++)
     //  {
@@ -16,13 +16,13 @@ GRDevScanner::~GRDevScanner()
 }
 
 //copy constructor
-GRDevScanner::GRDevScanner(const GRDevScanner& t)
+GRDevManager::GRDevManager(const GRDevManager& t)
 {
 }
 
 
 //operator =
-GRDevScanner& GRDevScanner::operator=(const GRDevScanner& t)
+GRDevManager& GRDevManager::operator=(const GRDevManager& t)
 {
 }
 
@@ -30,7 +30,7 @@ GRDevScanner& GRDevScanner::operator=(const GRDevScanner& t)
 
 /*Return map of avalible for connecting GR devices
 */
-std::unordered_map<int, device_t> GRDevScanner::getAvalibleDevices()
+std::unordered_map<int, device_t> GRDevManager::getAvalibleDevices()
 {
     dev_names deviceNames;
     device_t device;
@@ -98,7 +98,7 @@ std::unordered_map<int, device_t> GRDevScanner::getAvalibleDevices()
 
 /*Set GR device from avalible to active and make it ready for connection
 */
-GRConnection* GRDevScanner::setActiveDevice(int devId)
+GRConnection* GRDevManager::setActiveDevice(int devId)
 {
     std::unordered_map<int, GRConnection>::iterator it = this->_activeDevices.begin();
     while(it != this->_activeDevices.end())
@@ -119,7 +119,7 @@ GRConnection* GRDevScanner::setActiveDevice(int devId)
 //TODO needs to be implemented later
 /*Return device by ID
 */
-GRConnection* GRDevScanner::getDeviceById(int id)
+GRConnection* GRDevManager::getDeviceById(int id)
 {
     if(this->_activeDevices.find(id)->first != 0)
     {
@@ -134,7 +134,7 @@ GRConnection* GRDevScanner::getDeviceById(int id)
 
 /*Check id device in avalible device
 */
-bool GRDevScanner::_deviceIsIn(std::string addr)
+bool GRDevManager::_deviceIsIn(std::string addr)
 {
     int i=1;
 

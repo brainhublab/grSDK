@@ -11,10 +11,6 @@ GRConnection::GRConnection(device_t devInfo)
     this->_asignDeviceWithSocket();
 
     this->_start = std::chrono::high_resolution_clock::now();
-    /*will be useful if use rfcomm virtula descriptor
-     * rfcommPath = "/dev/rfcomm0";
-     setUpRfcomm(rfcommPath);
-     */
     firstIteration = true;
 }
 
@@ -40,9 +36,9 @@ bool GRConnection::getData(gr_message* message)
     while(iter<6)
     {
 
-        std::cout << "started reading" << std::endl;
+       // std::cout << "started reading" << std::endl;
         bytes_read = read(sock, buf, sizeof(buf));
-        std::cout << "finished reading" << std::endl;
+       // std::cout << "finished reading" << std::endl;
         if(bytes_read >0)
         {
             if(buf[0] != '\n')
@@ -63,6 +59,7 @@ bool GRConnection::getData(gr_message* message)
                 {
                     _asignMessageWithImu(rawMessage, message);
                 }
+                //std::cout<<rawMessage<<" message from connection"<<std::endl;
                 rawMessage.clear();
             }
         }
@@ -72,37 +69,10 @@ bool GRConnection::getData(gr_message* message)
         firstIteration = false;
     }
 
-    /*
-       if(!this->activeDevices[devId].palm.data.empty())
-       {
-    // std::cout << "==" << iter << std::endl;
-    for(int i=0; i<3; i++)
-    {
-    std::cout << this->activeDevices[devId].palm.data.front().gyro[i]<<" ";
-    }
-    for(int i=0; i<3; i++)
-    {
-
-    std::cout << this->activeDevices[devId].palm.data.front().acc[i]<<" ";
-    }
-    for(int i=0;i<3;i++)
-    {
-
-    std::cout << this->activeDevices[devId].palm.data.front().mag[i]<<" ";
-    }
-    //std::cout<<std::endl;
-    std::cout <<" ---- "<< this->activeDevices[devId].palm.data.front().time_stamp << std::endl;
-    std::cout <<"size--:   "<< this->activeDevices[devId].palm.data.size()<<std::endl;
-    this->activeDevices[devId].palm.data.pop_front();
-
-    }
-    */
-
-    // rawMessage.clear();
     return true;
 }
 
-/*Split raw device data in peaces and push them into structure
+/*Split raw device data in peaces and push them into imu structure vars
 */
 bool GRConnection::_splitData(std::string data, imu* sensor)
 {
@@ -191,7 +161,8 @@ int GRConnection::_asignDeviceWithSocket()
     return deviceSocket.sock;
 }
 
-
+/* Assigning raw message with concret imu mofule by finger index and split data for it
+ */
 bool GRConnection::_asignMessageWithImu(std::string rawMessage, gr_message* message)
 {
     int id;
@@ -240,6 +211,9 @@ bool GRConnection::_asignMessageWithImu(std::string rawMessage, gr_message* mess
     }
 
 }
+
+/* Iterate raw message and check which imu modules are connectd and write boolean flag of each imu in message
+ */
 bool GRConnection::_checkConnectedImus(std::string rawMessage, gr_message* msg)
 {
 
@@ -274,6 +248,7 @@ bool GRConnection::_checkConnectedImus(std::string rawMessage, gr_message* msg)
     }
     return true;
 }
+
 /*Make connection to socket of device
 */
 bool GRConnection::connectSocket()

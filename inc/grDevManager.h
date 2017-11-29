@@ -1,5 +1,5 @@
-#ifndef GR_DEV_SCANNER
-#define GR_DEV_SCANNER
+#ifndef GR_DEV_MANAGER
+#define GR_DEV_MANAGER
 
 #include "grDevice.h"
 
@@ -28,28 +28,28 @@
 
 #include <grConnection.h>
 /**
- * GRDevScanner - a class description
+ * GRDevManager - a class description
  */
-class GRDevScanner
+class GRDevManager
 {
     public:
         /**
          * @brief constructor
          * constructor descpription
          */
-        GRDevScanner();
+        GRDevManager();
         /**
          * @brief Destructor
          */
-        ~GRDevScanner();
+        ~GRDevManager();
         /**
          * @brief Copy constructor
          */
-        GRDevScanner(const GRDevScanner&);
+        GRDevManager(const GRDevManager&);
         /**
          * @brief Assignment operator
          */
-        GRDevScanner& operator=(const GRDevScanner&); 
+        GRDevManager& operator=(const GRDevManager&); 
         /**
          * @brief returns available devices
          * @return map of id's and devices which are avalible for connection

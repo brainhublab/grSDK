@@ -1,6 +1,6 @@
 #include "GRT/GRT.h"
 #include "grAlgorithm.h"
-#include "grDevScanner.h"
+#include "grDevManager.h"
 #include "grConnection.h"
 #include "grDevice.h"
 #include "grTrajectory.h"
@@ -38,18 +38,18 @@ int main (int argc, const char * argv[])
     grAlg.saveModel("./data/DTWModel.grt");
     cout << grAlg.getTestAccuracy() << endl;
     */
-    GRDevScanner conn;
+    GRDevManager devManager;
     GRConnection* devConn;
     device_t* device;
     gr_message msg;
     gr_alg_message alg_msg;
-    //device.address = "98:D3:32:10:AC:59";
+
     std::unordered_map<int, device_t> devices;
-    devices = conn.getAvalibleDevices();
+    devices = devManager.getAvalibleDevices();
     int devId=-1;
     for(std::unordered_map<int, device_t>::iterator it=devices.begin(); it!=devices.end(); it++)
     {
-        if(it->second.name == "GR[L]")
+        if(it->second.name == "GR[R]")
         {
             //    std::cout<<it->first<<" in iteration---------------------------------------------"<<std::endl;
             devId = it->first;
@@ -63,15 +63,14 @@ int main (int argc, const char * argv[])
     }
 
     std::cout<<"devId: "<<devId<<std::endl;
-    devConn = conn.setActiveDevice(devId);
+    devConn = devManager.setActiveDevice(devId);
     devConn->connectSocket();
+
     GRAlgorithm alg;
     alg.setupMadgwick(140, 140, 140, 140, 140, 220); //need to check
 
-    acc_k_vars k_vars;
-    //   alg.setUpKfilter(&conn, &k_vars, devId);
-
     std::unordered_map<std::string, gr_message> data;
+
     FILE* f, *fa;
     f = fopen("firs.txt", "w");
     fa = fopen("firs_acc.txt", "w");
@@ -82,16 +81,11 @@ int main (int argc, const char * argv[])
 
     while(1)
     {
-        std::cout << "asd" << std::endl;
-        //      std::cout << "Getting data..\n";
+        //std::cout << "Getting data..\n";
         devConn->getData(&msg);
-        //      alg.kFilterStep(&msg, &k_vars);
-        //        std::cout << "Got data!\n";
+
         if(!msg.imus["palm"]->acc.empty() && itr > 10)
         {
-            //       std::cout<<"data -->";
-
-            //   std::cout << msg.palm.gyro[0] << " " << msg.palm.gyro[1] << " " << msg.palm.gyro[2] << std::endl;
             alg.madgwickUpdate(&msg, &alg_msg, 1, "flag");
             //        std::cout<<"QUANTERNION---->";
             /*   for(int i =0;i<4;i++)
@@ -101,14 +95,14 @@ int main (int argc, const char * argv[])
 
                  std::cout<<std::endl;
                  */
-            // trajectory = traj.getNewPosByRunge(msg.palm.acc, alg_msg.palm, msg.palm.time_stamp);
+            //trajectory = traj.getNewPosByRunge(msg.palm.acc, alg_msg.palm, msg.palm.time_stamp);
             trajectory = traj.getAccelerations(msg.palm.acc, alg_msg.palm);
 
             //      printf( "%s %f %f %f \n","trjectory", trajectory[0], trajectory[1], trajectory[2]);
-              std::cout<<msg.palm.acc[0]<<" "<<msg.palm.acc[1]<<" "<<msg.palm.acc[2]<<std::endl;
+            std::cout<<msg.palm.acc[0]<<" "<<msg.palm.acc[1]<<" "<<msg.palm.acc[2]<<"check conn in main"<<std::endl;
             printf("writing...\n");
-            fprintf(f, "%f %f %f %f %f %f\n", trajectory[0], trajectory[1], trajectory[2], msg.palm.gyro[0], msg.palm.gyro[1], msg.palm.gyro[2]);
-            fprintf(fa, "%f %f %f \n", msg.palm.acc[0], msg.palm.acc[1], msg.palm.acc[2]);
+            //fprintf(f, "%f %f %f %f %f %f\n", trajectory[0], trajectory[1], trajectory[2], msg.palm.gyro[0], msg.palm.gyro[1], msg.palm.gyro[2]);
+            //fprintf(fa, "%f %f %f \n", msg.palm.acc[0], msg.palm.acc[1], msg.palm.acc[2]);
             //    std::cout<<std::endl;
         }
         msg.palm.gyro.clear();
@@ -116,19 +110,6 @@ int main (int argc, const char * argv[])
         msg.palm.mag.clear();
 
         alg_msg.clear();
-
-        /*
-           if(!data.empty())
-           {
-           acc = data["palm"].acc;
-           time =  data["palm"].time_stamp;
-           trajectory = traj.getNewPosByVelocity(acc,time);
-           std::cout<<acc[0]<<" "<<acc[1]<<" "<<acc[2]<<std::endl;
-           fprintf(f, "%f %f %f \n", trajectory[0], trajectory[1], trajectory[2]);
-           }
-           */
-
-        //conn.readData(1);
         itr ++;
 
     }
