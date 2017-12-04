@@ -1,6 +1,8 @@
 #ifndef GR_CONNECTION
 #define GR_CONNECTION
 
+
+
 #include "grDevice.h"
 
 #include <iostream>
@@ -27,11 +29,26 @@
 #include <bluetooth/rfcomm.h>
 
 
-struct dev_socket //grDevice socket structure 
+/**
+ * @brief sgrDevice socket structure
+ *  contains socket params 
+ */
+struct dev_socket 
 {
+    /**
+     * @brief socket descriptor
+     **/
     int sock;
+
+    /**
+     * @brief addres for data recieving
+     **/
     struct sockaddr_rc addr = { 0 };
 
+    /**
+     * @brief getter
+     * @return reference to sockaddr_rc structure of socket
+     */
     sockaddr_rc* getAddrRef()
     {
         return &this->addr;
@@ -42,43 +59,113 @@ struct dev_socket //grDevice socket structure
 class GRConnection
 {
     public:
-        GRConnection();//constructor
-        ~GRConnection();//destructor
-        GRConnection(const GRConnection&);//copy constructor
-        GRConnection& operator=(const GRConnection&);//operator = 
+        /**
+         * @brief default constructor
+         **/
+        GRConnection();
 
-        std::map<int, device_t> getAvalibleDevices();//return map of devices which are avalible for connection 
-        bool setActiveDevice(int); //add selected device to active devices and make precondition for connection
+        /**
+         * @brief constructor with param
+         * @param device_t structure for reference grDevice.h
+         **/
+        GRConnection(device_t);
 
-        int getDeviceId(device_t);//returns Id of devise
+        /**
+         * @brief fills msg with data from device
+         *  fills msg with data from device by id 
+         * @param id is device id geted from GRDevManager::_avalibleDevices and stored in GRDevManager::_activeDevices  
+         * @param msg is a pointer to gr_message object defined previosly
+         * @return true if got data
+         */
+        bool getData(gr_message* msg);
 
-        gr_message getMassage(int);//returns gr_message bi Id
-        
-        bool getData(int, gr_message*);// fill gr_message with message from device
-      
-        device_t* getDevice(int); //returns device by id
-       
-        bool connectSocket(int);//connect to socket 
+        /**
+         * @brief gets device by id
+         *   getter
+         * @param id is device id
+         * @return pointer to device_t object by device id
+         */
+        device_t* getDevice(int id);
+
+        /**
+         * @brief connects socket for selected device and store params of created socket in _deviceSocket
+         * @return true if socket is assigned succssesfuly         
+         */
+        bool connectSocket();
+
     private:
-        char _buf[256]; //buffer needet for reading from socket
-        double _timeStamp;//timestamp local not from device
-        std::chrono::time_point<std::chrono::system_clock> _start, _end;//timer
-        std::map<int, device_t> _avalibleDevices;//map from avalible devices
-        std::unordered_map<int, device_t> _activeDevices;//map from active devices
-        std::unordered_map<int, dev_socket> _deviceSockets;//map with device sockets
-        std::unordered_map<int, std::string> _bufferedData;//map with buffered data
+        /**
+         * @brief Buffer needed for reading from socket
+         */
+        char _buf[256];
 
-        std::string _getNext();  //get nex message method
-        bool _splitData(std::string, imu*);//splid raw data 
-        double _getTimeStamp();//getting local timestamp
-        bool _deviceIsIn(std::string); //chack if device is active devices
-        int _asignDeviceWithSocket(int); // parameter is device ID
-        device_t _getDeviceById(int);//getting device by dev Id
-        int _getDeviceSocketById(int);// get device socket byd device id
-        bool _asignMessageWithImu(std::string, gr_message*); //asigning of gr_message with concret imu
+        /**
+         * @brief timestamp local, not from device
+         */
+        double _timeStamp;
+
+        /**
+         * @brief timer
+         */
+        std::chrono::time_point<std::chrono::system_clock> _start, _end;
+
+       /**
+         * @brief splits raw data string for imu vars imu.gyro imu.acc imu.mag imu.time_stamp
+         * @return true if writing in imu* is succsessd
+         * @see imu
+         */
+        bool _splitData(std::string, imu*);
+
+        /**
+         * @brief returns local timestamp
+         */	
+        double _getTimeStamp();
+
+        /**
+         * @brief assigns new socket to device with device id  
+         * @return socket stored in _deviceSocket.sock 
+         */
+        int _asignDeviceWithSocket();
+
+        /**
+         * @brief return device by device id
+         * @return device_t structure with stored config data
+         */
+        device_t _getDeviceById(int id);
+
+        /**
+         * @brief assigns all imu vars in gr_message  pointer with concret imu data 
+         *  call GRConnection::_splitData for each imu 
+         * @param std::string input raw message 
+         * @param gr_message* pointer to message structure for output
+         * 
+         */
+        bool _asignMessageWithImu(std::string, gr_message*);
+
+        /**
+         * @bref check which finger modules are connected and send data
+         * write boolean imu.is_connected flags in gr_message parameter for each imu 
+         * @param std::string raw message as string
+         * @param gr_message* poiter to message struct as output 
+         * return true if finish ok 
+         **/
         bool _checkConnectedImus(std::string, gr_message*);    
-        bool firstIteration;        
-   // std::map<std::string, gr_message> messages;
+        
+        /**
+         * @brief Boolean for identifying first iteration of geting data
+         */
+        bool firstIteration;
+
+        /**
+         * @bref device_t class member for storing device params
+         **/
+        device_t _dev;
+
+        /**
+         * @bref socket information assignet with device
+         **/
+        dev_socket _deviceSocket;
+
 };
 
 #endif

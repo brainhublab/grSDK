@@ -7,30 +7,82 @@
 #include <vector>
 #include <math.h>
 
+/**
+ * GR Madgwick class 
+ */
 class GRMadgwick
 {
 
-	public:
-		GRMadgwick();//constructor
-		~GRMadgwick();//destructor
-		GRMadgwick(const GRMadgwick&);//copy constructor
-		GRMadgwick& operator=(const GRMadgwick&);//operator =
+public:
+	/**
+	 * @brief constructor
+	 */
+	GRMadgwick();
+	/**
+	 * @brief destructor
+	 */
+	~GRMadgwick();
+	/**
+	 * @brief copy constructor
+	 */
+	GRMadgwick(const GRMadgwick&);
+	/**
+	 * @brief assigment operator
+	 */
+	GRMadgwick& operator=(const GRMadgwick&);
 
 	
+	/**
+	 * @brief
+	 */
     	void MadgwickAHRSupdate(double gx, double gy, double gz, double ax, double ay, double az, 
-                double mx, double my, double mz, std::vector<double>*);//main step update of Madgwick
+	/**
+	 * @brief main step update of Madgwick
+	 */
+        double mx, double my, double mz, std::vector<double>*);
+	/**
+	 * @brief
+	 */
         void MadgwickAHRSupdateIMU(double gx, double gy, double gz, double ax, double ay, double az, 
-                std::vector<double>*);//update AHRS without magnetometer
-        bool setFreqCalibration(int);//set arbitary frequency calibration variable	
-	private:
-		double constrain(double , double , double );//hmm
-        double gravity = 256;//defining of gravity
+	/**
+	 * @brief update AHRS without magnetometer
+	 */
+        std::vector<double>*);
+	/**
+	 * @brief set arbitary frequency calibration variable
+	 */
+        bool setFreqCalibration(int);
+private:
+	/**
+	 * @brief TODO
+	 */
+	double constrain(double , double , double );
+	/**
+	 * @brief defining of gravity
+	 */
+        double gravity = 256;
+	
         //madgwick algorithm vars and methods
-        double q0 , q1, q2, q3;  // quaternion of sensor frame relative to auxiliary frame
-        double beta;//variable
-        int freqCallibration;//calibration 
+	/**
+	 * @brief quaternion of sensor frame relative to auxiliary frame
+	 */
+        double q0 , q1, q2, q3; 
+	/**
+	 * @brief variable
+	 */
+        double beta;
+	/**
+	 * @brief callibration frequency
+	 */
+        int freqCallibration;
 
-        std::vector<double> computeAngles();//angles computing from wuaternion
-        double invSqrt(double x);//inverse sqrt from doom or quake :D
+	/**
+	 * @brief angles computing from quaternion
+	 */
+        std::vector<double> computeAngles();
+	/**
+	 * @brief inverse sqrt from doom or quake :D
+	 */
+        double invSqrt(double x);
 };
 #endif
