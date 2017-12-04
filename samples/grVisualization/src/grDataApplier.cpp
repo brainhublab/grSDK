@@ -95,7 +95,7 @@ bool GRDataApplier::runDataReading()
 		// setting up fetching function calls
 }
 // method searches GR devices and connects to them
-bool GRDataApplier::run(std::map<int, device_t> &activeDevices)
+bool GRDataApplier::run(std::unordered_map<int, device_t> &activeDevices)
 {
 #ifdef GR_VISUALIZATION_LOGGING_ENABLED
 	printf("DataApplier: setting up fetchtimer...\n");
@@ -116,8 +116,8 @@ bool GRDataApplier::run(std::map<int, device_t> &activeDevices)
 usleep(3000000);
    deviceId = -1;
    std::cout << "Searching available devices....\n"; 
-   std::map<int, device_t> availableDevices = conn.getAvalibleDevices();
-    for(std::map<int, device_t>::const_iterator it = availableDevices.begin(); it != availableDevices.end(); ++it)
+   std::unordered_map<int, device_t> availableDevices = devManager.getAvalibleDevices();
+    for(std::unordered_map<int, device_t>::const_iterator it = availableDevices.begin(); it != availableDevices.end(); ++it)
     {
 	    if( it->second.name == deviceName )
 	    {
@@ -127,8 +127,8 @@ usleep(3000000);
 		
         	activeDevices[it->first] = it->second; // add information about active devices
 		
-            conn.setActiveDevice(it->first);
-	        conn.connectSocket(it->first);
+            conn = devManager.setActiveDevice(it->first);
+            conn->connectSocket();
 		    //leftArmApplier.run();
     	    deviceId = it->first;
 	    	printf("Activated device with name %s\n", deviceName.c_str());
@@ -202,7 +202,7 @@ bool changeFingerData(imu* finger)
 */
 bool GRDataApplier::fetchData() // get data and call processMsg
 {
-	if(!conn.getData(deviceId, &msg))
+    if(!conn->getData(&msg))
     {
         return false;
     }

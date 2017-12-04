@@ -57,6 +57,7 @@ SOURCES       = src/main.cpp \
 		../../externAssets/qcustomplot/qcustomplot.cpp \
 		src/grDataPlotter.cpp \
 		../../src/grConnection.cpp \
+		../../src/grDevManager.cpp \
 		../../src/grAlgorithm.cpp \
 		../../src/grGrt.cpp \
 		../../src/grMadgwick.cpp \
@@ -75,6 +76,7 @@ OBJECTS       = build/main.o \
 		build/qcustomplot.o \
 		build/grDataPlotter.o \
 		build/grConnection.o \
+		build/grDevManager.o \
 		build/grAlgorithm.o \
 		build/grGrt.o \
 		build/grMadgwick.o \
@@ -179,6 +181,7 @@ DIST          = /usr/lib64/qt5/mkspecs/features/spec_pre.prf \
 		../../externAssets/qcustomplot/qcustomplot.h \
 		inc/grDataPlotter.h \
 		../../inc/grConnection.h \
+		../../inc/grDevManager.h \
 		../../inc/grAlgorithm.h \
 		../../inc/grDevice.h \
 		../../inc/grGrt.h \
@@ -193,6 +196,7 @@ DIST          = /usr/lib64/qt5/mkspecs/features/spec_pre.prf \
 		../../externAssets/qcustomplot/qcustomplot.cpp \
 		src/grDataPlotter.cpp \
 		../../src/grConnection.cpp \
+		../../src/grDevManager.cpp \
 		../../src/grAlgorithm.cpp \
 		../../src/grGrt.cpp \
 		../../src/grMadgwick.cpp \
@@ -403,8 +407,8 @@ dist: distdir FORCE
 distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
-	$(COPY_FILE) --parents inc/grVisualization.h inc/ui_GRVisualization.h inc/grDataApplier.h inc/GRGLWidget.h inc/grHandNode.h inc/grHand.h inc/renderConfig.h inc/grRender.h ../../externAssets/qcustomplot/qcustomplot.h inc/grDataPlotter.h ../../inc/grConnection.h ../../inc/grAlgorithm.h ../../inc/grDevice.h ../../inc/grGrt.h ../../inc/grMadgwick.h ../../inc/grTrajectory.h ../../inc/grUtilities.h $(DISTDIR)/
-	$(COPY_FILE) --parents src/main.cpp src/grVisualization.cpp src/grDataApplier.cpp src/GRGLWidget.cpp src/grHand.cpp src/grRender.cpp ../../externAssets/qcustomplot/qcustomplot.cpp src/grDataPlotter.cpp ../../src/grConnection.cpp ../../src/grAlgorithm.cpp ../../src/grGrt.cpp ../../src/grMadgwick.cpp ../../src/grTrajectory.cpp ../../src/grUtilities.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents inc/grVisualization.h inc/ui_GRVisualization.h inc/grDataApplier.h inc/GRGLWidget.h inc/grHandNode.h inc/grHand.h inc/renderConfig.h inc/grRender.h ../../externAssets/qcustomplot/qcustomplot.h inc/grDataPlotter.h ../../inc/grConnection.h ../../inc/grDevManager.h ../../inc/grAlgorithm.h ../../inc/grDevice.h ../../inc/grGrt.h ../../inc/grMadgwick.h ../../inc/grTrajectory.h ../../inc/grUtilities.h $(DISTDIR)/
+	$(COPY_FILE) --parents src/main.cpp src/grVisualization.cpp src/grDataApplier.cpp src/GRGLWidget.cpp src/grHand.cpp src/grRender.cpp ../../externAssets/qcustomplot/qcustomplot.cpp src/grDataPlotter.cpp ../../src/grConnection.cpp ../../src/grDevManager.cpp ../../src/grAlgorithm.cpp ../../src/grGrt.cpp ../../src/grMadgwick.cpp ../../src/grTrajectory.cpp ../../src/grUtilities.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents grVisualisation.ui $(DISTDIR)/
 
 
@@ -452,8 +456,9 @@ build/generated_files/moc_grVisualization.cpp: inc/GRGLWidget.h \
 		../../externAssets/plog/Formatters/TxtFormatter.h \
 		../../externAssets/plog/Appenders/RollingFileAppender.h \
 		../../externAssets/plog/Converters/UTF8Converter.h \
-		../../inc/grConnection.h \
+		../../inc/grDevManager.h \
 		../../inc/grDevice.h \
+		../../inc/grConnection.h \
 		../../inc/grAlgorithm.h \
 		../../externAssets/grt/include/GRT/GRT.h \
 		../../externAssets/grt/include/GRT/Util/GRTVersionInfo.h \
@@ -838,8 +843,9 @@ build/generated_files/moc_grDataApplier.cpp: ../../externAssets/plog/Log.h \
 		inc/grHand.h \
 		inc/grHandNode.h \
 		inc/renderConfig.h \
-		../../inc/grConnection.h \
+		../../inc/grDevManager.h \
 		../../inc/grDevice.h \
+		../../inc/grConnection.h \
 		../../inc/grAlgorithm.h \
 		../../externAssets/grt/include/GRT/GRT.h \
 		../../externAssets/grt/include/GRT/Util/GRTVersionInfo.h \
@@ -1266,8 +1272,9 @@ build/main.o: src/main.cpp inc/grVisualization.h \
 		../../externAssets/plog/Formatters/TxtFormatter.h \
 		../../externAssets/plog/Appenders/RollingFileAppender.h \
 		../../externAssets/plog/Converters/UTF8Converter.h \
-		../../inc/grConnection.h \
+		../../inc/grDevManager.h \
 		../../inc/grDevice.h \
+		../../inc/grConnection.h \
 		../../inc/grAlgorithm.h \
 		../../externAssets/grt/include/GRT/GRT.h \
 		../../externAssets/grt/include/GRT/Util/GRTVersionInfo.h \
@@ -1655,8 +1662,9 @@ build/grVisualization.o: src/grVisualization.cpp inc/grVisualization.h \
 		../../externAssets/plog/Formatters/TxtFormatter.h \
 		../../externAssets/plog/Appenders/RollingFileAppender.h \
 		../../externAssets/plog/Converters/UTF8Converter.h \
-		../../inc/grConnection.h \
+		../../inc/grDevManager.h \
 		../../inc/grDevice.h \
+		../../inc/grConnection.h \
 		../../inc/grAlgorithm.h \
 		../../externAssets/grt/include/GRT/GRT.h \
 		../../externAssets/grt/include/GRT/Util/GRTVersionInfo.h \
@@ -2022,7 +2030,7 @@ build/grVisualization.o: src/grVisualization.cpp inc/grVisualization.h \
 		../../externAssets/eigen/Eigen/src/Eigenvalues/ComplexSchur_LAPACKE.h \
 		../../externAssets/eigen/Eigen/src/Eigenvalues/SelfAdjointEigenSolver_LAPACKE.h \
 		../../inc/grTrajectory.h \
-		inc/ui_grVisualisation.h
+		ui_grVisualisation.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/grVisualization.o src/grVisualization.cpp
 
 build/grDataApplier.o: src/grDataApplier.cpp inc/grDataApplier.h \
@@ -2042,8 +2050,9 @@ build/grDataApplier.o: src/grDataApplier.cpp inc/grDataApplier.h \
 		inc/grHand.h \
 		inc/grHandNode.h \
 		inc/renderConfig.h \
-		../../inc/grConnection.h \
+		../../inc/grDevManager.h \
 		../../inc/grDevice.h \
+		../../inc/grConnection.h \
 		../../inc/grAlgorithm.h \
 		../../externAssets/grt/include/GRT/GRT.h \
 		../../externAssets/grt/include/GRT/Util/GRTVersionInfo.h \
@@ -2439,6 +2448,11 @@ build/grDataPlotter.o: src/grDataPlotter.cpp inc/grDataPlotter.h \
 build/grConnection.o: ../../src/grConnection.cpp ../../inc/grConnection.h \
 		../../inc/grDevice.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/grConnection.o ../../src/grConnection.cpp
+
+build/grDevManager.o: ../../src/grDevManager.cpp ../../inc/grDevManager.h \
+		../../inc/grDevice.h \
+		../../inc/grConnection.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/grDevManager.o ../../src/grDevManager.cpp
 
 build/grAlgorithm.o: ../../src/grAlgorithm.cpp ../../inc/grAlgorithm.h \
 		../../externAssets/grt/include/GRT/GRT.h \

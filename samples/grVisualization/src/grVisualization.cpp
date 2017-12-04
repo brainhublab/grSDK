@@ -92,11 +92,11 @@ bool GRVisualization::runDataReading()
 
     // configuring connection to devices
 
-/*     std::map<int, device_t> availableDevices;
+/*     std::unordered_map<int, device_t> availableDevices;
     availableDevices = conn.getAvalibleDevices();
     int l = -1;
     int r = -1; 
-    for(std::map<int, device_t>::const_iterator it = availableDevices.begin(); it != availableDevices.end(); ++it)
+    for(std::unordered_map<int, device_t>::const_iterator it = availableDevices.begin(); it != availableDevices.end(); ++it)
     {
 	if( it->second.name == leftArmApplier.deviceName )
 	{
@@ -155,7 +155,7 @@ bool GRVisualization::runDataReading()
         activeDevices[4] = d;
     }
     
-    for(std::map<int, device_t>::const_iterator it = activeDevices.begin(); it != activeDevices.end(); it++)
+    for(std::unordered_map<int, device_t>::const_iterator it = activeDevices.begin(); it != activeDevices.end(); it++)
     {
         d = it->second;
         QTreeWidgetItem* item = new QTreeWidgetItem();

@@ -44,7 +44,7 @@ private:
 	bool initUiProps();
 
     	//GRConnection conn; // connection for data getting
-	std::map<int, device_t> activeDevices;	
+    std::unordered_map<int, device_t> activeDevices;
 	
 	Ui::GRVisualization *ui; // pointer to GUI
 	bool withTrajectory = false;
