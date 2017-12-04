@@ -1,0 +1,14 @@
+image: alpine
+
+docs:
+  script:
+  - cd docs/
+  - doxygen Doxyfile
+  - cd ../
+  - cp -r /srv/www/htdocs/docs.brainhub.co/sdk/html/ /srv/www/htdocs/docs.brainhub.co/sdk/backup/
+  - cp -r docs/out/html/* /srv/www/htdocs/docs.brainhub.co/sdk/html/
+  artifacts:
+    paths:
+    - docs/out/html/
+# only:
+# - master
