@@ -1,4 +1,4 @@
-#include "grDevManager.h"
+#include "/home/h3lgi/code/grSDK/inc/grDevManager.h"
 #include <sys/socket.h>
 //constructor
 GRDevManager::GRDevManager()

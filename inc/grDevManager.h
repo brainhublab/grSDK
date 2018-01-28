@@ -26,7 +26,7 @@
 #include <bluetooth/hci_lib.h>
 #include <bluetooth/rfcomm.h>
 
-#include <grConnection.h>
+#include </home/h3lgi/code/grSDK/inc/grConnection.h>
 /**
  * GRDevManager - a class description
  */
