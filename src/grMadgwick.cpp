@@ -242,3 +242,11 @@ double GRMadgwick::constrain(double x, double a, double b)
     else
         return x;
 }
+
+
+
+#include <nbind/nbind.h>
+NBIND_CLASS(GRMadgwick) {
+  construct<>();
+  construct<GRMadgwick>();
+}

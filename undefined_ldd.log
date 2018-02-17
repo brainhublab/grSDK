@@ -1,0 +1,205 @@
+                 U abort@@GLIBC_2.2.5
+                 U asinf@@GLIBC_2.2.5
+                 U __assert_fail@@GLIBC_2.2.5
+                 U atan2f@@GLIBC_2.2.5
+                 U ba2str
+                 U connect@@GLIBC_2.2.5
+                 U __cxa_allocate_exception@@CXXABI_1.3
+                 U __cxa_atexit@@GLIBC_2.2.5
+                 U __cxa_begin_catch@@CXXABI_1.3
+                 U __cxa_end_catch@@CXXABI_1.3
+                 U __cxa_free_exception@@CXXABI_1.3
+                 U __cxa_guard_abort@@CXXABI_1.3
+                 U __cxa_guard_acquire@@CXXABI_1.3
+                 U __cxa_guard_release@@CXXABI_1.3
+                 U __cxa_pure_virtual@@CXXABI_1.3
+                 U __cxa_rethrow@@CXXABI_1.3
+                 U __cxa_throw@@CXXABI_1.3
+                 U __errno_location@@GLIBC_2.2.5
+                 U exit@@GLIBC_2.2.5
+                 U free@@GLIBC_2.2.5
+                 U __gxx_personality_v0@@CXXABI_1.3
+                 U hci_get_route
+                 U hci_inquiry
+                 U hci_open_dev
+                 U hci_read_remote_name
+                 U malloc@@GLIBC_2.2.5
+                 U memcmp@@GLIBC_2.2.5
+                 U memcpy@@GLIBC_2.14
+                 U memmove@@GLIBC_2.2.5
+                 U memset@@GLIBC_2.2.5
+                 U node_module_register
+                 U perror@@GLIBC_2.2.5
+                 U read@@GLIBC_2.2.5
+                 U socket@@GLIBC_2.2.5
+                 U sqrt@@GLIBC_2.2.5
+                 U str2ba
+                 U strcmp@@GLIBC_2.2.5
+                 U strdup@@GLIBC_2.2.5
+                 U strerror@@GLIBC_2.2.5
+                 U strlen@@GLIBC_2.2.5
+                 U _Unwind_Resume@@GCC_3.0
+                 U vsnprintf@@GLIBC_2.2.5
+                 U operator delete[](void*)@@GLIBCXX_3.4
+                 U operator delete(void*)@@GLIBCXX_3.4
+                 U v8::ArrayBuffer::GetContents()
+                 U v8::HandleScope::CreateHandle(v8::internal::HeapObject*, v8::internal::Object*)
+                 U v8::HandleScope::CreateHandle(v8::internal::Isolate*, v8::internal::Object*)
+                 U v8::HandleScope::HandleScope(v8::Isolate*)
+                 U v8::HandleScope::~HandleScope()
+                 U v8::HandleScope::~HandleScope()
+                 U v8::ObjectTemplate::NewInstance(v8::Local<v8::Context>)
+                 U v8::ObjectTemplate::SetAccessor(v8::Local<v8::Name>, void (*)(v8::Local<v8::Name>, v8::PropertyCallbackInfo<v8::Value> const&), void (*)(v8::Local<v8::Name>, v8::Local<v8::Value>, v8::PropertyCallbackInfo<void> const&), v8::Local<v8::Value>, v8::AccessControl, v8::PropertyAttribute, v8::Local<v8::AccessorSignature>)
+                 U v8::ObjectTemplate::SetInternalFieldCount(int)
+                 U v8::ObjectTemplate::SetCallAsFunctionHandler(void (*)(v8::FunctionCallbackInfo<v8::Value> const&), v8::Local<v8::Value>)
+                 U v8::ObjectTemplate::New(v8::Isolate*, v8::Local<v8::FunctionTemplate>)
+                 U v8::ArrayBufferView::ByteLength()
+                 U v8::ArrayBufferView::ByteOffset()
+                 U v8::ArrayBufferView::Buffer()
+                 U v8::FunctionTemplate::GetFunction(v8::Local<v8::Context>)
+                 U v8::FunctionTemplate::GetFunction()
+                 U v8::FunctionTemplate::HasInstance(v8::Local<v8::Value>)
+                 U v8::FunctionTemplate::SetClassName(v8::Local<v8::String>)
+                 U v8::FunctionTemplate::InstanceTemplate()
+                 U v8::FunctionTemplate::PrototypeTemplate()
+                 U v8::FunctionTemplate::New(v8::Isolate*, void (*)(v8::FunctionCallbackInfo<v8::Value> const&), v8::Local<v8::Value>, v8::Local<v8::Signature>, int, v8::ConstructorBehavior)
+                 U v8::FunctionTemplate::Inherit(v8::Local<v8::FunctionTemplate>)
+                 U v8::EscapableHandleScope::Escape(v8::internal::Object**)
+                 U v8::EscapableHandleScope::EscapableHandleScope(v8::Isolate*)
+                 U v8::V8::ToLocalEmpty()
+                 U v8::V8::DisposeGlobal(v8::internal::Object**)
+                 U v8::V8::GlobalizeReference(v8::internal::Isolate*, v8::internal::Object**)
+                 U v8::V8::MakeWeak(v8::internal::Object**, void*, void (*)(v8::WeakCallbackInfo<void> const&), v8::WeakCallbackType)
+                 U v8::V8::ClearWeak(v8::internal::Object**)
+                 U v8::Array::New(v8::Isolate*, int)
+                 U v8::Number::New(v8::Isolate*, double)
+                 U v8::Object::SetInternalField(int, v8::Local<v8::Value>)
+                 U v8::Object::InternalFieldCount()
+                 U v8::Object::SlowGetInternalField(int)
+                 U v8::Object::SetAlignedPointerInInternalField(int, void*)
+                 U v8::Object::SlowGetAlignedPointerFromInternalField(int)
+                 U v8::Object::Get(v8::Local<v8::Value>)
+                 U v8::Object::Get(v8::Local<v8::Context>, unsigned int)
+                 U v8::Object::Set(unsigned int, v8::Local<v8::Value>)
+                 U v8::Object::Set(v8::Local<v8::Value>, v8::Local<v8::Value>)
+                 U v8::String::NewFromUtf8(v8::Isolate*, char const*, v8::NewStringType, int)
+                 U v8::Context::Global()
+                 U v8::Integer::NewFromUnsigned(v8::Isolate*, unsigned int)
+                 U v8::Integer::New(v8::Isolate*, int)
+                 U v8::Isolate::GetCurrent()
+                 U v8::Isolate::ThrowException(v8::Local<v8::Value>)
+                 U v8::Isolate::GetCurrentContext()
+                 U v8::External::New(v8::Isolate*, void*)
+                 U v8::Template::Set(v8::Local<v8::Name>, v8::Local<v8::Data>, v8::PropertyAttribute)
+                 U v8::Exception::Error(v8::Local<v8::String>)
+                 U v8::Exception::TypeError(v8::Local<v8::String>)
+                 U GRT::Classifier::enableNullRejection(bool)
+                 U GRT::MatrixFloat::MatrixFloat(GRT::MatrixFloat const&)
+                 U GRT::MatrixFloat::MatrixFloat()
+                 U GRT::MatrixFloat::~MatrixFloat()
+                 U GRT::VectorFloat::VectorFloat()
+                 U GRT::VectorFloat::~VectorFloat()
+                 U GRT::TimeSeriesClassificationData::setInfoText(std::string)
+                 U GRT::TimeSeriesClassificationData::setDatasetName(std::string)
+                 U GRT::TimeSeriesClassificationData::setNumDimensions(unsigned int)
+                 U GRT::TimeSeriesClassificationData::load(std::string const&)
+                 U GRT::TimeSeriesClassificationData::clear()
+                 U GRT::TimeSeriesClassificationData::split(unsigned int, bool)
+                 U GRT::TimeSeriesClassificationData::addSample(unsigned int, GRT::MatrixFloat const&)
+                 U GRT::TimeSeriesClassificationData::operator=(GRT::TimeSeriesClassificationData const&)
+                 U GRT::TimeSeriesClassificationData::TimeSeriesClassificationData(unsigned int, std::string, std::string)
+                 U GRT::TimeSeriesClassificationData::TimeSeriesClassificationData(GRT::TimeSeriesClassificationData const&)
+                 U GRT::TimeSeriesClassificationData::~TimeSeriesClassificationData()
+                 U GRT::DTW::operator=(GRT::DTW const&)
+                 U GRT::DTW::DTW(bool, bool, double, unsigned int, bool, double, bool, bool, unsigned int, double)
+                 U GRT::DTW::DTW(GRT::DTW const&)
+                 U GRT::DTW::~DTW()
+                 U GRT::MLBase::train(GRT::TimeSeriesClassificationData)
+                 U GRT::MLBase::predict(GRT::MatrixFloat)
+                 U node::MakeCallback(v8::Isolate*, v8::Local<v8::Object>, v8::Local<v8::Function>, int, v8::Local<v8::Value>*)
+                 U operator new[](unsigned long)@@GLIBCXX_3.4
+                 U v8::ArrayBuffer::ByteLength() const
+                 U v8::Array::Length() const
+                 U v8::Value::Int32Value() const
+                 U v8::Value::IsExternal() const
+                 U v8::Value::IsFunction() const
+                 U v8::Value::NumberValue() const
+                 U v8::Value::Uint32Value() const
+                 U v8::Value::IsArrayBufferView() const
+                 U v8::Value::IsArray() const
+                 U v8::Value::ToInt32(v8::Local<v8::Context>) const
+                 U v8::Value::IsObject() const
+                 U v8::Value::ToObject(v8::Local<v8::Context>) const
+                 U v8::Value::ToString(v8::Local<v8::Context>) const
+                 U v8::Value::ToUint32(v8::Local<v8::Context>) const
+                 U v8::String::Length() const
+                 U v8::String::WriteUtf8(char*, int, int*, int) const
+                 U v8::External::Value() const
+                 U v8::Function::NewInstance(v8::Local<v8::Context>, int, v8::Local<v8::Value>*) const
+                 U GRT::Classifier::getClassDistances() const
+                 U GRT::Classifier::getClassLikelihoods() const
+                 U GRT::Classifier::getMaximumLikelihood() const
+                 U GRT::Classifier::getPredictedClassLabel() const
+                 U GRT::TimeSeriesClassificationData::save(std::string const&) const
+                 U std::string::compare(char const*) const@@GLIBCXX_3.4
+                 U std::ctype<char>::_M_widen_init() const@@GLIBCXX_3.4.11
+                 U std::__detail::_Prime_rehash_policy::_M_next_bkt(unsigned long) const@@GLIBCXX_3.4.18
+                 U std::__detail::_Prime_rehash_policy::_M_need_rehash(unsigned long, unsigned long, unsigned long) const@@GLIBCXX_3.4.18
+                 U std::exception::what() const@@GLIBCXX_3.4
+                 U std::basic_iostream<char, std::char_traits<char> >::~basic_iostream()@@GLIBCXX_3.4
+                 U std::istream& std::istream::_M_extract<double>(double&)@@GLIBCXX_3.4.9
+                 U std::istream::operator>>(int&)@@GLIBCXX_3.4
+                 U std::ostream::put(char)@@GLIBCXX_3.4
+                 U std::ostream::flush()@@GLIBCXX_3.4
+                 U std::ostream& std::ostream::_M_insert<double>(double)@@GLIBCXX_3.4.9
+                 U std::ostream& std::ostream::_M_insert<unsigned long>(unsigned long)@@GLIBCXX_3.4.9
+                 U std::ostream::operator<<(int)@@GLIBCXX_3.4
+                 U std::string::_Rep::_M_destroy(std::allocator<char> const&)@@GLIBCXX_3.4
+                 U std::string::_Rep::_M_dispose(std::allocator<char> const&)@@GLIBCXX_3.4
+                 U std::string::_Rep::_S_empty_rep_storage@@GLIBCXX_3.4
+                 U std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&)@@GLIBCXX_3.4
+                 U std::string::swap(std::string&)@@GLIBCXX_3.4
+                 U std::string::append(char const*, unsigned long)@@GLIBCXX_3.4
+                 U std::string::append(std::string const&)@@GLIBCXX_3.4
+                 U std::string::assign(char const*, unsigned long)@@GLIBCXX_3.4
+                 U std::string::assign(std::string const&)@@GLIBCXX_3.4
+                 U std::string::insert(unsigned long, char const*, unsigned long)@@GLIBCXX_3.4
+                 U std::string::reserve(unsigned long)@@GLIBCXX_3.4
+                 U std::string::_M_mutate(unsigned long, unsigned long, unsigned long)@@GLIBCXX_3.4
+                 U std::basic_string<char, std::char_traits<char>, std::allocator<char> >::basic_string(char const*, unsigned long, std::allocator<char> const&)@@GLIBCXX_3.4
+                 U std::basic_string<char, std::char_traits<char>, std::allocator<char> >::basic_string(char const*, std::allocator<char> const&)@@GLIBCXX_3.4
+                 U std::basic_string<char, std::char_traits<char>, std::allocator<char> >::basic_string(std::string const&)@@GLIBCXX_3.4
+                 U std::runtime_error::runtime_error(std::string const&)@@GLIBCXX_3.4
+                 U std::runtime_error::~runtime_error()@@GLIBCXX_3.4
+                 U std::basic_stringbuf<char, std::char_traits<char>, std::allocator<char> >::_M_sync(char*, unsigned long, unsigned long)@@GLIBCXX_3.4
+                 U std::basic_stringstream<char, std::char_traits<char>, std::allocator<char> >::~basic_stringstream()@@GLIBCXX_3.4
+                 U std::chrono::_V2::system_clock::now()@@GLIBCXX_3.4.19
+                 U std::locale::locale()@@GLIBCXX_3.4
+                 U std::locale::~locale()@@GLIBCXX_3.4
+                 U std::ios_base::Init::Init()@@GLIBCXX_3.4
+                 U std::ios_base::Init::~Init()@@GLIBCXX_3.4
+                 U std::ios_base::ios_base()@@GLIBCXX_3.4
+                 U std::ios_base::~ios_base()@@GLIBCXX_3.4
+                 U std::basic_ios<char, std::char_traits<char> >::init(std::basic_streambuf<char, std::char_traits<char> >*)@@GLIBCXX_3.4
+                 U std::basic_ios<char, std::char_traits<char> >::clear(std::_Ios_Iostate)@@GLIBCXX_3.4
+                 U std::exception::~exception()@@GLIBCXX_3.4
+                 U operator new(unsigned long)@@GLIBCXX_3.4
+                 U std::_Hash_bytes(void const*, unsigned long, unsigned long)@@CXXABI_1.3.5
+                 U std::basic_ostream<char, std::char_traits<char> >& std::__ostream_insert<char, std::char_traits<char> >(std::basic_ostream<char, std::char_traits<char> >&, char const*, long)@@GLIBCXX_3.4.9
+                 U std::__throw_bad_cast()@@GLIBCXX_3.4
+                 U std::__throw_bad_alloc()@@GLIBCXX_3.4
+                 U std::__throw_length_error(char const*)@@GLIBCXX_3.4
+                 U std::__throw_out_of_range(char const*)@@GLIBCXX_3.4
+                 U std::cout@@GLIBCXX_3.4
+                 U std::basic_ostream<char, std::char_traits<char> >& std::endl<char, std::char_traits<char> >(std::basic_ostream<char, std::char_traits<char> >&)@@GLIBCXX_3.4
+                 U std::terminate()@@GLIBCXX_3.4
+                 U std::basic_ostream<char, std::char_traits<char> >& std::operator<< <std::char_traits<char> >(std::basic_ostream<char, std::char_traits<char> >&, char const*)@@GLIBCXX_3.4
+                 U typeinfo for std::runtime_error@@GLIBCXX_3.4
+                 U typeinfo for std::exception@@GLIBCXX_3.4
+                 U VTT for std::basic_stringstream<char, std::char_traits<char>, std::allocator<char> >@@GLIBCXX_3.4
+                 U vtable for __cxxabiv1::__class_type_info@@CXXABI_1.3
+                 U vtable for __cxxabiv1::__si_class_type_info@@CXXABI_1.3
+                 U vtable for std::basic_streambuf<char, std::char_traits<char> >@@GLIBCXX_3.4
+                 U vtable for std::basic_stringbuf<char, std::char_traits<char>, std::allocator<char> >@@GLIBCXX_3.4
+                 U vtable for std::basic_stringstream<char, std::char_traits<char>, std::allocator<char> >@@GLIBCXX_3.4
+                 U vtable for std::basic_ios<char, std::char_traits<char> >@@GLIBCXX_3.4

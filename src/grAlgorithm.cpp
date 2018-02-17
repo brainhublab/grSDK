@@ -39,10 +39,10 @@ void grInitAlgorithms()
 /*Update step of Madgwick algorithm
  * Takes gr_message and return quaternion 
  */
-bool GRAlgorithm::madgwickUpdate(gr_message* message, gr_alg_message* result, int freqCallibration, std::string flag)
+bool GRAlgorithm::madgwickUpdate(GRMessage* message, GRAlgMessage* result, int freqCallibration, std::string flag)
 {
     std::vector<double> rotations;
-    std::unordered_map<std::string, imu*>::iterator it;
+    std::unordered_map<std::string, GRImu*>::iterator it;
     // std::cout<<"\nbefore madgwickUpdate() Q :"<<q0<<" "<<q1<<" "<<q2<<" "<<q3<<std::endl;
     for(it=message->imus.begin(); it!=message->imus.end(); it++ )
     {
@@ -258,3 +258,16 @@ bool GRAlgorithm::_sliceAndPush(std::vector<double>* data, double val)
         }
     }   
 }
+
+
+
+#include <nbind/nbind.h>
+NBIND_CLASS(GRAlgorithm) {
+//  inherit(GRGrt);
+  construct<>();
+  construct<GRAlgorithm>();
+
+    method(setupMadgwick);
+    method(madgwickUpdate);
+}
+

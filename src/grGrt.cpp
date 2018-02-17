@@ -265,3 +265,11 @@ bool GRGrt::saveDataset()
         }
         //datasetDTW.trainingData.clear();TODO
 }
+
+
+#include <nbind/nbind.h>
+NBIND_CLASS(GRGrt) {
+    construct<>();
+    construct<GRGrt>();
+}
+
