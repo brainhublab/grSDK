@@ -14,15 +14,15 @@
 
 #include "GRT/GRT.h"
 
-#include <grConnection.h>
-#include <grDevice.h>
-#include <grMadgwick.h>
-#include <grGrt.h>
-
+#include "grConnection.h"
+#include "grDevice.h"
+#include "grMadgwick.h"
+#include "grGrt.h"
 
 #include "Eigen/Dense"
 using namespace std;
-struct k_filter_vars //variables needet from simplified kalman 
+
+struct k_filter_vars // variables needet from simplified kalman
 {
     double volt;
     double proccess;
@@ -47,13 +47,12 @@ struct k_filter_vars //variables needet from simplified kalman
     }
 };
 
-struct acc_k_vars //arbitary accelerometer vars for kalman
+struct acc_k_vars // arbitary accelerometer vars for kalman
 {
     k_filter_vars acc_k_x;
     k_filter_vars acc_k_y;
     k_filter_vars acc_k_z;
 };
-
 
 /**
  * GRAlgorithm class - short descr.
@@ -61,117 +60,115 @@ struct acc_k_vars //arbitary accelerometer vars for kalman
 class GRAlgorithm :public GRGrt
 {
     public:
-	    /**
-	     * @brief constructor
-	     */
-        GRAlgorithm();
-       	/**
-	 * @brief destructor
-	 */
-	~GRAlgorithm();
-	/**
-	 * @brief copy constructor
-	 */
-        GRAlgorithm(const GRAlgorithm& );
-	/**
-	 * @brief assigment operator
-	 */
-        GRAlgorithm& operator=(const GRAlgorithm&);
-	/**
-	 * @brief initialize algorithms
-	 */
-        void grInitAlgorithms();
-        //madgwick
-	/**
-	 * @brief Update iterative data of madgwick algorithm
-	 */
-        bool madgwickUpdate(gr_message*, gr_alg_message*, int, std::string flag);
-        //void madgwickUpdateThr(device_t*, alg_device_t*, int, std::string flag);//TODO need to implement
         /**
-	 * @brief precondition Madgwick algorithm
-	 */
-	bool setupMadgwick(int, int, int, int, int, int);
+         * @brief constructor
+         */
+        GRAlgorithm();
+        /**
+         * @brief destructor
+         */
+        ~GRAlgorithm();
+        /**
+         * @brief copy constructor
+         */
+        GRAlgorithm(const GRAlgorithm& );
+        /**
+         * @brief assigment operator
+         */
+        GRAlgorithm& operator=(const GRAlgorithm&);
+        /**
+         * @brief initialize algorithms
+         */
+        void grInitAlgorithms();
+        // madgwick
+        /**
+         * @brief Update iterative data of madgwick algorithm
+         */
+        bool madgwickUpdate(GRMessage*, GRAlgMessage*, int, std::string flag);
+        // void madgwickUpdateThr(GRDevice*, alg_device_t*, int, std::string flag);
+        // TODO need to implement
+        /**
+         * @brief precondition Madgwick algorithm
+         */
+        bool setupMadgwick(int, int, int, int, int, int);
 
-        //simplified Kalman
-         
+        // simplified Kalman
+
         bool setUpKfilter(std::vector<Eigen::Vector3d>, acc_k_vars*);//TODO implement for fingers
         Eigen::Vector3d kFilterStep(Eigen::Vector3d, acc_k_vars*);
-//        bool setUpKfilterCoord(std::vector<std::vector<double> >, acc_k_vars* );
-//        bool kFilterStepCoord(std::vector<double>, acc_k_vars*);
-             
+        // bool setUpKfilterCoord(std::vector<std::vector<double> >, acc_k_vars* );
+        // bool kFilterStepCoord(std::vector<double>, acc_k_vars*);
+
     private:
         /**
-	 * @brief rotations 
-	 */
-	double _roll, _pitch, _yaw;
-	/**
-	 * @brief vector with computed from quaternion angles
-	 */
+         * @brief rotations
+         */
+        double _roll, _pitch, _yaw;
+        /**
+         * @brief vector with computed from quaternion angles
+         */
         std::vector<double> _angles;
-	/**
-	 * @brief calculation of angles from quaternion method
-	 */
+        /**
+         * @brief calculation of angles from quaternion method
+         */
         std::vector<double> _computeAngles(std::vector<double>);
 
         //grMadgwick objects
-	/**
-	 * @brief madgwick alg for pinky
-	 */
+        /**
+         * @brief madgwick alg for pinky
+         */
         GRMadgwick _pinkyMadgwick;
-	/**
-	 * @brief madgwick alg for ring 
-	 */
+        /**
+         * @brief madgwick alg for ring
+         */
         GRMadgwick _ringMadgwick;
-	/**
-	 * @brief madgwick alg for middle
-	 */
+        /**
+         * @brief madgwick alg for middle
+         */
         GRMadgwick _middleMadgwick;
-	/**
-	 * @brief madgwick alg for index
-	 */
+        /**
+         * @brief madgwick alg for index
+         */
         GRMadgwick _indexMadgwick;
-	/**
-	 * @brief madgwick alg for thumb
-	 */
+        /**
+         * @brief madgwick alg for thumb
+         */
         GRMadgwick _thumbMadgwick;
-	/**
-	 * @brief madgwick alg for palm
-	 */
+        /**
+         * @brief madgwick alg for palm
+         */
         GRMadgwick _palmMadgwick;
-	
-	/**
-	 * @brief map for easier access of objects
-	 */
+
+        /**
+         * @brief map for easier access of objects
+         */
         std::unordered_map<std::string, GRMadgwick*> _madgwickObjects;
 
         //kFilter help methods
         /**
-	 * @brief simplified kalman
-	 */
-	double _kFilter(double, k_filter_vars*); 
+         * @brief simplified kalman
+         */
+        double _kFilter(double, k_filter_vars*);
         /**
-	 * @brief standart deviation
-	 */
+         * @brief standart deviation
+         */
         double _stDev(std::vector<double>*);
         /**
-	 * @brief average
-	 */
+         * @brief average
+         */
         double _average(std::vector<double>*);//average
         /**
-	 * @brief TODO
-	 */
+         * @brief TODO
+         */
         double _stdErr(std::vector<double>*);
         /**
-	 * @brief TODO
-	 */
+         * @brief TODO
+         */
         bool _correctKFilter(std::vector<double>, acc_k_vars*);
         /**
-	 * @brief TODO
-	 */
+         * @brief TODO
+         */
         bool _sliceAndPush(std::vector<double>*, double);
-
-
-
 };
 
 

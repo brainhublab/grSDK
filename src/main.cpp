@@ -40,14 +40,14 @@ int main (int argc, const char * argv[])
     */
     GRDevManager devManager;
     GRConnection* devConn;
-    device_t* device;
+    GRDevice* device;
     gr_message msg;
     gr_alg_message alg_msg;
 
-    std::unordered_map<int, device_t> devices;
+    std::unordered_map<int, GRDevice> devices;
     devices = devManager.getAvalibleDevices();
     int devId=-1;
-    for(std::unordered_map<int, device_t>::iterator it=devices.begin(); it!=devices.end(); it++)
+    for(std::unordered_map<int, GRDevice>::iterator it=devices.begin(); it!=devices.end(); it++)
     {
         if(it->second.name == "GR[R]")
         {

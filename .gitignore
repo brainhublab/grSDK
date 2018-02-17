@@ -12,3 +12,4 @@ externAssets/eigen
 data/*
 externAssets/sources/grt_source/build/tmp
 docs/out/*
+node_modules

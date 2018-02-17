@@ -13,262 +13,215 @@
 /**
  * gr devices names needed for easier findign of avalible devices
  */
-struct dev_names
+class GRDevNames
 {
-    std::string left;
-    std::string right;
-    std::string test;
+    public:
+        std::string left;
+        std::string right;
+        std::string test;
 
-    dev_names()
-    {
-        left = "GR[L]";
-        right = "GR[R]";
-        test = "HC-06";    
-    }
-};
-/**
- * Innertial mesurment unit data structure
- */
-struct imu
-{
-	/**
-	 * @brief gyroscope data
-	 */
-    std::vector<double> gyro;
-    /**
-     * @brief accelerometer data
-     */
-    std::vector<double> acc;
-    /**
-     * @brief magnetometr data
-     */
-    std::vector<double> mag;
+        GRDevNames();
 
-    /**
-     * @brief timespamp
-     */
-    unsigned long time_stamp;
-    /**
-     * @brief boolean
-     */
-    bool is_connected;
-    /**
-     * @brief constructor
-     */
-    imu()
-    {
-        gyro.clear();
-        acc.clear();
-        mag.clear();
-        time_stamp = 0.0;
-        is_connected = false;
-    }
-    /**
-     * @brief checks if imu has no data
-     */
-    bool empty()
-    {
-        if((gyro.empty() && acc.empty() && mag.empty()) ||
-                gyro.empty() || acc.empty() || mag.empty())
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-    /**
-     * @brief checks if imu data is complite
-     */
-    bool is_complite()
-    {
-        if((gyro.size() == 3) && (acc.size() == 3) && (mag.size() == 3))
-        {
-            return true;
-        }
-        else 
-        {
-            return false;
-        }
-    }
-    /**
-     * @brief deletes data
-     */
-    bool clear()
-    {
-        gyro.clear();
-        acc.clear();
-        mag.clear();
-    }
+        std::string get_left();
+        void set_left(std::string n_left);
+
+        std::string get_right();
+        void set_right(std::string n_right);
+
+        std::string get_test();
+        void set_test(std::string n_test);
 };
 
-/**
- * device message datastructure 
- */
-struct gr_message
+class GRImu
 {
-    /**
-     * @brief message id 
-     */
-    int id;
-    /**
-     * @brief imus for each finger 
-     */
-    imu pinky;
-    imu ring;
-    imu middle;
-    imu index;
-    imu thumb;
-    imu palm;
+    public:
+        /**
+         * @brief timespamp
+         */
+        unsigned long time_stamp;
 
-    /**
-     * @brief imu map with pairs <"imu name", imu structure pointer> 
-     */
-    std::unordered_map<std::string, imu*> imus;
+        /**
+         * @brief boolean
+         */
+        bool is_connected;
 
-    /**
-     * @brief constructor
-     */
-    gr_message()
-    {
-        id = 0;
-        
-        imus["pinky"] = &pinky;
-        imus["ring"] = &ring;
-        imus["middle"] = &middle;
-        imus["index"] = &index;
-        imus["thumb"] = &thumb;
-        imus["palm"] = &palm;
+        /**
+         * @brief gyroscope data
+         */
+        std::vector<double> gyro;
 
-        palm.is_connected = true;
-    }
-    /**
-     * @brief cleaner
-     */
-    bool clear()
-    {
-        pinky.clear();
-        ring.clear();
-        middle.clear();
-        index.clear();
-        thumb.clear();
-        palm.clear();
-        
-        return 1;
-    }
+        /**
+         * @brief accelerometer data
+         */
+        std::vector<double> acc;
 
+        /**
+         * @brief magnetometr data
+         */
+        std::vector<double> mag;
+
+        /**
+         * @brief constructor
+         */
+        GRImu();
+
+        /**
+         * @brief checks if imu has no data
+         */
+        bool empty();
+
+        /**
+         * @brief checks if imu data is complite
+         */
+        bool is_complete();
+
+        /**
+         * @brief deletes data
+         */
+        bool clear();
+
+        std::vector<double> get_gyro();
+        void set_gyro(std::vector<double> n_gyro);
+        void clear_gyro();
+
+        std::vector<double> get_acc();
+        void set_acc(std::vector<double> n_acc);
+        void clear_acc();
+
+        std::vector<double> get_mag();
+        void set_mag(std::vector<double> n_mag);
+        void clear_mag();
+
+        unsigned long get_time_stamp();
+        void set_time_stamp(unsigned long n_time_stamp);
+
+        bool get_is_connected();
+        void set_is_connected(bool n_is_connected);
 };
 
-/**
- * GR device data structure
- */
-struct device_t
+class GRMessage
 {
-    /**
-     * @brief device id
-     */
-    int id;
-    /**
-     * @brief device name
-     */
-    std::string name;
+    public:
+        int id;
+        GRImu pinky;
+        GRImu ring;
+        GRImu middle;
+        GRImu index;
+        GRImu thumb;
+        GRImu palm;
 
-    /**
-     * @brief device MAC address
-     */
-    std::string address;
+        std::unordered_map<std::string, GRImu*> imus;
 
-    /**
-     * @brief constuctor
-     */
-    device_t()
-    {
-        id = 0;
-    }
-    
-    device_t& operator=(const device_t& t)
-    {
-        this->id = t.id;
-        this->name = t.name;
-        this->address = t.address;
+        GRMessage();
+        bool clear();
 
-        return *this;
-    }
-    /**
-     * @brief cleaner
-     */
-    void clear_attributes()
-    {
-        id = 0;
-        name.clear();
-        address.clear(); 
-    }
+        int get_id();
+        void set_id(int);
+
+        GRImu get_pinky();
+        void set_pinky(GRImu);
+
+        GRImu get_ring();
+        void set_ring(GRImu);
+
+        GRImu get_middle();
+        void set_middle(GRImu);
+
+        GRImu get_index();
+        void set_index(GRImu);
+
+        GRImu get_thumb();
+        void set_thumb(GRImu);
+
+        GRImu get_palm();
+        void set_palm(GRImu);
+
+        std::unordered_map<std::string, GRImu*> get_imus();
 };
 
-struct gr_alg_message//gr message for algorithms
+class GRDevice
 {
-    // q x y z
-    // to store quaternions
-    /**
-     * @brief quaternion for pinky
-     */
-    std::vector<double>  pinky;
-    /**
-     * @brief quaternion for ring
-     */
-    std::vector<double>  ring;
-    /**
-     * @brief quaternion for middle
-     */
-    std::vector<double>  middle;
-    /**
-     * @brief quaternion for index
-     */
-    std::vector<double>  index;
-    /**
-     * @brief quaternion for thumb
-     */
-    std::vector<double>  thumb;
-    /**
-     * @brief quaternion for palm
-     */
-    std::vector<double>  palm;
+    public:
+        int id;
+        std::string name;
+        std::string address;
 
-    /**
-     * @brief map for iterating through quaternions
-     */
-    std::unordered_map<std::string, std::vector<double>*> nodes;
+        GRDevice();
+        GRDevice& operator=(const GRDevice& dev);
 
-    /**
-     * @brief constructor
-     */
-    gr_alg_message()
-    {
-        nodes["pinky"] = &pinky;
-        nodes["ring"] = &ring;
-        nodes["middle"] = &middle;
-        nodes["index"] = &index;
-        nodes["thumb"] = &thumb;
-        nodes["palm"] = &palm;
-    }
+        void clear_attributes();
 
-    /**
-     * @brief cleaner
-     */
-    bool clear()
-    {
+        int get_id();
+        void set_id(int);
 
-        pinky.clear();
-        ring.clear();
-        middle.clear();
-        index.clear();
-        thumb.clear();
-        palm.clear();
+        std::string get_name();
+        void set_name(std::string);
 
-        return true;
-    }
+        std::string get_address();
+        void set_address(std::string);
+};
 
+class GRAlgMessage
+{
+    public:
+        /**
+         * @brief quaternion for pinky
+         */
+        std::vector<double>  pinky;
+        /**
+         * @brief quaternion for ring
+         */
+        std::vector<double>  ring;
+        /**
+         * @brief quaternion for middle
+         */
+        std::vector<double>  middle;
+        /**
+         * @brief quaternion for index
+         */
+        std::vector<double>  index;
+        /**
+         * @brief quaternion for thumb
+         */
+        std::vector<double>  thumb;
+        /**
+         * @brief quaternion for palm
+         */
+        std::vector<double>  palm;
+        /**
+         * @brief map for iterating through quaternions
+         */
+        std::unordered_map<std::string, std::vector<double>*> nodes;
+
+        /**
+         * @brief constructor
+         */
+        GRAlgMessage();
+
+        /**
+         * @brief cleaner
+         */
+        bool clear();
+
+        std::vector<double> get_pinky();
+        void set_pinky(std::vector<double> n_pinky);
+
+        std::vector<double> get_ring();
+        void set_ring(std::vector<double> n_ring);
+
+        std::vector<double> get_middle();
+        void set_middle(std::vector<double> n_middle);
+
+        std::vector<double> get_index();
+        void set_index(std::vector<double> n_index);
+
+        std::vector<double> get_thumb();
+        void set_thumb(std::vector<double> n_thumb);
+
+        std::vector<double> get_palm();
+        void set_palm(std::vector<double> n_palm);
+
+        std::vector<double>* get_node(std::string key);
 };
 
 #endif

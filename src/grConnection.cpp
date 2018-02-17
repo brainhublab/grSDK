@@ -1,11 +1,12 @@
-#include <grConnection.h>
 #include <sys/socket.h>
+
+#include "grConnection.h"
 
 GRConnection::GRConnection()
 {
 }
 
-GRConnection::GRConnection(device_t devInfo)
+GRConnection::GRConnection(GRDevice devInfo)
 {
     this->_dev = devInfo;
     this->_asignDeviceWithSocket();
@@ -18,7 +19,7 @@ GRConnection::GRConnection(device_t devInfo)
 /*Select device by ID and fill message with one peace of data
  * Need to be use in loop
  */
-bool GRConnection::getData(gr_message* message)
+bool GRConnection::getData(GRMessage* message)
 {
     int sock, status, bytes_read;
     int id;
@@ -74,7 +75,7 @@ bool GRConnection::getData(gr_message* message)
 
 /*Split raw device data in peaces and push them into imu structure vars
 */
-bool GRConnection::_splitData(std::string data, imu* sensor)
+bool GRConnection::_splitData(std::string data, GRImu* sensor)
 {
     sensor->gyro.clear();
     sensor->acc.clear();
@@ -85,7 +86,7 @@ bool GRConnection::_splitData(std::string data, imu* sensor)
     std::stringstream ss(data);
     // std::vector<double> gyro, acc, mag;
 
-    //gr_message msg;
+    //GRMessage msg;
     while(ss >> n && i<11)
     {
         arr[i] = n;
@@ -163,7 +164,7 @@ int GRConnection::_asignDeviceWithSocket()
 
 /* Assigning raw message with concret imu mofule by finger index and split data for it
  */
-bool GRConnection::_asignMessageWithImu(std::string rawMessage, gr_message* message)
+bool GRConnection::_asignMessageWithImu(std::string rawMessage, GRMessage* message)
 {
     int id;
     bool messageAvalible = false;
@@ -173,33 +174,33 @@ bool GRConnection::_asignMessageWithImu(std::string rawMessage, gr_message* mess
     if(id == 0)
     {
         _splitData(rawMessage, &message->pinky);
-        //message->pinky.time_stamp = getTimeStamp();//TODO add if statement
+        //message->pinky().time_stamp = getTimeStamp;//TODO add if statement
     }
     else if(id ==1)
     {
         _splitData(rawMessage, &message->ring);
-        //message->ring.time_stamp = getTimeStamp();
+        //message->ring().time_stamp = getTimeStamp;
     }
     else if(id == 2)
     {
         _splitData(rawMessage, &message->middle);
-        //message->middle.time_stamp = getTimeStamp();
+        //message->middle().time_stamp = getTimeStamp;
     }
     else if(id == 3)
     {
         _splitData(rawMessage, &message->index);
-        //message->index.time_stamp = getTimeStamp();
+        //message->index().time_stamp = getTimeStamp;
     }
     else if(id==4)
     {
         _splitData(rawMessage, &message->thumb);
-        //message->thumb.time_stamp = getTimeStamp();
+        //message->thumb().time_stamp = getTimeStamp;
     }
     else if(id==5)
     {
         // std::cout<<rawMessage<<std::endl;
         _splitData(rawMessage, &message->palm);
-        //message->palm.time_stamp = getTimeStamp();
+        //message->palm().time_stamp = getTimeStamp;
 
     }
     //rawMessage.clear();
@@ -214,7 +215,7 @@ bool GRConnection::_asignMessageWithImu(std::string rawMessage, gr_message* mess
 
 /* Iterate raw message and check which imu modules are connectd and write boolean flag of each imu in message
  */
-bool GRConnection::_checkConnectedImus(std::string rawMessage, gr_message* msg)
+bool GRConnection::_checkConnectedImus(std::string rawMessage, GRMessage* msg)
 {
 
     int id;
@@ -255,7 +256,7 @@ bool GRConnection::connectSocket()
 {
     int status = 0;
     int attempts = 3;
-    
+
     while(attempts != 0)
     {
         status = connect(this->_deviceSocket.sock,
@@ -265,7 +266,7 @@ bool GRConnection::connectSocket()
         {
             attempts--;
             std::cout<<"Oh dear, something went wrong with connect! "<< strerror(errno)<<std::endl;
-            std::cout<<"Trying to make new attempt for connection"<<std::endl;            
+            std::cout<<"Trying to make new attempt for connection"<<std::endl;
         }
         else if(status == 0)
         {
@@ -276,4 +277,14 @@ bool GRConnection::connectSocket()
     }
     return true;
 
+}
+
+
+#include <nbind/nbind.h>
+NBIND_CLASS(GRConnection) {
+    construct<>();
+    construct<GRDevice>();
+
+    method(getData);
+    method(connectSocket);
 }
