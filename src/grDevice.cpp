@@ -124,7 +124,6 @@ void GRImu::set_is_connected(bool n_is_connected)
 GRMessage::GRMessage()
 {
     this->id = 0;
-
     this->imus["pinky"] = &(this->pinky);
     this->imus["ring"] = &(this->ring);
     this->imus["middle"] = &(this->middle);
@@ -354,7 +353,7 @@ std::vector<double>* GRAlgMessage::get_node(std::string key)
 }
 
 
-
+#ifdef NBIND
 #include <nbind/nbind.h>
 NBIND_CLASS(GRDevNames) {
     construct<>();
@@ -443,3 +442,4 @@ NBIND_CLASS(GRAlgMessage) {
     method(set_palm);
     method(get_node);
 }
+#endif

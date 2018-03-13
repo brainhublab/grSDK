@@ -14,7 +14,7 @@
 
 #include "GRT/GRT.h"
 
-#include "grConnection.h"
+//#include "grConnection.h" //TODO:
 #include "grDevice.h"
 #include "grMadgwick.h"
 #include "grGrt.h"

@@ -49,7 +49,9 @@ bool GRAlgorithm::madgwickUpdate(GRMessage* message, GRAlgMessage* result, int f
         if(message->imus[it->first]->is_connected)
         {
             _madgwickObjects[it->first]->MadgwickAHRSupdate(
-                    message->imus[it->first]->gyro[0], message->imus[it->first]->gyro[1], message->imus[it->first]->gyro[2], 
+                    message->imus[it->first]->gyro[0],
+                    message->imus[it->first]->gyro[1],
+                    message->imus[it->first]->gyro[2],
                     message->imus[it->first]->acc[0], message->imus[it->first]->acc[1], message->imus[it->first]->acc[2], 
                     message->imus[it->first]->mag[0], message->imus[it->first]->mag[1], message->imus[it->first]->mag[2], 
                     &rotations);
@@ -85,6 +87,7 @@ bool GRAlgorithm::madgwickUpdate(GRMessage* message, GRAlgMessage* result, int f
     }
     rotations.clear();
 
+    return true;
 }
 
 /*SetUp method for Madgwick algorithm 
@@ -97,6 +100,8 @@ bool GRAlgorithm::setupMadgwick(int pCallib, int rCallib, int mCallib, int iCall
     _madgwickObjects["index"]->setFreqCalibration(iCallib);
     _madgwickObjects["thumb"]->setFreqCalibration(tCallib);
     _madgwickObjects["palm"]->setFreqCalibration(paCallib);
+
+    return true;
 }
 /* TODO implement in thread madgwick update
 void GRAlgorithm::madgwickUpdateThr(imu* imu, int freqCallibration, std::string flag)
@@ -137,7 +142,7 @@ bool GRAlgorithm::setUpKfilter(std::vector<Eigen::Vector3d> data, acc_k_vars* k_
     k_vars->acc_k_y.volt = _stDev(&acc_y);
     k_vars->acc_k_z.volt = _stDev(&acc_z);
     std::cout<<"done with kalman setup"<<std::endl;
-
+    return true;
 }
 
 Eigen::Vector3d GRAlgorithm::kFilterStep(Eigen::Vector3d data, acc_k_vars* k_vars)
@@ -256,11 +261,12 @@ bool GRAlgorithm::_sliceAndPush(std::vector<double>* data, double val)
         {
             data->at(i) = val;
         }
-    }   
+    }
+    return true;
 }
 
 
-
+#ifdef NBIND
 #include <nbind/nbind.h>
 NBIND_CLASS(GRAlgorithm) {
 //  inherit(GRGrt);
@@ -270,4 +276,4 @@ NBIND_CLASS(GRAlgorithm) {
     method(setupMadgwick);
     method(madgwickUpdate);
 }
-
+#endif

@@ -238,9 +238,12 @@ bool GRTrajectory::isStationary()
    return _isStationary;
 }
 
+
+#ifdef NBIND
 #include <nbind/nbind.h>
 // problems with #define ?
 NBIND_CLASS(GRTrajectory) {
     construct<>();
     construct<GRTrajectory>();
 }
+#endif
