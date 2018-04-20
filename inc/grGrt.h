@@ -113,10 +113,61 @@ public:
 
 private:
 
+    //Preprocessing algorithms 
+    /**
+     * @brief deadZone preprocessor object
+     * needet in theory to determine not moments withoit movements
+     */
+    GRT::DeadZone _deadZone(1, 2); //TODO need to set right limits
+
+    /**
+     * @brief moving averageFilter object
+     * to smooth data 
+     */
+    GRT::DoubleMovingAverageFilter _doubleMovingAverageFilter(5, 1); //TODO set write parameters need to experiment to determine if it need or use low pass filter
+
+    //Feauture extraction algorithms 
+    /**
+     * @brief K meansQuatizer
+     * quantize the data from sensors
+     */
+    GRT::KMeansQuantizer _kMeansQuantizer(/*nim dimentions*/, 10);//TODO set right parameters 
+
+    /**
+     * @brief movement index object
+     * for recognition of triger gesture
+     */
+    GRT::MovementIndex movementIndex(/*windowSize,numDimensions*/);//TODO set right parameters
+
+    /**
+     * @brief movement trajectory features 
+     * needed for trigering gestures in combination with movement index
+     */
+    GRT::MovementTrajectoryFeature _trajectoryFeatures();//TODO set right parameters 
+
+    //regresion algorithms
+    
+    /**
+     * @brief Multi layer perception object 
+     * to do some cool things
+     */
+    GRT::MLP _mlp;
+
+    /**
+     * @brief multi dimensional regresion object
+     */
+    //TODO check how to push it in pipeline
+    
+
+
 	/**
 	 * @brief dtw object
 	 */
 	GRT::DTW _dtw;
+
+    /**
+     * @brief 
+     */
 	/**
 	 * @brief test data
 	 */
