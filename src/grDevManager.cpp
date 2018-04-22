@@ -144,8 +144,10 @@ bool GRDevManager::_deviceIsIn(std::string addr)
 }
 
 
+#ifdef NBIND
 #include <nbind/nbind.h>
 NBIND_CLASS(GRDevManager) {
     construct<>();
     method(getAvalibleDevices);
 }
+#endif

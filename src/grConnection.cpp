@@ -280,6 +280,7 @@ bool GRConnection::connectSocket()
 }
 
 
+#ifdef NBIND
 #include <nbind/nbind.h>
 NBIND_CLASS(GRConnection) {
     construct<>();
@@ -288,3 +289,4 @@ NBIND_CLASS(GRConnection) {
     method(getData);
     method(connectSocket);
 }
+#endif
