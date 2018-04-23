@@ -20,6 +20,7 @@
 #include "grGrt.h"
 
 #include "Eigen/Dense"
+#include "Eigen/Geometry"
 using namespace std;
 
 struct k_filter_vars // variables needet from simplified kalman
