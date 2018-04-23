@@ -27,6 +27,8 @@ SOURCES += ./src/main.cpp\
 ./src/grDataPlotter.cpp \
 ../../src/grConnection.cpp \
 ../../src/grAlgorithm.cpp \
+../../src/grDevice.cpp \
+../../src/grDevManager.cpp \
 ../../src/grGrt.cpp \
 ../../src/grMadgwick.cpp \
 ../../src/grTrajectory.cpp \
@@ -45,6 +47,7 @@ HEADERS += ./inc/grVisualization.h \
 ../../inc/grConnection.h \
 ../../inc/grAlgorithm.h \
 ../../inc/grDevice.h \
+../../inc/grDevManager.h \
 ../../inc/grGrt.h \
 ../../inc/grMadgwick.h \
 ../../inc/grTrajectory.h \

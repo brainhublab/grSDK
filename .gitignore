@@ -4,6 +4,7 @@
 .idea/*
 bin/*
 build/*
+build-cpp/*
 externAssets/*.zip
 */**/*.zip
 */**/*.tar.gz

@@ -142,9 +142,9 @@ class GRMessage
 class GRDevice
 {
     public:
-        int id;
-        std::string name;
-        std::string address;
+        int id = 0;
+        std::string name = "";
+        std::string address = "";
 
         GRDevice();
         GRDevice& operator=(const GRDevice& dev);
