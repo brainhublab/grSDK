@@ -374,8 +374,13 @@ bool GRDataApplier::moveHand(std::vector<double>& position)
  * q is quaternion
  * returns Euler yaw from q
  */
-float getYaw(std::vector<float> &q)
+float getYaw(std::vector<double> &q)
 {
+  if(q.empty())
+  {
+    // std::cerr << "quaternion is empty, no yaw here";
+    return -1;
+  }
   // float roll = 0.0f;
   //   float pitch = 0.0f;
   float yaw = 0.0f;
@@ -423,8 +428,18 @@ bool GRDataApplier::applyToHand(std::vector<double> &quant)
  */
 bool GRDataApplier::applyToFinger(std::vector<double> &q, int index)
 {
-  nodeQuanternion->clear();
-  nodeQuanternion->assign(q.begin(), q.end());
+      if((getYaw(q) - 180) > 70 || (getYaw(q) - 180) < -30)
+      {
+        // outbound
+        nodeQuanternion->assign(prevQuants[index].begin(), prevQuants[index].end());
+      }
+      else
+      {
+        nodeQuanternion->clear();
+        nodeQuanternion->assign(q.begin(), q.end());
+        // save last
+        prevQuants[index].assign(q.begin(), q.end());
+      }
 
   GLfloat mat[16];
 
@@ -432,6 +447,7 @@ bool GRDataApplier::applyToFinger(std::vector<double> &q, int index)
 
   //std::cout<< index << " finger of hand " << deviceId << " " << getYaw(*nodeQuanternion) << std::endl;
   arm->bendFingerWithMatrix(index, mat);
+
   //  //std::cout<<index<< getYaw(*nodeQuanternion) << std::endl;
   (*nodeQuanternion).clear();
 
