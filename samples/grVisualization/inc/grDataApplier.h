@@ -27,7 +27,7 @@ class GRDataApplier : public QObject
     //bool setConnection(GRConnection*);
     bool run(std::map<int, GRDevice> &availableDevices); // connect device and run fetchdata every {fetchFrequency)
 
-    bool writeQuanternionHistory(std::deque<std::vector<float>>*); // start writing history to vector pointer
+    bool writequaternionHistory(std::deque<std::vector<float>>*); // start writing history to vector pointer
     bool addHistoryData(std::vector<double>); // adds new quaternion to history
 
     bool isLoggingEnabled = false; // for logging to a file
@@ -63,13 +63,13 @@ class GRDataApplier : public QObject
     bool processMsg(std::string); // gets data from msg variable, updates it with madgwick and writes to alg_msg
 
     bool moveHand(std::vector<double>&);
-    bool applyToFinger(std::vector<double>&, int); // apply quaternion to [int] finger
-    bool applyToHand(std::vector<double>&); // apply quaternion to hand
-    std::vector<float>* nodeQuanternion; // current temporary quaternion
-    std::vector<float> prevQuants[6]; // previous quaternions of msg
+    bool applyToFinger(Eigen::Quaterniond&, int); // apply quaternion to [int] finger
+    bool applyToHand(Eigen::Quaterniond&); // apply quaternion to hand
+    Eigen::Quaterniond nodequaternion; // current temporary quaternion
+    Eigen::Quaterniond prevquats[6]; // previous quaternions of msg
 
     std::unordered_map<std::string, int> fingers; // nodeName-indexe
-    std::deque<std::vector<float>>* targetQuanternionHistory = nullptr; // buffer pointer for writing a history of quaternions
+    std::deque<std::vector<float>>* targetquaternionHistory = nullptr; // buffer pointer for writing a history of quaternions
 };
 
 #endif // GR_BUFFER_MANAGER_H

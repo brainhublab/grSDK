@@ -23,7 +23,7 @@
 GRDataApplier::GRDataApplier()
 {
   plog::init(plog::debug, "log.csv");
-  nodeQuanternion = new std::vector<float>();
+
   fingers["pinky"] = 0;
   fingers["ring"] = 1;
   fingers["middle"] = 2;
@@ -37,7 +37,6 @@ GRDataApplier::GRDataApplier()
 GRDataApplier::~GRDataApplier()
 {
   thread.wait();
-  delete nodeQuanternion;
 }
 
 
@@ -156,19 +155,19 @@ bool GRDataApplier::run(std::map<int, GRDevice> &activeDevices)
 }
 
 /*
- * quant is quaternion vector with length 4
- * pushes quant to tagretQuaternion history
+ * quat is quaternion vector with length 4
+ * pushes quat to tagretQuaternion history
  */
-bool GRDataApplier::addHistoryData(std::vector<double> quant)
+bool GRDataApplier::addHistoryData(std::vector<double> quat)
 {
-  if(targetQuanternionHistory == nullptr)
+  if(targetquaternionHistory == nullptr)
   {
     return false;
   }
   // TODO: this for cycle is seamless
   std::vector<float> q;
-  q.assign(quant.begin(), quant.end());
-  targetQuanternionHistory->push_back(q);
+  q.assign(quat.begin(), quat.end());
+  targetquaternionHistory->push_back(q);
   return true;
 }
 
@@ -176,9 +175,9 @@ bool GRDataApplier::addHistoryData(std::vector<double> quant)
  * h is pointer to deque of quaternions
  * sets deque pointer for history writing
  */
-bool GRDataApplier::writeQuanternionHistory(std::deque<std::vector<float> > * h)
+bool GRDataApplier::writequaternionHistory(std::deque<std::vector<float> > * h)
 {
-  targetQuanternionHistory = h;
+  targetquaternionHistory = h;
   return true;
 }
 
@@ -281,15 +280,27 @@ bool GRDataApplier::processMsg(std::string nodeName)
 
     if(withRotations)
     {
-      applyToHand(*alg_msg.nodes[nodeName]);
+      auto quatd = Eigen::Quaterniond(
+            (*alg_msg.nodes[nodeName])[0],
+            (*alg_msg.nodes[nodeName])[1],
+            (*alg_msg.nodes[nodeName])[2],
+            (*alg_msg.nodes[nodeName])[3]
+            );
+      applyToHand(quatd);
       addHistoryData(*alg_msg.nodes[nodeName]);
     }
   }
   else
   {
-    if(withRotations){
+    if(withRotations && alg_msg.nodes[nodeName]->size() == 4){
+      auto quatd = Eigen::Quaterniond(
+            (*alg_msg.nodes[nodeName])[0],
+            (*alg_msg.nodes[nodeName])[1],
+            (*alg_msg.nodes[nodeName])[2],
+            (*alg_msg.nodes[nodeName])[3]
+            );
       //std::cout << "\t\t Call applyToFinger " << nodeName << std::endl;
-      applyToFinger(*alg_msg.nodes[nodeName], fingers[nodeName]);
+      applyToFinger(quatd, fingers[nodeName]);
 
     }
   }
@@ -304,7 +315,7 @@ bool GRDataApplier::processMsg(std::string nodeName)
 /*
  * Gonverts quaternioin to matrix rotation | Quaternion (x, y, z, w)
  */
-void quaternionToRotation(std::vector<float>& quaternion,
+void quaternionToRotation(std::vector<float> quaternion,
     GLfloat *rotation)
 {
   // Normalize quaternion
@@ -395,30 +406,29 @@ float getYaw(std::vector<double> &q)
   return yaw;
 }
 
+std::vector<float> toStdVector(Eigen::Quaterniond &d)
+{
+  std::vector<float> r{(float) d.w(), (float) d.x(), (float) d.y(), (float) d.z()};
+  return r;
+}
+
 /*
- * quant is quaternion with size 4
+ * quat is quaternion with size 4
  * rotates palm with this quaternion
  */
-bool GRDataApplier::applyToHand(std::vector<double> &quant)
+bool GRDataApplier::applyToHand(Eigen::Quaterniond &quat)
 {
-  if (!quant.empty())
-  {
-    nodeQuanternion->clear();
-    nodeQuanternion->assign(quant.begin(), quant.end());
+    nodequaternion = quat;
 
     GLfloat mat[16];
-    quaternionToRotation(*nodeQuanternion, mat);
-    //printf("Hand Yaw %f\n", getYaw(*nodeQuanternion));
-    //printf("Hand Q: %f %f %f %f\n",  (*nodeQuanternion)[0], (*nodeQuanternion)[1], (*nodeQuanternion)[2], (*nodeQuanternion)[3]);
+    quaternionToRotation(toStdVector(nodequaternion),mat);
+    //printf("Hand Yaw %f\n", getYaw(*nodequaternion));
+    //printf("Hand Q: %f %f %f %f\n",  (*nodequaternion)[0], (*nodequaternion)[1], (*nodequaternion)[2], (*nodequaternion)[3]);
 
     arm->bendHandWithMatrix(mat);
-    //arm->bendHand((*nodeQuanternion)[2], (*nodeQuanternion)[1], (*nodeQuanternion)[3]);
-    (*nodeQuanternion).clear();
+    prevquats[5] = nodequaternion;
+    //arm->bendHand((*nodequaternion)[2], (*nodequaternion)[1], (*nodequaternion)[3]);
     return true;
-  }
-
-
-  return false;
 };
 
 
@@ -426,30 +436,38 @@ bool GRDataApplier::applyToHand(std::vector<double> &quant)
  * q is quaternion with size 4, index is figer index (see fingers map)
  * rotates finger with index [index] with q
  */
-bool GRDataApplier::applyToFinger(std::vector<double> &q, int index)
+bool GRDataApplier::applyToFinger(Eigen::Quaterniond &q, int index)
 {
-      if((getYaw(q) - 180) > 70 || (getYaw(q) - 180) < -30)
+  auto euler = q.toRotationMatrix().eulerAngles(0, 1, 2); // r p y
+      if(euler[2]*57.29578 > 70 || euler[2]*57.29578 < -30)
       {
         // outbound
-        nodeQuanternion->assign(prevQuants[index].begin(), prevQuants[index].end());
+        nodequaternion = prevquats[index];
       }
       else
       {
-        nodeQuanternion->clear();
-        nodeQuanternion->assign(q.begin(), q.end());
+        nodequaternion = q;
         // save last
-        prevQuants[index].assign(q.begin(), q.end());
+        prevquats[index] = q;
       }
 
+  // TODO: inverse if roll of palm is > 180
+  /*auto eulerPalm = prevquats[5].toRotationMatrix().eulerAngles(0,1,2);
+  std::cout << "of palm is " << eulerPalm*57.29578 << std::endl;
+  if(eulerPalm[2] < 0)
+  {
+    nodequaternion = nodequaternion.inverse();
+  }
+  //
+  std::cout << "Index is " << index << std::endl;
+  
+  */
   GLfloat mat[16];
 
-  quaternionToRotation(*nodeQuanternion, mat);
+  quaternionToRotation(toStdVector(nodequaternion),mat);
 
-  //std::cout<< index << " finger of hand " << deviceId << " " << getYaw(*nodeQuanternion) << std::endl;
+  //std::cout<< index << " finger of hand " << deviceId << " " << getYaw(*nodequaternion) << std::endl;
   arm->bendFingerWithMatrix(index, mat);
-
-  //  //std::cout<<index<< getYaw(*nodeQuanternion) << std::endl;
-  (*nodeQuanternion).clear();
 
   return true;
 }

@@ -12,7 +12,7 @@ TARGET = GRVisualization
 TEMPLATE = app
 LIBS += -L/usr/lib64 -L../../externAssets/grt/lib -lgrt -ldbus-1 -lglut -lGLU -lbluetooth
 INCLUDEPATH += ../../externAssets/grt/include ../../externAssets/grt/lib ../../externAssets/eigen /usr/include/dbus-1.0 /usr/lib64/dbus-1.0/include ./inc ../../externAssets/qcustomplot ../../externAssets/ ../../inc ./
-QMAKE_CXXFLAGS += -g -std=c++11
+QMAKE_CXXFLAGS += -g -std=c++11 -mno-avx -mno-avx2 # just eigen mno things
 
 OBJECTS_DIR = ./build
 DESTDIR = ./bin
