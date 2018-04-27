@@ -77,9 +77,9 @@ bool GRAlgorithm::madgwickUpdate(GRMessage* message, GRAlgMessage* result, int f
 
       relativeQuat = quat.inverse() * palmQuat;
       // relativeQuat = palmQuat.inverse() * quat;
-      rotations[0] = relativeQuat.w();
-      rotations[1] = relativeQuat.x();
-      rotations[2] = relativeQuat.y();
+      rotations[0] = -relativeQuat.w(); // inverse rotation back
+      rotations[1] = 0*relativeQuat.x();
+      rotations[2] = 0*relativeQuat.y();
       rotations[3] = relativeQuat.z();
 
       if(it->first == "pinky")
