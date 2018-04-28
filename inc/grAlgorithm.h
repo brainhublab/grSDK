@@ -139,6 +139,13 @@ class GRAlgorithm :public GRGrt
          * @brief madgwick alg for palm
          */
         GRMadgwick _palmMadgwick;
+        /**
+         * @brief quaternions for madgwickUpdate
+         */
+        Eigen::Quaterniond quat;
+        Eigen::Quaterniond palmQuat;
+        Eigen::Quaterniond relativeQuat;
+        std::vector<double> rotations;
 
         /**
          * @brief map for easier access of objects

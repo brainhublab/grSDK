@@ -43,8 +43,7 @@ bool GRAlgorithm::madgwickUpdate(GRMessage* message, GRAlgMessage* result, int f
   std::vector<double> rotations;
   std::unordered_map<std::string, GRImu*>::iterator it;
   // std::cout<<"\nbefore madgwickUpdate() Q :"<<q0<<" "<<q1<<" "<<q2<<" "<<q3<<std::endl;
-  Eigen::Quaterniond quat;
-  Eigen::Quaterniond palmQuat;
+
   // get palm rotations
   if(message->imus["palm"]->is_connected)
   {
@@ -52,14 +51,17 @@ bool GRAlgorithm::madgwickUpdate(GRMessage* message, GRAlgMessage* result, int f
         message->imus["palm"]->gyro[0],
         message->imus["palm"]->gyro[1],
         message->imus["palm"]->gyro[2],
-        message->imus["palm"]->acc[0], message->imus["palm"]->acc[1], message->imus["palm"]->acc[2],
-        message->imus["palm"]->mag[0], message->imus["palm"]->mag[1], message->imus["palm"]->mag[2],
+        message->imus["palm"]->acc[0],
+        message->imus["palm"]->acc[1],
+        message->imus["palm"]->acc[2],
+        message->imus["palm"]->mag[0],
+        message->imus["palm"]->mag[1],
+        message->imus["palm"]->mag[2],
         &rotations);
     result->palm = rotations;
     palmQuat = Eigen::Quaterniond(result->palm[0], result->palm[1], result->palm[2], result->palm[3]);
   }
 
-  Eigen::Quaterniond relativeQuat;
   for(it=message->imus.begin(); it!=message->imus.end(); it++ )
   {
     if(message->imus[it->first]->is_connected)
@@ -68,8 +70,12 @@ bool GRAlgorithm::madgwickUpdate(GRMessage* message, GRAlgMessage* result, int f
           message->imus[it->first]->gyro[0],
           message->imus[it->first]->gyro[1],
           message->imus[it->first]->gyro[2],
-          message->imus[it->first]->acc[0], message->imus[it->first]->acc[1], message->imus[it->first]->acc[2],
-          message->imus[it->first]->mag[0], message->imus[it->first]->mag[1], message->imus[it->first]->mag[2],
+          message->imus[it->first]->acc[0],
+          message->imus[it->first]->acc[1],
+          message->imus[it->first]->acc[2],
+          message->imus[it->first]->mag[0],
+          message->imus[it->first]->mag[1],
+          message->imus[it->first]->mag[2],
           &rotations);
 
       // get relative rotation
