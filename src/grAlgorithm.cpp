@@ -40,7 +40,6 @@ void grInitAlgorithms()
  */
 bool GRAlgorithm::madgwickUpdate(GRMessage* message, GRAlgMessage* result, int freqCallibration, std::string flag)
 {
-  std::vector<double> rotations;
   std::unordered_map<std::string, GRImu*>::iterator it;
   // std::cout<<"\nbefore madgwickUpdate() Q :"<<q0<<" "<<q1<<" "<<q2<<" "<<q3<<std::endl;
 
