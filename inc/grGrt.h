@@ -36,12 +36,18 @@ class GRGrt
          * @brief loads training data by path
          * @param filepath is path to training data
          */
-        bool loadTrainingData(std::string filepath);
+        bool loadTrainingData(std::string, std::string);
         /**
          * @brief loads test data from .grt file
          * @param filepath if .grt file
          */
-        bool loadTestData(std::string filepath);
+        bool loadTestData(std::string, std::string);
+
+        /**
+         * @brief initialize algorithms condition
+         * @param std:;string type of algorithm for initialization
+         */
+        bool init(std::string);
         /**
          * @brief Takes size from training data to use for testing accuracy
          * @param size is a size from training data
@@ -50,11 +56,11 @@ class GRGrt
         /**
          * @brief Traing the algorithm
          */ 
-        bool train();
+        bool train(std::string );
         /**
          * @brief Test the algorithm with testData and return accuracy
          */
-        double test();
+        double test(std::string);
         /**
          * @brief returns test accuracy
          */
@@ -108,6 +114,8 @@ class GRGrt
         /**
          * @brief saving in path
          */
+
+        ////////////////////TODO
         bool saveDataset(); 
 
         bool checkDeadzone(gr_message* ); //TODO implement if needed
@@ -155,6 +163,24 @@ class GRGrt
          */
         GRT::MLP _mlp;
 
+        /**
+         * @brief training data for ragression algorithms
+         *
+         */
+        GRT::LebelleRegressionData _regressionTrainingData;
+
+        /**
+         * @brief test data for regriession algorithm
+         *
+         */
+        GRT::LebelledRegressionData _regressionTestData;
+
+        unsigned int _numInputNeurons;
+        unsigned int _numHidenNeurons;
+        unsigned int _numOutputNeurons;
+        
+
+        GRT::GestureRecognitionPipeline _pipeline;
         /**
          * @brief multi dimensional regresion object
          */
