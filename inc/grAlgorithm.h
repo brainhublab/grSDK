@@ -99,6 +99,20 @@ class GRAlgorithm :public GRGrt
         Eigen::Vector3d kFilterStep(Eigen::Vector3d, acc_k_vars*);
         // bool setUpKfilterCoord(std::vector<std::vector<double> >, acc_k_vars* );
         // bool kFilterStepCoord(std::vector<double>, acc_k_vars*);
+       
+        // TODO: make const GRAlgMessage in methods for rotations
+        /**
+         * @brief get specific node rotation from gr algorithm message
+         */
+        Eigen::Quaterniond getNodeRotation(GRAlgMessage &alg_msg, const std::string& nodeName) const;
+        /**
+         * @brief get unordered map of roations in quaternion representation
+         */
+        std::unordered_map<std::string, Eigen::Quaterniond> getRotations(GRAlgMessage alg_msg) const;
+        /**
+         * @brief get unordered_map of nodename-rotations in [roll, pitch, yaw] representation
+         */
+        std::unordered_map<std::string, std::vector<double>> getEulerRotations(GRAlgMessage alg_msg) const;
 
     private:
         /**

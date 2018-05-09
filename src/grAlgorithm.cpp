@@ -299,6 +299,38 @@ bool GRAlgorithm::_sliceAndPush(std::vector<double>* data, double val)
 }
 
 
+Eigen::Quaterniond GRAlgorithm::getNodeRotation(GRAlgMessage &alg_msg, const std::string& nodeName) const
+{
+  const std::vector<double> rots = *alg_msg.get_node(nodeName);
+  return Eigen::Quaterniond(
+      rots[0], rots[1], rots[2], rots[3]
+  );
+}
+
+std::unordered_map<std::string, Eigen::Quaterniond> GRAlgorithm::getRotations(GRAlgMessage alg_msg) const
+{
+  std::unordered_map<std::string, Eigen::Quaterniond> result;
+  for (auto& node : alg_msg.nodes)
+  {
+    result[node.first] = getNodeRotation(alg_msg, node.first);
+  }
+  return result;
+}
+
+std::unordered_map<std::string, std::vector<double>> GRAlgorithm::getEulerRotations(GRAlgMessage alg_msg) const
+{
+  std::unordered_map<std::string, std::vector<double>> result;
+  Eigen::Matrix<double, 3, 1> m;
+  for (auto& p : getRotations(alg_msg)){
+    m = p.second.toRotationMatrix().eulerAngles(0,1,2); // r p y
+    result[p.first] = std::vector<double>{m[0], m[1], m[2]};
+  }
+  return result;
+  // std::transform(result.begin(), result.end(), result.begin(), [&](auto& pair) -> auto {
+  //     
+  //     })
+}
+
 #ifdef NBIND
 #include <nbind/nbind.h>
 NBIND_CLASS(GRAlgorithm) {
