@@ -10,6 +10,9 @@ GRGrt::GRGrt()
     //datasetDTW.trainingData.setDatasetName("grDTWTrainingData"); //TODO later add relative name 
     //datasetDTW.trainingData.setInfoText("Thisdataset contains some GR data"); //later add relative info text
     _dtw.enableNullRejection(true);
+    this->_deadZoneLower = -0.2; //TODO need to be set correctly
+    this->_deadZoneUpper = 0.2; //TODO need to be se correctly 
+    this->_deadZone = _deadZone(this->_deadZoneLower, this->_deadZoneUpper, 1 /*dimention*/);
 
 }
 /*destructor
@@ -258,10 +261,50 @@ bool GRGrt::pushGesture()
 */
 bool GRGrt::saveDataset()
 {
-        if(!_trainingData.save(("../trainingData/grTrainingDTW"+_fileProp)))
+    if(!_trainingData.save(("../trainingData/grTrainingDTW"+_fileProp)))
+    {
+        std::cout<<"ERROR: Failed to save dataset to file \n";
+        return EXIT_FAILURE;
+    }
+    //datasetDTW.trainingData.clear();TODO
+}
+
+bool GRGrt::tranQantizationModel(std::string quantizationSettingsFile)
+{
+    this->_quantizer = GRT::KMeansQuantizer(_trainingData.getNumDimensions(), 10);
+    
+    if(!this->_quantizer.train(this->_trainingData))
+    {
+        std::cout<<"ERROR: Failed to train quantizer"<<std::endl;
+        return EXIT_FAILURE;
+    }
+
+    if(!this->_quantizer.saveSettingsToFile(quantizationSettingsFile))
+    {
+        std::cout<<"ERROR: Failed to safe quantizer settings to file: "<<quantizationSettingsFile<<std::endl;
+        return EXIT_FAILURE;
+    }
+    return true;
+}
+
+bool GRGrt::quantizeData(std::string quantizationSettingsFile)
+{
+    if(!this->_quantizer.loadSettingsFromFile(quantizationSettingsFile))
+    {
+        std::cout<<"ERROR: filed to load quantization settings from file: "<<quantizationSettingsFile<<std::endl;
+        return EXIT_FAILURE;
+    }
+    for(int i=0; i<_trainingData.getNumSamples(); i++)
+    {
+        _quantizer.quantize(_trainingData[i].getSample());
+        std::cout<<"quantization index: "<<i<<std::endl;
+        std::cout<<"Sample: ";
+
+        for(int j=0; j<_trainingData[i].getNumDimensions(); j++ )
         {
-            std::cout<<"ERROR: Failed to save dataset to file \n";
-            return EXIT_FAILURE;
+            std::cout<<_trainingData[i][j] <<"\t";
         }
-        //datasetDTW.trainingData.clear();TODO
+        cout<<"Quantized value: "<<_quantizer.getQuantizedValue()<<std::endl;
+    }
+    return EXIT_SUCCESS;
 }

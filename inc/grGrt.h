@@ -14,189 +14,193 @@
  */
 class GRGrt
 {
-public:
+    public:
 
-	/**
-	 * @brief constructor
-	 */
-	GRGrt();
-	/**
-	 * @brief destructor
-	 */
-	~GRGrt();
-	/**
-	 * @brief copy constructor
-	 */
-	GRGrt(const GRGrt& );
-	/**
-	 * @brief assigment operator
-	 */
-	GRGrt& operator=(const GRGrt& );
-	/**
-	 * @brief loads training data by path
-	 * @param filepath is path to training data
-	 */
-	bool loadTrainingData(std::string filepath);
-	/**
-	 * @brief loads test data from .grt file
-	 * @param filepath if .grt file
+        /**
+         * @brief constructor
          */
-	bool loadTestData(std::string filepath);
-	/**
-	 * @brief Takes size from training data to use for testing accuracy
-	 * @param size is a size from training data
+        GRGrt();
+        /**
+         * @brief destructor
          */
-	bool setTestDataFromTraining(int size);
-	/**
-	 * @brief Traing the algorithm
-       	 */ 
-	bool train();
-	/**
-	 * @brief Test the algorithm with testData and return accuracy
+        ~GRGrt();
+        /**
+         * @brief copy constructor
          */
-	double test();
-	/**
-	 * @brief returns test accuracy
-	 */
+        GRGrt(const GRGrt& );
+        /**
+         * @brief assigment operator
+         */
+        GRGrt& operator=(const GRGrt& );
+        /**
+         * @brief loads training data by path
+         * @param filepath is path to training data
+         */
+        bool loadTrainingData(std::string filepath);
+        /**
+         * @brief loads test data from .grt file
+         * @param filepath if .grt file
+         */
+        bool loadTestData(std::string filepath);
+        /**
+         * @brief Takes size from training data to use for testing accuracy
+         * @param size is a size from training data
+         */
+        bool setTestDataFromTraining(int size);
+        /**
+         * @brief Traing the algorithm
+         */ 
+        bool train();
+        /**
+         * @brief Test the algorithm with testData and return accuracy
+         */
+        double test();
+        /**
+         * @brief returns test accuracy
+         */
         double getTestAccuracy();
-	/**
-	 * @brief saving trained model of the algorithm
+        /**
+         * @brief saving trained model of the algorithm
          * @param filepath is a path to result-file 
-	 */
-	bool saveModel(std::string filepath);
-	/**
-	 * @brief loading trained model of the algorithm
-	 * @param filepath is a path to file with model
-	 */
+         */
+        bool saveModel(std::string filepath);
+        /**
+         * @brief loading trained model of the algorithm
+         * @param filepath is a path to file with model
+         */
         bool loadModel(std::string filepath);
-        
-	// Predictions functions
-	
-	/**
-	 * @brief
-	 */
+
+        // Predictions functions
+
+        /**
+         * @brief
+         */
         bool predict(GRT::MatrixDouble timeseries);
-	/**
-	 * @brief
-	 */
+        /**
+         * @brief
+         */
         GRT::UINT getPredictedClassLabel();
-	/**
-	 * @brief
-	 */
+        /**
+         * @brief
+         */
         double getMaximumLikelihood();
 
         //utils
-	/**
-	 * @brief properties of dataset
-	 */
-	void setDatasetProperties(std::string, std::string, std::string, int);
-	/**
-	 * @brief next label of dataset in training data
-	 */
-	void setNextLabel();
-	/**
-	 * @brief cleaner
-	 */
-	void clearTrainingData();
-        
+        /**
+         * @brief properties of dataset
+         */
+        void setDatasetProperties(std::string, std::string, std::string, int);
+        /**
+         * @brief next label of dataset in training data
+         */
+        void setNextLabel();
+        /**
+         * @brief cleaner
+         */
+        void clearTrainingData();
+
         bool addSample(std::vector<double>* , std::vector<double>* );
-	/**
-	 * @brief push dataset to DTW
-	 * TODO vector trajectory & quanternion
-	 */
-	bool pushGesture();
-	/**
-	 * @brief saving in path
-	 */
-	bool saveDataset(); 
-       
+        /**
+         * @brief push dataset to DTW
+         * TODO vector trajectory & quanternion
+         */
+        bool pushGesture();
+        /**
+         * @brief saving in path
+         */
+        bool saveDataset(); 
 
-private:
+        bool checkDeadzone(gr_message* ); //TODO implement if needed
 
-    //Preprocessing algorithms 
-    /**
-     * @brief deadZone preprocessor object
-     * needet in theory to determine not moments withoit movements
-     */
-    GRT::DeadZone _deadZone(1, 2); //TODO need to set right limits
+        bool tranQantizationModel(std::string);
 
-    /**
-     * @brief moving averageFilter object
-     * to smooth data 
-     */
-    GRT::DoubleMovingAverageFilter _doubleMovingAverageFilter(5, 1); //TODO set write parameters need to experiment to determine if it need or use low pass filter
+        bool quantizeData(std::string);
+    private:
 
-    //Feauture extraction algorithms 
-    /**
-     * @brief K meansQuatizer
-     * quantize the data from sensors
-     */
-    GRT::KMeansQuantizer _kMeansQuantizer(/*nim dimentions*/, 10);//TODO set right parameters 
+        //Preprocessing algorithms 
+        /**
+         * @brief deadZone preprocessor object
+         * needet in theory to determine not moments withoit movements
+         */
+        GRT::DeadZone _deadZone(); //TODO need to set right limits
 
-    /**
-     * @brief movement index object
-     * for recognition of triger gesture
-     */
-    GRT::MovementIndex movementIndex(/*windowSize,numDimensions*/);//TODO set right parameters
-
-    /**
-     * @brief movement trajectory features 
-     * needed for trigering gestures in combination with movement index
-     */
-    GRT::MovementTrajectoryFeature _trajectoryFeatures();//TODO set right parameters 
-
-    //regresion algorithms
-    
-    /**
-     * @brief Multi layer perception object 
-     * to do some cool things
-     */
-    GRT::MLP _mlp;
-
-    /**
-     * @brief multi dimensional regresion object
-     */
-    //TODO check how to push it in pipeline
-    
+        double _deadZoneLower;
+        double _deadZoneUpper;
 
 
-	/**
-	 * @brief dtw object
-	 */
-	GRT::DTW _dtw;
+        //Feauture extraction algorithms 
+        /**
+         * @brief K meansQuatizer
+         * quantize the data from sensors
+         */
+        GRT::KMeansQuantizer _quantizer;//TODO set right parameters 
 
-    /**
-     * @brief 
-     */
-	/**
-	 * @brief test data
-	 */
+        /**
+         * @brief movement index object
+         * for recognition of triger gesture
+         */
+        GRT::MovementIndex movementIndex(/*windowSize,numDimensions*/);//TODO set right parameters
+
+        /**
+         * @brief movement trajectory features 
+         * needed for trigering gestures in combination with movement index
+         */
+        GRT::MovementTrajectoryFeatures  _trajectoryFeatures();//TODO set right parameters 
+
+        //regresion algorithms
+
+        /**
+         * @brief Multi layer perception object 
+         * to do some cool things
+         */
+        GRT::MLP _mlp;
+
+        /**
+         * @brief multi dimensional regresion object
+         */
+        //TODO check how to push it in pipeline
+
+
+
+        /**
+         * @brief dtw object
+         */
+        GRT::DTW _dtw;
+
+        /**
+         * @brief 
+         */
+        /**
+         * @brief test data
+         */
         GRT::TimeSeriesClassificationData _testData;
 
-	/**
-	 * @brief
-	 */
+        /**
+         * @brief
+         */
         double _testAccuracy = 0.0;
 
-	/**
-	 * @brief
-	 */
+        /**
+         * @brief
+         */
         GRT::UINT _gestureLabel;
-	/**
-	 * @brief
-	 */
+        /**
+         * @brief
+         */
         int _dimensions;
-	/**
-	 * @brief
-	 */
+        /**
+         * @brief
+         */
         GRT::MatrixDouble _gestureSample;
-	/**
-	 * @brief
-	 */
+        /**
+         * @brief
+         */
         GRT::TimeSeriesClassificationData _trainingData;
-	/**
-	 * @brief
-	 */
+        /**
+         * @brief
+         */
         std::string _fileProp;
+
+
 };
 #endif
