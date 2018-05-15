@@ -95,7 +95,7 @@ class GRGrt
         /**
          * @brief properties of dataset
          */
-        void setDatasetProperties(std::string, std::string, std::string, int);
+        void setDatasetProperties(std::string, std::string, std::string, std::string, int);
         /**
          * @brief next label of dataset in training data
          */
@@ -167,13 +167,23 @@ class GRGrt
          * @brief training data for ragression algorithms
          *
          */
-        GRT::LebelleRegressionData _regressionTrainingData;
+        GRT::RegressionData _regressionTrainingData;
+
+        GRT::ClassificationData _mlpClassificationTrainingData;
+        GRT::ClassificationData _mlpClassificationTestData;
+
+       const GRT::UINT _mlpInputVectorDimensions; //dimensions of input vector
+      const GRT::UINT _mlpTargetVectorDimensions; //Target Vector dimensions
+      const GRT::UINT _mlpTrainingExamplesNumber; 
+
+      GRT::VectorDouble _mlpInputVector;
+      GRT::VectorDouble _mlpTargetVector;
 
         /**
          * @brief test data for regriession algorithm
          *
          */
-        GRT::LebelledRegressionData _regressionTestData;
+        GRT::RegressionData _regressionTestData;
 
         unsigned int _numInputNeurons;
         unsigned int _numHidenNeurons;

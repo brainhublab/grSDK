@@ -5,19 +5,29 @@ GRGrt::GRGrt()
 {
 
     //utils
-    _gestureLabel = 1;
+    this->_gestureLabel = 1;
     //datasetDTW.trainingData.setNumDimensions(datasetDTW.dimensions);
     //datasetDTW.trainingData.setDatasetName("grDTWTrainingData"); //TODO later add relative name 
     //datasetDTW.trainingData.setInfoText("Thisdataset contains some GR data"); //later add relative info text
-    _dtw.enableNullRejection(true);
+    this->_dtw.enableNullRejection(true);
     this->_deadZoneLower = -0.2; //TODO need to be set correctly
     this->_deadZoneUpper = 0.2; //TODO need to be se correctly 
     this->_deadZone = _deadZone(this->_deadZoneLower, this->_deadZoneUpper, 1 /*dimention*/);
 
-    _numInputNeurons = 0;
-    _numHidenNeurons = 0;
-    _numOutputNeurons = 0;
+    this->_numInputNeurons = 0;
+    this->_numHidenNeurons = 0;
+    this->_numOutputNeurons = 0;
 
+    this->_mlpInputVectorDimensions = 36;
+    this->_mlpTargetVectorDimensions = 36;
+    this->_mlpTrainingExamplesNumber = 30;
+
+    this->_mlpInputVector = _mlpInputVector(_mlpInputVectorDimensions);
+    this->_mlpTargetVector = _mlpTargetVector(_mlpTargetVectorDimensions);
+
+    
+    GRT::TrainingLog::setLoggingEnabled( true ); 
+   
 }
 /*destructor
 */
@@ -220,7 +230,7 @@ double GRGrt::test(std::string alg)
             GRT::MatrixDouble timeseries = this->_testData[i].getData();
 
             //Perform a prediction using the classifier
-            if( !this->_dtw.predict( timeseries ) ){
+            if( !this->_dtw.predict( timeseries ) ){                std::cout << "Failed to perform prediction for test sampel: " << i <<"\n";
                 std::cout << "Failed to perform prediction for test sampel: " << i <<"\n";
                 return EXIT_FAILURE;
             }
@@ -244,13 +254,52 @@ double GRGrt::test(std::string alg)
     }
     else if(alg == "MLP")
     {
-        if(!this->pipeline.test(this->_regressionTestData))
+        if(!this->_pipeline.test(this->_regressionTestData))
         {
             std::cout<<"ERROR: Failed to test MLP model"<<std::endl;
             return EXIT_FAILURE;
         }
         std::cout<<"MLP test is complete starting test RMS error..."<<this->_pipeline.getTestRMSError()<<std::endl;
+
+        //TODO make output file as parameter
+        std::fstream file;
+        file.open();
+
+        for(GRT::UINT i=0; i<_regressionTestData.getNumSamples(); i++)
+        {
+            std::vector<double> inputVector = _regressionTestData[i].getInputVector();
+            std::vector<double> targetVector = _regressionTestData[i].getTargetVector();
+
+            //Map the input vector using the trained regression model
+            if(!_pipeline.predict(inputVector))
+            {
+                std::cout<<"ERROR: Failed to map test sample"<< i <<std::endl;
+                return EXIT_FAILURE;
+            }
+
+            std::vector<double> outputVector = pipeline.getRegressionData();
+
+            //Write the mapped value and also the target value to the file
+            for(GRT::UINT j=0; j<outputVector.size(); j++)
+            {
+                file<<outputVector[j]<<"\t";
+            }
+            for(GRT::UINT j=0;j<targetVector.size(); j++)
+            {
+                file<<targetVector[j]<<"\t";
+            }
+            file<<std::endl; 
+        }
+
+        file.close();
+
     }
+    else
+    {
+        std::cout<<"No such algorithm wit name: "<<alg<<std::endl;
+        return EXIT_FAILURE;
+    }
+    return EXIT_SUCCESS
 }
 
 /*get test acuracy
@@ -318,13 +367,24 @@ double GRGrt::getMaximumLikelihood()
 
 /*properties for dataset
 */
-void GRGrt::setDatasetProperties(std::string dataSetName, std::string infoText, std::string fProp, int dimIn )
+void GRGrt::setDatasetProperties(std::string alg, std::string datasetName, std::string infoText, std::string fProp, int dimIn, 
+        )
 {
-    _dimensions = dimIn; 
-    _trainingData.setNumDimensions(_dimensions);
-    _trainingData.setDatasetName(dataSetName);
-    _trainingData.setInfoText(infoText);
-    _fileProp = fProp + ".grt";
+    if(alg == "DTW")
+    {
+    this->_dimensions = dimIn; 
+    this->_trainingData.setNumDimensions(_dimensions);
+    this->_trainingData.setDatasetName(dataSetName);
+    this->_trainingData.setInfoText(infoText);
+    this->_fileProp = fProp + ".grt";
+    }
+    else if(alg == "MLP")
+    {
+        this->_regressionTrainingData.setInputAndTargetDimensions(this->_mlpInputVectorDimensions, this->_mlpTargetVectorDimensions);
+        this->_regressionTrainingData.setDatasetName(datasetName);
+        this->_regressionTrainingData.setInfoText(infoText);
+        this->_fileProp = fProp + ".grt"
+    }
 
 }
 
