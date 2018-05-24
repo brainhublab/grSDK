@@ -10,9 +10,6 @@ GRGrt::GRGrt()
     //datasetDTW.trainingData.setDatasetName("grDTWTrainingData"); //TODO later add relative name 
     //datasetDTW.trainingData.setInfoText("Thisdataset contains some GR data"); //later add relative info text
     this->_dtw.enableNullRejection(true);
-    this->_deadZoneLower = -0.2; //TODO need to be set correctly
-    this->_deadZoneUpper = 0.2; //TODO need to be se correctly 
-    this->_deadZone = _deadZone(this->_deadZoneLower, this->_deadZoneUpper, 1 /*dimention*/);
 
     this->_numInputNeurons = 0;
     this->_numHidenNeurons = 0;
@@ -22,12 +19,12 @@ GRGrt::GRGrt()
     this->_mlpTargetVectorDimensions = 36;
     this->_mlpTrainingExamplesNumber = 30;
 
-    this->_mlpInputVector = _mlpInputVector(_mlpInputVectorDimensions);
-    this->_mlpTargetVector = _mlpTargetVector(_mlpTargetVectorDimensions);
+    this->_mlpInputVector.resize(_mlpInputVectorDimensions);
+    this->_mlpTargetVector.resize(_mlpTargetVectorDimensions);
 
-    
+
     GRT::TrainingLog::setLoggingEnabled( true ); 
-   
+
 }
 /*destructor
 */
@@ -116,7 +113,7 @@ bool GRGrt::loadTestData(std::string filepath, std::string alg)
             std::cout<<"ERROR: The number of input dimensions in the training data ( "
                 <<this->_regressionTrainingData.getNumInputDimensions()<<" )"
                 <<"does not match the number of input dimensions of test data ( "
-                <<this->_regressionTestData.getNumInputDimensions()<<" )"std::endl;
+                <<this->_regressionTestData.getNumInputDimensions()<<" )"<<std::endl;
             return EXIT_FAILURE;
 
         }
@@ -151,15 +148,18 @@ bool GRGrt::init(std::string alg)
 {
     if(alg == "MLP")
     {
-        this->_mlp.init(_numInputNeurons, _numHiddenNeurons, _numOutputNeurons);
-
+        this->_mlp.init(_numInputNeurons, _numHidenNeurons, _numOutputNeurons);
+        
+        //TODO need to be set from config !!!
         //Set the training settings yes it's important 
         this->_mlp.setMaxNumEpochs(500); //This sets the maximum number of epochs (1 epoch is 1 complete iteration of the training data) that are allowed
         this->_mlp.setMinChange(1.0e-5);//This sets the minimum change allowed in training error between any two epochs
-        this->_mlp.setNumRandomTrainingIterations(20);//This sets the number of times the MLP will be trained, each training iteration starts with new random values 
+        this->_mlp.setLearningRate(0.1); //This sets the rate at which the learning algorithm updates the weights of the neural network
+        this->_mlp.setMomentum(0.5); //TODO need to be verified
+        this->_mlp.setNumRestarts(20);//This sets the number of times the MLP will be trained, each training iteration starts with new random values 
         this->_mlp.setUseValidationSet(true); ////This sets aside a small portiion of the training data to be used as a validation set to mitigate overfitting
         this->_mlp.setValidationSetSize(20); ////Use 20% of the training data for validation during the training phase
-        this->_mlp.setRandomizeTrainingOrder(true); ////Randomize the order of the training data so that the training algorithm does not bias the training
+        this->_mlp.setRandomiseTrainingOrder(true); ////Randomize the order of the training data so that the training algorithm does not bias the training
 
         this->_mlp.enableScaling(true);
 
@@ -263,12 +263,12 @@ double GRGrt::test(std::string alg)
 
         //TODO make output file as parameter
         std::fstream file;
-        file.open();
+        file.open("mlp_results.csv", std::fstream::out);
 
         for(GRT::UINT i=0; i<_regressionTestData.getNumSamples(); i++)
         {
-            std::vector<double> inputVector = _regressionTestData[i].getInputVector();
-            std::vector<double> targetVector = _regressionTestData[i].getTargetVector();
+            GRT::VectorDouble inputVector = _regressionTestData[i].getInputVector();
+            GRT::VectorDouble targetVector = _regressionTestData[i].getTargetVector();
 
             //Map the input vector using the trained regression model
             if(!_pipeline.predict(inputVector))
@@ -277,7 +277,7 @@ double GRGrt::test(std::string alg)
                 return EXIT_FAILURE;
             }
 
-            std::vector<double> outputVector = pipeline.getRegressionData();
+            GRT::VectorDouble outputVector = _pipeline.getRegressionData();
 
             //Write the mapped value and also the target value to the file
             for(GRT::UINT j=0; j<outputVector.size(); j++)
@@ -299,7 +299,7 @@ double GRGrt::test(std::string alg)
         std::cout<<"No such algorithm wit name: "<<alg<<std::endl;
         return EXIT_FAILURE;
     }
-    return EXIT_SUCCESS
+    return EXIT_SUCCESS;
 }
 
 /*get test acuracy
@@ -367,23 +367,22 @@ double GRGrt::getMaximumLikelihood()
 
 /*properties for dataset
 */
-void GRGrt::setDatasetProperties(std::string alg, std::string datasetName, std::string infoText, std::string fProp, int dimIn, 
-        )
+void GRGrt::setDatasetProperties(std::string alg, std::string datasetName, std::string infoText, std::string fProp, int dimIn)
 {
     if(alg == "DTW")
     {
-    this->_dimensions = dimIn; 
-    this->_trainingData.setNumDimensions(_dimensions);
-    this->_trainingData.setDatasetName(dataSetName);
-    this->_trainingData.setInfoText(infoText);
-    this->_fileProp = fProp + ".grt";
+        this->_dimensions = dimIn; 
+        this->_trainingData.setNumDimensions(_dimensions);
+        this->_trainingData.setDatasetName(datasetName);
+        this->_trainingData.setInfoText(infoText);
+        this->_fileProp = fProp + ".grt";
     }
     else if(alg == "MLP")
     {
         this->_regressionTrainingData.setInputAndTargetDimensions(this->_mlpInputVectorDimensions, this->_mlpTargetVectorDimensions);
         this->_regressionTrainingData.setDatasetName(datasetName);
         this->_regressionTrainingData.setInfoText(infoText);
-        this->_fileProp = fProp + ".grt"
+        this->_fileProp = fProp + ".grt";
     }
 
 }
@@ -444,15 +443,15 @@ bool GRGrt::saveDataset()
 
 bool GRGrt::tranQantizationModel(std::string quantizationSettingsFile)
 {
-    this->_quantizer = GRT::KMeansQuantizer(_trainingData.getNumDimensions(), 10);
-    
+    this->_quantizer = GRT::KMeansQuantizer(_trainingData.getNumDimensions());
+
     if(!this->_quantizer.train(this->_trainingData))
     {
         std::cout<<"ERROR: Failed to train quantizer"<<std::endl;
         return EXIT_FAILURE;
     }
 
-    if(!this->_quantizer.saveSettingsToFile(quantizationSettingsFile))
+    if(!this->_quantizer.save(quantizationSettingsFile))
     {
         std::cout<<"ERROR: Failed to safe quantizer settings to file: "<<quantizationSettingsFile<<std::endl;
         return EXIT_FAILURE;
@@ -462,7 +461,9 @@ bool GRGrt::tranQantizationModel(std::string quantizationSettingsFile)
 
 bool GRGrt::quantizeData(std::string quantizationSettingsFile)
 {
-    if(!this->_quantizer.loadSettingsFromFile(quantizationSettingsFile))
+    //TODO need to be fixed 
+    /*
+    if(!this->_quantizer.load(quantizationSettingsFile))
     {
         std::cout<<"ERROR: filed to load quantization settings from file: "<<quantizationSettingsFile<<std::endl;
         return EXIT_FAILURE;
@@ -480,4 +481,5 @@ bool GRGrt::quantizeData(std::string quantizationSettingsFile)
         cout<<"Quantized value: "<<_quantizer.getQuantizedValue()<<std::endl;
     }
     return EXIT_SUCCESS;
+    */
 }

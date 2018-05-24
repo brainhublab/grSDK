@@ -118,24 +118,12 @@ class GRGrt
         ////////////////////TODO
         bool saveDataset(); 
 
-        bool checkDeadzone(gr_message* ); //TODO implement if needed
-
         bool tranQantizationModel(std::string);
 
         bool quantizeData(std::string);
     private:
 
-        //Preprocessing algorithms 
-        /**
-         * @brief deadZone preprocessor object
-         * needet in theory to determine not moments withoit movements
-         */
-        GRT::DeadZone _deadZone(); //TODO need to set right limits
-
-        double _deadZoneLower;
-        double _deadZoneUpper;
-
-
+        
         //Feauture extraction algorithms 
         /**
          * @brief K meansQuatizer
@@ -172,12 +160,12 @@ class GRGrt
         GRT::ClassificationData _mlpClassificationTrainingData;
         GRT::ClassificationData _mlpClassificationTestData;
 
-       const GRT::UINT _mlpInputVectorDimensions; //dimensions of input vector
-      const GRT::UINT _mlpTargetVectorDimensions; //Target Vector dimensions
-      const GRT::UINT _mlpTrainingExamplesNumber; 
+        GRT::UINT _mlpInputVectorDimensions; //dimensions of input vector
+        GRT::UINT _mlpTargetVectorDimensions; //Target Vector dimensions
+        GRT::UINT _mlpTrainingExamplesNumber; 
 
-      GRT::VectorDouble _mlpInputVector;
-      GRT::VectorDouble _mlpTargetVector;
+        GRT::VectorDouble _mlpInputVector;
+        GRT::VectorDouble _mlpTargetVector;
 
         /**
          * @brief test data for regriession algorithm
@@ -188,7 +176,7 @@ class GRGrt
         unsigned int _numInputNeurons;
         unsigned int _numHidenNeurons;
         unsigned int _numOutputNeurons;
-        
+
 
         GRT::GestureRecognitionPipeline _pipeline;
         /**
