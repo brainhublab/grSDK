@@ -71,6 +71,12 @@ int main (int argc, const char * argv[])
 
     std::unordered_map<std::string, gr_message> data;
 
+    int ch;
+    initscr();
+    cbreak();
+    noecho();
+    nodelay(stdscr, TRUE);
+
     FILE* f, *fa;
     f = fopen("firs.txt", "w");
     fa = fopen("firs_acc.txt", "w");
@@ -79,42 +85,72 @@ int main (int argc, const char * argv[])
     GRTrajectory traj;
     int itr = 0;
 
-    while(1)
+    while(ch != 'q')
     {
-        //std::cout << "Getting data..\n";
-        devConn->getData(&msg);
-
-        if(!msg.imus["palm"]->acc.empty() && itr > 10)
+        ch = getch();
+        if(ch == 'd')
         {
-            alg.madgwickUpdate(&msg, &alg_msg, 1, "flag");
-            //        std::cout<<"QUANTERNION---->";
-            /*   for(int i =0;i<4;i++)
-                 {
-                 std::cout<<alg_msg.palm[i];
-                 }
+            ch = getch();
+            while(ch != 'g')
+            {
+                ch = getch();
+                if(ch == 'r')
+                {
+                    std::cout<<"saving"<<std::endl;
+                    while(ch != 's' && devCon->getData(&msg) && itr > 10)
+                    {
+                        std::cout<<"reading"<<std::endl;
+                        ch = getch();
+                        if(!msg.empty())
+                        {
+                            //TODO call push function 
+                        }
+                        itr++;
+                    }
+                }
+                else if(ch == 'n')
+                {
+                    //TODO save gesture sample and set next label
+                }
 
-                 std::cout<<std::endl;
-                 */
-            //trajectory = traj.getNewPosByRunge(msg.palm.acc, alg_msg.palm, msg.palm.time_stamp);
-            trajectory = traj.getAccelerations(msg.palm.acc, alg_msg.palm);
-
-            //      printf( "%s %f %f %f \n","trjectory", trajectory[0], trajectory[1], trajectory[2]);
-            std::cout<<msg.palm.acc[0]<<" "<<msg.palm.acc[1]<<" "<<msg.palm.acc[2]<<"check conn in main"<<std::endl;
-            printf("writing...\n");
-            //fprintf(f, "%f %f %f %f %f %f\n", trajectory[0], trajectory[1], trajectory[2], msg.palm.gyro[0], msg.palm.gyro[1], msg.palm.gyro[2]);
-            //fprintf(fa, "%f %f %f \n", msg.palm.acc[0], msg.palm.acc[1], msg.palm.acc[2]);
-            //    std::cout<<std::endl;
+                //TODO clearing training data
+            }
         }
-        msg.palm.gyro.clear();
-        msg.palm.acc.clear();
-        msg.palm.mag.clear();
-
-        alg_msg.clear();
-        itr ++;
-
+        else if(ch == 't')
+        {
+            //TODO training 
+        }
+        else if( ch == 'e')
+        {
+            //TODO execue test 
+        }
     }
+    //std::cout << "Getting data..\n";
+    /*
+       devConn->getData(&msg);
 
-    return 0;
+       if(!msg.empty() && itr > 10 )
+       {
+       alg.madgwickUpdate(&msg, &alg_msg, 1, "flag");
+       trajectory = traj.getAccelerations(msg.palm.acc, alg_msg.palm);
+
+    //      printf( "%s %f %f %f \n","trjectory", trajectory[0], trajectory[1], trajectory[2]);
+    std::cout<<msg.palm.acc[0]<<" "<<msg.palm.acc[1]<<" "<<msg.palm.acc[2]<<"check conn in main"<<std::endl;
+    printf("writing...\n");
+    //fprintf(f, "%f %f %f %f %f %f\n", trajectory[0], trajectory[1], trajectory[2], msg.palm.gyro[0], msg.palm.gyro[1], msg.palm.gyro[2]);
+    //fprintf(fa, "%f %f %f \n", msg.palm.acc[0], msg.palm.acc[1], msg.palm.acc[2]);
+    }
+    msg.palm.gyro.clear();
+    msg.palm.acc.clear();
+    msg.palm.mag.clear();
+
+    alg_msg.clear();
+    itr ++;
+    */
+
+}
+
+return 0;
 
 }
 

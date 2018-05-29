@@ -26,6 +26,12 @@ GRGrt::GRGrt()
     GRT::TrainingLog::setLoggingEnabled( true ); 
 
 }
+
+GRGrt::GRGrt(std::string alg)
+{
+    GRGrt();
+    setRegressifier(alg);
+}
 /*destructor
 */
 GRGrt::~GRGrt()
@@ -38,8 +44,8 @@ GRGrt::~GRGrt()
 GRGrt::GRGrt(const GRGrt &t)
 {
     this->_dtw = GRT::DTW(t._dtw);
-    this->_trainingData = GRT::TimeSeriesClassificationData(t._trainingData);
-    this->_testData = GRT::TimeSeriesClassificationData(t._testData);
+    this->_dtwTrainingData = GRT::TimeSeriesClassificationData(t._dtwTrainingData);
+    this->_dtwTestData = GRT::TimeSeriesClassificationData(t._dtwTestData);
 
     this->_testAccuracy = t._testAccuracy;
 }
@@ -49,13 +55,33 @@ GRGrt::GRGrt(const GRGrt &t)
 GRGrt& GRGrt::operator=(const GRGrt& t)
 {
     this->_dtw = GRT::DTW(t._dtw);
-    this->_trainingData = GRT::TimeSeriesClassificationData(t._trainingData);
-    this->_testData = GRT::TimeSeriesClassificationData(t._testData);
+    this->_dtwTrainingData = GRT::TimeSeriesClassificationData(t._dtwTrainingData);
+    this->_dtwTestData = GRT::TimeSeriesClassificationData(t._dtwTestData);
 
     this->_testAccuracy = t._testAccuracy;
 
 }
 
+bool GRGrt::setRecognitionAlgorithm(std::string alg)
+{
+    if(alg == "DTW")
+    {
+        _algType = alg;
+    }
+    else if(alg == "MLP_R")
+    {
+        _algType = alg;
+    }
+    else if(alg == "MLP_C")
+    {
+        _algType = alg;
+    }
+    else
+    {
+        std::cout<<"ERROR: No such recognition algorithm with name: "<<alg<<std::endl;
+    }
+    return EXIT_SUCCESS;
+}
 /*loading of training data from filepath
  * training data structor is used from GRT standarts //TODO later need to be from database
  */
@@ -63,22 +89,31 @@ bool GRGrt::loadTrainingData(std::string filepath, std::string alg)
 {
     if(alg == "DTW")
     {
-        if(!this->_trainingData.load(filepath))
+        if(!this->_dtwTrainingData.load(filepath))
         {
             std::cout << "Failed to load training data!\n";
             return false;
         }
 
     }
-    else if(alg == "MLP")
+    else if(alg == "MLP_R")
     {
-        if(!this->_regressionTrainingData.loadDatasetFromFile(filepath))
+        if(!this->_mlpRegressionTrainingData.load(filepath))
         {
             std::cout<<"ERROR: failed to load training data for: "<<alg
                 <<" from path"<< filepath<<std::endl;
             return EXIT_FAILURE;
         }
 
+    }
+    else if(alg == "MLP_C")
+    {
+        if(!this->_mlpClassificationTrainingData.load(filepath))
+        {
+            std::cout<<"ERROR: failed to load training data for "<< alg
+                <<" from path "<<filepath<<std::endl;
+            return EXIT_FAILURE;
+        }
     }
     else
     {
@@ -94,62 +129,74 @@ bool GRGrt::loadTestData(std::string filepath, std::string alg)
 {
     if(alg == "DTW")
     {
-        if(!this->_testData.load(filepath))
+        if(!this->_dtwTestData.load(filepath))
         {
             std::cout << "Failed to load test data!\n";
             return false;
         }
     }
-    else if(alg == "MLP")
+    else if(alg == "MLP_R")
     {
-        if(!this->_regressionTestData.loadDatasetFromFile(filepath))
+        if(!this->_mlpRegressionTrainingData.load(filepath))
         {
             std::cout<<"ERROR: Failed to load test data for "<<alg
                 <<"from filepath"<<filepath<<std::endl;
             return EXIT_FAILURE;
         }
-        if(this->_regressionTrainingData.getNumInputDimensions() !=this-> _regressionTestData.getNumInputDimensions())
+        if(this->_mlpRegressionTrainingData.getNumInputDimensions() !=this-> _mlpRegressionTestData.getNumInputDimensions())
         {
             std::cout<<"ERROR: The number of input dimensions in the training data ( "
-                <<this->_regressionTrainingData.getNumInputDimensions()<<" )"
+                <<this->_mlpRegressionTrainingData.getNumInputDimensions()<<" )"
                 <<"does not match the number of input dimensions of test data ( "
-                <<this->_regressionTestData.getNumInputDimensions()<<" )"<<std::endl;
+                <<this->_mlpRegressionTestData.getNumInputDimensions()<<" )"<<std::endl;
             return EXIT_FAILURE;
 
         }
-        if(this->_regressionTrainingData.getNumTargetDimensions() != this->_regressionTestData.getNumTargetDimensions())
+        if(this->_mlpRegressionTrainingData.getNumTargetDimensions() != this->_mlpRegressionTestData.getNumTargetDimensions())
         {
             std::cout<<"ERROR: The number of target dimensions of tranining data ("
-                <<this->_regressionTrainingData.getNumTargetDimensions()<<" )"
+                <<this->_mlpRegressionTrainingData.getNumTargetDimensions()<<" )"
                 <<"does not match with target dimensions of test data ( "
-                <<this->_regressionTestData.getNumTargetDimensions()<<" )"<<std::endl;
+                <<this->_mlpRegressionTestData.getNumTargetDimensions()<<" )"<<std::endl;
             return EXIT_FAILURE;
 
         }
     }
+    else if(alg == "MLP_C")
+    {
+        if(!this->_mlpClassificationTestData.load(filepath))
+        {
+            std::cout<<"ERROR: Failed to load test data for "<< alg
+                <<" from path "<< filepath<<std::endl;
+        }
+    }
     std::cout<<"Training and test dataset are loaded successfuly "<<std::endl;
-    if(alg == "MLP")
+    if(alg == "MLP_R")
     {
         std::cout<<"Training data stats: "<<std::endl;
-        this->_regressionTrainingData.printStats();
+        this->_mlpRegressionTrainingData.printStats();
         std::cout<<"Test data stats: "<<std::endl;
-        this->_regressionTestData.printStats();
+        this->_mlpRegressionTestData.printStats();
 
-        this->_numInputNeurons = this->_regressionTrainingData.getNumInputDimensions();
+        this->_numInputNeurons = this->_mlpRegressionTrainingData.getNumInputDimensions();
         this->_numHidenNeurons = 5;
-        this->_numOutputNeurons = this->_regressionTrainingData.getNumTargetDimensions();
+        this->_numOutputNeurons = this->_mlpRegressionTrainingData.getNumTargetDimensions();
     }
     return true;
 }
 
 /*initializing algorithms
 */
-bool GRGrt::init(std::string alg)
+bool GRGrt::setParams(std::string alg)
 {
-    if(alg == "MLP")
+    if(alg == "DTW")
+    {
+
+    }
+    else if(alg == "MLP_R")
     {
         this->_mlp.init(_numInputNeurons, _numHidenNeurons, _numOutputNeurons);
-        
+
         //TODO need to be set from config !!!
         //Set the training settings yes it's important 
         this->_mlp.setMaxNumEpochs(500); //This sets the maximum number of epochs (1 epoch is 1 complete iteration of the training data) that are allowed
@@ -166,26 +213,76 @@ bool GRGrt::init(std::string alg)
         //aading the MLP to pipeline
         this->_pipeline.setRegressifier(this->_mlp);     
     }
+    else if(alg == "MLP_C")
+    {
+        this->_mlp.init(_numInputNeurons, _numHidenNeurons, _numOutputNeurons);
+
+        //TODO need to be set from config !!!
+        //Set the training settings yes it's important 
+        this->_mlp.setMaxNumEpochs(500); //This sets the maximum number of epochs (1 epoch is 1 complete iteration of the training data) that are allowed
+        this->_mlp.setMinChange(1.0e-5);//This sets the minimum change allowed in training error between any two epochs
+        this->_mlp.setLearningRate(0.1); //This sets the rate at which the learning algorithm updates the weights of the neural network
+        this->_mlp.setMomentum(0.5); //TODO need to be verified
+        this->_mlp.setNumRestarts(20);//This sets the number of times the MLP will be trained, each training iteration starts with new random values 
+        this->_mlp.setUseValidationSet(true); ////This sets aside a small portiion of the training data to be used as a validation set to mitigate overfitting
+        this->_mlp.setValidationSetSize(20); ////Use 20% of the training data for validation during the training phase
+        this->_mlp.setRandomiseTrainingOrder(true); ////Randomize the order of the training data so that the training algorithm does not bias the training
+
+        this->_mlp.enableScaling(true);
+
+        //aading the MLP to pipeline
+        this->_pipeline.setRegressifier(this->_mlp);     
+
+    }
+
 }
 /* setting of test data with providing of size of dataset 
 */
-bool GRGrt::setTestDataFromTraining(int size)
+bool GRGrt::setTestDataFromTraining(int size, std::string alg)
 {
-    if(this->_trainingData.getNumSamples() == 0)
-    {
-        std::cout << "No trainig data to use!"<<std::endl;
-        return false;
-    }
-
     if(size < 0 || size > 100)
     {
         std::cout << "Incorrect size!"<<std::endl;
-        return false;
+        return EXIT_FAILURE;
     }
 
-    this->_testData = this->_trainingData.split(100 - size);
+    //seze from examples is 20%
+    if(alg == "DTW")
+    {
+        if(this->_dtwTrainingData.getNumSamples() == 0)
+        {
+            std::cout << "ERROR: There is no training data to use"<<std::endl;
+            return EXIT_FAILURE;
+        }
 
-    return true;
+        this->_dtwTestData = this->_dtwTrainingData.split(100 - size);
+    }
+    else if(alg == "MLP_R")
+    {
+        if(this->_mlpRegressionTrainingData.getNumSamples == 0) 
+        {
+            std::cout<<"ERROR: There is no training data to use"<<std::endl;
+            return EXIT_FAILURE;
+        }
+
+        this->_mlpRegressionTestData = this->_mlpRegressionTrainingData.split(100 - size)
+    }
+    else if(alg == "MLP_C")
+    {
+        if(this->_mlpClassificationTrainingData.getNumSamples == 0)
+        {
+            std::cout<<"ERROR: There is no trining data to use"<<std::endl;
+            return EXIT_FAILURE;
+        }
+        this->_mlpClassificationTestData = this->_mlpClassificationTrainingData.split(100 - size);
+    }
+    else
+    {
+        std::cout<<"ERROR: there is no algorithm with name: "<<alg<<std::endl;
+        return EXIT_FAILURE;
+
+    }
+    return EXIT_SUCCESS;
 }
 
 /* training 
@@ -194,17 +291,25 @@ bool GRGrt::train(std::string alg)
 {
     if(alg == "DTW")
     {
-        if(!this->_dtw.train(this->_trainingData))
+        if(!this->_dtw.train(this->_dtwTrainingData))
         {
             std::cout << "Failed to train classifier!"<<std::endl;
             return EXIT_FAILURE;
         }
     }
-    else if(alg == "MLP")
+    else if(alg == "MLP_R")
     {
-        if(!this->_pipeline.train(_regressionTrainingData))
+        if(!this->_pipeline.train(_mlpRegressionTrainingData))
         {
             std::cout<<"ERROR: Failed to train MLP model "<<std::endl;
+            return EXIT_FAILURE;
+        }
+    }
+    else if(alg == "MLP_C")
+    {
+        if(!this->_pipeline.train(this->_mlpClassificationTrainingData))
+        {
+            std::cout<<"ERROR: Failed to train Clasification MLP"<<std::endl;
             return EXIT_FAILURE;
         }
     }
@@ -219,18 +324,19 @@ bool GRGrt::train(std::string alg)
 
 /*testing of trained data
 */
-double GRGrt::test(std::string alg)
+double GRGrt::test(std::string alg) //HERE
 {
     if(alg == "DTW")
     {
         double accuracy = 0;
-        for(GRT::UINT i=0; i<this->_testData.getNumSamples(); i++){
+        for(GRT::UINT i=0; i<this->_dtwTestData.getNumSamples(); i++){
             //Get the i'th test sample - this is a timeseries
-            GRT::UINT classLabel = this->_testData[i].getClassLabel();
-            GRT::MatrixDouble timeseries = this->_testData[i].getData();
+            GRT::UINT classLabel = this->_dtwTestData[i].getClassLabel();
+            GRT::MatrixDouble timeseries = this->_dtwTestData[i].getData();
 
             //Perform a prediction using the classifier
-            if( !this->_dtw.predict( timeseries ) ){                std::cout << "Failed to perform prediction for test sampel: " << i <<"\n";
+            if( !this->_dtw.predict( timeseries ) )
+            {
                 std::cout << "Failed to perform prediction for test sampel: " << i <<"\n";
                 return EXIT_FAILURE;
             }
@@ -246,15 +352,15 @@ double GRGrt::test(std::string alg)
             std::cout << "TestSample: " << i <<  "\tClassLabel: " << classLabel << "\tPredictedClassLabel: " << predictedClassLabel << "\tMaximumLikelihood: " << maximumLikelihood << std::endl;
         }
 
-        this->_testAccuracy = (double(accuracy) / double(_testData.getNumSamples())) * 100.0;
+        this->_testAccuracy = (double(accuracy) / double(_dtwTestData.getNumSamples())) * 100.0;
 
         std::cout << "Test Accuracy: " << this->_testAccuracy << "%" << std::endl;
 
         return this->_testAccuracy;
     }
-    else if(alg == "MLP")
+    else if(alg == "MLP_R")
     {
-        if(!this->_pipeline.test(this->_regressionTestData))
+        if(!this->_pipeline.test(this->_mlpRegressionTestData))
         {
             std::cout<<"ERROR: Failed to test MLP model"<<std::endl;
             return EXIT_FAILURE;
@@ -263,12 +369,12 @@ double GRGrt::test(std::string alg)
 
         //TODO make output file as parameter
         std::fstream file;
-        file.open("mlp_results.csv", std::fstream::out);
+        file.open("mlp_regression_results.csv", std::fstream::out);
 
-        for(GRT::UINT i=0; i<_regressionTestData.getNumSamples(); i++)
+        for(GRT::UINT i=0; i<_mlpRegressionTestData.getNumSamples(); i++)
         {
-            GRT::VectorDouble inputVector = _regressionTestData[i].getInputVector();
-            GRT::VectorDouble targetVector = _regressionTestData[i].getTargetVector();
+            GRT::VectorDouble inputVector = _mlpRegressionTestData[i].getInputVector();
+            GRT::VectorDouble targetVector = _mlpRegressionTestData[i].getTargetVector();
 
             //Map the input vector using the trained regression model
             if(!_pipeline.predict(inputVector))
@@ -292,7 +398,53 @@ double GRGrt::test(std::string alg)
         }
 
         file.close();
+        _testAccuracy = double(_pipeline.getTestAccuracy());
+        std::cout<<"Test Accuracy of regresional MLP: "<< _testAccuracy <<std::endl;
+        return _testAccuracy;
 
+
+
+    }
+    else if(alg == "MLP_C")
+    {
+
+        GRT::RegressionData regressionFromClassificationTestData = _mlpClassificationTestData.reformatAsRegression();
+        if(!this->_pipeline.test(regressionFromClassificationTestData))
+        {
+            std::cout<<"ERROR: Failed to test Classification MLP model"<<std::endl;
+            return EXIT_FAILURE;
+        }
+
+        std::fstream file;
+        file.open("mlp_classification.csv", std::fstream::out);
+        for(GRT::UINT i=0; i<regressionFromClassificationTestData.getNumSamples; i++)
+        {
+            GRT::VectorDouble inputVector = regressionFromClassificationTestData[i].getInputVector();
+            GRT::VectorDouble targetVector = regressionFromClassificationTestData[i].getTargetVector();
+
+            if(!_pipeline.predict(inputVector))
+            {
+                std::cout<<"ERROR: failed to map test sample "<<i<<std::endl;
+                return EXIT_FAILURE;
+            }
+            GRT::VectorDouble _pipeline.getRegressionData();
+            
+            for(GRT::UINT j=0; j<outputVector.size(); j++)
+            {
+                file<<outputVector[j]<<'\t';
+
+            }
+            for(GRT::UINT j=0; J<targetVector.size(); j++)
+            {
+                file<<targetVector[j]<<'\t';
+            }
+            file<<std::endl;
+        }
+        file.close();
+        _testAccuracy = double(_pipeline.getTestAccuracy());
+        std::cout<<"Test accuracy of classification MLP: "<<_testAccuracy<<std::endl;
+
+        return _testAccuracy;
     }
     else
     {
@@ -367,22 +519,38 @@ double GRGrt::getMaximumLikelihood()
 
 /*properties for dataset
 */
-void GRGrt::setDatasetProperties(std::string alg, std::string datasetName, std::string infoText, std::string fProp, int dimIn)
+bool GRGrt::setDatasetProperties(std::string alg, std::string datasetName, std::string infoText, std::string fProp, int dimIn)
 {
     if(alg == "DTW")
     {
         this->_dimensions = dimIn; 
-        this->_trainingData.setNumDimensions(_dimensions);
-        this->_trainingData.setDatasetName(datasetName);
-        this->_trainingData.setInfoText(infoText);
+        this->_dtwTrainingData.setNumDimensions(_dimensions);
+        this->_dtwTrainingData.setDatasetName(datasetName);
+        this->_dtwTrainingData.setInfoText(infoText);
         this->_fileProp = fProp + ".grt";
+        return EXIT_SUCCESS;
     }
-    else if(alg == "MLP")
+    else if(alg == "MLP_R")
     {
-        this->_regressionTrainingData.setInputAndTargetDimensions(this->_mlpInputVectorDimensions, this->_mlpTargetVectorDimensions);
-        this->_regressionTrainingData.setDatasetName(datasetName);
-        this->_regressionTrainingData.setInfoText(infoText);
+        this->_mlpRegressionTrainingData.setInputAndTargetDimensions(this->_mlpInputVectorDimensions, this->_mlpTargetVectorDimensions);
+        this->_mlpRegressionTrainingData.setDatasetName(datasetName);
+        this->_mlpRegressionTrainingData.setInfoText(infoText);
         this->_fileProp = fProp + ".grt";
+        return EXIT_SUCCESS;
+    }
+    else if(alg == "MLP_C")
+    {
+        this->_dimensions = dimIn;
+        this->_mlpClassificationTrainingData.setNumDimensions(_dimensions);
+        this->_mlpClassificationTrainingData.setDatasetName(datasetName);
+        this->_mlpClassificationTrainingData.setInfoText(infotext);
+        this->_fileprop = fProp + ".grt";
+        return EXIT_SUCCESS;
+    }
+    else
+    {
+        std::cout<<"ERROR No such algorithm with name: "<<alg<<std::endl;
+        return EXIT_FAILURE;
     }
 
 }
@@ -398,7 +566,7 @@ void GRGrt::setNextLabel()
 */
 void GRGrt::clearTrainingData()
 {
-    _trainingData.clear();
+    _dtwTrainingData.clear();
 
 }
 
@@ -425,7 +593,7 @@ bool GRGrt::addSample(std::vector<double>* trajIn, std::vector<double>* quantIn)
 */
 bool GRGrt::pushGesture()
 {
-    _trainingData.addSample(_gestureLabel, _gestureSample);
+    _dtwTrainingData.addSample(_gestureLabel, _gestureSample);
     _gestureSample.clear();
 }
 
@@ -433,7 +601,7 @@ bool GRGrt::pushGesture()
 */
 bool GRGrt::saveDataset()
 {
-    if(!_trainingData.save(("../trainingData/grTrainingDTW"+_fileProp)))
+    if(!_dtwTrainingData.save(("../trainingData/grTrainingDTW"+_fileProp)))
     {
         std::cout<<"ERROR: Failed to save dataset to file \n";
         return EXIT_FAILURE;
@@ -443,9 +611,9 @@ bool GRGrt::saveDataset()
 
 bool GRGrt::tranQantizationModel(std::string quantizationSettingsFile)
 {
-    this->_quantizer = GRT::KMeansQuantizer(_trainingData.getNumDimensions());
+    this->_quantizer = GRT::KMeansQuantizer(_dtwTrainingData.getNumDimensions());
 
-    if(!this->_quantizer.train(this->_trainingData))
+    if(!this->_quantizer.train(this->_dtwTrainingData))
     {
         std::cout<<"ERROR: Failed to train quantizer"<<std::endl;
         return EXIT_FAILURE;
@@ -462,24 +630,24 @@ bool GRGrt::tranQantizationModel(std::string quantizationSettingsFile)
 bool GRGrt::quantizeData(std::string quantizationSettingsFile)
 {
     //TODO need to be fixed 
-    /*
-    if(!this->_quantizer.load(quantizationSettingsFile))
-    {
-        std::cout<<"ERROR: filed to load quantization settings from file: "<<quantizationSettingsFile<<std::endl;
-        return EXIT_FAILURE;
-    }
-    for(int i=0; i<_trainingData.getNumSamples(); i++)
-    {
-        _quantizer.quantize(_trainingData[i].getSample());
-        std::cout<<"quantization index: "<<i<<std::endl;
-        std::cout<<"Sample: ";
+    /* 
+       if(!this->_quantizer.load(quantizationSettingsFile))
+       {
+       std::cout<<"ERROR: filed to load quantization settings from file: "<<quantizationSettingsFile<<std::endl;
+       return EXIT_FAILURE;
+       }
+       for(int i=0; i<_dtwTrainingData.getNumSamples(); i++)
+       {
+       _quantizer.quantize(_dtwTrainingData[i].getSample());
+       std::cout<<"quantization index: "<<i<<std::endl;
+       std::cout<<"Sample: ";
 
-        for(int j=0; j<_trainingData[i].getNumDimensions(); j++ )
-        {
-            std::cout<<_trainingData[i][j] <<"\t";
-        }
-        cout<<"Quantized value: "<<_quantizer.getQuantizedValue()<<std::endl;
-    }
-    return EXIT_SUCCESS;
-    */
+       for(int j=0; j<_dtwTrainingData[i].getNumDimensions(); j++ )
+       {
+       std::cout<<_dtwTrainingData[i][j] <<"\t";
+       }
+       cout<<"Quantized value: "<<_quantizer.getQuantizedValue()<<std::endl;
+       }
+       return EXIT_SUCCESS;
+       */
 }

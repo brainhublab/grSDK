@@ -47,7 +47,7 @@ class GRGrt
          * @brief initialize algorithms condition
          * @param std:;string type of algorithm for initialization
          */
-        bool init(std::string);
+        bool setParams(std::string);
         /**
          * @brief Takes size from training data to use for testing accuracy
          * @param size is a size from training data
@@ -155,7 +155,14 @@ class GRGrt
          * @brief training data for ragression algorithms
          *
          */
-        GRT::RegressionData _regressionTrainingData;
+        GRT::RegressionData _mlpRegressionTrainingData;
+
+        /**
+         * @brief test data for regriession algorithm
+         *
+         */
+        GRT::RegressionData _mlpRegressionTestData;
+
 
         GRT::ClassificationData _mlpClassificationTrainingData;
         GRT::ClassificationData _mlpClassificationTestData;
@@ -166,12 +173,6 @@ class GRGrt
 
         GRT::VectorDouble _mlpInputVector;
         GRT::VectorDouble _mlpTargetVector;
-
-        /**
-         * @brief test data for regriession algorithm
-         *
-         */
-        GRT::RegressionData _regressionTestData;
 
         unsigned int _numInputNeurons;
         unsigned int _numHidenNeurons;
@@ -197,7 +198,7 @@ class GRGrt
         /**
          * @brief test data
          */
-        GRT::TimeSeriesClassificationData _testData;
+        GRT::TimeSeriesClassificationData _dtwTestData;
 
         /**
          * @brief
@@ -215,11 +216,11 @@ class GRGrt
         /**
          * @brief
          */
-        GRT::MatrixDouble _gestureSample;
+        GRT::TimeSeriesClassificationSample _gestureSample;
         /**
          * @brief
          */
-        GRT::TimeSeriesClassificationData _trainingData;
+        GRT::TimeSeriesClassificationData _dtwTrainingData;
         /**
          * @brief
          */

@@ -158,6 +158,19 @@ struct gr_message
         return 1;
     }
 
+    bool empty()
+    {
+        if(pinky.empty() || ring.empty() || middle.empty() || index.empty() || thumb.empty() ||
+         (pinky.empty() && ring.empty() && middle.empty() && index.empty() && thumb.empty()) )
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
 };
 
 /**
