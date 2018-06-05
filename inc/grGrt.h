@@ -20,6 +20,8 @@ class GRGrt
          * @brief constructor
          */
         GRGrt();
+
+  //      GRGrt(std::string);
         /**
          * @brief destructor
          */
@@ -36,18 +38,22 @@ class GRGrt
          * @brief loads training data by path
          * @param filepath is path to training data
          */
-        bool loadTrainingData(std::string, std::string);
+        bool setAlgorithms(std::string, bool);
+
+//        bool setRegressifier(std::string);///TODO WHAAAT
+
+        bool loadTrainingData(std::string);
         /**
          * @brief loads test data from .grt file
          * @param filepath if .grt file
          */
-        bool loadTestData(std::string, std::string);
+        bool loadTestData(std::string);
 
         /**
          * @brief initialize algorithms condition
          * @param std:;string type of algorithm for initialization
          */
-        bool setParams(std::string);
+        bool prepare();
         /**
          * @brief Takes size from training data to use for testing accuracy
          * @param size is a size from training data
@@ -56,11 +62,11 @@ class GRGrt
         /**
          * @brief Traing the algorithm
          */ 
-        bool train(std::string );
+        bool train();
         /**
          * @brief Test the algorithm with testData and return accuracy
          */
-        double test(std::string);
+        double test();
         /**
          * @brief returns test accuracy
          */
@@ -81,7 +87,8 @@ class GRGrt
         /**
          * @brief
          */
-        bool predict(GRT::MatrixDouble timeseries);
+        bool predict(GRT::MatrixDouble );
+        bool predict(GRT::VectorDouble);
         /**
          * @brief
          */
@@ -95,7 +102,7 @@ class GRGrt
         /**
          * @brief properties of dataset
          */
-        void setDatasetProperties(std::string, std::string, std::string, std::string, int);
+        bool setDatasetProperties(std::string, std::string, std::string, int);
         /**
          * @brief next label of dataset in training data
          */
@@ -130,7 +137,7 @@ class GRGrt
          * quantize the data from sensors
          */
         GRT::KMeansQuantizer _quantizer;//TODO set right parameters 
-
+        GRT::ClassificationData _quantizerTrainingData;
         /**
          * @brief movement index object
          * for recognition of triger gesture
@@ -162,10 +169,12 @@ class GRGrt
          *
          */
         GRT::RegressionData _mlpRegressionTestData;
+        GRT::RegressionSample _mlpRegressionSample;
 
 
         GRT::ClassificationData _mlpClassificationTrainingData;
         GRT::ClassificationData _mlpClassificationTestData;
+        GRT::ClassificationSample _mlpClassificationSample;
 
         GRT::UINT _mlpInputVectorDimensions; //dimensions of input vector
         GRT::UINT _mlpTargetVectorDimensions; //Target Vector dimensions
@@ -178,8 +187,14 @@ class GRGrt
         unsigned int _numHidenNeurons;
         unsigned int _numOutputNeurons;
 
-
+        bool _setNumNeurons();
+        bool _matchDimensionsOfTrainingAndTestData(GRT::RegressionData, GRT::RegressionData);
         GRT::GestureRecognitionPipeline _pipeline;
+        bool _enableFeatureExtraction;
+
+        std::string _algType;
+
+
         /**
          * @brief multi dimensional regresion object
          */

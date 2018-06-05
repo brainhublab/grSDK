@@ -97,7 +97,7 @@ int main (int argc, const char * argv[])
                 if(ch == 'r')
                 {
                     std::cout<<"saving"<<std::endl;
-                    while(ch != 's' && devCon->getData(&msg) && itr > 10)
+                    while(ch != 's' && devConn->getData(&msg) && itr > 10)
                     {
                         std::cout<<"reading"<<std::endl;
                         ch = getch();
@@ -148,7 +148,7 @@ int main (int argc, const char * argv[])
     itr ++;
     */
 
-}
+
 
 return 0;
 
