@@ -15,7 +15,6 @@
  */
 struct GRDevNames
 {
-    public:
         std::string left;
         std::string right;
         std::string test;
@@ -34,7 +33,6 @@ struct GRDevNames
 
 struct GRImu
 {
-    public:
         /**
          * @brief timespamp
          */
@@ -101,7 +99,6 @@ struct GRImu
 
 struct GRMessage
 {
-    public:
         int id;
         GRImu pinky;
         GRImu ring;
@@ -134,7 +131,6 @@ struct GRMessage
         }
     }
 
-//=======
         GRImu get_ring();
         void set_ring(GRImu);
 
@@ -151,12 +147,10 @@ struct GRMessage
         void set_palm(GRImu);
 
         std::unordered_map<std::string, GRImu*> get_imus();
-//>>>>>>> rotations
 };
 
 struct GRDevice
 {
-    public:
         int id = 0;
         std::string name = "";
         std::string address = "";
@@ -178,7 +172,6 @@ struct GRDevice
 
 struct GRAlgMessage
 {
-    public:
         /**
          * @brief quaternion for pinky
          */

@@ -85,7 +85,7 @@ class GRAlgorithm :public GRGrt
         /**
          * @brief Update iterative data of madgwick algorithm
          */
-        bool madgwickUpdate(gr_message*, gr_alg_message*);
+        bool madgwickUpdate(GRMessage*, GRAlgMessage*);
         //void madgwickUpdateThr(device_t*, alg_device_t*, int, std::string flag);//TODO need to implement
         /**
          * @brief precondition Madgwick algorithm

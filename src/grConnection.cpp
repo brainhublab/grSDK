@@ -278,15 +278,3 @@ bool GRConnection::connectSocket()
     return true;
 
 }
-
-
-#ifdef NBIND
-#include <nbind/nbind.h>
-NBIND_CLASS(GRConnection) {
-    construct<>();
-    construct<GRDevice>();
-
-    method(getData);
-    method(connectSocket);
-}
-#endif

@@ -36,9 +36,9 @@ void grInitAlgorithms()
 {
 }
 /*Update step of Madgwick algorithm
- * Takes gr_message and return quaternion
+ * Takes GRMessage and return quaternion
  */
-bool GRAlgorithm::madgwickUpdate(gr_message* message, gr_alg_message* result)
+bool GRAlgorithm::madgwickUpdate(GRMessage* message, GRAlgMessage* result)
 {
     std::unordered_map<std::string, GRImu*>::iterator it;
     // std::cout<<"\nbefore madgwickUpdate() Q :"<<q0<<" "<<q1<<" "<<q2<<" "<<q3<<std::endl;
@@ -232,15 +232,3 @@ std::unordered_map<std::string, std::vector<double>> GRAlgorithm::getEulerRotati
     //     })
 }
 
-#ifdef NBIND
-#include <nbind/nbind.h>
-NBIND_CLASS(GRAlgorithm) {
-    //  inherit(GRGrt);
-    construct<>();
-    construct<GRAlgorithm>();
-
-    method(setupMadgwick);
-    method(madgwickUpdate);
-}
-#endif
->>>>>>> rotations

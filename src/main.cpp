@@ -110,7 +110,7 @@ int main (int argc, const char * argv[])
                 {
 
                     alg.madgwickUpdate(&msg, &alg_msg);
-                    for(std::unordered_map<std::string, imu* >::iterator it=msg.imus.begin(); it!=msg.imus.end(); ++it)
+                    for(std::unordered_map<std::string, GRImu* >::iterator it=msg.imus.begin(); it!=msg.imus.end(); ++it)
                     {
                         for(int i=0;i<3;i++) 
                         {
