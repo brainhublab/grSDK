@@ -30,16 +30,10 @@ GRAlgorithm& GRAlgorithm::operator=(const GRAlgorithm& t)
 
 }
 
-/* Initialize algorithms and variables needed for them
- */
-void grInitAlgorithms()
-{
-}
-
 /*Update step of Madgwick algorithm
  * Takes gr_message and return quaternion 
  */
-bool GRAlgorithm::madgwickUpdate(gr_message* message, gr_alg_message* result, int freqCallibration, std::string flag)
+bool GRAlgorithm::madgwickUpdate(gr_message* message, gr_alg_message* result)
 {
     std::vector<double> rotations;
     std::unordered_map<std::string, imu*>::iterator it;
@@ -107,56 +101,7 @@ void GRAlgorithm::madgwickUpdateThr(imu* imu, int freqCallibration, std::string 
 }
 */
 
-/* setUp method for simplified kalman filter
- * It's take a grConnection object make some iterations and calkulate variables needet for filter
- */
-bool GRAlgorithm::setUpKfilter(std::vector<Eigen::Vector3d> data, acc_k_vars* k_vars )
-{
-    int i=0;
-    std::vector<double> acc_x;
-    std::vector<double> acc_y;
-    std::vector<double> acc_z;
-    std::cout<<"starting kamlman initialization"<<std::endl;
-    while(i < data.size())
-    {
-        
-        acc_x.push_back(data[i](0));
-        acc_y.push_back(data[i](1));
-        acc_z.push_back(data[i](2));
-        if(i> 46)
-        {
-            k_vars->acc_k_x.accumulated.push_back(data[i](0));
-            k_vars->acc_k_y.accumulated.push_back(data[i](1));
-            k_vars->acc_k_z.accumulated.push_back(data[i](2));
-        }
-        i++;
-        std::cout<<i<<std::endl;
 
-    }
-    k_vars->acc_k_x.volt = _stDev(&acc_x);
-    k_vars->acc_k_y.volt = _stDev(&acc_y);
-    k_vars->acc_k_z.volt = _stDev(&acc_z);
-    std::cout<<"done with kalman setup"<<std::endl;
-
-}
-
-Eigen::Vector3d GRAlgorithm::kFilterStep(Eigen::Vector3d data, acc_k_vars* k_vars)
-{
-    Eigen::Vector3d result;
-//   _correctKFilter(msg->palm.acc, k_vars);
-    result(0) = _kFilter(data(0), &(k_vars->acc_k_x));
-    result(1) = _kFilter(data(1), &(k_vars->acc_k_y));
-    result(2) = _kFilter(data(2), &(k_vars->acc_k_z));
-    return result;
-}
-/*
-bool GRAlgorithm::setUpKfilterCoord(std::vector<std::vector<double> > acumulated_data, acc_k_vars* k_vars)
-{
-
-}
-bool kFilterStepCoord(std::vector<double> coord, )*/
-/*compute pitch roll and yaw from quaternion
- */
 std::vector<double> GRAlgorithm::_computeAngles(std::vector<double> q)
 {
 
@@ -180,21 +125,7 @@ std::vector<double> GRAlgorithm::_computeAngles(std::vector<double> q)
     return _angles;
 }
 
-/*Simplified kalman filter 
- */
-double GRAlgorithm::_kFilter(double input, k_filter_vars* k_vars)
-{
-    k_vars->pc = k_vars->p + k_vars->proccess;
-    k_vars->g = k_vars->pc / (k_vars->pc + k_vars->volt);
-    k_vars->p = (1 - k_vars->g) * k_vars->pc;
-    k_vars->xp = k_vars->xe;
-    k_vars->zp = k_vars->xp;
-    k_vars->xe = k_vars->g * (input - k_vars->zp) + k_vars->xp;
-    
-    return k_vars->xe;
-}
 
-//Kfilter private help methods
 /* Standard deviation calculation
  */
 double GRAlgorithm::_stDev(std::vector<double>* input)
@@ -226,35 +157,3 @@ double GRAlgorithm::_stdErr(std::vector<double>* input)
     return (tmpVar/sqrt((double)input->size()));
 }
 
-bool GRAlgorithm::_correctKFilter(std::vector<double> data, acc_k_vars* k_vars)
-{
-    _sliceAndPush(&(k_vars->acc_k_x.accumulated), data[0]);
-    k_vars->acc_k_x.accumulated;
-    _sliceAndPush(&(k_vars->acc_k_y.accumulated), data[1]);
-    k_vars->acc_k_y.accumulated;
-    _sliceAndPush(&(k_vars->acc_k_z.accumulated), data[2]);
-    k_vars->acc_k_z.accumulated;
-
-    k_vars->acc_k_x.volt = _stDev(&(k_vars->acc_k_x.accumulated));
-    k_vars->acc_k_y.volt = _stDev(&(k_vars->acc_k_y.accumulated));
-    k_vars->acc_k_z.volt = _stDev(&(k_vars->acc_k_z.accumulated));
-    
-    return 1;    
-}
-
-bool GRAlgorithm::_sliceAndPush(std::vector<double>* data, double val)
-{
-   // std::cout<<"slice data size  -->"<<data->size()<<std::endl;
-
-    for(int i=0; i<data->size(); i++)
-    {
-        if(i<2)
-        {    
-            data->at(i) = data->at(i+1);
-        }
-        else
-        {
-            data->at(i) = val;
-        }
-    }   
-}

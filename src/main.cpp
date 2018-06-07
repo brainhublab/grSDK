@@ -71,6 +71,12 @@ int main (int argc, const char * argv[])
 
     std::unordered_map<std::string, gr_message> data;
 
+    int ch;
+    initscr();
+    cbreak();
+    noecho();
+    nodelay(stdscr, TRUE);
+
     FILE* f, *fa;
     f = fopen("firs.txt", "w");
     fa = fopen("firs_acc.txt", "w");
@@ -79,40 +85,111 @@ int main (int argc, const char * argv[])
     GRTrajectory traj;
     int itr = 0;
 
-    while(1)
+
+    GRGrt grt;
+
+    grt.setAlgorithms("MLP_C", false);
+    grt.prepare();
+    std::vector<double> accelerations;
+    std::vector<double> rotations;
+    while(ch != 'q')
     {
-        //std::cout << "Getting data..\n";
-        devConn->getData(&msg);
+        ch = getch();
+        if(ch == 'r')
+        {   
+            clrtoeol();
+            mvprintw(0, 0, "saving");
+            while(ch != 's' && devConn->getData(&msg))
+            {
+                clrtoeol();
+                mvprintw(0, 0, "reading");
 
-        if(!msg.imus["palm"]->acc.empty() && itr > 10)
-        {
-            alg.madgwickUpdate(&msg, &alg_msg, 1, "flag");
-            //        std::cout<<"QUANTERNION---->";
-            /*   for(int i =0;i<4;i++)
-                 {
-                 std::cout<<alg_msg.palm[i];
-                 }
+                ch=getch();
+                if(!msg.empty() && itr > 10)
+                {
 
-                 std::cout<<std::endl;
-                 */
-            //trajectory = traj.getNewPosByRunge(msg.palm.acc, alg_msg.palm, msg.palm.time_stamp);
-            trajectory = traj.getAccelerations(msg.palm.acc, alg_msg.palm);
+                    alg.madgwickUpdate(&msg, &alg_msg);
+                    for(std::unordered_map<std::string, imu* >::iterator it=msg.imus.begin(); it!=msg.imus.end(); ++it)
+                    {
+                        for(int i=0;i<3;i++) 
+                        {
+                            accelerations.push_back(it->second->acc[i]);
+                        }  
+                    }
 
-            //      printf( "%s %f %f %f \n","trjectory", trajectory[0], trajectory[1], trajectory[2]);
-            std::cout<<msg.palm.acc[0]<<" "<<msg.palm.acc[1]<<" "<<msg.palm.acc[2]<<"check conn in main"<<std::endl;
-            printf("writing...\n");
-            //fprintf(f, "%f %f %f %f %f %f\n", trajectory[0], trajectory[1], trajectory[2], msg.palm.gyro[0], msg.palm.gyro[1], msg.palm.gyro[2]);
-            //fprintf(fa, "%f %f %f \n", msg.palm.acc[0], msg.palm.acc[1], msg.palm.acc[2]);
-            //    std::cout<<std::endl;
+                    for(std::unordered_map<std::string, std::vector<double>* >::iterator it=alg_msg.nodes.begin(); it!=alg_msg.nodes.end(); ++it)
+                    {
+                        for(int i=0;i<3;i++)
+                        {
+                            //TODO  //here need to fill rotations
+                        }     
+
+                    }
+
+                    grt.addSample(&accelerations, &rotations);
+                    //need new connection to continue
+                }
+                msg.clear();
+                alg_msg.clear();
+                itr++;
+
+            }
+            clrtoeol();
+            mvprintw(0, 0, "saving");
+            grt.pushGesture();
         }
-        msg.palm.gyro.clear();
-        msg.palm.acc.clear();
-        msg.palm.mag.clear();
+        else if(ch == 'n')
+        {
+            grt.setNextLabel();
+            clrtoeol();
+            mvprintw(0, 0, "next label");
 
-        alg_msg.clear();
-        itr ++;
+        }
+        else if(ch == 't')
+        {
+            clrtoeol();
+            mvprintw(0, 0, "training and testing");
+            grt.loadTrainingData("../trainingData/MLP_C_trainingData.grt");
+            grt.setTestDataFromTraining(20);
 
+            grt.train();
+            grt.test();
+
+            grt.saveModel("../trainingData/MLP_C_model.grt");
+
+            clrtoeol();
+//            mvprintw(0, 0, std::string(grt.getTestAccuracy()));
+
+
+        }
+
+
+    } 
+
+    //std::cout << "Getting data..\n";
+    /*
+       devConn->getData(&msg);
+
+       if(!msg.empty() && itr > 10 )
+       {
+       alg.madgwickUpdate(&msg, &alg_msg, 1, "flag");
+       trajectory = traj.getAccelerations(msg.palm.acc, alg_msg.palm);
+
+    //      printf( "%s %f %f %f \n","trjectory", trajectory[0], trajectory[1], trajectory[2]);
+    std::cout<<msg.palm.acc[0]<<" "<<msg.palm.acc[1]<<" "<<msg.palm.acc[2]<<"check conn in main"<<std::endl;
+    printf("writing...\n");
+    //fprintf(f, "%f %f %f %f %f %f\n", trajectory[0], trajectory[1], trajectory[2], msg.palm.gyro[0], msg.palm.gyro[1], msg.palm.gyro[2]);
+    //fprintf(fa, "%f %f %f \n", msg.palm.acc[0], msg.palm.acc[1], msg.palm.acc[2]);
     }
+    msg.palm.gyro.clear();
+    msg.palm.acc.clear();
+    msg.palm.mag.clear();
+
+    alg_msg.clear();
+    itr ++;
+    */
+
+
 
     return 0;
 
