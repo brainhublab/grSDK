@@ -40,7 +40,7 @@ int main (int argc, const char * argv[])
     */
     GRDevManager devManager;
     GRConnection* devConn;
-    device_t* device;
+    GRDevice* device;
     gr_message msg;
     gr_alg_message alg_msg;
 
@@ -85,35 +85,48 @@ int main (int argc, const char * argv[])
     GRTrajectory traj;
     int itr = 0;
 
+    std::vector<double> accelerations;
+    std::vector<double> rotations;
     while(ch != 'q')
     {
         ch = getch();
-        if(ch == 'd')
-        {
-            ch = getch();
-            while(ch != 'g')
+        if(ch == 'r')
+        {   
+            clrtoeol();
+            nvprintw(0, 0, "saving");
+            while(ch != 's' && devCon->getData(&msg))
             {
-                ch = getch();
-                if(ch == 'r')
-                {
-                    std::cout<<"saving"<<std::endl;
-                    while(ch != 's' && devConn->getData(&msg) && itr > 10)
-                    {
-                        std::cout<<"reading"<<std::endl;
-                        ch = getch();
-                        if(!msg.empty())
-                        {
-                            //TODO call push function 
-                        }
-                        itr++;
-                    }
-                }
-                else if(ch == 'n')
-                {
-                    //TODO save gesture sample and set next label
-                }
+                clrtoeol();
+                nvprintw(0, 0, "reading");
 
-                //TODO clearing training data
+                ch=getch();
+                if(!msg.empty() && itr > 10)
+                {
+                    
+                    alg.madgwickUpdate(&msg, &alg_msg);
+                    for(std::unordered_map<std::string, imu*>::iterator it; it<msg.imus.begin(); it!=msg.imus.end())
+                    {
+                        for(int i=0;i<3;i++) 
+                        {
+                            accelerations.push_back(it->second->acc[i]};
+                        }  
+                    }
+
+                    for(std::unordered_map<std::string, std::vector<double>*>::iterator it=alg_msg.nodes.begin(); it!= alg_msg.nodes.end())
+                    {
+                        
+                    
+                    }
+                   for(int i=0; i<3; i++)
+                   {
+                    
+                    
+                    
+                    
+                   } 
+
+                    //need new connection to continue
+                }
             }
         }
         else if(ch == 't')

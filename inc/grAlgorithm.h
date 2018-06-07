@@ -85,7 +85,7 @@ class GRAlgorithm :public GRGrt
 	/**
 	 * @brief Update iterative data of madgwick algorithm
 	 */
-        bool madgwickUpdate(gr_message*, gr_alg_message*, int, std::string flag);
+        bool madgwickUpdate(gr_message*, gr_alg_message*);
         //void madgwickUpdateThr(device_t*, alg_device_t*, int, std::string flag);//TODO need to implement
         /**
 	 * @brief precondition Madgwick algorithm
@@ -94,7 +94,6 @@ class GRAlgorithm :public GRGrt
 
         //simplified Kalman
          
-        bool setUpKfilter(std::vector<Eigen::Vector3d>, acc_k_vars*);//TODO implement for fingers
         Eigen::Vector3d kFilterStep(Eigen::Vector3d, acc_k_vars*);
 //        bool setUpKfilterCoord(std::vector<std::vector<double> >, acc_k_vars* );
 //        bool kFilterStepCoord(std::vector<double>, acc_k_vars*);
@@ -144,14 +143,6 @@ class GRAlgorithm :public GRGrt
 	 */
         std::unordered_map<std::string, GRMadgwick*> _madgwickObjects;
 
-        //kFilter help methods
-        /**
-	 * @brief simplified kalman
-	 */
-	double _kFilter(double, k_filter_vars*); 
-        /**
-	 * @brief standart deviation
-	 */
         double _stDev(std::vector<double>*);
         /**
 	 * @brief average
@@ -164,11 +155,6 @@ class GRAlgorithm :public GRGrt
         /**
 	 * @brief TODO
 	 */
-        bool _correctKFilter(std::vector<double>, acc_k_vars*);
-        /**
-	 * @brief TODO
-	 */
-        bool _sliceAndPush(std::vector<double>*, double);
 
 
 
