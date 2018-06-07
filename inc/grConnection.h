@@ -31,9 +31,9 @@
 
 /**
  * @brief sgrDevice socket structure
- *  contains socket params 
+ *  contains socket params
  */
-struct dev_socket 
+struct dev_socket
 {
     /**
      * @brief socket descriptor
@@ -66,30 +66,30 @@ class GRConnection
 
         /**
          * @brief constructor with param
-         * @param device_t structure for reference grDevice.h
+         * @param GRDevice structure for reference grDevice.h
          **/
-        GRConnection(device_t);
+        GRConnection(GRDevice);
 
         /**
          * @brief fills msg with data from device
-         *  fills msg with data from device by id 
-         * @param id is device id geted from GRDevManager::_avalibleDevices and stored in GRDevManager::_activeDevices  
+         *  fills msg with data from device by id
+         * @param id is device id geted from GRDevManager::_avalibleDevices and stored in GRDevManager::_activeDevices
          * @param msg is a pointer to gr_message object defined previosly
          * @return true if got data
          */
-        bool getData(gr_message* msg);
+        bool getData(GRMessage* msg);
 
         /**
          * @brief gets device by id
          *   getter
          * @param id is device id
-         * @return pointer to device_t object by device id
+         * @return pointer to GRDevice object by device id
          */
-        device_t* getDevice(int id);
+        GRDevice* getDevice(int id);
 
         /**
          * @brief connects socket for selected device and store params of created socket in _deviceSocket
-         * @return true if socket is assigned succssesfuly         
+         * @return true if socket is assigned succssesfuly
          */
         bool connectSocket();
 
@@ -114,52 +114,52 @@ class GRConnection
          * @return true if writing in imu* is succsessd
          * @see imu
          */
-        bool _splitData(std::string, imu*);
+        bool _splitData(std::string, GRImu*);
 
         /**
          * @brief returns local timestamp
-         */	
+         */
         double _getTimeStamp();
 
         /**
-         * @brief assigns new socket to device with device id  
-         * @return socket stored in _deviceSocket.sock 
+         * @brief assigns new socket to device with device id
+         * @return socket stored in _deviceSocket.sock
          */
         int _asignDeviceWithSocket();
 
         /**
          * @brief return device by device id
-         * @return device_t structure with stored config data
+         * @return GRDevice structure with stored config data
          */
-        device_t _getDeviceById(int id);
+        GRDevice _getDeviceById(int id);
 
         /**
-         * @brief assigns all imu vars in gr_message  pointer with concret imu data 
-         *  call GRConnection::_splitData for each imu 
-         * @param std::string input raw message 
+         * @brief assigns all imu vars in gr_message  pointer with concret imu data
+         *  call GRConnection::_splitData for each imu
+         * @param std::string input raw message
          * @param gr_message* pointer to message structure for output
-         * 
+         *
          */
-        bool _asignMessageWithImu(std::string, gr_message*);
+        bool _asignMessageWithImu(std::string, GRMessage*);
 
         /**
          * @bref check which finger modules are connected and send data
-         * write boolean imu.is_connected flags in gr_message parameter for each imu 
+         * write boolean imu.is_connected flags in gr_message parameter for each imu
          * @param std::string raw message as string
-         * @param gr_message* poiter to message struct as output 
-         * return true if finish ok 
+         * @param gr_message* poiter to message struct as output
+         * return true if finish ok
          **/
-        bool _checkConnectedImus(std::string, gr_message*);    
-        
+        bool _checkConnectedImus(std::string, GRMessage*);
+
         /**
          * @brief Boolean for identifying first iteration of geting data
          */
         bool firstIteration;
 
         /**
-         * @bref device_t class member for storing device params
+         * @bref GRDevice class member for storing device params
          **/
-        device_t _dev;
+        GRDevice _dev;
 
         /**
          * @bref socket information assignet with device

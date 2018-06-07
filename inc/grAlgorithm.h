@@ -14,15 +14,16 @@
 
 #include "GRT/GRT.h"
 
-#include <grConnection.h>
-#include <grDevice.h>
-#include <grMadgwick.h>
-#include <grGrt.h>
-
+//#include "grConnection.h" //TODO:
+#include "grDevice.h"
+#include "grMadgwick.h"
+#include "grGrt.h"
 
 #include "Eigen/Dense"
+#include "Eigen/Geometry"
 using namespace std;
-struct k_filter_vars //variables needet from simplified kalman 
+
+struct k_filter_vars // variables needet from simplified kalman
 {
     double volt;
     double proccess;
@@ -47,13 +48,12 @@ struct k_filter_vars //variables needet from simplified kalman
     }
 };
 
-struct acc_k_vars //arbitary accelerometer vars for kalman
+struct acc_k_vars // arbitary accelerometer vars for kalman
 {
     k_filter_vars acc_k_x;
     k_filter_vars acc_k_y;
     k_filter_vars acc_k_z;
 };
-
 
 /**
  * GRAlgorithm class - short descr.
@@ -61,100 +61,114 @@ struct acc_k_vars //arbitary accelerometer vars for kalman
 class GRAlgorithm :public GRGrt
 {
     public:
-	    /**
-	     * @brief constructor
-	     */
+        /**
+         * @brief constructor
+         */
         GRAlgorithm();
-       	/**
-	 * @brief destructor
-	 */
-	~GRAlgorithm();
-	/**
-	 * @brief copy constructor
-	 */
+        /**
+         * @brief destructor
+         */
+        ~GRAlgorithm();
+        /**
+         * @brief copy constructor
+         */
         GRAlgorithm(const GRAlgorithm& );
-	/**
-	 * @brief assigment operator
-	 */
+        /**
+         * @brief assigment operator
+         */
         GRAlgorithm& operator=(const GRAlgorithm&);
-	/**
-	 * @brief initialize algorithms
-	 */
+        /**
+         * @brief initialize algorithms
+         */
         void grInitAlgorithms();
         //madgwick
-	/**
-	 * @brief Update iterative data of madgwick algorithm
-	 */
+        /**
+         * @brief Update iterative data of madgwick algorithm
+         */
         bool madgwickUpdate(gr_message*, gr_alg_message*);
         //void madgwickUpdateThr(device_t*, alg_device_t*, int, std::string flag);//TODO need to implement
         /**
-	 * @brief precondition Madgwick algorithm
-	 */
-	bool setupMadgwick(int, int, int, int, int, int);
+         * @brief precondition Madgwick algorithm
+         */
+        bool setupMadgwick(int, int, int, int, int, int);
 
         //simplified Kalman
-         
-        Eigen::Vector3d kFilterStep(Eigen::Vector3d, acc_k_vars*);
-//        bool setUpKfilterCoord(std::vector<std::vector<double> >, acc_k_vars* );
-//        bool kFilterStepCoord(std::vector<double>, acc_k_vars*);
-             
+
+        // TODO: make const GRAlgMessage in methods for rotations
+        /**
+         * @brief get specific node rotation from gr algorithm message
+         */
+        Eigen::Quaterniond getNodeRotation(GRAlgMessage &alg_msg, const std::string& nodeName) const;
+        /**
+         * @brief get unordered map of roations in quaternion representation
+         */
+        std::unordered_map<std::string, Eigen::Quaterniond> getRotations(GRAlgMessage alg_msg) const;
+        /**
+         * @brief get unordered_map of nodename-rotations in [roll, pitch, yaw] representation
+         */
+        std::unordered_map<std::string, std::vector<double>> getEulerRotations(GRAlgMessage alg_msg) const;
+
     private:
         /**
-	 * @brief rotations 
-	 */
-	double _roll, _pitch, _yaw;
-	/**
-	 * @brief vector with computed from quaternion angles
-	 */
+         * @brief rotations
+         */
+        double _roll, _pitch, _yaw;
+        /**
+         * @brief vector with computed from quaternion angles
+         */
         std::vector<double> _angles;
-	/**
-	 * @brief calculation of angles from quaternion method
-	 */
+        /**
+         * @brief calculation of angles from quaternion method
+         */
         std::vector<double> _computeAngles(std::vector<double>);
 
         //grMadgwick objects
-	/**
-	 * @brief madgwick alg for pinky
-	 */
+        /**
+         * @brief madgwick alg for pinky
+         */
         GRMadgwick _pinkyMadgwick;
-	/**
-	 * @brief madgwick alg for ring 
-	 */
+        /**
+         * @brief madgwick alg for ring
+         */
         GRMadgwick _ringMadgwick;
-	/**
-	 * @brief madgwick alg for middle
-	 */
+        /**
+         * @brief madgwick alg for middle
+         */
         GRMadgwick _middleMadgwick;
-	/**
-	 * @brief madgwick alg for index
-	 */
+        /**
+         * @brief madgwick alg for index
+         */
         GRMadgwick _indexMadgwick;
-	/**
-	 * @brief madgwick alg for thumb
-	 */
+        /**
+         * @brief madgwick alg for thumb
+         */
         GRMadgwick _thumbMadgwick;
-	/**
-	 * @brief madgwick alg for palm
-	 */
+        /**
+         * @brief madgwick alg for palm
+         */
         GRMadgwick _palmMadgwick;
-	
-	/**
-	 * @brief map for easier access of objects
-	 */
+        /**
+         * @brief quaternions for madgwickUpdate
+         */
+        Eigen::Quaterniond quat;
+        Eigen::Quaterniond palmQuat;
+        Eigen::Quaterniond relativeQuat;
+        std::vector<double> rotations;
+
+        /**
+         * @brief map for easier access of objects
+         */
         std::unordered_map<std::string, GRMadgwick*> _madgwickObjects;
 
         double _stDev(std::vector<double>*);
         /**
-	 * @brief average
-	 */
+         * @brief average
+         */
         double _average(std::vector<double>*);//average
         /**
-	 * @brief TODO
-	 */
+         * @brief TODO
+         */
         double _stdErr(std::vector<double>*);
-        /**
-	 * @brief TODO
-	 */
 
 
 

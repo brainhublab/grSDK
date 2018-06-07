@@ -4,6 +4,7 @@
 .idea/*
 bin/*
 build/*
+build-cpp/*
 externAssets/*.zip
 */**/*.zip
 */**/*.tar.gz
@@ -12,3 +13,4 @@ externAssets/eigen
 data/*
 externAssets/sources/grt_source/build/tmp
 docs/out/*
+node_modules

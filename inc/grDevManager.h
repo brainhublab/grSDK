@@ -26,7 +26,7 @@
 #include <bluetooth/hci_lib.h>
 #include <bluetooth/rfcomm.h>
 
-#include <grConnection.h>
+#include "grConnection.h"
 /**
  * GRDevManager - a class description
  */
@@ -37,45 +37,45 @@ class GRDevManager
          * @brief constructor
          */
         GRDevManager();
-        
+
         /**
          * @brief Destructor
          */
         ~GRDevManager();
-        
+
         /**
          * @brief Copy constructor
          */
         GRDevManager(const GRDevManager&);
-        
+
         /**
          * @brief Assignment operator
          */
-        GRDevManager& operator=(const GRDevManager&); 
-        
+        GRDevManager& operator=(const GRDevManager&);
+
         /**
          * @brief returns available devices in range
          * @return map of id's and devices which are avalible for connection
-         * @see device_t
-         */ 
-        std::unordered_map<int, device_t> getAvalibleDevices();
-        
+         * @see GRDevice
+         */
+        std::vector<GRDevice> getAvalibleDevices();
+
         /**
          * @brief activates device
          * add selected device from _avalibleDevices to _activeDevices and make precondition for connection
          * @param id is id of device
          * @return pointer to GRConnection object
          * @see getDeviceId()
-         * @see GRConnection 
+         * @see GRConnection
          */
         GRConnection*  setActiveDevice(int);
 
         /**
          * @brief returns id of device
          * a getter of id
-         * @param device is device_t structure
+         * @param device is GRDevice structure
          * @return id of device
-         * @see device_t
+         * @see GRDevice
          */
         GRConnection* getActiveDeviceById(int);
 
@@ -83,7 +83,7 @@ class GRDevManager
         /**
          * @brief map of available devices
          */
-        std::unordered_map<int, device_t> _avalibleDevices;
+        std::vector<GRDevice> _avalibleDevices;
         /**
          * @brief map of activated devices
          */

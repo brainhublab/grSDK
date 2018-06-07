@@ -905,3 +905,12 @@ bool GRGrt::quantizeData(std::string quantizationSettingsFile)
     return true;
 }
 */
+//TODO check if its needed 
+#ifdef NBIND
+#include <nbind/nbind.h>
+NBIND_CLASS(GRGrt) {
+    construct<>();
+    construct<GRGrt>();
+}
+
+#endif

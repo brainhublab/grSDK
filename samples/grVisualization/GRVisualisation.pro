@@ -12,7 +12,7 @@ TARGET = GRVisualization
 TEMPLATE = app
 LIBS += -L/usr/lib64 -L../../externAssets/grt/lib -lgrt -ldbus-1 -lglut -lGLU -lbluetooth
 INCLUDEPATH += ../../externAssets/grt/include ../../externAssets/grt/lib ../../externAssets/eigen /usr/include/dbus-1.0 /usr/lib64/dbus-1.0/include ./inc ../../externAssets/qcustomplot ../../externAssets/ ../../inc ./
-QMAKE_CXXFLAGS += -g -std=c++11
+QMAKE_CXXFLAGS += -g -std=c++11 -mno-avx -mno-avx2 # just eigen mno things
 
 OBJECTS_DIR = ./build
 DESTDIR = ./bin
@@ -27,6 +27,8 @@ SOURCES += ./src/main.cpp\
 ./src/grDataPlotter.cpp \
 ../../src/grConnection.cpp \
 ../../src/grAlgorithm.cpp \
+../../src/grDevice.cpp \
+../../src/grDevManager.cpp \
 ../../src/grGrt.cpp \
 ../../src/grMadgwick.cpp \
 ../../src/grTrajectory.cpp \
@@ -45,6 +47,7 @@ HEADERS += ./inc/grVisualization.h \
 ../../inc/grConnection.h \
 ../../inc/grAlgorithm.h \
 ../../inc/grDevice.h \
+../../inc/grDevManager.h \
 ../../inc/grGrt.h \
 ../../inc/grMadgwick.h \
 ../../inc/grTrajectory.h \

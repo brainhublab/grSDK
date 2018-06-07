@@ -212,6 +212,7 @@ void GRMadgwick::MadgwickAHRSupdateIMU(double gx, double gy, double gz, double a
 bool GRMadgwick::setFreqCalibration(int callibration)
 {
     this->freqCallibration = callibration;
+    return true;
 }
 // Fast inverse square-root
 
@@ -242,3 +243,13 @@ double GRMadgwick::constrain(double x, double a, double b)
     else
         return x;
 }
+
+
+
+#ifdef NBIND
+#include <nbind/nbind.h>
+NBIND_CLASS(GRMadgwick) {
+  construct<>();
+  construct<GRMadgwick>();
+}
+#endif
