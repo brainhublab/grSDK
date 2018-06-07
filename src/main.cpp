@@ -40,7 +40,7 @@ int main (int argc, const char * argv[])
     */
     GRDevManager devManager;
     GRConnection* devConn;
-    GRDevice* device;
+    device_t* device;
     gr_message msg;
     gr_alg_message alg_msg;
 
@@ -85,6 +85,11 @@ int main (int argc, const char * argv[])
     GRTrajectory traj;
     int itr = 0;
 
+
+    GRGrt grt;
+
+    grt.setAlgorithms("MLP_C", false);
+    grt.prepare();
     std::vector<double> accelerations;
     std::vector<double> rotations;
     while(ch != 'q')
@@ -93,51 +98,74 @@ int main (int argc, const char * argv[])
         if(ch == 'r')
         {   
             clrtoeol();
-            nvprintw(0, 0, "saving");
-            while(ch != 's' && devCon->getData(&msg))
+            mvprintw(0, 0, "saving");
+            while(ch != 's' && devConn->getData(&msg))
             {
                 clrtoeol();
-                nvprintw(0, 0, "reading");
+                mvprintw(0, 0, "reading");
 
                 ch=getch();
                 if(!msg.empty() && itr > 10)
                 {
-                    
+
                     alg.madgwickUpdate(&msg, &alg_msg);
-                    for(std::unordered_map<std::string, imu*>::iterator it; it<msg.imus.begin(); it!=msg.imus.end())
+                    for(std::unordered_map<std::string, imu* >::iterator it=msg.imus.begin(); it!=msg.imus.end(); ++it)
                     {
                         for(int i=0;i<3;i++) 
                         {
-                            accelerations.push_back(it->second->acc[i]};
+                            accelerations.push_back(it->second->acc[i]);
                         }  
                     }
 
-                    for(std::unordered_map<std::string, std::vector<double>*>::iterator it=alg_msg.nodes.begin(); it!= alg_msg.nodes.end())
+                    for(std::unordered_map<std::string, std::vector<double>* >::iterator it=alg_msg.nodes.begin(); it!=alg_msg.nodes.end(); ++it)
                     {
-                        
-                    
-                    }
-                   for(int i=0; i<3; i++)
-                   {
-                    
-                    
-                    
-                    
-                   } 
+                        for(int i=0;i<3;i++)
+                        {
+                            //TODO  //here need to fill rotations
+                        }     
 
+                    }
+
+                    grt.addSample(&accelerations, &rotations);
                     //need new connection to continue
                 }
+                msg.clear();
+                alg_msg.clear();
+                itr++;
+
             }
+            clrtoeol();
+            mvprintw(0, 0, "saving");
+            grt.pushGesture();
+        }
+        else if(ch == 'n')
+        {
+            grt.setNextLabel();
+            clrtoeol();
+            mvprintw(0, 0, "next label");
+
         }
         else if(ch == 't')
         {
-            //TODO training 
+            clrtoeol();
+            mvprintw(0, 0, "training and testing");
+            grt.loadTrainingData("../trainingData/MLP_C_trainingData.grt");
+            grt.setTestDataFromTraining(20);
+
+            grt.train();
+            grt.test();
+
+            grt.saveModel("../trainingData/MLP_C_model.grt");
+
+            clrtoeol();
+//            mvprintw(0, 0, std::string(grt.getTestAccuracy()));
+
+
         }
-        else if( ch == 'e')
-        {
-            //TODO execue test 
-        }
-    }
+
+
+    } 
+
     //std::cout << "Getting data..\n";
     /*
        devConn->getData(&msg);
@@ -163,7 +191,7 @@ int main (int argc, const char * argv[])
 
 
 
-return 0;
+    return 0;
 
 }
 
