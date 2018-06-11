@@ -15,29 +15,25 @@
 #include <bluetooth/rfcomm.h>
 #include <map>
 #include <unordered_map>
-#include <ncurses.h>
+#include <sys/ioctl.h>
 //using namespace GRT;
 //using namespace std;
+int buttonPressed()
+{
+    int i;
+    ioctl(0, FIONREAD, &i);
+    return i; //return a count of avalible cahracters
+}
 
+bool grPrint(std::string stringToPrint)
+{
+    system("stty cooked");
+    std::cout<<stringToPrint<<std::endl;
+    system("stty raw -echo");
+}
 
 int main (int argc, const char * argv[])
 {
-
-    //Gnuplot gp;
-    /*
-       GRAlgorithm grAlg;
-
-       grAlg.loadTrainingData("./data/grTrainingDTWtest.grt");
-       grAlg.setTestDataFromTraining(20);
-
-    //grAlg.loadModel("./data/DTWModel.grt");
-
-    grAlg.train();
-    grAlg.test();
-
-    grAlg.saveModel("./data/DTWModel.grt");
-    cout << grAlg.getTestAccuracy() << endl;
-    */
     GRDevManager devManager;
     GRConnection* devConn;
     GRDevice* device;
@@ -68,15 +64,11 @@ int main (int argc, const char * argv[])
     devConn->connectSocket();
 
     GRAlgorithm alg;
-    alg.setupMadgwick(140, 140, 140, 140, 140, 220); //need to check
+    alg.setupMadgwick(280, 280, 280, 280, 280, 220); //need to check
 
     std::unordered_map<std::string, GRMessage> data;
 
     int ch;
-    initscr();
-    cbreak();
-    noecho();
-    nodelay(stdscr, TRUE);
 
     FILE* f, *fa;
     f = fopen("firs.txt", "w");
@@ -90,109 +82,140 @@ int main (int argc, const char * argv[])
     GRGrt grt;
 
     grt.setAlgorithms("MLP_C", false);
-    grt.prepare();
     std::vector<double> accelerations;
     std::vector<double> rotations;
+    grt.setDatasetProperties("_trainingData", "first", "_trainingdata", 26);
+    std::unordered_map<std::string, std::vector<double> > nodeRotationsMain;
     while(ch != 'q')
     {
-        ch = getch();
+        if(buttonPressed())
+        {
+            ch=getchar();
+        }
         if(ch == 'r')
-        {   
-            clrtoeol();
-            mvprintw(0, 0, "saving");
+        {
+            grPrint("saving");   
             while(ch != 's' && devConn->getData(&msg))
             {
-                clrtoeol();
-                mvprintw(0, 0, "reading");
+                grPrint("reading");
+                if(buttonPressed())
+                {
+                    ch = getchar();
+                }
 
-                ch=getch();
                 if(!msg.empty() && itr > 10)
                 {
 
-                    alg.madgwickUpdate(&msg, &alg_msg);
-                    for(std::unordered_map<std::string, GRImu* >::iterator it=msg.imus.begin(); it!=msg.imus.end(); ++it)
+                    if( alg.madgwickUpdate(&msg, &alg_msg))
                     {
-                        for(int i=0;i<3;i++) 
+                        //for(std::unordered_map<std::string, GRImu* >::iterator it=msg.imus.begin(); it!=msg.imus.end(); ++it)
+                        for(auto& imu : msg.imus)
                         {
-                            accelerations.push_back(it->second->acc[i]);
-                        }  
+                            for(int i=0;i<3;i++) 
+                            {
+                                accelerations.push_back(imu.second->acc[i]);
+                                system("stty cooked");
+                                std::cout<<imu.second->acc[i]<<" ";
+                            }  
+                            std::cout<<"accs"<<std::endl;
+
+                        }
+                        nodeRotationsMain = alg.getEulerRotations(alg_msg);
+
+                        //for(std::unordered_map<std::string, std::vector<double> >::iterator it=nodeRotationsMain.begin(); it!=nodeRotationsMain.end(); ++it)                    {
+                        for(auto& node : nodeRotationsMain)
+                        {
+                            if(node.first == "palm")
+                            {
+                                for(int i=0;i<3;i++)
+                                {
+                                    rotations.push_back(node.second[i]);
+                                }
+                            }
+                            else
+                            {
+                                rotations.push_back(node.second[3]);
+                            }
+                            std::cout<<node.second[3]<<" ";
+
+                            std::cout<<"rotations"<<std::endl;
+
+                        }
+                        system("stty raw");
+
+                        grt.addSample(&accelerations, &rotations);
+                        //need new connection to continue
+                        accelerations.clear();
+                        rotations.clear();
+                    }
                     }
 
-                    for(std::unordered_map<std::string, std::vector<double>* >::iterator it=alg_msg.nodes.begin(); it!=alg_msg.nodes.end(); ++it)
-                    {
-                        for(int i=0;i<3;i++)
-                        {
-                            //TODO  //here need to fill rotations
-                        }     
+                    nodeRotationsMain.clear();
 
-                    }
+                    msg.clear();
+                    alg_msg.clear();
+                    itr++;
 
-                    grt.addSample(&accelerations, &rotations);
-                    //need new connection to continue
                 }
-                msg.clear();
-                alg_msg.clear();
-                itr++;
+                grPrint("pushing gasture");
+                grt.pushGesture();
+            }
+            else if(ch == 'n')
+            {
+                grPrint("NEXT GESTURE");
+                ch = ' ';
+                grt.setNextLabel();
 
             }
-            clrtoeol();
-            mvprintw(0, 0, "saving");
-            grt.pushGesture();
+            else if(ch == 't')
+            {
+                system("sstty cooked echo");
+                //                grPrint("training");
+                std::cout<<"-----------------------------------------------------training"<<std::endl;
+                grt.loadTrainingData("../trainingData/grtrainingMLP_C_trainingdata.grt");
+
+                grt.prepare();
+                grt.setTestDataFromTraining(20);
+
+                grt.train();
+            //    grt.test();
+
+                grt.saveModel("../trainingData/MLP_C_model.grt");
+               // system("stty raw");
+
+            }
+
+
+
+        } 
+
+        system("stty cooked echo");
+        //std::cout << "Getting data..\n";
+        /*
+           devConn->getData(&msg);
+
+           if(!msg.empty() && itr > 10 )
+           {
+           alg.madgwickUpdate(&msg, &alg_msg, 1, "flag");
+           trajectory = traj.getAccelerations(msg.palm.acc, alg_msg.palm);
+
+        //      printf( "%s %f %f %f \n","trjectory", trajectory[0], trajectory[1], trajectory[2]);
+        std::cout<<msg.palm.acc[0]<<" "<<msg.palm.acc[1]<<" "<<msg.palm.acc[2]<<"check conn in main"<<std::endl;
+        printf("writing...\n");
+        //fprintf(f, "%f %f %f %f %f %f\n", trajectory[0], trajectory[1], trajectory[2], msg.palm.gyro[0], msg.palm.gyro[1], msg.palm.gyro[2]);
+        //fprintf(fa, "%f %f %f \n", msg.palm.acc[0], msg.palm.acc[1], msg.palm.acc[2]);
         }
-        else if(ch == 'n')
-        {
-            grt.setNextLabel();
-            clrtoeol();
-            mvprintw(0, 0, "next label");
+        msg.palm.gyro.clear();
+        msg.palm.acc.clear();
+        msg.palm.mag.clear();
 
-        }
-        else if(ch == 't')
-        {
-            clrtoeol();
-            mvprintw(0, 0, "training and testing");
-            grt.loadTrainingData("../trainingData/MLP_C_trainingData.grt");
-            grt.setTestDataFromTraining(20);
+        alg_msg.clear();
+        itr ++;
+        */
 
-            grt.train();
-            grt.test();
+        grt.saveDataset();
 
-            grt.saveModel("../trainingData/MLP_C_model.grt");
+        return 0;
 
-            clrtoeol();
-//            mvprintw(0, 0, std::string(grt.getTestAccuracy()));
-
-
-        }
-
-
-    } 
-
-    //std::cout << "Getting data..\n";
-    /*
-       devConn->getData(&msg);
-
-       if(!msg.empty() && itr > 10 )
-       {
-       alg.madgwickUpdate(&msg, &alg_msg, 1, "flag");
-       trajectory = traj.getAccelerations(msg.palm.acc, alg_msg.palm);
-
-    //      printf( "%s %f %f %f \n","trjectory", trajectory[0], trajectory[1], trajectory[2]);
-    std::cout<<msg.palm.acc[0]<<" "<<msg.palm.acc[1]<<" "<<msg.palm.acc[2]<<"check conn in main"<<std::endl;
-    printf("writing...\n");
-    //fprintf(f, "%f %f %f %f %f %f\n", trajectory[0], trajectory[1], trajectory[2], msg.palm.gyro[0], msg.palm.gyro[1], msg.palm.gyro[2]);
-    //fprintf(fa, "%f %f %f \n", msg.palm.acc[0], msg.palm.acc[1], msg.palm.acc[2]);
     }
-    msg.palm.gyro.clear();
-    msg.palm.acc.clear();
-    msg.palm.mag.clear();
-
-    alg_msg.clear();
-    itr ++;
-    */
-
-
-
-    return 0;
-
-}
 

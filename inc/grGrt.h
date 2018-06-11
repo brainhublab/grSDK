@@ -15,7 +15,6 @@
 class GRGrt
 {
     public:
-
         /**
          * @brief constructor
          */
@@ -175,6 +174,7 @@ class GRGrt
         GRT::ClassificationData _mlpClassificationTrainingData;
         GRT::ClassificationData _mlpClassificationTestData;
         GRT::ClassificationSample _mlpClassificationSample;
+        std::vector<GRT::ClassificationSample> _mlpClassificationSamples;
 
         GRT::UINT _mlpInputVectorDimensions; //dimensions of input vector
         GRT::UINT _mlpTargetVectorDimensions; //Target Vector dimensions

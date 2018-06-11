@@ -52,8 +52,15 @@ GRImu::GRImu()
 
 bool GRImu::empty()
 {
-    return (this->gyro.empty() && this->acc.empty() && this->mag.empty()) ||
-            this->gyro.empty() || this->acc.empty() || this->mag.empty();
+    if((this->gyro.empty() && this->acc.empty() && this->mag.empty()) ||
+            this->gyro.empty() || this->acc.empty() || this->mag.empty())
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 bool GRImu::is_complete()

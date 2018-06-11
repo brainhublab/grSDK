@@ -120,9 +120,9 @@ struct GRMessage
 
     bool empty()
     {
-        if(pinky.empty() || ring.empty() || middle.empty() || index.empty() || thumb.empty() ||
-         (pinky.empty() && ring.empty() && middle.empty() && index.empty() && thumb.empty()) )
+        if(pinky.empty() || ring.empty() || middle.empty() || index.empty() || thumb.empty() || palm.empty())
         {
+            std::cout<<"msg is EMPTY"<<std::endl;
             return true;
         }
         else

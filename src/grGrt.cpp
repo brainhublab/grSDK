@@ -15,8 +15,8 @@ GRGrt::GRGrt()
     this->_numHidenNeurons = 0;
     this->_numOutputNeurons = 0;
 
-    this->_mlpInputVectorDimensions = 36;
-    this->_mlpTargetVectorDimensions = 36;
+    this->_mlpInputVectorDimensions = 26;
+    this->_mlpTargetVectorDimensions = 1;
     this->_mlpTrainingExamplesNumber = 30;
 
     this->_mlpInputVector.resize(_mlpInputVectorDimensions);
@@ -28,7 +28,7 @@ GRGrt::GRGrt()
     this->_enableFeatureExtraction = false;
     this->_algType = "NO ALGORITHM";
 
-   // this->_quantizer = GRT::KMeansQuantizer( 5, 10); is not needed
+    // this->_quantizer = GRT::KMeansQuantizer( 5, 10); is not needed
 }
 /*
    GRGrt::GRGrt(std::string alg)
@@ -146,7 +146,7 @@ bool GRGrt::loadTrainingData(std::string filepath)
     }
     std::cout<<"Training dataset is loaded successfuly"<<std::endl;
     std::cout<<"Training data stats: "<<std::endl;
-    this->_mlpRegressionTrainingData.printStats();
+    //this->_mlpClassificationTrainingData.printStats();
     return true;
 }
 
@@ -163,6 +163,12 @@ bool GRGrt::_setNumNeurons()
         this->_numInputNeurons = this->_mlpClassificationTrainingData.getNumDimensions();
         this->_numHidenNeurons = 5;
         this->_numOutputNeurons = this->_mlpClassificationTrainingData.getNumClasses();
+        std::cout<<"------------------------------------------------------------------------neurons are seted"<<std::endl;
+
+        //GRT::Neuron::Type inputActivationFunction = GRT::Neuron::LINEAR;
+        //GRT::Neuron::Type hiddenActivationFunction = GRT::Neuron::TANH;
+        //GRT::Neuron::Type outputActivationFunction = GRT::Neuron::LINEAR;
+        return true;
     }
     else
     {
@@ -276,12 +282,14 @@ bool GRGrt::prepare()
         this->_mlp.setNumRestarts(20);//This sets the number of times the MLP will be trained, each training iteration starts with new random values 
         this->_mlp.setUseValidationSet(true); ////This sets aside a small portiion of the training data to be used as a validation set to mitigate overfitting
         this->_mlp.setValidationSetSize(20); ////Use 20% of the training data for validation during the training phase
-        this->_mlp.setRandomiseTrainingOrder(true); ////Randomize the order of the training data so that the training algorithm does not bias the training
+       // this->_mlp.setRandomiseTrainingOrder(true); ////Randomize the order of the training data so that the training algorithm does not bias the training
 
         this->_mlp.enableScaling(true);
 
         //aading the MLP to pipeline
-        this->_pipeline<<this->_mlp;     
+        this->_pipeline<<this->_mlp;
+//        this->_pipeline.setClassifier(_mlp);
+        std::cout<<"---------------------------------------------praparing successfuly"<<std::endl;     
     }
     else
     {
@@ -361,15 +369,16 @@ bool GRGrt::train()
     }
     else if(_algType == "MLP_C")
     {
-        if(!this->_pipeline.train(this->_mlpClassificationTrainingData))
+        //if(!this->_pipeline.train(this->_mlpClassificationTrainingData))
+        if(!this->_mlp.train(this->_mlpClassificationTrainingData))
         {
             std::cout<<"ERROR: Failed to train Clasification MLP"<<std::endl;
             return false;
-            
+
         }
         //if()
     }
-    
+
     else
     {
         std::cout<<"ERROR: You forgot to specify recognition algorithm "<<std::endl;
@@ -683,13 +692,25 @@ bool GRGrt::setDatasetProperties(std::string datasetName, std::string infoText, 
         this->_fileProp = fProp + ".grt";
         return true;
     }
-    else if(_algType == "MLP_R" || _algType == "MLP_C")
+    else if(_algType == "MLP_R" )
     {
+        this->_dimensions = dimIn;
         this->_mlpRegressionTrainingData.setInputAndTargetDimensions(this->_mlpInputVectorDimensions, this->_mlpTargetVectorDimensions);
         this->_mlpRegressionTrainingData.setDatasetName(datasetName);
         this->_mlpRegressionTrainingData.setInfoText(infoText);
         this->_fileProp = fProp + ".grt";
         return true;
+    }
+    else if(_algType == "MLP_C")
+    {
+        this->_dimensions = dimIn;
+
+        _mlpClassificationTrainingData.setNumDimensions(dimIn);
+        this->_mlpClassificationTrainingData.setDatasetName(datasetName);
+        this->_mlpClassificationTrainingData.setInfoText(infoText);
+        this->_fileProp = fProp + ".grt";
+        return true;
+
     }
     else
     {
@@ -733,7 +754,7 @@ void GRGrt::clearTrainingData()
 bool GRGrt::addSample(std::vector<double>* accData, std::vector<double>* gyroData)
 {
     GRT::VectorDouble sample;
-    sample.resize(this->_dimensions);
+    sample.resize((accData->size()+gyroData->size()));
     for(int i=0; i < (accData->size() + gyroData->size()); i++)
     {
         if(i<accData->size())
@@ -742,7 +763,7 @@ bool GRGrt::addSample(std::vector<double>* accData, std::vector<double>* gyroDat
         }
         else
         {
-            sample[i] = gyroData->at(i-3);
+            sample[i] = gyroData->at(i-(accData->size()));
         }    
     }
 
@@ -768,8 +789,11 @@ bool GRGrt::addSample(std::vector<double>* accData, std::vector<double>* gyroDat
     }
     else if(this->_algType == "MLP_C")
     {
-
+        std::cout<<"---------------------------------------------------------------------------------------"<<std::endl;
         this->_mlpClassificationSample.set(_gestureLabel, sample);
+
+        this->_mlpClassificationSamples.push_back(_mlpClassificationSample);
+        this->_mlpClassificationSample.clear();
 
     }
     else
@@ -807,13 +831,18 @@ bool GRGrt::pushGesture()
     }
     else if(this->_algType == "MLP_C")
     {
-        if(!this->_mlpClassificationTrainingData.addSample(_mlpClassificationSample.getClassLabel(), 
-                    _mlpClassificationSample.getSample()))
+        for(int i=0; i<_mlpClassificationSamples.size();i++)
         {
-            std::cout<<"ERROR: cannot push the gesture for: "<<_algType<<std::endl;
-            return false;
-        }
+            if(!this->_mlpClassificationTrainingData.addSample(_mlpClassificationSamples[i].getClassLabel(), 
+                        _mlpClassificationSamples[i].getSample()))
+            {
+                std::cout<<"ERROR: cannot push the gesture for: "<<_algType<<std::endl;
+                return false;
+            }
+        } 
         _mlpClassificationSample.clear();
+        _mlpClassificationSamples.clear();
+
     }
     else
     {
@@ -864,45 +893,45 @@ bool GRGrt::saveDataset()
 }
 //TODO if needet 
 /*
-bool GRGrt::tranQantizationModel(std::string quantizationSettingsFile)
+   bool GRGrt::tranQantizationModel(std::string quantizationSettingsFile)
+   {
+   this->_quantizer = GRT::KMeansQuantizer(_dtwTrainingData.getNumDimensions());
+
+   if(!this->_quantizer.train(this->_dtwTrainingData))
+   {
+   std::cout<<"ERROR: Failed to train quantizer"<<std::endl;
+   return false;
+   }
+
+   if(!this->_quantizer.save(quantizationSettingsFile))
+   {
+   std::cout<<"ERROR: Failed to safe quantizer settings to file: "<<quantizationSettingsFile<<std::endl;
+   return false;
+   }
+   return true;
+   }
+
+   bool GRGrt::quantizeData(std::string quantizationSettingsFile)
+   {
+//TODO need to be fixed 
+if(!this->_quantizer.load(quantizationSettingsFile))
 {
-    this->_quantizer = GRT::KMeansQuantizer(_dtwTrainingData.getNumDimensions());
-
-    if(!this->_quantizer.train(this->_dtwTrainingData))
-    {
-        std::cout<<"ERROR: Failed to train quantizer"<<std::endl;
-        return false;
-    }
-
-    if(!this->_quantizer.save(quantizationSettingsFile))
-    {
-        std::cout<<"ERROR: Failed to safe quantizer settings to file: "<<quantizationSettingsFile<<std::endl;
-        return false;
-    }
-    return true;
+std::cout<<"ERROR: filed to load quantization settings from file: "<<quantizationSettingsFile<<std::endl;
+return false;
 }
-
-bool GRGrt::quantizeData(std::string quantizationSettingsFile)
+for(int i=0; i<_dtwTrainingData.getNumSamples(); i++)
 {
-    //TODO need to be fixed 
-    if(!this->_quantizer.load(quantizationSettingsFile))
-    {
-        std::cout<<"ERROR: filed to load quantization settings from file: "<<quantizationSettingsFile<<std::endl;
-        return false;
-    }
-    for(int i=0; i<_dtwTrainingData.getNumSamples(); i++)
-    {
-        _quantizer.quantize(_dtwTrainingData[i].getSample());
-        std::cout<<"quantization index: "<<i<<std::endl;
-        std::cout<<"Sample: ";
+_quantizer.quantize(_dtwTrainingData[i].getSample());
+std::cout<<"quantization index: "<<i<<std::endl;
+std::cout<<"Sample: ";
 
-        for(int j=0; j<_dtwTrainingData[i].getNumDimensions(); j++ )
-        {
-            std::cout<<_dtwTrainingData[i][j] <<"\t";
-        }
-        cout<<"Quantized value: "<<_quantizer.getQuantizedValue()<<std::endl;
-    }
-    return true;
+for(int j=0; j<_dtwTrainingData[i].getNumDimensions(); j++ )
+{
+std::cout<<_dtwTrainingData[i][j] <<"\t";
+}
+cout<<"Quantized value: "<<_quantizer.getQuantizedValue()<<std::endl;
+}
+return true;
 }
 */
 

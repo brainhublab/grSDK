@@ -35,19 +35,22 @@ public:
 	/**
 	 * @brief
 	 */
-    	void MadgwickAHRSupdate(double gx, double gy, double gz, double ax, double ay, double az, 
+    	void MadgwickAHRSupdate(double gx, double gy, double gz, double ax, double ay, double az,
+                                 double mx, double my, double mz, std::vector<double>*);
+
 	/**
 	 * @brief main step update of Madgwick
 	 */
-        double mx, double my, double mz, std::vector<double>*);
+       
 	/**
 	 * @brief
 	 */
         void MadgwickAHRSupdateIMU(double gx, double gy, double gz, double ax, double ay, double az, 
+                                       std::vector<double>*);
 	/**
 	 * @brief update AHRS without magnetometer
 	 */
-        std::vector<double>*);
+    
 	/**
 	 * @brief set arbitary frequency calibration variable
 	 */
