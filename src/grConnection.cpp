@@ -226,26 +226,32 @@ bool GRConnection::_checkConnectedImus(std::string rawMessage, GRMessage* msg)
     if(id == 0)
     {
         msg->pinky.is_connected = true;
+        std::cout<<"Pinky is connected"<<std::endl;
     }
     else if(id ==1)
     {
         msg->ring.is_connected = true;
+        std::cout<<"Ring is connected"<<std::endl;
     }
     else if(id == 2)
     {
         msg->middle.is_connected = true;
+        std::cout<<"Middle is connected"<<std::endl;
     }
     else if(id == 3)
     {
         msg->index.is_connected = true;
+        std::cout<<"Index is connected"<<std::endl;
     }
     else if(id==4)
     {
         msg->thumb.is_connected = true;
+        std::cout<<"Thumb is connected"<<std::endl;
     }
     else if(id==5)
     {
         msg->palm.is_connected = true;
+        std::cout<<"Palm is connected"<<std::endl;
     }
     return true;
 }

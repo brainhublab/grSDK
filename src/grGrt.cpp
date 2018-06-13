@@ -165,9 +165,6 @@ bool GRGrt::_setNumNeurons()
         this->_numOutputNeurons = this->_mlpClassificationTrainingData.getNumClasses();
         std::cout<<"------------------------------------------------------------------------neurons are seted"<<std::endl;
 
-        //GRT::Neuron::Type inputActivationFunction = GRT::Neuron::LINEAR;
-        //GRT::Neuron::Type hiddenActivationFunction = GRT::Neuron::TANH;
-        //GRT::Neuron::Type outputActivationFunction = GRT::Neuron::LINEAR;
         return true;
     }
     else
@@ -271,24 +268,25 @@ bool GRGrt::prepare()
     }
     else if(_algType == "MLP_R" || _algType == "MLP_C")
     {
-        this->_mlp.init(_numInputNeurons, _numHidenNeurons, _numOutputNeurons);
+        this->_mlp.init(_numInputNeurons, _numHidenNeurons, _numOutputNeurons, inputActivationFunction, hiddenActivationFunction, outputActivationFunction );
 
         //TODO need to be set from config !!!
         //Set the training settings yes it's important 
         this->_mlp.setMaxNumEpochs(500); //This sets the maximum number of epochs (1 epoch is 1 complete iteration of the training data) that are allowed
-        this->_mlp.setMinChange(1.0e-5);//This sets the minimum change allowed in training error between any two epochs
+        this->_mlp.setMinChange(1.0e-10);//This sets the minimum change allowed in training error between any two epochs
         this->_mlp.setLearningRate(0.1); //This sets the rate at which the learning algorithm updates the weights of the neural network
-        this->_mlp.setMomentum(0.5); //TODO need to be verified
-        this->_mlp.setNumRestarts(20);//This sets the number of times the MLP will be trained, each training iteration starts with new random values 
-        this->_mlp.setUseValidationSet(true); ////This sets aside a small portiion of the training data to be used as a validation set to mitigate overfitting
+        this->_mlp.setMomentum(0.1); //TODO need to be verified
+        this->_mlp.setNumRestarts(10000);//This sets the number of times the MLP will be trained, each training iteration starts with new random values 
+        this->_mlp.setUseValidationSet(false); ////This sets aside a small portiion of the training data to be used as a validation set to mitigate overfitting
         this->_mlp.setValidationSetSize(20); ////Use 20% of the training data for validation during the training phase
-       // this->_mlp.setRandomiseTrainingOrder(true); ////Randomize the order of the training data so that the training algorithm does not bias the training
+        this->_mlp.setRandomiseTrainingOrder(true); ////Randomize the order of the training data so that the training algorithm does not bias the training
 
         this->_mlp.enableScaling(true);
 
         //aading the MLP to pipeline
-        this->_pipeline<<this->_mlp;
-//        this->_pipeline.setClassifier(_mlp);
+        //   _pipeline << _mlp;
+        //   _pipeline.setClassifier(_mlp);
+        //        this->_pipeline.setClassifier(_mlp);
         std::cout<<"---------------------------------------------praparing successfuly"<<std::endl;     
     }
     else
@@ -353,7 +351,7 @@ bool GRGrt::train()
 {
     if(_algType == "DTW")
     {
-        if(!this->_pipeline.train(this->_dtwTrainingData))
+        if(!this->_dtw.train(this->_dtwTrainingData))
         {
             std::cout << "Failed to train classifier!"<<std::endl;
             return false;
@@ -369,7 +367,7 @@ bool GRGrt::train()
     }
     else if(_algType == "MLP_C")
     {
-        //if(!this->_pipeline.train(this->_mlpClassificationTrainingData))
+        //  if(!this->_pipeline.train(this->_mlpClassificationTrainingData))
         if(!this->_mlp.train(this->_mlpClassificationTrainingData))
         {
             std::cout<<"ERROR: Failed to train Clasification MLP"<<std::endl;
@@ -395,11 +393,15 @@ double GRGrt::test() //HERE
     if(_algType == "DTW")
     {
         double accuracy = 0;
-        if(!_pipeline.test(this->_dtwTestData))
+        /*if(!_pipeline.test(this->_dtwTestData))
+          {
+          std::cout<<"ERROR: Failed to test DTW model";
+          return false;
+          }*/
+        if(!_dtw.load("../trainingData/DTW_model.grt"))
         {
-            std::cout<<"ERROR: Failed to test DTW model";
-            return false;
-        }
+            std::cout<<"ERROR CANNOT LOAD DTW"<<std::endl;
+        } 
         std::cout<<"Performing test with data output"<<std::endl;
         for(GRT::UINT i=0; i<this->_dtwTestData.getNumSamples(); i++){
             //Get the i'th test sample - this is a timeseries
@@ -430,14 +432,15 @@ double GRGrt::test() //HERE
 
         return this->_testAccuracy;
     }
+
     else if(_algType == "MLP_R")
     {
-        if(!this->_pipeline.test(this->_mlpRegressionTestData))
-        {
+        /*  if(!this->_pipeline.test(this->_mlpRegressionTestData))
+            {
             std::cout<<"ERROR: Failed to test MLP model"<<std::endl;
             return false;
-        }
-        std::cout<<"MLP test is complete starting test RMS error..."<<this->_pipeline.getTestRMSError()<<std::endl;
+            }
+            */std::cout<<"MLP test is complete starting test RMS error..."<<this->_pipeline.getTestRMSError()<<std::endl;
 
         //TODO make output file as parameter
         std::fstream file;
@@ -481,12 +484,12 @@ double GRGrt::test() //HERE
     {
 
         GRT::RegressionData regressionFromClassificationTestData = _mlpClassificationTestData.reformatAsRegressionData();
-        if(!this->_pipeline.test(regressionFromClassificationTestData))
-        {
-            std::cout<<"ERROR: Failed to test Classification MLP model"<<std::endl;
-            return false;
-        }
-
+        /*        if(!this->_pipeline.test(regressionFromClassificationTestData))
+                  {
+                  std::cout<<"ERROR: Failed to test Classification MLP model"<<std::endl;
+                  return false;
+                  }
+                  */
         std::fstream file;
         file.open("mlp_classification.csv", std::fstream::out);
         for(GRT::UINT i=0; i<regressionFromClassificationTestData.getNumSamples(); i++)
@@ -494,7 +497,7 @@ double GRGrt::test() //HERE
             GRT::VectorDouble inputVector = regressionFromClassificationTestData[i].getInputVector();
             GRT::VectorDouble targetVector = regressionFromClassificationTestData[i].getTargetVector();
 
-            if(!_pipeline.predict(inputVector))
+            if(!_mlp.predict(inputVector))
             {
                 std::cout<<"ERROR: failed to map test sample "<<i<<std::endl;
                 return false;
@@ -510,10 +513,17 @@ double GRGrt::test() //HERE
             {
                 file<<targetVector[j]<<'\t';
             }
+
             file<<std::endl;
+            GRT::UINT predictedClassLabel = _mlp.getPredictedClassLabel();
+            double maximumLikelihood = _mlp.getMaximumLikelihood();
+            GRT::VectorDouble classLikelihoods = _mlp.getClassLikelihoods();
+            GRT::VectorDouble classDistances = _mlp.getClassDistances();
+
         }
         file.close();
-        _testAccuracy = double(_pipeline.getTestAccuracy());
+
+        // _testAccuracy = double(_mlp.getTestAccuracy());
         std::cout<<"Test accuracy of classification MLP: "<<_testAccuracy<<std::endl;
 
         return _testAccuracy;
@@ -537,7 +547,7 @@ double GRGrt::getTestAccuracy()
 */
 bool GRGrt::saveModel(std::string filepath)
 {
-    if(!this->_pipeline.save(filepath))
+    if(!this->_mlp.save(filepath))
     {
         std::cout<<"ERROR: Cannot Save the pipeline"<<std::endl;;
         return false;

@@ -40,30 +40,32 @@ void grInitAlgorithms()
  */
 bool GRAlgorithm::madgwickUpdate(GRMessage* message, GRAlgMessage* result)
 {
-    std::unordered_map<std::string, GRImu*>::iterator it;
+    //std::unordered_map<std::string, GRImu*>::iterator it;
     // std::cout<<"\nbefore madgwickUpdate() Q :"<<q0<<" "<<q1<<" "<<q2<<" "<<q3<<std::endl;
-    
+
     // get palm rotations
     if(message->imus["palm"]->is_connected)
     {
-    _madgwickObjects["palm"]->MadgwickAHRSupdate(
-    message->imus["palm"]->gyro[0],
-    message->imus["palm"]->gyro[1],
-    message->imus["palm"]->gyro[2],
-    message->imus["palm"]->acc[0],
-    message->imus["palm"]->acc[1],
-    message->imus["palm"]->acc[2],
-    message->imus["palm"]->mag[0],
-    message->imus["palm"]->mag[1],
-    message->imus["palm"]->mag[2],
-    &rotations);
-    result->palm = rotations;
-    palmQuat = Eigen::Quaterniond(result->palm[0], result->palm[1], result->palm[2], result->palm[3]);
+        _madgwickObjects["palm"]->MadgwickAHRSupdate(
+                message->imus["palm"]->gyro[0],
+                message->imus["palm"]->gyro[1],
+                message->imus["palm"]->gyro[2],
+                message->imus["palm"]->acc[0],
+                message->imus["palm"]->acc[1],
+                message->imus["palm"]->acc[2],
+                message->imus["palm"]->mag[0],
+                message->imus["palm"]->mag[1],
+                message->imus["palm"]->mag[2],
+                &rotations);
+        result->palm = this->rotations;
+        palmQuat = Eigen::Quaterniond(result->palm[0], result->palm[1], result->palm[2], result->palm[3]);
+        this->rotations.clear();
     }
-    
-    for(it=message->imus.begin(); it!=message->imus.end(); it++ )
+
+    for(std::unordered_map<std::string, GRImu* >::iterator it=message->imus.begin(); it!=message->imus.end(); it++ )
     {
-        if(message->imus[it->first]->is_connected)
+        //        std::cout<<"IN ALG ------------------------"<<it->first<<std::endl;
+        if(it->first != "palm")//message->imus[it->first]->is_connected && 
         {
             //std::cout<<it->first<<"MAAAAADDDDD"<<std::endl;
 
@@ -84,10 +86,10 @@ bool GRAlgorithm::madgwickUpdate(GRMessage* message, GRAlgMessage* result)
 
             relativeQuat = quat.inverse() * palmQuat;
             // relativeQuat = palmQuat.inverse() * quat;
-            rotations[0] = -relativeQuat.w(); // inverse rotation back
-            rotations[1] = 0*relativeQuat.x();
-            rotations[2] = 0*relativeQuat.y();
-            rotations[3] = relativeQuat.z();
+            this->rotations[0] = -relativeQuat.w(); // inverse rotation back
+            this->rotations[1] = 0*relativeQuat.x();
+            this->rotations[2] = 0*relativeQuat.y();
+            this->rotations[3] = relativeQuat.z();
 
             if(it->first == "pinky")
             {
@@ -109,18 +111,19 @@ bool GRAlgorithm::madgwickUpdate(GRMessage* message, GRAlgMessage* result)
             {
                 result->thumb = rotations;
             }
-            else if(it->first == "palm")
-            {
-                // result->palm = rotations;
-                // DONE
-            }
+            /*    else if(it->first == "palm")
+                  {
+            // result->palm = rotations;
+            // DONE
+            }*/
             else
             {
                 std::cout<<"Wow you have some random readings please debug me:"<<it->first<<std::endl;
             }
         }
+        this->rotations.clear();
     }
-    rotations.clear();
+    this->rotations.clear();
 
     return true;
 }
@@ -202,19 +205,29 @@ double GRAlgorithm::_stdErr(std::vector<double>* input)
 }
 
 
-Eigen::Quaterniond GRAlgorithm::getNodeRotation(GRAlgMessage& alg_msg, const std::string& nodeName) const
+Eigen::Quaterniond GRAlgorithm::getNodeRotation(GRAlgMessage alg_msg, const std::string nodeName) const
 {
-    std::cout << "size for node " << nodeName << "is " << alg_msg.get_node(nodeName)->size() << std::endl;
-   /* for ( auto& el : *alg_msg.get_node(nodeName))
+    /* for ( auto& el : *alg_msg.get_node(nodeName))
+       {
+       std::cout << el << " ";
+       }
+       */
+    if(alg_msg.empty())
     {
-        std::cout << el << " ";
+        std::cerr << "alg msg is empty!!!!!";
     }
-    */
     const std::vector<double> rots = *alg_msg.get_node(nodeName);
+    if(rots.empty())
+    {
+        std::cerr << "rots is empty!!!!!";
+        //return Eigen::Quaterniond(-1, -1,-1, -1);
+        throw "wat";
+    }
     for(int i=0; i<rots.size();i++)
     {
         std::cout<<rots[i]<<" ";
     }
+    std::cout << " is " << nodeName << " and size for node " << nodeName << "is " << alg_msg.get_node(nodeName)->size() << std::endl;
     Eigen::Quaterniond result(rots[0], rots[1], rots[2], rots[3] );
     return result;
     //  return Eigen::Quaterniond(rots[0], rots[1], rots[2], rots[3]);
@@ -222,7 +235,7 @@ Eigen::Quaterniond GRAlgorithm::getNodeRotation(GRAlgMessage& alg_msg, const std
 
 std::unordered_map<std::string, Eigen::Quaterniond> GRAlgorithm::getRotations(GRAlgMessage alg_msg) const
 {
-      std::unordered_map<std::string, Eigen::Quaterniond> result;
+    std::unordered_map<std::string, Eigen::Quaterniond> result;
     for (auto& node : alg_msg.nodes)
     {
         result[node.first] = getNodeRotation(alg_msg, node.first);

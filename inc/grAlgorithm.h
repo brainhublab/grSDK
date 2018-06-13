@@ -98,7 +98,7 @@ class GRAlgorithm :public GRGrt
         /**
          * @brief get specific node rotation from gr algorithm message
          */
-        Eigen::Quaterniond getNodeRotation(GRAlgMessage &alg_msg, const std::string& nodeName) const;
+        Eigen::Quaterniond getNodeRotation(GRAlgMessage alg_msg, const std::string nodeName) const;//TODO SUUUUUUUUUKKKKAAAA
         /**
          * @brief get unordered map of roations in quaternion representation
          */

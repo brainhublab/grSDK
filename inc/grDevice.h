@@ -57,6 +57,8 @@ struct GRImu
          * @brief magnetometr data
          */
         std::vector<double> mag;
+        
+    
 
         /**
          * @brief constructor
@@ -77,6 +79,25 @@ struct GRImu
          * @brief deletes data
          */
         bool clear();
+        bool print()
+        {
+                for(int i=0;i<gyro.size();i++)
+                {
+                    std::cout<<gyro[i]<<" ";
+                }
+                std::cout<<std::endl;
+                       for(int i=0;i<acc.size();i++)
+                {
+                    std::cout<<acc[i]<<" ";
+                }
+                std::cout<<std::endl;
+                       for(int i=0;i<mag.size();i++)
+                {
+                    std::cout<<mag[i]<<" ";
+                }
+                std::cout<<std::endl;
+            
+        }
 
         std::vector<double> get_gyro();
         void set_gyro(std::vector<double> n_gyro);
@@ -128,6 +149,15 @@ struct GRMessage
         else
         {
             return false;
+        }
+    }
+    bool print()
+    {
+        
+        for(auto& imu : imus)
+        {
+            
+            imu.second->print();
         }
     }
 
@@ -205,6 +235,18 @@ struct GRAlgMessage
          * @brief constructor
          */
         GRAlgMessage();
+        bool empty()
+        {
+            if(pinky.empty() || ring.empty() || middle.empty() || index.empty() || thumb.empty() || palm.empty())
+            {
+                std::cout<<"ALGmsg is EMPTY"<<std::endl;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
 
         /**
          * @brief cleaner

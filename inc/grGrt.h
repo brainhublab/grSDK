@@ -20,7 +20,7 @@ class GRGrt
          */
         GRGrt();
 
-  //      GRGrt(std::string);
+        //      GRGrt(std::string);
         /**
          * @brief destructor
          */
@@ -39,7 +39,7 @@ class GRGrt
          */
         bool setAlgorithms(std::string, bool);
 
-//        bool setRegressifier(std::string);///TODO WHAAAT
+        //        bool setRegressifier(std::string);///TODO WHAAAT
 
         bool loadTrainingData(std::string);
         /**
@@ -129,7 +129,7 @@ class GRGrt
         bool quantizeData(std::string);
     private:
 
-        
+
         //Feauture extraction algorithms 
         /**
          * @brief K meansQuatizer
@@ -193,6 +193,9 @@ class GRGrt
         bool _enableFeatureExtraction;
 
         std::string _algType;
+        GRT::Neuron::Type inputActivationFunction = GRT::Neuron::LINEAR;
+        GRT::Neuron::Type hiddenActivationFunction = GRT::Neuron::TANH;
+        GRT::Neuron::Type outputActivationFunction = GRT::Neuron::LINEAR;
 
 
         /**
