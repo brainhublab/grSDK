@@ -243,7 +243,7 @@ bool GRDataApplier::fetchData() // get data and call processMsg
      changeFingerData(&msg.index);
      changeFingerData(&msg.thumb);
      */
-  alg.madgwickUpdate(&msg, &alg_msg, 1, "flag");
+  alg.madgwickUpdate(&msg, &alg_msg);
   // for each node prcess this msg
   processMsg("palm");
   processMsg("pinky");
