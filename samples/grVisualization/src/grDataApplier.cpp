@@ -114,7 +114,7 @@ bool GRDataApplier::run(std::map<int, GRDevice> &activeDevices)
   }
   usleep(3000000);
   deviceId = -1;
-  
+
   std::cout << "Searching available devices....\n";
   std::vector<GRDevice> availableDevices = devManager.getAvalibleDevices();
   int i = 0;
@@ -245,12 +245,48 @@ bool GRDataApplier::fetchData() // get data and call processMsg
      */
   alg.madgwickUpdate(&msg, &alg_msg);
   // for each node prcess this msg
-  processMsg("palm");
-  processMsg("pinky");
-  processMsg("ring");
-  processMsg("middle");
-  processMsg("index");
-  processMsg("thumb");
+  // processMsg("palm");
+  // processMsg("pinky");
+  // processMsg("ring");
+  // processMsg("middle");
+  // processMsg("index");
+  // processMsg("thumb");
+
+  auto eulerRotationsMap = alg.getRotations(alg_msg);
+  for (auto& p : eulerRotationsMap)
+  {
+    // Apply this data to OpenGL 3d-model
+    if(p.first == "palm")
+    {
+      //get new position;
+      if(withTrajectory)
+      {
+        last_position = trajectory.getNewPosByRunge(msg.palm.acc, alg_msg.palm, msg.palm.time_stamp);
+        moveHand(last_position);
+      }
+      else
+      {
+        arm->setHandPosition(0, 0, 0);
+      }
+
+      if(withRotations)
+      {
+        applyToHand(p.second);
+        // addHistoryData(p.second);
+      }
+    }
+    else
+    {
+      applyToFinger(p.second, fingers[p.first]);
+
+    }
+    // clear data
+    msg.imus[p.first]->gyro.clear();
+    msg.imus[p.first]->acc.clear();
+    msg.imus[p.first]->mag.clear();
+
+
+  }
   //printf("Processed data from %d\n", deviceId);
   alg_msg.clear();
   return true;
@@ -281,11 +317,11 @@ bool GRDataApplier::processMsg(std::string nodeName)
     if(withRotations)
     {
       auto quatd = Eigen::Quaterniond(
-            (*alg_msg.nodes[nodeName])[0],
-            (*alg_msg.nodes[nodeName])[1],
-            (*alg_msg.nodes[nodeName])[2],
-            (*alg_msg.nodes[nodeName])[3]
-            );
+          (*alg_msg.nodes[nodeName])[0],
+          (*alg_msg.nodes[nodeName])[1],
+          (*alg_msg.nodes[nodeName])[2],
+          (*alg_msg.nodes[nodeName])[3]
+          );
       applyToHand(quatd);
       addHistoryData(*alg_msg.nodes[nodeName]);
     }
@@ -294,11 +330,11 @@ bool GRDataApplier::processMsg(std::string nodeName)
   {
     if(withRotations && alg_msg.nodes[nodeName]->size() == 4){
       auto quatd = Eigen::Quaterniond(
-            (*alg_msg.nodes[nodeName])[0],
-            (*alg_msg.nodes[nodeName])[1],
-            (*alg_msg.nodes[nodeName])[2],
-            (*alg_msg.nodes[nodeName])[3]
-            );
+          (*alg_msg.nodes[nodeName])[0],
+          (*alg_msg.nodes[nodeName])[1],
+          (*alg_msg.nodes[nodeName])[2],
+          (*alg_msg.nodes[nodeName])[3]
+          );
       //std::cout << "\t\t Call applyToFinger " << nodeName << std::endl;
       applyToFinger(quatd, fingers[nodeName]);
 
@@ -418,17 +454,17 @@ std::vector<float> toStdVector(Eigen::Quaterniond &d)
  */
 bool GRDataApplier::applyToHand(Eigen::Quaterniond &quat)
 {
-    nodequaternion = quat;
+  nodequaternion = quat;
 
-    GLfloat mat[16];
-    quaternionToRotation(toStdVector(nodequaternion),mat);
-    //printf("Hand Yaw %f\n", getYaw(*nodequaternion));
-    //printf("Hand Q: %f %f %f %f\n",  (*nodequaternion)[0], (*nodequaternion)[1], (*nodequaternion)[2], (*nodequaternion)[3]);
+  GLfloat mat[16];
+  quaternionToRotation(toStdVector(nodequaternion),mat);
+  //printf("Hand Yaw %f\n", getYaw(*nodequaternion));
+  //printf("Hand Q: %f %f %f %f\n",  (*nodequaternion)[0], (*nodequaternion)[1], (*nodequaternion)[2], (*nodequaternion)[3]);
 
-    arm->bendHandWithMatrix(mat);
-    prevquats[5] = nodequaternion;
-    //arm->bendHand((*nodequaternion)[2], (*nodequaternion)[1], (*nodequaternion)[3]);
-    return true;
+  arm->bendHandWithMatrix(mat);
+  prevquats[5] = nodequaternion;
+  //arm->bendHand((*nodequaternion)[2], (*nodequaternion)[1], (*nodequaternion)[3]);
+  return true;
 };
 
 
@@ -439,29 +475,29 @@ bool GRDataApplier::applyToHand(Eigen::Quaterniond &quat)
 bool GRDataApplier::applyToFinger(Eigen::Quaterniond &q, int index)
 {
   auto euler = q.toRotationMatrix().eulerAngles(0, 1, 2); // r p y
-      if(euler[2]*57.29578 > 70 || euler[2]*57.29578 < -30)
-      {
-        // outbound
-        nodequaternion = prevquats[index];
-      }
-      else
-      {
-        nodequaternion = q;
-        // save last
-        prevquats[index] = q;
-      }
+  if(euler[2]*57.29578 > 70 || euler[2]*57.29578 < -30)
+  {
+    // outbound
+    nodequaternion = prevquats[index];
+  }
+  else
+  {
+    nodequaternion = q;
+    // save last
+    prevquats[index] = q;
+  }
 
   // TODO: inverse if roll of palm is > 180
   /*auto eulerPalm = prevquats[5].toRotationMatrix().eulerAngles(0,1,2);
-  std::cout << "of palm is " << eulerPalm*57.29578 << std::endl;
-  if(eulerPalm[2] < 0)
-  {
+    std::cout << "of palm is " << eulerPalm*57.29578 << std::endl;
+    if(eulerPalm[2] < 0)
+    {
     nodequaternion = nodequaternion.inverse();
-  }
+    }
   //
   std::cout << "Index is " << index << std::endl;
-  
-  */
+
+*/
   GLfloat mat[16];
 
   quaternionToRotation(toStdVector(nodequaternion),mat);
