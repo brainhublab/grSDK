@@ -34,13 +34,22 @@ bool grPrint(std::string stringToPrint)
     system("stty raw -echo");
 }
 
-double changePrecision(double inp)
+double toDegWithChangePrecision(double inp)
 {
-
-    return  round(inp*10000)/10000;
+ return   inp *= 57.29578;
+//    return  round(inp*10)/10;
 }
+
+
 int main (int argc, const char * argv[])
 {
+    if(argc !=4 )
+    {
+        std::cout<<"Something went wrong with arguments, arguments are: ALG_TYPE, TRAINING_IO_FILE_PATH, MODEL_IO_FILE_PATH"<<std::endl;
+        return 0;
+    }
+
+
     GRDevManager devManager;
     GRConnection* devConn;
     GRDevice* device;
@@ -48,34 +57,48 @@ int main (int argc, const char * argv[])
     GRAlgMessage alg_msg;
 
     std::vector<GRDevice> devices;
-//    devices = devManager.getAvalibleDevices();
-    int devId=-1;
-    int i = 0;
-/*    for(std::vector<GRDevice>::iterator it=devices.begin(); it!=devices.end(); i++, it++)
-    {
-        if(it->name == "GR[R]")
-        {
-            //    std::cout<<it->first<<" in iteration---------------------------------------------"<<std::endl;
-            devId = i;
-        }
-    }
+    devices = devManager.getAvalibleDevices();
 
-    if(devId == -1)
-    {
-        std::cout << "Device not found" << std::endl;
-        return 0;
-    }
-
-    std::cout<<"devId: "<<devId<<std::endl;
-    devConn = devManager.setActiveDevice(devId);
-    devConn->connectSocket();
-*/
     GRAlgorithm alg;
     alg.setupMadgwick(280, 280, 280, 280, 280, 220); //need to check
 
     std::unordered_map<std::string, GRMessage> data;
 
+    std::vector<double> accelerations;
+    std::vector<double> rotations;
+
+    std::unordered_map<std::string, std::vector<double> > nodeRotationsMain;
+    std::string test = argv[1];
+    if(test == "train" )
+    {
+        int devId=-1;
+        int i = 0;
+        for(std::vector<GRDevice>::iterator it=devices.begin(); it!=devices.end(); i++, it++)
+        {
+            if(it->name == "GR[R]")
+            {
+                //    std::cout<<it->first<<" in iteration---------------------------------------------"<<std::endl;
+                devId = i;
+            }
+        }
+
+        if(devId == -1)
+        {
+            std::cout << "Device not found" << std::endl;
+            return 0;
+        }
+
+        std::cout<<"devId: "<<devId<<std::endl;
+        devConn = devManager.setActiveDevice(devId);
+        devConn->connectSocket();
+
+    }
+    /* else
+       {
+       std::cout<<"Warnirng you run without connection so you can anly train or predict"<<std::endl;
+       }*/
     int ch;
+
 
     FILE* f, *fa;
     f = fopen("firs.txt", "w");
@@ -88,11 +111,12 @@ int main (int argc, const char * argv[])
 
     GRGrt grt;
 
-    grt.setAlgorithms("MLP_C", false);
-    std::vector<double> accelerations;
-    std::vector<double> rotations;
-    grt.setDatasetProperties("_trainingData", "first", "_trainingdata", 26);
-    std::unordered_map<std::string, std::vector<double> > nodeRotationsMain;
+    grt.setAlgorithms(argv[2], false);
+    grt.setDatasetProperties("_trainingData", "first", argv[3], 26);
+
+    std::string trainingDataFilePath = "../trainingData/grTraining_" + std::string(argv[2]) + std::string(argv[3]);
+    std::string modelDataFilePath = "../trainingData/" + std::string(argv[2]);
+
     while(ch != 'q')
     {
         if(buttonPressed())
@@ -114,7 +138,7 @@ int main (int argc, const char * argv[])
                 {
 
                     system("stty cooked");
-                    msg.print(); 
+                    // msg.print(); 
                     system("stty raw");
 
                     if( alg.madgwickUpdate(&msg, &alg_msg) && !alg_msg.empty())
@@ -126,9 +150,9 @@ int main (int argc, const char * argv[])
                             {
                                 accelerations.push_back(imu.second->acc[i]);
                                 system("stty cooked");
-                                std::cout<<imu.second->acc[i]<<" ";
+                                //  std::cout<<imu.second->acc[i]<<" ";
                             }  
-                            std::cout<<"accs"<<std::endl;
+                            //std::cout<<"accs"<<std::endl;
 
                         }
                         nodeRotationsMain = alg.getEulerRotations(alg_msg);
@@ -137,18 +161,24 @@ int main (int argc, const char * argv[])
                         for(auto& node : nodeRotationsMain)
                         {
                             if(node.first == "palm")
+                            
                             {
+                                std::cout<<"-------------";
                                 for(int i=0;i<3;i++)
                                 {
-                                    rotations.push_back((57.29578 * node.second[i]));
+                                    rotations.push_back(toDegWithChangePrecision(node.second[i]));
+                                    std::cout<<toDegWithChangePrecision(node.second[i])<<" ";
                                 }
+                                std::cout<<node.first<<" ";
                             }
                             else
                             {
-                                rotations.push_back((57.20578 * node.second[2]));
+                                std::cout<<"==============";
+                                rotations.push_back(toDegWithChangePrecision(node.second[2]));
+                                std::cout<<toDegWithChangePrecision(node.second[2])<<" ";
+                                std::cout<<node.first<<" ";
                             }
 
-                            std::cout<<changePrecision(changePrecision(node.second[2]))<<" ";
                             std::cout<<"rotations"<<std::endl;
 
                         }
@@ -183,22 +213,76 @@ int main (int argc, const char * argv[])
             system("stty cooked echo");
             //                grPrint("training");
             std::cout<<"-----------------------------------------------------training"<<std::endl;
-            grt.loadTrainingData("../trainingData/grtrainingMLP_C_trainingdata.grt");
+            grt.loadTrainingData(trainingDataFilePath);
 
             grt.prepare();
             grt.setTestDataFromTraining(20);
 
             grt.train();
-            grt.saveModel("../trainingData/MLP_C_model.grt");
+            grt.saveModel(modelDataFilePath);
             grt.test();
 
             // system("stty raw");
             return 0;
         }
-        else if(ch == t)
+        else if(ch == 'p')
         {
-        
-            grt.loadModel("../trainingData/MLP_C_model.grt");
+            itr = 0;
+            accelerations.clear();
+            rotations.clear();
+            nodeRotationsMain.clear();
+
+            grt.loadModel(modelDataFilePath);
+
+            GRT::MatrixDouble gestureData;
+            GRT::VectorDouble gestureSample;
+            while(devConn->getData(&msg))
+            {
+                if(!msg.empty() && itr >10)
+                {
+                    if(alg.madgwickUpdate(&msg, &alg_msg) && !alg_msg.empty()) 
+                    {
+                        for(auto& imu : msg.imus)
+                        {
+                            for(int i=0;i<3;i++)
+                            {
+                                // accelerations.push_back(imu.second->acc[i]);
+                                gestureSample.push_back(imu.second->acc[i]);
+
+                            }
+                        }
+
+                        nodeRotationsMain = alg.getEulerRotations(alg_msg);
+
+                        for(auto& node : nodeRotationsMain)
+                        {
+                            if(node.first == "palm")
+                            {
+                                for(int i=0; i<3; i++)
+                                {
+                                    //rotations.push_back((57.29578 * node.second[i]))
+                                    gestureSample.push_back((57.29578 * node.second[i]));
+                                }
+                            }
+                            else
+                            {
+                                //rotations.push_back((57.29578 * node.second[2]));
+                                gestureSample.push_back((57.29578 * node.second[2]));
+                            }
+                        }
+
+
+                    }       
+                }
+                itr ++;
+                if(itr > 10)
+                {
+                    grt.predict(gestureSample);
+                    gestureSample.clear();
+
+                }
+
+            }
 
         }
 
@@ -230,7 +314,11 @@ int main (int argc, const char * argv[])
     itr ++;
     */
 
-    grt.saveDataset();
+    if(argv[1] == "train")
+    {
+
+        grt.saveDataset();
+    }
 
     return 0;
 

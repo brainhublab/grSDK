@@ -869,7 +869,7 @@ bool GRGrt::saveDataset()
 {
     if(this->_algType == "DTW")
     {
-        if(!this->_dtwTrainingData.save(("../trainingData/grTrainingDTW"+this->_fileProp)))
+        if(!this->_dtwTrainingData.save(("../trainingData/grTraining_"+this->_algType+this->_fileProp)))
         {
             std::cout<<"ERROR: Failed to save dataset to file"<<std::endl;
             return false;
@@ -877,7 +877,7 @@ bool GRGrt::saveDataset()
     }
     else if(this->_algType == "MLP_R")
     {
-        if(!this->_mlpRegressionTrainingData.save(("../trainingData/grTrainingMLP_R"+this->_fileProp)))
+        if(!this->_mlpRegressionTrainingData.save(("../trainingData/grTraining_"+this->_algType+this->_fileProp)))
         {
             std::cout<<"ERROR: Failed to save dataset to file"<<std::endl;
             return false;
@@ -886,7 +886,7 @@ bool GRGrt::saveDataset()
     }
     else if(this->_algType == "MLP_C")
     {
-        if(!this->_mlpClassificationTrainingData.save(("../trainingData/grtrainingMLP_C"+this->_fileProp)))
+        if(!this->_mlpClassificationTrainingData.save(("../trainingData/grTraining_"+this->_algType+this->_fileProp)))
         {
             std::cout<<"ERROR: Failed to save dataset to file"<<std::endl;
             return false;

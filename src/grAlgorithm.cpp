@@ -223,11 +223,12 @@ Eigen::Quaterniond GRAlgorithm::getNodeRotation(GRAlgMessage alg_msg, const std:
         //return Eigen::Quaterniond(-1, -1,-1, -1);
         throw "wat";
     }
+    /*
     for(int i=0; i<rots.size();i++)
     {
         std::cout<<rots[i]<<" ";
-    }
-    std::cout << " is " << nodeName << " and size for node " << nodeName << "is " << alg_msg.get_node(nodeName)->size() << std::endl;
+    }*/
+//    std::cout << " is " << nodeName << " and size for node " << nodeName << "is " << alg_msg.get_node(nodeName)->size() << std::endl;
     Eigen::Quaterniond result(rots[0], rots[1], rots[2], rots[3] );
     return result;
     //  return Eigen::Quaterniond(rots[0], rots[1], rots[2], rots[3]);
