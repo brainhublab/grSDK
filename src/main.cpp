@@ -36,13 +36,14 @@ bool grPrint(std::string stringToPrint)
 
 double toDegWithChangePrecision(double inp)
 {
- return   inp *= 57.29578;
-//    return  round(inp*10)/10;
+       inp *= 57.29578;
+       return  round(inp);
 }
 
 
-int main (int argc, const char * argv[])
+int main (int argc, char* argv[])
 {
+    std::cout<<argc<<"start"<<std::endl;
     if(argc !=4 )
     {
         std::cout<<"Something went wrong with arguments, arguments are: ALG_TYPE, TRAINING_IO_FILE_PATH, MODEL_IO_FILE_PATH"<<std::endl;
@@ -57,7 +58,6 @@ int main (int argc, const char * argv[])
     GRAlgMessage alg_msg;
 
     std::vector<GRDevice> devices;
-    devices = devManager.getAvalibleDevices();
 
     GRAlgorithm alg;
     alg.setupMadgwick(280, 280, 280, 280, 280, 220); //need to check
@@ -68,9 +68,11 @@ int main (int argc, const char * argv[])
     std::vector<double> rotations;
 
     std::unordered_map<std::string, std::vector<double> > nodeRotationsMain;
-    std::string test = argv[1];
-    if(test == "train" )
+    std::cout<<std::string(argv[1]);
+    if(std::string(argv[1]) == "data")
     {
+        
+        devices = devManager.getAvalibleDevices();
         int devId=-1;
         int i = 0;
         for(std::vector<GRDevice>::iterator it=devices.begin(); it!=devices.end(); i++, it++)
@@ -93,10 +95,10 @@ int main (int argc, const char * argv[])
         devConn->connectSocket();
 
     }
-    /* else
+     else if(std::string(argv[1]) == "train")
        {
        std::cout<<"Warnirng you run without connection so you can anly train or predict"<<std::endl;
-       }*/
+       }
     int ch;
 
 
@@ -114,9 +116,9 @@ int main (int argc, const char * argv[])
     grt.setAlgorithms(argv[2], false);
     grt.setDatasetProperties("_trainingData", "first", argv[3], 26);
 
-    std::string trainingDataFilePath = "../trainingData/grTraining_" + std::string(argv[2]) + std::string(argv[3]);
-    std::string modelDataFilePath = "../trainingData/" + std::string(argv[2]);
-
+    std::string trainingDataFilePath = "../trainingData/grTraining_" + std::string(argv[2]) + std::string(argv[3]) + ".grt" ;
+    std::string modelDataFilePath = "../trainingData/" + std::string(argv[2]) + ".grt";
+    
     while(ch != 'q')
     {
         if(buttonPressed())
@@ -125,6 +127,12 @@ int main (int argc, const char * argv[])
         }
         if(ch == 'r')
         {
+            std::cout<<argv[1]<<std::endl;
+            if(std::string(argv[1]) != "data")
+            {
+                std::cout<<"You are not in data mode"<<std::endl;
+                return 0;
+            }
             grPrint("saving");   
             while(ch != 's' && devConn->getData(&msg))
             {
@@ -137,9 +145,9 @@ int main (int argc, const char * argv[])
                 if(!msg.empty() && itr > 10)
                 {
 
-                    system("stty cooked");
+                   // system("stty cooked");
                     // msg.print(); 
-                    system("stty raw");
+                    //system("stty raw");
 
                     if( alg.madgwickUpdate(&msg, &alg_msg) && !alg_msg.empty())
                     {
@@ -149,7 +157,7 @@ int main (int argc, const char * argv[])
                             for(int i=0;i<3;i++) 
                             {
                                 accelerations.push_back(imu.second->acc[i]);
-                                system("stty cooked");
+                         //       system("stty cooked");
                                 //  std::cout<<imu.second->acc[i]<<" ";
                             }  
                             //std::cout<<"accs"<<std::endl;
@@ -161,28 +169,32 @@ int main (int argc, const char * argv[])
                         for(auto& node : nodeRotationsMain)
                         {
                             if(node.first == "palm")
-                            
+
                             {
-                                std::cout<<"-------------";
+                                //std::cout<<"-------------";
                                 for(int i=0;i<3;i++)
                                 {
                                     rotations.push_back(toDegWithChangePrecision(node.second[i]));
-                                    std::cout<<toDegWithChangePrecision(node.second[i])<<" ";
+                                    //   std::cout<<toDegWithChangePrecision(node.second[i])<<" ";
                                 }
-                                std::cout<<node.first<<" ";
+                                // std::cout<<node.first<<" ";
                             }
                             else
                             {
-                                std::cout<<"==============";
+                                //std::cout<<"==============";
                                 rotations.push_back(toDegWithChangePrecision(node.second[2]));
-                                std::cout<<toDegWithChangePrecision(node.second[2])<<" ";
-                                std::cout<<node.first<<" ";
+                               /* if(node.first == "thumb")
+                                {
+                                    std::cout<<toDegWithChangePrecision(node.second[2])<<" ";
+                                    std::cout<<node.first<<" ";
+
+                                }*/
                             }
 
-                            std::cout<<"rotations"<<std::endl;
+                           // std::cout<<"rotations"<<std::endl;
 
                         }
-                        system("stty raw");
+                       // system("stty raw");
 
                         grt.addSample(&accelerations, &rotations);
                         //need new connection to continue
@@ -213,10 +225,11 @@ int main (int argc, const char * argv[])
             system("stty cooked echo");
             //                grPrint("training");
             std::cout<<"-----------------------------------------------------training"<<std::endl;
+            std::cout<<trainingDataFilePath<<std::endl;
             grt.loadTrainingData(trainingDataFilePath);
 
             grt.prepare();
-            grt.setTestDataFromTraining(20);
+            grt.setTestDataFromTraining(40);
 
             grt.train();
             grt.saveModel(modelDataFilePath);
@@ -314,7 +327,7 @@ int main (int argc, const char * argv[])
     itr ++;
     */
 
-    if(argv[1] == "train")
+    if(std::string(argv[1]) == "data")
     {
 
         grt.saveDataset();
