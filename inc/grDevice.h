@@ -57,8 +57,8 @@ struct GRImu
          * @brief magnetometr data
          */
         std::vector<double> mag;
-        
-    
+
+
 
         /**
          * @brief constructor
@@ -96,7 +96,7 @@ struct GRImu
                     std::cout<<mag[i]<<" ";
                 }
                 std::cout<<std::endl;
-            
+
         }
 
         std::vector<double> get_gyro();
@@ -144,6 +144,12 @@ struct GRMessage
         if(pinky.empty() || ring.empty() || middle.empty() || index.empty() || thumb.empty() || palm.empty())
         {
             std::cout<<"msg is EMPTY"<<std::endl;
+            std::cout<<pinky.empty()<<std::endl;
+            std::cout<<ring.empty()<<std::endl;
+            std::cout<<middle.empty()<<std::endl;
+            std::cout<<index.empty()<<std::endl;
+            std::cout<<thumb.empty()<<std::endl;
+            std::cout<<palm.empty()<<std::endl;
             return true;
         }
         else
@@ -153,10 +159,10 @@ struct GRMessage
     }
     bool print()
     {
-        
+
         for(auto& imu : imus)
         {
-            
+
             imu.second->print();
         }
     }

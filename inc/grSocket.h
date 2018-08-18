@@ -20,8 +20,9 @@
 #define DEFAULT_PATH "/tmp/grsock";
 #define BUFFER_LEN 2048
 
-enum class DataType {NOTYPE, RAW_PALM, RAW_THUMB, RAW_INDEX, RAW_MIDDLE, RAW_RING, RAW_PINKY};
-enum class Command {NOCMD, CMD1, STREAM_DATA};
+enum class DataType {NOTYPE, RAW_PALM, RAW_THUMB, RAW_INDEX, RAW_MIDDLE,
+                     RAW_RING, RAW_PINKY, ROTATIONS};
+enum class Command {NOCMD, CMD1, STREAM_DATA, STREAM_ROTATIONS_DATA};
 
 
 
@@ -36,6 +37,7 @@ class GRSocket {
         bool pollConnections();
         bool addDataToWrite(DataType x, std::vector<double> data);
         bool addRawData(std::string key, GRImu *imu);
+        bool addRotationsData(std::unordered_map<std::string, std::vector<double>> data);
 
     private:
         bool isListening, isSetUp;

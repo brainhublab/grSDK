@@ -31,11 +31,12 @@ GRAlgorithm& GRAlgorithm::operator=(const GRAlgorithm& t)
 }
 
 /* Initialize algorithms and variables needed for them
-*/
+ */
 void grInitAlgorithms()
 {
 }
-/*Update step of Madgwick algorithm
+
+/* Update step of Madgwick algorithm
  * Takes GRMessage and return quaternion
  */
 bool GRAlgorithm::madgwickUpdate(GRMessage* message, GRAlgMessage* result)
@@ -65,7 +66,7 @@ bool GRAlgorithm::madgwickUpdate(GRMessage* message, GRAlgMessage* result)
     for(std::unordered_map<std::string, GRImu* >::iterator it=message->imus.begin(); it!=message->imus.end(); it++ )
     {
         //        std::cout<<"IN ALG ------------------------"<<it->first<<std::endl;
-        if(it->first != "palm")//message->imus[it->first]->is_connected && 
+        if(it->first != "palm")//message->imus[it->first]->is_connected &&
         {
             //std::cout<<it->first<<"MAAAAADDDDD"<<std::endl;
 
@@ -128,8 +129,8 @@ bool GRAlgorithm::madgwickUpdate(GRMessage* message, GRAlgMessage* result)
     return true;
 }
 
-/*SetUp method for Madgwick algorithm
-*/
+/* SetUp method for Madgwick algorithm
+ */
 bool GRAlgorithm::setupMadgwick(int pCallib, int rCallib, int mCallib, int iCallib, int tCallib, int paCallib)
 {
     _madgwickObjects["pinky"]->setFreqCalibration(pCallib);
@@ -141,14 +142,14 @@ bool GRAlgorithm::setupMadgwick(int pCallib, int rCallib, int mCallib, int iCall
 
     return true;
 }
-/* TODO implement in thread madgwick update
-   void GRAlgorithm::madgwickUpdateThr(imu* imu, int freqCallibration, std::string flag)
-   {
-   std::thread madgwick(&GRAlgorithm::madgwickUpdate, this, imu,  freqCallibration, flag);
-   pinky.detach();
-   std::cout<<"run MadgwickAHRSupdate thread for pinky"<<endl;
-   }
-   */
+
+// // TODO implement in thread madgwick update
+// void GRAlgorithm::madgwickUpdateThr(imu* imu, int freqCallibration, std::string flag)
+// {
+//     std::thread madgwick(&GRAlgorithm::madgwickUpdate, this, imu,  freqCallibration, flag);
+//     pinky.detach();
+//     std::cout<<"run MadgwickAHRSupdate thread for pinky"<<endl;
+// }
 
 std::vector<double> GRAlgorithm::_computeAngles(std::vector<double> q)
 {
@@ -174,7 +175,7 @@ std::vector<double> GRAlgorithm::_computeAngles(std::vector<double> q)
 }
 
 /* Standard deviation calculation
-*/
+ */
 double GRAlgorithm::_stDev(std::vector<double>* input)
 {
     double sum = std::accumulate(input->begin(), input->end(), 0.0);
@@ -190,8 +191,8 @@ double GRAlgorithm::_stDev(std::vector<double>* input)
     return stdev;
 }
 
-/*Average
-*/
+/* Average
+ */
 double GRAlgorithm::_average(std::vector<double>* input)
 {
     double average = std::accumulate(input->begin(), input->end(), 0.0);
@@ -248,14 +249,16 @@ std::unordered_map<std::string, std::vector<double>> GRAlgorithm::getEulerRotati
 {
     std::unordered_map<std::string, std::vector<double>> result;
     Eigen::Matrix<double, 3, 1> m;
+
     for (auto& p : getRotations(alg_msg))
     {
         m = p.second.toRotationMatrix().eulerAngles(0,1,2); // r p y
         result[p.first] = std::vector<double>{m[0], m[1], m[2]};
     }
+
     return result;
+
     // std::transform(result.begin(), result.end(), result.begin(), [&](auto& pair) -> auto {
-    //     
+    //
     //     })
 }
-

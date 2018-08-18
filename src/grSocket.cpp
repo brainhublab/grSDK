@@ -40,6 +40,7 @@ void GRSocket::initializeCmds()
 {
     this->commands["CMD1"] = Command::CMD1;
     this->commands["STREAM_DATA"] = Command::STREAM_DATA;
+    this->commands["STREAM_ROTATIONS_DATA"] = Command::STREAM_ROTATIONS_DATA;
 }
 
 void GRSocket::initializeDataTypes()
@@ -51,6 +52,7 @@ void GRSocket::initializeDataTypes()
     this->dataTypes["middle"] = DataType::RAW_MIDDLE;
     this->dataTypes["ring"] = DataType::RAW_RING;
     this->dataTypes["pinky"] = DataType::RAW_PINKY;
+    this->dataTypes["rotations"] = DataType::ROTATIONS;
 }
 
 void GRSocket::setUpAddress()
@@ -85,7 +87,7 @@ bool GRSocket::startListening()
         return false;
     }
 
-    if (listen(this->serverFd, 3) < 0)
+    if (listen(this->serverFd, 10) < 0)
     {
         this->error("listen");
         return false;
@@ -123,12 +125,12 @@ bool GRSocket::setUp()
         return false;
     }
 
-    int flags = fcntl(this->serverFd, F_GETFL);
-    if (fcntl(this->serverFd, F_SETFL, flags | O_NONBLOCK) < 0)
-    {
-        this->error("fcntl");
-        return false;
-    }
+    // int flags = fcntl(this->serverFd, F_GETFL);
+    // if (fcntl(this->serverFd, F_SETFL, flags | O_NONBLOCK) < 0)
+    // {
+    //     this->error("fcntl");
+    //     return false;
+    // }
 
     // attach socket to address
     if (bind(this->serverFd, (struct sockaddr *) &this->address, sizeof(this->address)) < 0)
@@ -325,6 +327,12 @@ bool GRSocket::handleCmd(pollfd *in, std::string cmd)
                 this->toWrite[in->fd].push(std::string("KO Missing argument"));
             }
             break;
+        case Command::STREAM_ROTATIONS_DATA:
+            printf("STREAM_DATA\n");
+            this->outSockets[in->fd] = DataType::ROTATIONS;
+            std::queue<std::string>().swap(this->toWrite[in->fd]);  // empty previous data in queue
+            this->toWrite[in->fd].push(std::string("OK"));
+            break;
         default:
             printf("NOCMD\n");
             break;
@@ -458,6 +466,91 @@ bool GRSocket::addRawData(std::string key, GRImu *imu)
     sData.pop_back();
 
     // add data to socket's writing queue
+    this->toWrite[socket].push(sData);
+
+    return true;
+}
+
+bool GRSocket::addRotationsData(std::unordered_map<std::string, std::vector<double>> data)
+{
+    int socket = 0;
+    std::string sData;
+
+    // find which socket expects data of type `type`
+    for (const auto& x : this->outSockets)
+    {
+        if (x.second == DataType::ROTATIONS)
+        {
+            socket = x.first;
+            break;
+        }
+    }
+
+    // if no socket expects the data return
+    if (socket == 0)
+    {
+        return false;
+    }
+
+    std::vector<double> tmpData;
+
+    tmpData = data["palm"];
+    if (!tmpData.empty())
+    {
+        for (auto const& x : tmpData)
+        {
+            sData += numToString(x);
+            sData += ' ';
+        }
+    } else {
+        sData += "x x x ";
+    }
+
+    tmpData = data["thumb"];
+    if (!tmpData.empty())
+    {
+        sData += numToString(tmpData[0]);
+        sData += " ";
+    } else {
+        sData += "x ";
+    }
+
+    tmpData = data["index"];
+    if (!tmpData.empty())
+    {
+        sData += numToString(tmpData[0]);
+        sData += " ";
+    } else {
+        sData += "x ";
+    }
+
+    tmpData = data["middle"];
+    if (!tmpData.empty())
+    {
+        sData += numToString(tmpData[0]);
+        sData += " ";
+    } else {
+        sData += "x ";
+    }
+
+    tmpData = data["ring"];
+    if (!tmpData.empty())
+    {
+        sData += numToString(tmpData[0]);
+        sData += " ";
+    } else {
+        sData += "x ";
+    }
+
+    tmpData = data["pinky"];
+    if (!tmpData.empty())
+    {
+        sData += numToString(tmpData[0]);
+    } else {
+        sData += "x";
+    }
+
+    printf("%s\n", sData.c_str());
     this->toWrite[socket].push(sData);
 
     return true;
