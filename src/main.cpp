@@ -23,6 +23,21 @@
 int main (int argc, const char * argv[])
 {
 
+    GRDevManager devManager;
+    std::vector<std::string> str;
+
+    std::vector<GRDevice> devs;
+
+    devManager._getAllManagedDevicesPaths();
+    str = devManager._allManagedDevicesPaths;
+    for(auto &path: str)
+    {
+        std::cout<<path<<" :-----";
+        std::cout<<path.find(defaultAdapterPath)<<std::endl;
+    }
+
+    devs =  devManager.getAvalibleDevices();
+
     //Gnuplot gp;
     /*
        GRAlgorithm grAlg;
@@ -38,6 +53,8 @@ int main (int argc, const char * argv[])
     grAlg.saveModel("./data/DTWModel.grt");
     cout << grAlg.getTestAccuracy() << endl;
     */
+
+    /*
     GRDevManager devManager;
     GRConnection* devConn;
     GRDevice* device;
@@ -166,7 +183,7 @@ int main (int argc, const char * argv[])
 
 
     } 
-
+*/
     //std::cout << "Getting data..\n";
     /*
        devConn->getData(&msg);

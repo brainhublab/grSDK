@@ -13,8 +13,6 @@
 #include <thread>
 #include <chrono>
 
-
-
 #include <stdio.h>   /* Standard input/output definitions */
 #include <stdlib.h>
 #include <string>  /* String function definitions */
@@ -27,8 +25,6 @@
 #include <bluetooth/hci.h>
 #include <bluetooth/hci_lib.h>
 #include <bluetooth/rfcomm.h>
-
-#include <gio/gio.h>
 
 #include "grConnection.h"
 /**
@@ -83,7 +79,7 @@ class GRDevManager
          */
         GRConnection* getActiveDeviceById(int);
 
-        // private:
+    private:
         /**
          * @brief map of available devices
          */
@@ -97,20 +93,6 @@ class GRDevManager
          */
         bool _deviceIsIn(std::string);
 
-        bool _getAllManagedDevicesPaths();
-
-
-
-
-        GDBusProxy *_rootProxy;
-        std::vector<std::string> _allManagedDevicesPaths;
-        GError *_err;
-
-        GVariant*  _getProperty(std::string, std::string , GDBusProxy*);
-        std::string _getStringProp(std::string, GDBusProxy*, std::string);
-        GDBusProxy* _createPropProxy(std::string );
-        GVariant* _propResult;
-    private:
 };
 
 #endif

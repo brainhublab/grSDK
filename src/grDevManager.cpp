@@ -1,8 +1,20 @@
 #include "grDevManager.h"
 #include <sys/socket.h>
+#include <gio/gio.h>
 //constructor
 GRDevManager::GRDevManager()
 {
+
+    _err = NULL;
+    _rootProxy = g_dbus_proxy_new_for_bus_sync(G_BUS_TYPE_SYSTEM,
+            G_DBUS_PROXY_FLAGS_DO_NOT_LOAD_PROPERTIES,
+            NULL,
+            bluezBus.c_str(),
+            "/",
+            "org.freedesktop.DBus.ObjectManager",
+            NULL,
+            &_err);
+
 }
 
 //destructor
@@ -19,71 +31,114 @@ GRDevManager::GRDevManager(const GRDevManager& t)
 GRDevManager& GRDevManager::operator=(const GRDevManager& t)
 {
 }
+bool GRDevManager::_getAllManagedDevicesPaths()
+{
+    GVariant *res;
 
+    res = g_dbus_proxy_call_sync(_rootProxy,
+            "GetManagedObjects",
+            NULL,
+            G_DBUS_CALL_FLAGS_NONE,
+            -1,
+            NULL,
+            &_err);
+    if(!res)
+    {
+        g_dbus_error_strip_remote_error(_err);
+        g_print("ERROR: getting of list of managed objects failed: %s\n", _err->message);
+        g_error_free(_err);
+        return false;
+    }
+
+    GVariantIter *objPathIter, *ifaceIter, *propIter;
+    gchar  *objPath;
+
+    g_variant_get(res, "(a{oa{sa{sv}}})", &objPathIter);
+
+    while(g_variant_iter_loop(objPathIter, "{oa{sa{sv}}}", &objPath, &ifaceIter))
+    {
+        //g_print("%s\n", objPath);
+        if(std::strstr(objPath, defaultAdapterPath.c_str()) && strlen(objPath) == 37)    
+        {
+
+            _allManagedDevicesPaths.push_back(objPath);
+        }
+    }
+    return true;
+}
+
+GVariant* GRDevManager::_getProperty(std::string propName, std::string oPath, GDBusProxy *propProxy)
+{
+    GVariant *res;
+    res = g_dbus_proxy_call_sync(propProxy,
+            "Get",
+            g_variant_new("(ss)",
+                deviceIface.c_str(),
+                propName.c_str()),
+            G_DBUS_CALL_FLAGS_NONE,
+            -1,
+            NULL,
+            &_err);
+    if(!res)
+    {
+        g_dbus_error_strip_remote_error(_err);
+        g_warning("ERROR: failed to get property: %s\n", _err->message);
+        g_error_free(_err);
+        //return ;
+
+    }
+    g_print( "\n The NAMEEE :   %s\n", g_variant_get_data(res) );
+    //  g_variant_get(variantRes, "(v)", strRes);
+    //  out = strRes;
+    return res;
+
+
+}
+
+std::string GRDevManager::_getStringProp(std::string oPath, GDBusProxy* propProxy, std::string prop)
+{
+    const gchar *res;
+    GVariant* gVar; 
+    g_variant_get(_getProperty(prop, oPath, propProxy), "(v)", &gVar);
+    g_variant_get(gVar, "s", &res);
+    g_variant_unref (gVar);
+
+    return std::string(res);
+}
+
+GDBusProxy* GRDevManager::_createPropProxy(std::string oPath)
+{
+   return  g_dbus_proxy_new_for_bus_sync(G_BUS_TYPE_SYSTEM,
+            G_DBUS_PROXY_FLAGS_NONE,
+            NULL,
+            bluezBus.c_str(),
+            oPath.c_str(),
+            propIface.c_str(),
+            NULL,
+            &_err);
+
+}
 /* Return map of avalible for connecting GR devices */
 std::vector<GRDevice> GRDevManager::getAvalibleDevices()
 {
-    GRDevNames deviceNames;
     GRDevice device;
-
-    inquiry_info *inqInfo = NULL;
-    int maxRsp, numRsp;
-    int devId, sock, len, flags;
-
-    char addr[19] = {0};
-    char name[248] = {0};
-
-    devId = hci_get_route(NULL);
-    sock = hci_open_dev(devId);
-    if(devId < 0 || sock < 0)
+    std::string result;
+   // GVariant *gVar; 
+    GDBusProxy *propProxy;
+    for(auto &path: _allManagedDevicesPaths)
     {
-        perror("opening socket while scan devices");
-        exit(1);
-    }
-
-    len = 8;
-    maxRsp = 255;
-    flags = IREQ_CACHE_FLUSH;
-    inqInfo = (inquiry_info*)malloc(maxRsp * sizeof(inquiry_info));
-
-    numRsp = hci_inquiry(devId, len, maxRsp, NULL, &inqInfo, flags);
-    if(numRsp < 0)
-    {
-        perror("hci_inquiry error while scanning devices");
-    }
-
-    for(int i =0; i < numRsp; i++)
-    {
-        ba2str(&(inqInfo + i)->bdaddr, addr);
-        memset(name, 0, sizeof(name));
-        if(hci_read_remote_name(sock, &(inqInfo + i)->bdaddr, sizeof(name), name, 0) < 0)
+        propProxy = _createPropProxy(path);
+        result = _getStringProp(path, propProxy, "Name"); 
+        if(result == lName || result == rName)
         {
-            strcpy(name, "[unknown]");
+            device.propProxy = propProxy;
+            device.dbusObjecPath = path;
+            device.name = result;
+            device.address = _getStringProp(path, device.propProxy, "Address");
+            std::cout<<"IT WORKING"<<device.address<<std::endl;
         }
-        else if(deviceNames.get_left() == name || deviceNames.get_right() == name || deviceNames.get_test() == name )
-        {
-            //  device.id = i;
-
-            std::cout<<name<<" "<<addr<<std::endl;
-
-            // device.name.assign(name, strlen(name));
-            device.set_name(std::string(name));
-            // device.address.assign(addr, strlen(addr));
-            device.set_address(std::string(addr));
-
-            std::cout<<"Finded device with address: "<<device.get_address();
-            std::cout<<" and name "<<device.get_name()<<std::endl;
-            if(!_deviceIsIn(device.get_address()))
-            {
-                // device.id = (_avalibleDevices.size() + 1);
-                device.set_id(_avalibleDevices.size() + 1);
-                this->_avalibleDevices.push_back(device);
-            }
-            // std::cout<<"stored in avalibleDevices device with addres "<<_avalibleDevices[device.id].address;
-            // std::cout<<" and name "<< _avalibleDevices[device.id].name<<std::endl;
-
-            device.clear_attributes();
-        }
+        result.clear();
+       // g_object_unref(propProxy); TODO fix with adding link in CMakeLists for pkgconfig of all objects of glib
     }
 
     return _avalibleDevices;

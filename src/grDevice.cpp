@@ -220,6 +220,7 @@ std::unordered_map<std::string, GRImu*> GRMessage::get_imus()
  */
 GRDevice::GRDevice() {
     this->id = 0;
+    
 }
 
 GRDevice& GRDevice::operator=(const GRDevice& dev)
