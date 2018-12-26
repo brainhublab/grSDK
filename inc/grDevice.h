@@ -19,27 +19,11 @@ const std::string bluezBus = "org.bluez";
 const std::string defaultAdapterPath = "/org/bluez/hci";
 const std::string deviceIface = "org.bluez.Device1";
 const std::string propIface = "org.freedesktop.DBus.Properties";
-
+const std::string gattCharIface = "org.bluez.GattCharacteristic1";
+const std::string dataGattCharPath = "/service001f/char0020";
 
 const std::string lName = "GR[L]";
 const std::string rName = "GR[R]";
-struct GRDevNames
-{
-    std::string left;
-    std::string right;
-    std::string test;
-
-    GRDevNames();
-
-    std::string get_left();
-    void set_left(std::string n_left);
-
-    std::string get_right();
-    void set_right(std::string n_right);
-
-    std::string get_test();
-    void set_test(std::string n_test);
-};
 
 struct GRImu
 {
@@ -71,40 +55,47 @@ struct GRImu
     /**
      * @brief constructor
      */
-    GRImu();
+    GRImu()
+    {
+        this->gyro.clear();
+        this->acc.clear();
+        this->mag.clear();
+        this->time_stamp = 0.0;
+        this->is_connected = false;
+    }
 
     /**
      * @brief checks if imu has no data
      */
-    bool empty();
+    bool empty()
+    {
+        return (this->gyro.empty() && this->acc.empty() && this->mag.empty()) ||
+            this->gyro.empty() || this->acc.empty() || this->mag.empty();
+    }
 
     /**
      * @brief checks if imu data is complite
      */
-    bool is_complete();
+    bool is_complete()
+    {
+        return (this->gyro.size() == 3) && (this->acc.size() == 3) && (this->mag.size() == 3);
+
+    }
 
     /**
      * @brief deletes data
      */
-    bool clear();
+    bool clear()
+    {
+        this->gyro.clear();
+        this->acc.clear();
+        this->mag.clear(); 
+        this->time_stamp = 0.0;
+        this->is_connected = false;
+        return true;
+    }
 
-    std::vector<double> get_gyro();
-    void set_gyro(std::vector<double> n_gyro);
-    void clear_gyro();
 
-    std::vector<double> get_acc();
-    void set_acc(std::vector<double> n_acc);
-    void clear_acc();
-
-    std::vector<double> get_mag();
-    void set_mag(std::vector<double> n_mag);
-    void clear_mag();
-
-    unsigned long get_time_stamp();
-    void set_time_stamp(unsigned long n_time_stamp);
-
-    bool get_is_connected();
-    void set_is_connected(bool n_is_connected);
 };
 
 struct GRMessage
@@ -119,14 +110,27 @@ struct GRMessage
 
     std::unordered_map<std::string, GRImu*> imus;
 
-    GRMessage();
-    bool clear();
+    GRMessage()
+    {
+        this->id = 0;
+        this->imus["pinky"] = &(this->pinky);
+        this->imus["ring"] = &(this->ring);
+        this->imus["middle"] = &(this->middle);
+        this->imus["index"] = &(this->index);
+        this->imus["thumb"] = &(this->thumb);
+        this->imus["palm"] = &(this->palm);
 
-    int get_id();
-    void set_id(int);
-
-    GRImu get_pinky();
-    void set_pinky(GRImu);
+        this->palm.is_connected = true;
+    }
+    bool clear()
+    {
+        this->pinky.clear();
+        this->ring.clear();
+        this->middle.clear();
+        this->index.clear();
+        this->thumb.clear();
+        this->palm.clear();
+    }
 
     bool empty()
     {
@@ -141,22 +145,6 @@ struct GRMessage
         }
     }
 
-    GRImu get_ring();
-    void set_ring(GRImu);
-
-    GRImu get_middle();
-    void set_middle(GRImu);
-
-    GRImu get_index();
-    void set_index(GRImu);
-
-    GRImu get_thumb();
-    void set_thumb(GRImu);
-
-    GRImu get_palm();
-    void set_palm(GRImu);
-
-    std::unordered_map<std::string, GRImu*> get_imus();
 };
 
 struct GRDevice
@@ -169,22 +157,44 @@ struct GRDevice
     bool connected = false;
 
     GDBusProxy *propProxy;
-    GDBusProxy *methodProxy;
+    GDBusProxy *devMethodProxy;
+    GDBusProxy *gattCharProxy;
+    GDBusProxy *gattPropProxy;
 
 
-    GRDevice();
-    GRDevice& operator=(const GRDevice& dev);
+    GRDevice()
+    {
+        this->id = 0;
 
-    void clear_attributes();
+    }
+    GRDevice& operator=(const GRDevice& dev)
+    {
+        this->id = dev.id;
+        this->name = dev.name;
+        this->address = dev.address;
 
-    int get_id();
-    void set_id(int);
+        return *this;
+    }
 
-    std::string get_name();
-    void set_name(std::string);
+    void clear_attributes()
+    {
+        this->id = 0;
+        this->name.clear();
+        this->address.clear();
+    }
+    void clear()
+    {
+        this->id = 0;
+        this->name.clear();
+        this->address.clear();
+        this->dbusObjecPath.clear();
 
-    std::string get_address();
-    void set_address(std::string);
+        this->connected = false;
+
+        //TODO clear proxies;
+        //g_object_unref(propProxy);
+        //g_object_unref(methodProxy);
+    }
 };
 
 struct GRAlgMessage
@@ -221,32 +231,38 @@ struct GRAlgMessage
     /**
      * @brief constructor
      */
-    GRAlgMessage();
+    GRAlgMessage()
+    {
+        this->nodes["pinky"] = &(this->pinky);
+        this->nodes["ring"] = &(this->ring);
+        this->nodes["middle"] = &(this->middle);
+        this->nodes["index"] = &(this->index);
+        this->nodes["thumb"] = &(this->thumb);
+        this->nodes["palm"] = &(this->palm);
+    }
 
     /**
      * @brief cleaner
      */
-    bool clear();
+    bool clear()
+    {
+        this->pinky.clear();
+        this->ring.clear();
+        this->middle.clear();
+        this->index.clear();
+        this->thumb.clear();
+        this->palm.clear();
 
-    std::vector<double> get_pinky();
-    void set_pinky(std::vector<double> n_pinky);
+        return true;
+    }
 
-    std::vector<double> get_ring();
-    void set_ring(std::vector<double> n_ring);
 
-    std::vector<double> get_middle();
-    void set_middle(std::vector<double> n_middle);
 
-    std::vector<double> get_index();
-    void set_index(std::vector<double> n_index);
+    std::vector<double>* get_node(std::string key)
+    {
+        return this->nodes[key];
 
-    std::vector<double> get_thumb();
-    void set_thumb(std::vector<double> n_thumb);
-
-    std::vector<double> get_palm();
-    void set_palm(std::vector<double> n_palm);
-
-    std::vector<double>* get_node(std::string key);
+    }
 };
 
 #endif

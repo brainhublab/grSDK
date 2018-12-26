@@ -72,8 +72,8 @@ class GRDevManager
          * @see getDeviceId()
          * @see GRConnection
          */
-        GRConnection*  setActiveDevice(int);
-
+        bool  connect(GRDevice*);
+        bool disconnect(GRDevice*);
         /**
          * @brief returns id of device
          * a getter of id
@@ -83,10 +83,14 @@ class GRDevManager
          */
         GRConnection* getActiveDeviceById(int);
 
+        bool getData(GRDevice*);
+
         // private:
         /**
          * @brief map of available devices
          */
+        bool prepareDataReading(GRDevice*);
+        bool finishDataReading(GRDevice*);
         std::vector<GRDevice> _avalibleDevices;
         /**
          * @brief map of activated devices
@@ -106,10 +110,20 @@ class GRDevManager
         std::vector<std::string> _allManagedDevicesPaths;
         GError *_err;
 
-        GVariant*  _getProperty(std::string, std::string , GDBusProxy*);
+        GVariant*  _getProperty(std::string, std::string , GDBusProxy*, std::string);
         std::string _getStringProp(std::string, GDBusProxy*, std::string);
-        GDBusProxy* _createPropProxy(std::string );
+        bool _getDataset(std::string, GDBusProxy*, std::string);
+        bool _getBoolProp(std::string, GDBusProxy*, std::string);
+        bool _callDevMethod(std::string, GDBusProxy* );
+        
+        GDBusProxy* _createProxy(std::string , std::string);
+
+        bool _connected(GRDevice*);
         GVariant* _propResult;
+
+        
+
+        int _id = 0;
     private:
 };
 

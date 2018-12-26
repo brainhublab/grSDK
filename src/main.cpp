@@ -30,13 +30,46 @@ int main (int argc, const char * argv[])
 
     devManager._getAllManagedDevicesPaths();
     str = devManager._allManagedDevicesPaths;
-    for(auto &path: str)
+  /*  for(auto &path: str)
     {
         std::cout<<path<<" :-----";
         std::cout<<path.find(defaultAdapterPath)<<std::endl;
     }
+*/
+    /*
+    for(int i=0; i< 5; i++)
+    {
+        devs =  devManager.getAvalibleDevices();
+        std::cout<<devs.size()<<"  <-this is the size of devs"<<std::endl;
+        for(int j=0;j<devs.size(); j++)
+        {
+            std::cout<<devs[j].id<<"]-----"<<j<<std::endl;
+        }
+    }
+*/
+    int j=0;
 
-    devs =  devManager.getAvalibleDevices();
+        devs =  devManager.getAvalibleDevices();
+        for(int i=0;i<devs.size();i++)
+        {
+            if(devs[i].name == "GR[L]")
+            {
+                devManager.connect(&devs[i]);
+                std::cout<<devs[i].dbusObjecPath<<std::endl;
+                //usleep(200);
+                //devManager.disconnect(&devs[i]);
+                devManager.prepareDataReading(&devs[i]);
+                while(true)
+                {
+                    devManager.getData(&devs[i]);
+                    std::cout<<"iteration------------------"<<j++;
+                }
+            }
+        }
+
+
+
+
 
     //Gnuplot gp;
     /*
