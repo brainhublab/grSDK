@@ -20,7 +20,8 @@ const std::string defaultAdapterPath = "/org/bluez/hci";
 const std::string deviceIface = "org.bluez.Device1";
 const std::string propIface = "org.freedesktop.DBus.Properties";
 const std::string gattCharIface = "org.bluez.GattCharacteristic1";
-const std::string dataGattCharPath = "/service001f/char0020";
+//const std::string dataGattCharPath = "/service001f/char0020";
+const std::string dataGattCharPath = "/service002b/char002c";
 
 const std::string lName = "GR[L]";
 const std::string rName = "GR[R]";

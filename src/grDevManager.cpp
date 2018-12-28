@@ -5,7 +5,7 @@
 GRDevManager::GRDevManager()
 {
 
-    _err = NULL;
+    GError* _err = NULL;
     _rootProxy = g_dbus_proxy_new_for_bus_sync(G_BUS_TYPE_SYSTEM,
             G_DBUS_PROXY_FLAGS_DO_NOT_LOAD_PROPERTIES,
             NULL,
@@ -14,6 +14,7 @@ GRDevManager::GRDevManager()
             "org.freedesktop.DBus.ObjectManager",
             NULL,
             &_err);
+    g_error_free(_err);
 
 }
 
@@ -34,7 +35,7 @@ GRDevManager& GRDevManager::operator=(const GRDevManager& t)
 bool GRDevManager::_getAllManagedDevicesPaths()
 {
     GVariant *res;
-
+    GError* _err = NULL;
     res = g_dbus_proxy_call_sync(_rootProxy,
             "GetManagedObjects",
             NULL,
@@ -69,6 +70,7 @@ bool GRDevManager::_getAllManagedDevicesPaths()
 
 GVariant* GRDevManager::_getProperty(std::string propName, std::string oPath, GDBusProxy *propProxy, std::string iFace)
 {
+    GError* _err = NULL;
     GVariant *res;
     res = g_dbus_proxy_call_sync(propProxy,
             "Get",
@@ -79,10 +81,10 @@ GVariant* GRDevManager::_getProperty(std::string propName, std::string oPath, GD
             -1,
             NULL,
             &_err);
-    if(!res)
+    if(!res && _err)
     {
         g_dbus_error_strip_remote_error(_err);
-        g_warning("ERROR: failed to get property: %s\n", _err->message);
+        g_warning("GR_WARNING: failed to get property: %s\n", _err->message);
         g_error_free(_err);
         //return ;
 
@@ -90,12 +92,15 @@ GVariant* GRDevManager::_getProperty(std::string propName, std::string oPath, GD
     //g_print( "\n The NAMEEE :   %s\n", g_variant_get_data(res) );
     //  g_variant_get(variantRes, "(v)", strRes);
     //  out = strRes;
+
     return res;
 
 
 }
+
 bool GRDevManager::_callDevMethod(std::string methodName, GDBusProxy* methodProxy)
 {
+    GError* _err = NULL;
     g_dbus_proxy_call_sync(methodProxy,
             methodName.c_str(),
             NULL,
@@ -105,16 +110,24 @@ bool GRDevManager::_callDevMethod(std::string methodName, GDBusProxy* methodProx
             &_err);
     return true; 
 }
-
 std::string GRDevManager::_getStringProp(std::string oPath, GDBusProxy* propProxy, std::string prop)
 {
     const gchar *res;
-    GVariant *gVar; 
-    g_variant_get(_getProperty(prop, oPath, propProxy, deviceIface), "(v)", &gVar);
-    g_variant_get(gVar, "s", &res);
-    g_variant_unref (gVar);
+    GVariant* gVar; 
+    GVariant* getPropGVar = _getProperty(prop, oPath, propProxy, deviceIface);
+    if(getPropGVar!=NULL)
+    {
+        g_variant_get(getPropGVar, "(v)", &gVar);
+        if(gVar != NULL)
+        {
+            g_variant_get(gVar, "s", &res);
+            g_variant_unref (gVar);
+            g_variant_unref(getPropGVar);
+            return std::string(res);
+        }
 
-    return std::string(res);
+    } 
+    return " ";
 }
 
 bool GRDevManager::_getBoolProp(std::string oPath, GDBusProxy* propProxy, std::string prop)
@@ -130,39 +143,52 @@ bool GRDevManager::_getBoolProp(std::string oPath, GDBusProxy* propProxy, std::s
 
 bool GRDevManager::_getDataset(std::string oPath, GDBusProxy* gattCharProxy,  std::string prop)
 {
-    std::cout<<"in getDataset"<<oPath<<"   "<<std::endl;
-    unsigned char bytes[20];
+
+    //std::cout<<"in getDataset"<<oPath<<"   "<<std::endl;
+    uint8_t bytes[20];
+    const char* out;
     int len=0;
     guchar res;
     GVariant *gVar;
     GVariantIter *iter;
+    //    getPropertyAsync(prop, oPath, gattCharProxy, gattCharIface);
     g_variant_get(_getProperty(prop, oPath, gattCharProxy, gattCharIface), "(v)", &gVar);
     g_variant_get(gVar, "ay", &iter);
     while(g_variant_iter_loop(iter, "y", &res))
     {
-        bytes[len++] = res;
+        bytes[len++] = res & 0xFF;
 
     }
 
-    std::cout<<"This is LEN-> :"<<len<<std::endl;
+
     //g_print("%s\n", res)
     int i=0;
-    while(i<20)
+    if((int8_t)bytes[0] != curId)
     {
-        if(i == 0)
+        curId = (int8_t)bytes[0];
+        while(i<20)
         {
-            std::cout<<"fuck it: "<<char( bytes[i])<<"  ";
-            i++;
-        }
-        else
-        {int16_t d = bytes[i] << 8 | bytes[i+1];
-            i+=2;
-            std::cout<<d<<" ";
+            if(i == 0)
+            {
 
+            std::cout<<"LEN:"<<len;
+                // std::cout<<"fuck it: id["<<int8_t( bytes[i])<<"]  ";
+                printf("id- [ %x ]", bytes[i]);
+                i++;
+            }
+            else
+            {int16_t d = (bytes[i] & 0xFF) << 8 | (bytes[i+1] & 0xFF);
+                i+=2;
+                std::cout<<d;//<<" <-> ";
+
+            }
         }
+
+        std::cout<<std::endl;
+
+
     }
 
-    std::cout<<std::endl;
     g_variant_iter_free(iter);
     //gfree(res);
     // std::cout<<std::string(res)<<"HERE IS THE RES"<<std::endl;
@@ -171,7 +197,10 @@ bool GRDevManager::_getDataset(std::string oPath, GDBusProxy* gattCharProxy,  st
 
 GDBusProxy* GRDevManager::_createProxy(std::string oPath, std::string iFace)
 {
-    return  g_dbus_proxy_new_for_bus_sync(G_BUS_TYPE_SYSTEM,
+    GError* _err = NULL;
+    GDBusProxy* newProxy =  g_dbus_proxy_new_for_bus_sync(G_BUS_TYPE_SYSTEM,
+           // G_DBUS_PROXY_FLAGS_GET_INVALIDATED_PROPERTIES,
+
             G_DBUS_PROXY_FLAGS_NONE,
             NULL,
             bluezBus.c_str(),
@@ -179,6 +208,13 @@ GDBusProxy* GRDevManager::_createProxy(std::string oPath, std::string iFace)
             iFace.c_str(),
             NULL,
             &_err);
+    if(!newProxy)
+    {
+        g_dbus_error_strip_remote_error(_err);
+        g_warning("GR_WARNING: failed to create proxy: %s\n", _err->message);
+        g_error_free(_err);
+    }
+    return newProxy;
 
 }
 
@@ -188,7 +224,7 @@ bool GRDevManager::_connected(GRDevice *dev)
     return  this->_getBoolProp(dev->dbusObjecPath, dev->propProxy, "Connected");
 }
 
-bool GRDevManager::getData(GRDevice *dev)
+void GRDevManager::getData(GRDevice *dev)
 {
     this->_getDataset((dev->dbusObjecPath+dataGattCharPath), dev->gattPropProxy, "Value"); 
 }
@@ -202,27 +238,31 @@ std::vector<GRDevice> GRDevManager::getAvalibleDevices()
     for(auto &path: _allManagedDevicesPaths)
     {
         propProxy = this->_createProxy(path, propIface);
-        std::cout<<path<<"<-------this is path"<<std::endl;
-        devName = this->_getStringProp(path, propProxy, "Name"); 
-        devAddr = this->_getStringProp(path, propProxy, "Address");
-        if((devName == lName || devName == rName) && !this->_deviceIsIn(devAddr))
+        if(propProxy!=NULL)
         {
-            device.name = devName;
-            device.propProxy = propProxy;
-            device.devMethodProxy = this->_createProxy(path, deviceIface);
-            device.gattCharProxy = this->_createProxy((path+dataGattCharPath), gattCharIface);
-            device.gattPropProxy = this->_createProxy((path+dataGattCharPath), propIface);
-            device.dbusObjecPath = path;
-            device.address = devAddr;
-            device.id = this->_id++;
-            //std::cout<<"IT WORKING"<<device.address<<std::endl;
-            if(this->_connected(&device))
+            std::cout<<path<<"<-------this is path"<<std::endl;
+            devName = this->_getStringProp(path, propProxy, "Name"); 
+            devAddr = this->_getStringProp(path, propProxy, "Address");
+            if((devName == lName || devName == rName) && !this->_deviceIsIn(devAddr))
             {
-                std::cout<<"IS Connected!! ->"<<device.address<<std::endl;
-                device.connected = true;
+                device.name = devName;
+                device.propProxy = propProxy;
+                device.devMethodProxy = this->_createProxy(path, deviceIface);
+                device.gattCharProxy = this->_createProxy((path+dataGattCharPath), gattCharIface);
+                device.gattPropProxy = this->_createProxy((path+dataGattCharPath), propIface);
+                device.dbusObjecPath = path;
+                device.address = devAddr;
+                device.id = this->_id++;
+                //std::cout<<"IT WORKING"<<device.address<<std::endl;
+                if(this->_connected(&device))
+                {
+                    std::cout<<"IS Connected!! ->"<<device.address<<std::endl;
+                    device.connected = true;
+                }
+                this->_avalibleDevices.push_back(device);
             }
-            this->_avalibleDevices.push_back(device);
         }
+
         devName.clear();
         //device.clear(); //TODO add clear method
         // g_object_unref(propProxy); TODO fix with adding link in CMakeLists for pkgconfig of all objects of glib
@@ -261,7 +301,64 @@ bool GRDevManager::disconnect(GRDevice* dev)
 bool GRDevManager::prepareDataReading(GRDevice* dev)
 {
     this->_callDevMethod("StartNotify", dev->gattCharProxy); 
+//    g_signal_connect(dev->gattCharProxy, "g-properties-changed", G_CALLBACK(getData), dev);
 }
+
+void GRDevManager::getDataCallBack(GDBusProxy* propProxy, GAsyncResult* result, GError** err)
+{
+    uint8_t bytes[20];
+    int len = 0;
+    guchar  res;
+    GVariant* gVar;
+    GVariantIter* iter;
+    gVar = g_dbus_proxy_call_finish(propProxy, result, err);
+    g_variant_get(gVar, "ay", &iter);
+    while(g_variant_iter_loop(iter, "y", &res))
+    {
+        bytes[len++] = res & 0xFF;
+    }
+    int i=0;
+
+
+    while(i<19)
+    {
+        if(i == 0)
+        {
+            // std::cout<<"fuck it: id["<<int8_t( bytes[i])<<"]  ";
+            std::cout<<"LEN:"<<len;
+            printf(" id- [ %x ]", bytes[i]);
+            i++;
+        }
+        else
+        {int16_t d = (bytes[i] & 0xFF) << 8 | (bytes[i+1] & 0xFF);
+            i+=2;
+            std::cout<<d<<" <-> ";
+
+        }
+    }
+
+    std::cout<<std::endl;
+    g_variant_iter_free(iter);
+
+}
+void GRDevManager::_getPropertyAsync(std::string propName, std::string oPath, GDBusProxy* propProxy, std::string iFace)
+{
+    GError* _err = NULL;
+
+    g_dbus_proxy_call(propProxy,
+            "Get",
+            g_variant_new("(ss)",
+                iFace.c_str(),
+                propName.c_str()),
+            G_DBUS_CALL_FLAGS_NONE,
+            -1,
+            NULL,
+            (GAsyncReadyCallback) getDataCallBack,
+            NULL);
+
+} 
+
+
 bool GRDevManager::finishDataReading(GRDevice *dev)
 {
     this->_callDevMethod("StopNotify", dev->gattCharProxy);

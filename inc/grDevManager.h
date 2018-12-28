@@ -83,7 +83,7 @@ class GRDevManager
          */
         GRConnection* getActiveDeviceById(int);
 
-        bool getData(GRDevice*);
+         void getData(GRDevice*);
 
         // private:
         /**
@@ -108,9 +108,11 @@ class GRDevManager
 
         GDBusProxy *_rootProxy;
         std::vector<std::string> _allManagedDevicesPaths;
-        GError *_err;
+        //GError *_err;
 
         GVariant*  _getProperty(std::string, std::string , GDBusProxy*, std::string);
+
+        void _getPropertyAsync(std::string, std::string, GDBusProxy*, std::string);
         std::string _getStringProp(std::string, GDBusProxy*, std::string);
         bool _getDataset(std::string, GDBusProxy*, std::string);
         bool _getBoolProp(std::string, GDBusProxy*, std::string);
@@ -120,9 +122,11 @@ class GRDevManager
 
         bool _connected(GRDevice*);
         GVariant* _propResult;
-
+        GVariant* _dataSet;
         
-
+        static void getDataCallBack(GDBusProxy* propProxy, GAsyncResult*, GError**);
+        
+        int8_t curId = 0;
         int _id = 0;
     private:
 };
