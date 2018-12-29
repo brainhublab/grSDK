@@ -28,9 +28,10 @@
 #include <bluetooth/hci_lib.h>
 #include <bluetooth/rfcomm.h>
 
+#include "tinyb.hpp"
 #include <gio/gio.h>
 
-#include "grConnection.h"
+//#include "grConnection.h"
 /**
  * GRDevManager - a class description
  */
@@ -81,7 +82,7 @@ class GRDevManager
          * @return id of device
          * @see GRDevice
          */
-        GRConnection* getActiveDeviceById(int);
+ //       GRConnection* getActiveDeviceById(int);
 
          void getData(GRDevice*);
 
@@ -95,7 +96,7 @@ class GRDevManager
         /**
          * @brief map of activated devices
          */
-        std::unordered_map<int, GRConnection> _activeDevices;
+//        std::unordered_map<int, GRConnection> _activeDevices;
         /**
          * @brief checks if device is active
          */
@@ -123,11 +124,18 @@ class GRDevManager
         bool _connected(GRDevice*);
         GVariant* _propResult;
         GVariant* _dataSet;
-        
+      GVariant* _oldGvar;       
         static void getDataCallBack(GDBusProxy* propProxy, GAsyncResult*, GError**);
         
+        std::vector<uint8_t> dataHolder; 
+         
         int8_t curId = 0;
         int _id = 0;
+        uint8_t packetBuffer[18];
+        int buffLen =0; 
+        bool firstPieceFlag = true;
+        bool full = false;
+        int globalIter = 0;
     private:
 };
 

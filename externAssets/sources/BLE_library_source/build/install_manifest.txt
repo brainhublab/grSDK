@@ -1,0 +1,14 @@
+/usr/local/include/tinyb.hpp
+/usr/local/include/tinyb/BluetoothAdapter.hpp
+/usr/local/include/tinyb/BluetoothDevice.hpp
+/usr/local/include/tinyb/BluetoothEvent.hpp
+/usr/local/include/tinyb/BluetoothException.hpp
+/usr/local/include/tinyb/BluetoothGattCharacteristic.hpp
+/usr/local/include/tinyb/BluetoothGattDescriptor.hpp
+/usr/local/include/tinyb/BluetoothGattService.hpp
+/usr/local/include/tinyb/BluetoothManager.hpp
+/usr/local/include/tinyb/BluetoothObject.hpp
+/usr/local/lib/pkgconfig/tinyb.pc
+/usr/local/lib64/libtinyb.so.0.5.0
+/usr/local/lib64/libtinyb.so.0
+/usr/local/lib64/libtinyb.so

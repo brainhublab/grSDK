@@ -1,0 +1,11 @@
+prefix=/opt/code/grSDK/externAssets/ble_lib
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: tinyb
+Description: Tiny BLE library
+Version: 0.5.0
+
+Libs: -L${libdir} -ltinyb
+Cflags: -I${includedir}

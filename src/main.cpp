@@ -1,7 +1,7 @@
 #include "GRT/GRT.h"
 #include "grAlgorithm.h"
 #include "grDevManager.h"
-#include "grConnection.h"
+//#include "grConnection.h"
 #include "grDevice.h"
 #include "grTrajectory.h"
 
@@ -63,11 +63,17 @@ int main (int argc, const char * argv[])
             //usleep(200);
             //devManager.disconnect(&devs[i]);
             devManager.prepareDataReading(&devs[i]);
+            int k=0;
             while(true)
-            {
+           {
                 devManager.getData(&devs[i]);
          //       std::cout<<"iteration------------------"<<j++;
+                k++;
+
             }
+            devManager.disconnect(&devs[i]);
+
+            devManager.finishDataReading(&devs[i]);
         }
     }
 

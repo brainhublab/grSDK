@@ -1,0 +1,1 @@
+/usr/bin/c++      CMakeFiles/esstinyb.dir/esstinyb.cpp.o  -o esstinyb -rdynamic ../src/libtinyb.so.0.5.0 -lpthread -lglib-2.0 -lgio-2.0 -lgobject-2.0 -lglib-2.0 -lgio-2.0 -lgobject-2.0 -Wl,-rpath,/home/h3lgi/buffer/BLE_library-1b603854c8f301fe27542a96e84e49998efcf69d/build/src 

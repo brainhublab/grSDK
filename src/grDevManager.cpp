@@ -145,7 +145,7 @@ bool GRDevManager::_getDataset(std::string oPath, GDBusProxy* gattCharProxy,  st
 {
 
     //std::cout<<"in getDataset"<<oPath<<"   "<<std::endl;
-    uint8_t bytes[20];
+    uint8_t bytes[18];
     const char* out;
     int len=0;
     guchar res;
@@ -159,32 +159,40 @@ bool GRDevManager::_getDataset(std::string oPath, GDBusProxy* gattCharProxy,  st
         bytes[len++] = res & 0xFF;
 
     }
+    //  if((int8_t)bytes[0] != curId && firstPieceFlag)
 
 
-    //g_print("%s\n", res)
     int i=0;
     if((int8_t)bytes[0] != curId)
     {
+        curId = (uint8_t)bytes[0];
+        if(len<18)
+        {
+            std::cout<<len<<"---------LEN"<<std::endl;
+        }
         curId = (int8_t)bytes[0];
-        while(i<20)
+        while(i<18)
         {
             if(i == 0)
             {
 
-            std::cout<<"LEN:"<<len;
-                // std::cout<<"fuck it: id["<<int8_t( bytes[i])<<"]  ";
-                printf("id- [ %x ]", bytes[i]);
+                std::cout<<"LEN:"<<len;
+                // std::cout<<"fuck it: id["<<int8_t( bytes[i] )<<"]  ";
+                printf("id- [ %x  ]", bytes[i]);
                 i++;
+                //                                             
             }
             else
             {int16_t d = (bytes[i] & 0xFF) << 8 | (bytes[i+1] & 0xFF);
                 i+=2;
-                std::cout<<d;//<<" <-> ";
+                std::cout<<d<<" <-> ";
 
             }
+
         }
 
         std::cout<<std::endl;
+
 
 
     }
@@ -195,11 +203,108 @@ bool GRDevManager::_getDataset(std::string oPath, GDBusProxy* gattCharProxy,  st
     return true;
 }
 
+/*
+//curId = (int8_t)bytes[0];
+if(len<18)
+{
+
+if((int8_t)bytes[0] != curId && firstPieceFlag && globalIter < 2)
+{
+
+curId = (int8_t)bytes[0];
+//if(firstPieceFlag)
+//{
+
+for(int i=0; i<len;i++)
+{
+packetBuffer[i]= bytes[i];
+}
+buffLen = len;
+firstPieceFlag = false;
+std::cout<<"LLEN:<[ "<<len<<"]>";
+//}
+}
+if(bytes[0] != curId && !firstPieceFlag)
+{
+
+for(int i=0;i<len;i++)
+{
+packetBuffer[i + buffLen] = bytes[i];
+}
+firstPieceFlag = true;
+buffLen = 0;
+
+int i=0;
+while(i<18)
+{
+if(i == 0)
+{
+
+std::cout<<"HLEN:<[ "<<len<<"]>";
+// std::cout<<"fuck it: id["<<int8_t( bytes[i])<<"]  ";
+printf("id- [ %x ]", packetBuffer[i]);
+i++;
+}
+else
+{int16_t d = (packetBuffer[i] & 0xFF) << 8 | (packetBuffer[i+1] & 0xFF);
+i+=2;
+std::cout<<d<<" <-> ";
+
+}
+}
+
+std::cout<<std::endl;
+
+// free(firstPiece);
+// free(secondPiece);
+
+}
+
+//        memset(packetBuffer, 0, 18);
+globalIter ++;
+} 
+else
+{
+if((int8_t)bytes[0] != curId && firstPieceFlag)
+{
+
+curId = (int8_t)bytes[0];
+//g_print("%s\n", res)
+int i=0;
+curId = (int8_t)bytes[0];
+while(i<18)
+{
+if(i == 0)
+{
+
+    std::cout<<"LEN:<[ "<<len<<"]>";
+    // std::cout<<"fuck it: id["<<int8_t( bytes[i])<<"]  ";
+    printf("id- [ %x ]", bytes[i]);
+    i++;
+}
+else
+{int16_t d = (bytes[i] & 0xFF) << 8 | (bytes[i+1] & 0xFF);
+    i+=2;
+    std::cout<<d<<" <-> ";
+
+}
+}
+
+std::cout<<std::endl;
+
+// free(firstPiece);
+// free(secondPiece);
+
+
+}
+}      
+
+    */
 GDBusProxy* GRDevManager::_createProxy(std::string oPath, std::string iFace)
 {
     GError* _err = NULL;
     GDBusProxy* newProxy =  g_dbus_proxy_new_for_bus_sync(G_BUS_TYPE_SYSTEM,
-           // G_DBUS_PROXY_FLAGS_GET_INVALIDATED_PROPERTIES,
+            // G_DBUS_PROXY_FLAGS_GET_INVALIDATED_PROPERTIES,
 
             G_DBUS_PROXY_FLAGS_NONE,
             NULL,
@@ -301,7 +406,7 @@ bool GRDevManager::disconnect(GRDevice* dev)
 bool GRDevManager::prepareDataReading(GRDevice* dev)
 {
     this->_callDevMethod("StartNotify", dev->gattCharProxy); 
-//    g_signal_connect(dev->gattCharProxy, "g-properties-changed", G_CALLBACK(getData), dev);
+    //    g_signal_connect(dev->gattCharProxy, "g-properties-changed", G_CALLBACK(getData), dev);
 }
 
 void GRDevManager::getDataCallBack(GDBusProxy* propProxy, GAsyncResult* result, GError** err)
@@ -365,7 +470,7 @@ bool GRDevManager::finishDataReading(GRDevice *dev)
 }
 //TODO needs to be implemented later
 /* Return device by ID */
-GRConnection* GRDevManager::getActiveDeviceById(int id)
+/*GRConnection* GRDevManager::getActiveDeviceById(int id)
 {
     if(this->_activeDevices.find(id)->first != 0)
     {
@@ -377,7 +482,7 @@ GRConnection* GRDevManager::getActiveDeviceById(int id)
         return NULL;
     }
 }
-
+*/
 /* Check id device in avalible device */
 bool GRDevManager::_deviceIsIn(std::string addr)
 {

@@ -15,6 +15,10 @@ set(BUILD_DIR "build")
 set(SOURCE_DIR "src")
 set(HEADER_DIR "inc")
 
+set(BLE_DIR "${EXTERN_ASSETS}/ble_lib")
+set(BLE_INCLUDE "${BLE_DIR}/include")
+set(BLE_LIB "${BLE_DIR}/lib64/libtinyb.so")
+
 set(GRT_DIR "${EXTERN_ASSETS}/grt")
 set(GRT_INCLUDE "${GRT_DIR}/include")
 set(GRT_LIB "${GRT_DIR}/lib/libgrt.so")
@@ -32,6 +36,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_COMPILE_FLAGS} ${CXX_LINK_FLAGS} $
 include_directories(${HEADER_DIR})
 include_directories(${GRT_INCLUDE})
 include_directories(${EIGEN_DIR})
+include_directories(${BLE_INCLUDE})
 
 include_directories(${GLIB_INCLUDE_DIRS})
 link_libraries(${GLIB_LDFLAGS})
