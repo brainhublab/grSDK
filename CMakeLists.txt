@@ -30,7 +30,7 @@ set(SOURCES "${SOURCE_DIR}/*.cpp")
 file(GLOB CPPS ${SOURCES})
 #TODO add entries for samples maeby
 set(CXX_COMPILE_FLAGS "-g -std=c++11 -std=gnu++11 -pthread " )
-set(CXX_LINK_FLAGS " -lstdc++ -lbluetooth -lboost_iostreams -lboost_system -lboost_filesystem -lncurses -ltinfo -lglib-2.0 -lgio-2.0")
+set(CXX_LINK_FLAGS " -lstdc++ -lbluetooth -lboost_iostreams -lboost_system -lboost_filesystem -lncurses -ltinfo -lglib-2.0 -lgio-2.0 -ltinyb")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_COMPILE_FLAGS} ${CXX_LINK_FLAGS} ${GLIB_LDFLAGS}")
 
 include_directories(${HEADER_DIR})
@@ -41,6 +41,8 @@ include_directories(${BLE_INCLUDE})
 include_directories(${GLIB_INCLUDE_DIRS})
 link_libraries(${GLIB_LDFLAGS})
 link_directories(${GLIB_LIBRARY_DIRS})
+link_directories(${BLE_LIB})
+
 #cmake_policy(SET CMP0011 NEW)
 #cmake_policy(SET CMP0001 OLD)
 #option(BUILD_SHARED_LIB " " OFF)
@@ -53,4 +55,4 @@ if(NOT UNIX)
 endif()
 
 add_executable(main ${SOURCE_DIR}/main.cpp ${CPPS})
-target_link_libraries(main ${CMAKE_SOURCE_DIR}/externAssets/grt/lib/libgrt.so )
+target_link_libraries(main ${CMAKE_SOURCE_DIR}/externAssets/grt/lib/libgrt.so ${CMAKE_SOURCE_DIR}/externAssets/ble_lib/lib64/libtinyb.so)

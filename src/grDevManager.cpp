@@ -5,17 +5,29 @@
 GRDevManager::GRDevManager()
 {
 
-    GError* _err = NULL;
-    _rootProxy = g_dbus_proxy_new_for_bus_sync(G_BUS_TYPE_SYSTEM,
-            G_DBUS_PROXY_FLAGS_DO_NOT_LOAD_PROPERTIES,
-            NULL,
-            bluezBus.c_str(),
-            "/",
-            "org.freedesktop.DBus.ObjectManager",
-            NULL,
-            &_err);
-    g_error_free(_err);
+    btManager = nullptr;
+    try{
+        btManager = tinyb::BluetoothManager::get_bluetooth_manager();  
+    }
+    catch(const std::runtime_error& err)
+    {
+        std::cerr << "ERROR: initializing libtinyb BluetoothManager"<< err.what()<<std::endl;
+        exit(1);
+    }
 
+
+    /*
+       GError* _err = NULL;
+       _rootProxy = g_dbus_proxy_new_for_bus_sync(G_BUS_TYPE_SYSTEM,
+       G_DBUS_PROXY_FLAGS_DO_NOT_LOAD_PROPERTIES,
+       NULL,
+       bluezBus.c_str(),
+       "/",
+       "org.freedesktop.DBus.ObjectManager",
+       NULL,
+       &_err);
+       g_error_free(_err);
+       */
 }
 
 //destructor
@@ -32,474 +44,258 @@ GRDevManager::GRDevManager(const GRDevManager& t)
 GRDevManager& GRDevManager::operator=(const GRDevManager& t)
 {
 }
-bool GRDevManager::_getAllManagedDevicesPaths()
+
+std::unordered_map<int, GRDevice>*GRDevManager::getAvalibleGRDevices()
 {
-    GVariant *res;
-    GError* _err = NULL;
-    res = g_dbus_proxy_call_sync(_rootProxy,
-            "GetManagedObjects",
-            NULL,
-            G_DBUS_CALL_FLAGS_NONE,
-            -1,
-            NULL,
-            &_err);
-    if(!res)
-    {
-        g_dbus_error_strip_remote_error(_err);
-        g_print("ERROR: getting of list of managed objects failed: %s\n", _err->message);
-        g_error_free(_err);
-        return false;
-    }
-
-    GVariantIter *objPathIter, *ifaceIter, *propIter;
-    gchar  *objPath;
-
-    g_variant_get(res, "(a{oa{sa{sv}}})", &objPathIter);
-
-    while(g_variant_iter_loop(objPathIter, "{oa{sa{sv}}}", &objPath, &ifaceIter))
-    {
-        //g_print("%s\n", objPath);
-        if(std::strstr(objPath, defaultAdapterPath.c_str()) && strlen(objPath) == 37)    
-        {
-
-            this->_allManagedDevicesPaths.push_back(objPath);
-        }
-    }
-    return true;
-}
-
-GVariant* GRDevManager::_getProperty(std::string propName, std::string oPath, GDBusProxy *propProxy, std::string iFace)
-{
-    GError* _err = NULL;
-    GVariant *res;
-    res = g_dbus_proxy_call_sync(propProxy,
-            "Get",
-            g_variant_new("(ss)",
-                iFace.c_str(),
-                propName.c_str()),
-            G_DBUS_CALL_FLAGS_NONE,
-            -1,
-            NULL,
-            &_err);
-    if(!res && _err)
-    {
-        g_dbus_error_strip_remote_error(_err);
-        g_warning("GR_WARNING: failed to get property: %s\n", _err->message);
-        g_error_free(_err);
-        //return ;
-
-    }
-    //g_print( "\n The NAMEEE :   %s\n", g_variant_get_data(res) );
-    //  g_variant_get(variantRes, "(v)", strRes);
-    //  out = strRes;
-
-    return res;
-
-
-}
-
-bool GRDevManager::_callDevMethod(std::string methodName, GDBusProxy* methodProxy)
-{
-    GError* _err = NULL;
-    g_dbus_proxy_call_sync(methodProxy,
-            methodName.c_str(),
-            NULL,
-            G_DBUS_CALL_FLAGS_NONE,
-            -1,
-            NULL,
-            &_err);
-    return true; 
-}
-std::string GRDevManager::_getStringProp(std::string oPath, GDBusProxy* propProxy, std::string prop)
-{
-    const gchar *res;
-    GVariant* gVar; 
-    GVariant* getPropGVar = _getProperty(prop, oPath, propProxy, deviceIface);
-    if(getPropGVar!=NULL)
-    {
-        g_variant_get(getPropGVar, "(v)", &gVar);
-        if(gVar != NULL)
-        {
-            g_variant_get(gVar, "s", &res);
-            g_variant_unref (gVar);
-            g_variant_unref(getPropGVar);
-            return std::string(res);
-        }
-
-    } 
-    return " ";
-}
-
-bool GRDevManager::_getBoolProp(std::string oPath, GDBusProxy* propProxy, std::string prop)
-{
-    gboolean res;
-    GVariant *gVar;
-    g_variant_get(_getProperty(prop, oPath, propProxy, deviceIface), "(v)", &gVar);
-    g_variant_get(gVar, "b", &res);
-    g_variant_unref(gVar);
-    return res;
-
-}
-
-bool GRDevManager::_getDataset(std::string oPath, GDBusProxy* gattCharProxy,  std::string prop)
-{
-
-    //std::cout<<"in getDataset"<<oPath<<"   "<<std::endl;
-    uint8_t bytes[18];
-    const char* out;
-    int len=0;
-    guchar res;
-    GVariant *gVar;
-    GVariantIter *iter;
-    //    getPropertyAsync(prop, oPath, gattCharProxy, gattCharIface);
-    g_variant_get(_getProperty(prop, oPath, gattCharProxy, gattCharIface), "(v)", &gVar);
-    g_variant_get(gVar, "ay", &iter);
-    while(g_variant_iter_loop(iter, "y", &res))
-    {
-        bytes[len++] = res & 0xFF;
-
-    }
-    //  if((int8_t)bytes[0] != curId && firstPieceFlag)
-
-
-    int i=0;
-    if((int8_t)bytes[0] != curId)
-    {
-        curId = (uint8_t)bytes[0];
-        if(len<18)
-        {
-            std::cout<<len<<"---------LEN"<<std::endl;
-        }
-        curId = (int8_t)bytes[0];
-        while(i<18)
-        {
-            if(i == 0)
-            {
-
-                std::cout<<"LEN:"<<len;
-                // std::cout<<"fuck it: id["<<int8_t( bytes[i] )<<"]  ";
-                printf("id- [ %x  ]", bytes[i]);
-                i++;
-                //                                             
-            }
-            else
-            {int16_t d = (bytes[i] & 0xFF) << 8 | (bytes[i+1] & 0xFF);
-                i+=2;
-                std::cout<<d<<" <-> ";
-
-            }
-
-        }
-
-        std::cout<<std::endl;
-
-
-
-    }
-
-    g_variant_iter_free(iter);
-    //gfree(res);
-    // std::cout<<std::string(res)<<"HERE IS THE RES"<<std::endl;
-    return true;
-}
-
-/*
-//curId = (int8_t)bytes[0];
-if(len<18)
-{
-
-if((int8_t)bytes[0] != curId && firstPieceFlag && globalIter < 2)
-{
-
-curId = (int8_t)bytes[0];
-//if(firstPieceFlag)
-//{
-
-for(int i=0; i<len;i++)
-{
-packetBuffer[i]= bytes[i];
-}
-buffLen = len;
-firstPieceFlag = false;
-std::cout<<"LLEN:<[ "<<len<<"]>";
-//}
-}
-if(bytes[0] != curId && !firstPieceFlag)
-{
-
-for(int i=0;i<len;i++)
-{
-packetBuffer[i + buffLen] = bytes[i];
-}
-firstPieceFlag = true;
-buffLen = 0;
-
-int i=0;
-while(i<18)
-{
-if(i == 0)
-{
-
-std::cout<<"HLEN:<[ "<<len<<"]>";
-// std::cout<<"fuck it: id["<<int8_t( bytes[i])<<"]  ";
-printf("id- [ %x ]", packetBuffer[i]);
-i++;
-}
-else
-{int16_t d = (packetBuffer[i] & 0xFF) << 8 | (packetBuffer[i+1] & 0xFF);
-i+=2;
-std::cout<<d<<" <-> ";
-
-}
-}
-
-std::cout<<std::endl;
-
-// free(firstPiece);
-// free(secondPiece);
-
-}
-
-//        memset(packetBuffer, 0, 18);
-globalIter ++;
+    this->_getAvalibleiGRDevices();
+    /*    std::unordered_map<int, GRDevice*> outDevs;
+          for(auto device : this->_avalibleGRDevices)
+          {
+          outDevs[device.id] = &device;
+          }
+          */
+    return &_avalibleGRDevices;
 } 
-else
-{
-if((int8_t)bytes[0] != curId && firstPieceFlag)
-{
 
-curId = (int8_t)bytes[0];
-//g_print("%s\n", res)
-int i=0;
-curId = (int8_t)bytes[0];
-while(i<18)
+GRDevice* GRDevManager::getGRDeviceById(int devId)
 {
-if(i == 0)
-{
-
-    std::cout<<"LEN:<[ "<<len<<"]>";
-    // std::cout<<"fuck it: id["<<int8_t( bytes[i])<<"]  ";
-    printf("id- [ %x ]", bytes[i]);
-    i++;
-}
-else
-{int16_t d = (bytes[i] & 0xFF) << 8 | (bytes[i+1] & 0xFF);
-    i+=2;
-    std::cout<<d<<" <-> ";
-
-}
+    return &(_avalibleGRDevices[devId]);
 }
 
-std::cout<<std::endl;
-
-// free(firstPiece);
-// free(secondPiece);
-
+bool GRDevManager::getData(int devId)
+{
+    std::thread thr(&GRDevManager::subscribe, this,  devId);
+    thr.detach();
 
 }
-}      
+bool GRDevManager::_startDiscovery()
+{   
+    bool flag = this->btManager->start_discovery();
+    std::cout<<"Discovery of devices is "<<(flag ? "started":"not started" )<<std::endl;
+    return flag;
+}
 
-    */
-GDBusProxy* GRDevManager::_createProxy(std::string oPath, std::string iFace)
+bool GRDevManager::_stopDiscovery()
 {
-    GError* _err = NULL;
-    GDBusProxy* newProxy =  g_dbus_proxy_new_for_bus_sync(G_BUS_TYPE_SYSTEM,
-            // G_DBUS_PROXY_FLAGS_GET_INVALIDATED_PROPERTIES,
 
-            G_DBUS_PROXY_FLAGS_NONE,
-            NULL,
-            bluezBus.c_str(),
-            oPath.c_str(),
-            iFace.c_str(),
-            NULL,
-            &_err);
-    if(!newProxy)
+    bool flag = this->btManager->stop_discovery();
+    std::cout<<"Discovery of devices is "<<(flag? "stoped": "not stoped")<<std::endl;
+    return flag;
+}
+
+bool GRDevManager::_getAvalibleiGRDevices()
+{
+    _startDiscovery();
+    //    this->btManager->start_discovery();
+    //std::vector<std::unique_ptr<tinyb::BluetoothDevice> > allDevices = btManager->get_devices();
+    for(auto& btIter : this->btManager->get_devices())
     {
-        g_dbus_error_strip_remote_error(_err);
-        g_warning("GR_WARNING: failed to create proxy: %s\n", _err->message);
-        g_error_free(_err);
-    }
-    return newProxy;
-
-}
-
-bool GRDevManager::_connected(GRDevice *dev)
-{
-
-    return  this->_getBoolProp(dev->dbusObjecPath, dev->propProxy, "Connected");
-}
-
-void GRDevManager::getData(GRDevice *dev)
-{
-    this->_getDataset((dev->dbusObjecPath+dataGattCharPath), dev->gattPropProxy, "Value"); 
-}
-/* Return map of avalible for connecting GR devices */
-std::vector<GRDevice> GRDevManager::getAvalibleDevices()
-{
-    GRDevice device;
-    std::string devName, devAddr;
-    // GVariant *gVar; 
-    GDBusProxy *propProxy;
-    for(auto &path: _allManagedDevicesPaths)
-    {
-        propProxy = this->_createProxy(path, propIface);
-        if(propProxy!=NULL)
+        if(btIter->get_name() == lName || btIter->get_name() == rName)
         {
-            std::cout<<path<<"<-------this is path"<<std::endl;
-            devName = this->_getStringProp(path, propProxy, "Name"); 
-            devAddr = this->_getStringProp(path, propProxy, "Address");
-            if((devName == lName || devName == rName) && !this->_deviceIsIn(devAddr))
+            GRDevice grDev;
+            grDev.id = _grDevId;
+            grDev.name = btIter->get_name();
+            grDev.address = btIter->get_address();
+            grDev.btTag = std::move(btIter);
+            //devVec.emplace_back(std::move(grDev));
+            if(!_deviceIsIn(&grDev))
             {
-                device.name = devName;
-                device.propProxy = propProxy;
-                device.devMethodProxy = this->_createProxy(path, deviceIface);
-                device.gattCharProxy = this->_createProxy((path+dataGattCharPath), gattCharIface);
-                device.gattPropProxy = this->_createProxy((path+dataGattCharPath), propIface);
-                device.dbusObjecPath = path;
-                device.address = devAddr;
-                device.id = this->_id++;
-                //std::cout<<"IT WORKING"<<device.address<<std::endl;
-                if(this->_connected(&device))
-                {
-                    std::cout<<"IS Connected!! ->"<<device.address<<std::endl;
-                    device.connected = true;
-                }
-                this->_avalibleDevices.push_back(device);
+
+                this->_avalibleGRDevices[_grDevId] = std::move(grDev);
+
+                _grDevId ++;
             }
         }
-
-        devName.clear();
-        //device.clear(); //TODO add clear method
-        // g_object_unref(propProxy); TODO fix with adding link in CMakeLists for pkgconfig of all objects of glib
     }
 
-    return this->_avalibleDevices;
+    for(auto& it: _avalibleGRDevices) 
+    {
+        // std::cout << typeid(it.btTag).name() << std::endl;
+        std::cout<<it.second.name<<std::endl;
+    }
+    // return _avalibleGRDevices;
+    //  if(this->btManager->get_discovering ())
+    // {
+
+//    _stopDiscovery();
+    // }
 }
 
-/* Set GR device from avalible to active and make it ready for connection */
-bool GRDevManager::connect(GRDevice* dev)
+bool GRDevManager::connect(int devId)
 {
-    if(!this->_connected(dev))
+    auto& dev = _avalibleGRDevices[devId];
+    std::cout<<dev.address<<std::endl;
+    std::string addr = dev.name;
+    //auto grTag = btManager->find<BluetoothDevice>(nullptr, &addr, nullptr, std::chrono::seconds(2));
+    if(dev.btTag == nullptr)
     {
-        this->_callDevMethod("Connect", dev->devMethodProxy); 
-    }
-    else
-    {
-        std::cout<<"Device is already connected"<<std::endl;
+        std::cerr<<"ERROR: something go wrong so cannot emit device with ID: "<<devId<<std::endl;
         return false;
     }
-}
 
-bool GRDevManager::disconnect(GRDevice* dev)
-{
-    if(!this->_connected(dev))
-    {
-        std::cout<<"Device is already disconncted"<<std::endl;
-        return false;
-    }
-    else
-    {
-        this->_callDevMethod("Disconnect", dev->devMethodProxy);
-    }
-}
-
-bool GRDevManager::prepareDataReading(GRDevice* dev)
-{
-    this->_callDevMethod("StartNotify", dev->gattCharProxy); 
-    //    g_signal_connect(dev->gattCharProxy, "g-properties-changed", G_CALLBACK(getData), dev);
-}
-
-void GRDevManager::getDataCallBack(GDBusProxy* propProxy, GAsyncResult* result, GError** err)
-{
-    uint8_t bytes[20];
-    int len = 0;
-    guchar  res;
-    GVariant* gVar;
-    GVariantIter* iter;
-    gVar = g_dbus_proxy_call_finish(propProxy, result, err);
-    g_variant_get(gVar, "ay", &iter);
-    while(g_variant_iter_loop(iter, "y", &res))
-    {
-        bytes[len++] = res & 0xFF;
-    }
-    int i=0;
-
-
-    while(i<19)
-    {
-        if(i == 0)
-        {
-            // std::cout<<"fuck it: id["<<int8_t( bytes[i])<<"]  ";
-            std::cout<<"LEN:"<<len;
-            printf(" id- [ %x ]", bytes[i]);
-            i++;
-        }
-        else
-        {int16_t d = (bytes[i] & 0xFF) << 8 | (bytes[i+1] & 0xFF);
-            i+=2;
-            std::cout<<d<<" <-> ";
-
-        }
-    }
-
-    std::cout<<std::endl;
-    g_variant_iter_free(iter);
-
-}
-void GRDevManager::_getPropertyAsync(std::string propName, std::string oPath, GDBusProxy* propProxy, std::string iFace)
-{
-    GError* _err = NULL;
-
-    g_dbus_proxy_call(propProxy,
-            "Get",
-            g_variant_new("(ss)",
-                iFace.c_str(),
-                propName.c_str()),
-            G_DBUS_CALL_FLAGS_NONE,
-            -1,
-            NULL,
-            (GAsyncReadyCallback) getDataCallBack,
+    dev.btTag->enable_connected_notifications([](BluetoothDevice &grDev, bool connected, void* userData)
+            {if(connected) std::cout<<"Device with name: "<<grDev.get_name()<<"and address: "<<grDev.get_address()<<" is connected"<<std::endl;},
             NULL);
 
-} 
-
-
-bool GRDevManager::finishDataReading(GRDevice *dev)
-{
-    this->_callDevMethod("StopNotify", dev->gattCharProxy);
-}
-//TODO needs to be implemented later
-/* Return device by ID */
-/*GRConnection* GRDevManager::getActiveDeviceById(int id)
-{
-    if(this->_activeDevices.find(id)->first != 0)
+    if(dev.btTag != nullptr)
     {
-        return &this->_activeDevices[id];
+        dev.btTag->connect();
+        std::cout<<"Waiting for service:  "<<imuServiceUUID<<"to be discovered"<<std::endl;
+
+        std::string service = imuServiceUUID;
+        dev.imuService = dev.btTag->find(&service);
+
     }
     else
+    {   std::cout<<"ERROR: something goes wrong with connecting to TAG"<<std::endl;
+        return false;
+        //TODO stop discovery
+    }
+    std::string characteristic = imuGattCharUUID;
+    dev.imuChar = dev.imuService->find(&characteristic);
+
+
+    std::cout<<_avalibleGRDevices[devId].name<<std::endl;
+    return true;
+    //if(this->btManager->get_discovering ())
+
+    // {
+
+    _stopDiscovery();
+    //}
+
+
+
+}
+void GRDevManager::dataCallback(BluetoothGattCharacteristic &c, std::vector<unsigned char> &data, void *userdata)
+{
+    unsigned char* data_c;
+    unsigned int dataSize = data.size();
+    auto dev = static_cast<GRDevice*>(userdata);
+
+    //std::cout<<dev->name<<"  IN CALLBACK ---------------"<<std::endl;
+    /*
+       if(dataSize >0)
+       {
+       data_c = data.data();
+
+       std::cout<<" Raw data ---[";
+       for(unsigned i=0;i<dataSize; i++)
+       {
+    //  std::cout<<std::hex<<static_cast<int>(data_c[i])<<" - ";
+
+    }
+    std::cout<<"]"<<std::endl;
+
+
+    }
+    */
+    if(dataSize > 0)
     {
-        std::cout<<"ERROR: No such device with id: "<<id<<std::endl;
-        return NULL;
+
+        data_c = data.data();
+        //  uint8_t imuId = static_cast<uint8_t>(data_c[0]);
+        int imuId = (int)data_c[0];
+
+
+        std::vector<int16_t> msg;
+        unsigned i=0;
+        while(i<18)
+        {
+            if(i==0)
+            {
+                i++;
+            }
+            else
+            {
+                uint16_t dataPiece = (data_c[i] & 0xFF) << 8 | (data_c[i+1] & 0xFF);
+                // int16_t piece = (data_c[i] << 8) | (data_c[i+1]);
+                msg.push_back(dataPiece);
+        //        std::cout<<dataPiece<<"["<< i << i+1<<"]"<<" ";
+
+                i+=2;
+            }
+        }
+//        std::cout<<std::endl;
+      //  std::cout<<msg.size()<<"MSG SIZE"<<std::endl;
+
+        if(imuId == 0)
+        {
+            dev->cumulativeMsg.pinky.pushData(msg);
+        }
+        else if(imuId == 1)
+        {
+            dev->cumulativeMsg.ring.pushData(msg);
+        }
+        else if(imuId == 2)
+        {
+            dev->cumulativeMsg.middle.pushData(msg);
+        }
+        else if(imuId == 3)
+        {
+
+            dev->cumulativeMsg.index.pushData(msg);
+        }
+        else if(imuId == 4)
+        {
+            dev->cumulativeMsg.thumb.pushData(msg);
+        }
+        else if(imuId == 5)
+        {
+           // std::cout<<"PALM INDEX"<<std::endl;
+            dev->cumulativeMsg.palm.pushData(msg);
+            dev->data.push_back(dev->cumulativeMsg);
+            dev->cumulativeMsg.clear();
+        }
+
+
     }
 }
-*/
-/* Check id device in avalible device */
-bool GRDevManager::_deviceIsIn(std::string addr)
-{
-    int i=0;
 
-    while(i < _avalibleDevices.size())
+std::vector<int16_t> GRDevManager::convertFromBytes(unsigned char* bytes)
+{
+    //TODO optimize
+    std::vector<int16_t> msg;
+    int i=0;
+    while( i<18)
     {
-        if(addr != _avalibleDevices[i].address)
+        if(i!=0)
         {
-            i++;
+            int16_t piece = (bytes[i] & 0xFF) << 8 | (bytes[i+1] & 0xFF);
+            msg.push_back(piece);
+            i+=2;
         }
-        else if(addr == _avalibleDevices[i].address)
+    }
+    return msg;
+}
+void GRDevManager::subscribe(int devId)
+{
+    //   auto& dev = _avalibleGRDevices[devId];
+    this->_avalibleGRDevices[devId].imuChar->enable_value_notifications(&GRDevManager::dataCallback, &(this->_avalibleGRDevices[devId]));
+//    std::mutex m;
+  //  std::unique_lock<std::mutex> lock(m);
+
+//    std::signal(SIGINT, signal_handler);
+//    conditionVar.wait(lock);
+
+  /*  if(this->_avalibleGRDevices[devId].btTag != nullptr)
+    {
+        this->_avalibleGRDevices[devId].btTag->disconnect();
+    }
+*/
+}
+
+
+// Check id device in avalible device /
+bool GRDevManager::_deviceIsIn(GRDevice* grDev)
+{
+    for(auto devIt=this->_avalibleGRDevices.begin(); devIt!= this->_avalibleGRDevices.end(); devIt++)
+    {
+        if(grDev->address == devIt->second.address)
         {
             return true;
         }
     }
-
     return false;
 }
 

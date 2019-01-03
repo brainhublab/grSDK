@@ -16,6 +16,7 @@
 #include <map>
 #include <unordered_map>
 #include <ncurses.h>
+
 //using namespace GRT;
 //using namespace std;
 
@@ -25,59 +26,76 @@ int main (int argc, const char * argv[])
 
     GRDevManager devManager;
     std::vector<std::string> str;
+    int devToRead =0;
+    //    std::vector<GRDevice> devs;
+    //devManager._startDiscovery();
+    auto devs = devManager.getAvalibleGRDevices();
+    std::cout<<devs->size()<<"IN MAIN"<<std::endl;
 
-    std::vector<GRDevice> devs;
-
-    devManager._getAllManagedDevicesPaths();
-    str = devManager._allManagedDevicesPaths;
-    /*  for(auto &path: str)
-        {
-        std::cout<<path<<" :-----";
-        std::cout<<path.find(defaultAdapterPath)<<std::endl;
-        }
-        */
-    /*
-       for(int i=0; i< 5; i++)
-       {
-       devs =  devManager.getAvalibleDevices();
-       std::cout<<devs.size()<<"  <-this is the size of devs"<<std::endl;
-       for(int j=0;j<devs.size(); j++)
-       {
-       std::cout<<devs[j].id<<"]-----"<<j<<std::endl;
-       }
-       }
-       */
-    int j=0;
-
-        devs =  devManager.getAvalibleDevices();
-        for(int i=0;i<devs.size(); i++)
-        {
-            std::cout<<devs[i].name<<std::endl;
-        }
- for(int i=0;i<devs.size();i++)
+    for(auto it=devs->begin(); it!=devs->end(); it++)
     {
-        if(devs[i].name == "GR[L]")
+        if(it->second.name == lName)
         {
-            devManager.connect(&devs[i]);
-            std::cout<<devs[i].dbusObjecPath<<std::endl;
-            //usleep(200);
-            //devManager.disconnect(&devs[i]);
-            devManager.prepareDataReading(&devs[i]);
-            int k=0;
-            while(true)
-           {
-                devManager.getData(&devs[i]);
-         //       std::cout<<"iteration------------------"<<j++;
-                k++;
-
-            }
-            devManager.disconnect(&devs[i]);
-
-            devManager.finishDataReading(&devs[i]);
+            devToRead = it->first;
         }
     }
 
+    devManager.connect(devToRead);
+    //devManager.subscribe(devToRead);
+    devManager.getData(devToRead);
+    int iter = 0;
+    auto& dev1 = devs->at(devToRead);
+    while(true)
+    {
+        if(!dev1.data.empty()) 
+        {
+            for(int i=0;i<3;i++)
+            {
+                if(!dev1.data.front().pinky.gyro.empty())
+                {
+                    std::cout<<dev1.data.front().pinky.gyro[i];
+                    std::cout<<dev1.data.front().pinky.acc[i];
+                    std::cout<<dev1.data.front().pinky.mag[i]<<std::endl;
 
+                }
+            }
+            dev1.data.pop_front();
+        }
+    }
+    //  std::raise(SIGINT);
+    //devManager.stopDiscovery();
+    /*
+       int j=0;
+
+       devs =  devManager.getAvalibleDevices();
+       for(int i=0;i<devs.size(); i++)
+       {
+       std::cout<<devs[i].name<<std::endl;
+       }
+       for(int i=0;i<devs.size();i++)
+       {
+       if(devs[i].name == "GR[L]")
+       {
+       devManager.connect(&devs[i]);
+       std::cout<<devs[i].dbusObjecPath<<std::endl;
+    //usleep(200);
+    //devManager.disconnect(&devs[i]);
+    devManager.prepareDataReading(&devs[i]);
+    int k=0;
+    while(true)
+    {
+    devManager.getData(&devs[i]);
+    //       std::cout<<"iteration------------------"<<j++;
+    k++;
+
+    }
+    devManager.disconnect(&devs[i]);
+
+    devManager.finishDataReading(&devs[i]);
+    }
+    }
+
+*/
 
 
 

@@ -21,20 +21,20 @@
 #include <unistd.h>  /* UNIX standard function definitions */
 #include <fcntl.h>   /* File control definitions */
 #include <errno.h>   /* Error number definitions */
+#include <thread>
+#include <condition_variable>
+#include <typeinfo>
 
-#include <sys/socket.h>
-#include <bluetooth/bluetooth.h>
-#include <bluetooth/hci.h>
-#include <bluetooth/hci_lib.h>
-#include <bluetooth/rfcomm.h>
+#include <csignal>
 
-#include "tinyb.hpp"
 #include <gio/gio.h>
 
+#include "tinyb.hpp"
 //#include "grConnection.h"
 /**
  * GRDevManager - a class description
  */
+
 class GRDevManager
 {
     public:
@@ -63,79 +63,36 @@ class GRDevManager
          * @return map of id's and devices which are avalible for connection
          * @see GRDevice
          */
-        std::vector<GRDevice> getAvalibleDevices();
+        std::unordered_map<int, GRDevice>* getAvalibleGRDevices();
 
-        /**
-         * @brief activates device
-         * add selected device from _avalibleDevices to _activeDevices and make precondition for connection
-         * @param id is id of device
-         * @return pointer to GRConnection object
-         * @see getDeviceId()
-         * @see GRConnection
-         */
-        bool  connect(GRDevice*);
-        bool disconnect(GRDevice*);
-        /**
-         * @brief returns id of device
-         * a getter of id
-         * @param device is GRDevice structure
-         * @return id of device
-         * @see GRDevice
-         */
- //       GRConnection* getActiveDeviceById(int);
-
-         void getData(GRDevice*);
-
-        // private:
-        /**
-         * @brief map of available devices
-         */
-        bool prepareDataReading(GRDevice*);
-        bool finishDataReading(GRDevice*);
-        std::vector<GRDevice> _avalibleDevices;
-        /**
-         * @brief map of activated devices
-         */
-//        std::unordered_map<int, GRConnection> _activeDevices;
-        /**
-         * @brief checks if device is active
-         */
-        bool _deviceIsIn(std::string);
-
-        bool _getAllManagedDevicesPaths();
-
-
-
-
-        GDBusProxy *_rootProxy;
-        std::vector<std::string> _allManagedDevicesPaths;
-        //GError *_err;
-
-        GVariant*  _getProperty(std::string, std::string , GDBusProxy*, std::string);
-
-        void _getPropertyAsync(std::string, std::string, GDBusProxy*, std::string);
-        std::string _getStringProp(std::string, GDBusProxy*, std::string);
-        bool _getDataset(std::string, GDBusProxy*, std::string);
-        bool _getBoolProp(std::string, GDBusProxy*, std::string);
-        bool _callDevMethod(std::string, GDBusProxy* );
+        bool _deviceIsIn(GRDevice*);
         
-        GDBusProxy* _createProxy(std::string , std::string);
+        GRDevice* getGRDeviceById(int);
 
-        bool _connected(GRDevice*);
-        GVariant* _propResult;
-        GVariant* _dataSet;
-      GVariant* _oldGvar;       
-        static void getDataCallBack(GDBusProxy* propProxy, GAsyncResult*, GError**);
-        
+        bool getData(int);
+
+        static void dataCallback(BluetoothGattCharacteristic &c, std::vector<unsigned char> &data, void *userdata);
+
+        std::vector<int16_t> convertFromBytes(unsigned char*);
+
         std::vector<uint8_t> dataHolder; 
-         
-        int8_t curId = 0;
-        int _id = 0;
-        uint8_t packetBuffer[18];
-        int buffLen =0; 
-        bool firstPieceFlag = true;
-        bool full = false;
-        int globalIter = 0;
+
+        int _grDevId = 0;
+
+        bool _getAvalibleiGRDevices();
+
+        bool _startDiscovery();
+        bool _stopDiscovery();
+
+        bool connect(int);
+
+        void subscribe(int);
+
+        tinyb::BluetoothManager* btManager;
+        std::unordered_map<int, GRDevice> _avalibleGRDevices; 
+
+        
+
     private:
 };
 

@@ -10,21 +10,60 @@
 #include <unordered_map>
 #include <stdlib.h>
 
+#include "tinyb.hpp"
 #include <gio/gio.h>
 
 /**
  * gr devices names needed for easier findign of avalible devices
  */
-const std::string bluezBus = "org.bluez";
-const std::string defaultAdapterPath = "/org/bluez/hci";
-const std::string deviceIface = "org.bluez.Device1";
-const std::string propIface = "org.freedesktop.DBus.Properties";
-const std::string gattCharIface = "org.bluez.GattCharacteristic1";
+/*
+   const std::string bluezBus = "org.bluez";
+   const std::string defaultAdapterPath = "/org/bluez/hci";
+   const std::string deviceIface = "org.bluez.Device1";
+   const std::string propIface = "org.freedesktop.DBus.Properties";
+   const std::string gattCharIface = "org.bluez.GattCharacteristic1";
 //const std::string dataGattCharPath = "/service001f/char0020";
 const std::string dataGattCharPath = "/service002b/char002c";
-
+*/
 const std::string lName = "GR[L]";
 const std::string rName = "GR[R]";
+
+const std::string imuServiceUUID = "fced6408-c015-45ea-b50d-1de32a1c2f6d"; //TODO later change to const
+const std::string imuGattCharUUID = "fced6409-c015-45ea-b50d-1de32a1c2f6d";
+const std::string startDataTransmissionChar = "";
+const std::string battService = "";
+const std::string battChar = "";
+
+static std::condition_variable conditionVar;
+
+static void data_callback(BluetoothGattCharacteristic &c, std::vector<unsigned char> &data, void *userdata)
+{
+    unsigned char* data_c;
+    unsigned int dataSize = data.size();
+
+    if(dataSize >0)
+    {
+        data_c = data.data();
+
+        std::cout<<" Raw data [";
+        for(unsigned i=0;i<dataSize; i++)
+        {
+            std::cout<<std::hex<<static_cast<int>(data_c[i])<<" - ";
+
+        }
+        std::cout<<"]"<<std::endl;
+    }
+}
+
+static void signal_handler(int sigNum)
+{
+    if(sigNum == SIGINT)
+    {
+        conditionVar.notify_all();
+    }
+}
+
+
 
 struct GRImu
 {
@@ -41,17 +80,17 @@ struct GRImu
     /**
      * @brief gyroscope data
      */
-    std::vector<double> gyro;
+    std::vector<int16_t> gyro;
 
     /**
      * @brief accelerometer data
      */
-    std::vector<double> acc;
+    std::vector<int16_t> acc;
 
     /**
      * @brief magnetometr data
      */
-    std::vector<double> mag;
+    std::vector<int16_t> mag;
 
     /**
      * @brief constructor
@@ -94,6 +133,15 @@ struct GRImu
         this->time_stamp = 0.0;
         this->is_connected = false;
         return true;
+    }
+    bool pushData(std::vector<int16_t> inp)
+    {
+        for(int i=0; i<3; i++)
+        {
+            gyro.push_back(inp[i]);
+            acc.push_back(inp[i+3]);
+            mag.push_back(inp[i+6]);
+        }
     }
 
 
@@ -153,27 +201,41 @@ struct GRDevice
     int id = 0;
     std::string name = "";
     std::string address = "";
-    std::string dbusObjecPath = "";
-
     bool connected = false;
 
-    GDBusProxy *propProxy;
-    GDBusProxy *devMethodProxy;
-    GDBusProxy *gattCharProxy;
-    GDBusProxy *gattPropProxy;
+    std::unique_ptr< tinyb::BluetoothDevice >  btTag;
+    std::unique_ptr<tinyb::BluetoothGattService> imuService;
+    std::unique_ptr< BluetoothGattCharacteristic > imuChar;
 
-
+    std::deque<GRMessage> data;
+    GRMessage cumulativeMsg;
     GRDevice()
     {
         this->id = 0;
 
     }
-    GRDevice& operator=(const GRDevice& dev)
+    GRDevice(GRDevice &&dev) : btTag(std::move(dev.btTag)), imuService(std::move(dev.imuService)),
+    imuChar(std::move(dev.imuChar))
     {
         this->id = dev.id;
         this->name = dev.name;
         this->address = dev.address;
+       
+    }
+    //   GRDevice& operator=(GRDevice const& );
 
+
+    GRDevice& operator=(GRDevice&& dev)
+    {
+        if(this != &dev)
+        {
+            this->id = dev.id;
+            this->name = dev.name;
+            this->address = dev.address;
+            this->btTag = std::move(dev.btTag);
+            this->imuService = std::move(dev.imuService);
+            this->imuChar = std::move(dev.imuChar);
+        }
         return *this;
     }
 
@@ -188,7 +250,6 @@ struct GRDevice
         this->id = 0;
         this->name.clear();
         this->address.clear();
-        this->dbusObjecPath.clear();
 
         this->connected = false;
 
@@ -196,6 +257,9 @@ struct GRDevice
         //g_object_unref(propProxy);
         //g_object_unref(methodProxy);
     }
+    private:
+    GRDevice(const GRDevice &);
+    GRDevice& operator=(const GRDevice &);
 };
 
 struct GRAlgMessage
