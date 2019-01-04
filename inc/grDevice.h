@@ -30,35 +30,42 @@ const std::string rName = "GR[R]";
 
 const std::string imuServiceUUID = "fced6408-c015-45ea-b50d-1de32a1c2f6d"; //TODO later change to const
 const std::string imuGattCharUUID = "fced6409-c015-45ea-b50d-1de32a1c2f6d";
-const std::string startDataTransmissionChar = "";
-const std::string battService = "";
-const std::string battChar = "";
+const std::string transmissionServiceUUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
+const std::string transmissionCharUUID = "6e400002-b5a3-f393-e0a9-e50e24dcca9e";
+const std::string battServiceUUID = "0000180f-0000-1000-8000-00805f9b34fb";
+const std::string battCharUUID = "00002a1b-0000-1000-8000-00805f9b34fb";
+
+const std::vector<unsigned char> start_transmission {0x01};
+const std::vector<unsigned char> end_transmission {0x04};
+const std::vector<unsigned char> check_bat {0x06};
 
 static std::condition_variable conditionVar;
+/*
+   static void data_callback(BluetoothGattCharacteristic &c, std::vector<unsigned char> &data, void *userdata)
+   {
+   unsigned char* data_c;
+   unsigned int dataSize = data.size();
 
-static void data_callback(BluetoothGattCharacteristic &c, std::vector<unsigned char> &data, void *userdata)
-{
-    unsigned char* data_c;
-    unsigned int dataSize = data.size();
+   if(dataSize >0)
+   {
+   data_c = data.data();
 
-    if(dataSize >0)
-    {
-        data_c = data.data();
+   std::cout<<" Raw data [";
+   for(unsigned i=0;i<dataSize; i++)
+   {
+   std::cout<<std::hex<<static_cast<int>(data_c[i])<<" - ";
 
-        std::cout<<" Raw data [";
-        for(unsigned i=0;i<dataSize; i++)
-        {
-            std::cout<<std::hex<<static_cast<int>(data_c[i])<<" - ";
-
-        }
-        std::cout<<"]"<<std::endl;
-    }
-}
+   }
+   std::cout<<"]"<<std::endl;
+   }
+   }
+   */
 
 static void signal_handler(int sigNum)
 {
     if(sigNum == SIGINT)
     {
+
         conditionVar.notify_all();
     }
 }
@@ -143,8 +150,30 @@ struct GRImu
             mag.push_back(inp[i+6]);
         }
     }
+    bool print()
+    {
+        if(is_complete())
+        {
+            for(int i=0;i<3;i++)
+            {
+                std::cout<<"GYRO:"<<this->gyro[i];
+            }
+            // std::cout<<std::endl;
+            for(int i=0;i<3;i++)
+            {
+                std::cout<<"ACC:"<<this->acc[i];
+            }
+            // std::cout<<std::endl;
+            for(int i=0;i<3;i++)
+            {
+                std::cout<<"MAG:"<<this->mag[i];
+            }
+            std::cout<<std::endl;
+
+        }
 
 
+    }
 };
 
 struct GRMessage
@@ -171,6 +200,12 @@ struct GRMessage
 
         this->palm.is_connected = true;
     }
+    
+    bool is_complete()
+    {
+        return (pinky.is_complete() && ring.is_complete() && middle.is_complete() 
+                && index.is_complete() && thumb.is_complete() && palm.is_complete());
+    }
     bool clear()
     {
         this->pinky.clear();
@@ -193,21 +228,39 @@ struct GRMessage
             return false;
         }
     }
+    bool print()
+    {
+
+        this->pinky.print();
+        this->ring.print();
+        this->middle.print();
+        this->index.print();
+        this->thumb.print();
+        this->palm.print();
+        std::cout<<std::endl;
+    }
 
 };
 
 struct GRDevice
 {
     int id = 0;
+    int oldMsgId = 0;
     std::string name = "";
     std::string address = "";
     bool connected = false;
+    int battPercents = 0;
 
     std::unique_ptr< tinyb::BluetoothDevice >  btTag;
     std::unique_ptr<tinyb::BluetoothGattService> imuService;
     std::unique_ptr< BluetoothGattCharacteristic > imuChar;
 
-    std::deque<GRMessage> data;
+    std::unique_ptr<tinyb::BluetoothGattService> transmissionService;
+    std::unique_ptr< tinyb::BluetoothGattCharacteristic > transmissionChar;
+
+    std::unique_ptr<tinyb::BluetoothGattService> battService;
+    std::unique_ptr<tinyb::BluetoothGattCharacteristic> battChar;
+
     GRMessage cumulativeMsg;
     GRDevice()
     {
@@ -215,12 +268,14 @@ struct GRDevice
 
     }
     GRDevice(GRDevice &&dev) : btTag(std::move(dev.btTag)), imuService(std::move(dev.imuService)),
-    imuChar(std::move(dev.imuChar))
+    imuChar(std::move(dev.imuChar)), transmissionService(std::move(dev.transmissionService)), 
+    transmissionChar(std::move(dev.transmissionChar)), battService(std::move(dev.battService)),
+    battChar(std::move(dev.battChar))
     {
         this->id = dev.id;
         this->name = dev.name;
         this->address = dev.address;
-       
+
     }
     //   GRDevice& operator=(GRDevice const& );
 
@@ -235,6 +290,10 @@ struct GRDevice
             this->btTag = std::move(dev.btTag);
             this->imuService = std::move(dev.imuService);
             this->imuChar = std::move(dev.imuChar);
+            this->transmissionService = std::move(dev.transmissionService);
+            this->transmissionChar = std::move(dev.transmissionChar);
+            this->battService = std::move(dev.battService);
+            this->battChar = std::move(dev.battChar);
         }
         return *this;
     }

@@ -20,15 +20,15 @@
 //using namespace GRT;
 //using namespace std;
 
-
 int main (int argc, const char * argv[])
 {
 
     GRDevManager devManager;
     std::vector<std::string> str;
     int devToRead =0;
+    int devToReadR = 0;
     //    std::vector<GRDevice> devs;
-    //devManager._startDiscovery();
+    // devManager._getAvalibleiGRDevices();
     auto devs = devManager.getAvalibleGRDevices();
     std::cout<<devs->size()<<"IN MAIN"<<std::endl;
 
@@ -38,31 +38,49 @@ int main (int argc, const char * argv[])
         {
             devToRead = it->first;
         }
+        if(it->second.name == rName)
+        {
+            devToReadR = it->first;
+        }
     }
 
     devManager.connect(devToRead);
-    //devManager.subscribe(devToRead);
-    devManager.getData(devToRead);
+    devManager.subscribe(devToRead);
+    //    devManager.connect(devToReadR);
+    //  devManager.subscribe(devToReadR);
+    //devManager.getData(devToRead);
+    std::cout<<"NOTIFY STARTED"<<std::endl;
     int iter = 0;
     auto& dev1 = devs->at(devToRead);
-    while(true)
+    auto& dev2 = devs->at(devToReadR);
+    GRMessage msg;
+    while(iter<100)
     {
-        if(!dev1.data.empty()) 
+        if(devManager.getData(devToRead))
         {
-            for(int i=0;i<3;i++)
-            {
-                if(!dev1.data.front().pinky.gyro.empty())
-                {
-                    std::cout<<dev1.data.front().pinky.gyro[i];
-                    std::cout<<dev1.data.front().pinky.acc[i];
-                    std::cout<<dev1.data.front().pinky.mag[i]<<std::endl;
-
-                }
-            }
-            dev1.data.pop_front();
+            std::cout<<dev1.cumulativeMsg.id<<"  DEVID  "<<dev1.id<<std::endl;   
+            dev1.cumulativeMsg.print();
+           if(iter%10 == 0) devManager.getBatteryState(devToRead);
+           std::cout<<dev1.battPercents<<"PERCeNTS IN MAIN=========="<<std::endl;
+           iter++;
         }
+        /*    if(devManager.getData(devToReadR))
+              {
+              std::cout<<dev2.cumulativeMsg.id<<"DEVID"<<dev2.id<<std::endl;   
+              dev2.cumulativeMsg.print();
+              iter++;
+              }*/
+
     }
     //  std::raise(SIGINT);
+    devManager.endTransmission(devToRead);
+    // devManager.unsubscribe(devToRead);
+
+
+
+    while(1)
+    {
+   }
     //devManager.stopDiscovery();
     /*
        int j=0;

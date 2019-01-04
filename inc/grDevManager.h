@@ -69,9 +69,11 @@ class GRDevManager
         
         GRDevice* getGRDeviceById(int);
 
-        bool getData(int);
+        bool getData( int);
 
         static void dataCallback(BluetoothGattCharacteristic &c, std::vector<unsigned char> &data, void *userdata);
+    
+        static void batteryCallback(BluetoothGattCharacteristic &c, std::vector<unsigned char> &data, void *userdata);
 
         std::vector<int16_t> convertFromBytes(unsigned char*);
 
@@ -85,13 +87,16 @@ class GRDevManager
         bool _stopDiscovery();
 
         bool connect(int);
+        bool startTransmission(int);
+        bool endTransmission(int);
 
+        float getBatteryState(int);
         void subscribe(int);
-
+        void unsubscribe(int);
         tinyb::BluetoothManager* btManager;
         std::unordered_map<int, GRDevice> _avalibleGRDevices; 
 
-        
+        int msgId=0;        
 
     private:
 };

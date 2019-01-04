@@ -64,132 +64,41 @@ GRDevice* GRDevManager::getGRDeviceById(int devId)
 
 bool GRDevManager::getData(int devId)
 {
-    std::thread thr(&GRDevManager::subscribe, this,  devId);
-    thr.detach();
-
-}
-bool GRDevManager::_startDiscovery()
-{   
-    bool flag = this->btManager->start_discovery();
-    std::cout<<"Discovery of devices is "<<(flag ? "started":"not started" )<<std::endl;
-    return flag;
-}
-
-bool GRDevManager::_stopDiscovery()
-{
-
-    bool flag = this->btManager->stop_discovery();
-    std::cout<<"Discovery of devices is "<<(flag? "stoped": "not stoped")<<std::endl;
-    return flag;
-}
-
-bool GRDevManager::_getAvalibleiGRDevices()
-{
-    _startDiscovery();
-    //    this->btManager->start_discovery();
-    //std::vector<std::unique_ptr<tinyb::BluetoothDevice> > allDevices = btManager->get_devices();
-    for(auto& btIter : this->btManager->get_devices())
-    {
-        if(btIter->get_name() == lName || btIter->get_name() == rName)
-        {
-            GRDevice grDev;
-            grDev.id = _grDevId;
-            grDev.name = btIter->get_name();
-            grDev.address = btIter->get_address();
-            grDev.btTag = std::move(btIter);
-            //devVec.emplace_back(std::move(grDev));
-            if(!_deviceIsIn(&grDev))
-            {
-
-                this->_avalibleGRDevices[_grDevId] = std::move(grDev);
-
-                _grDevId ++;
-            }
-        }
-    }
-
-    for(auto& it: _avalibleGRDevices) 
-    {
-        // std::cout << typeid(it.btTag).name() << std::endl;
-        std::cout<<it.second.name<<std::endl;
-    }
-    // return _avalibleGRDevices;
-    //  if(this->btManager->get_discovering ())
-    // {
-
-//    _stopDiscovery();
-    // }
-}
-
-bool GRDevManager::connect(int devId)
-{
+    // std::thread thr(&GRDevManager::subscribe, this,  devId);
+    // thr.detach();
     auto& dev = _avalibleGRDevices[devId];
-    std::cout<<dev.address<<std::endl;
-    std::string addr = dev.name;
-    //auto grTag = btManager->find<BluetoothDevice>(nullptr, &addr, nullptr, std::chrono::seconds(2));
-    if(dev.btTag == nullptr)
+    if(dev.cumulativeMsg.is_complete() && dev.cumulativeMsg.id != dev.oldMsgId)
     {
-        std::cerr<<"ERROR: something go wrong so cannot emit device with ID: "<<devId<<std::endl;
-        return false;
+        dev.oldMsgId = dev.cumulativeMsg.id;
+        // dev.cumulativeMsg.print();
+        //dev.cumulativeMsg;
+        return true;
     }
-
-    dev.btTag->enable_connected_notifications([](BluetoothDevice &grDev, bool connected, void* userData)
-            {if(connected) std::cout<<"Device with name: "<<grDev.get_name()<<"and address: "<<grDev.get_address()<<" is connected"<<std::endl;},
-            NULL);
-
-    if(dev.btTag != nullptr)
-    {
-        dev.btTag->connect();
-        std::cout<<"Waiting for service:  "<<imuServiceUUID<<"to be discovered"<<std::endl;
-
-        std::string service = imuServiceUUID;
-        dev.imuService = dev.btTag->find(&service);
-
-    }
-    else
-    {   std::cout<<"ERROR: something goes wrong with connecting to TAG"<<std::endl;
-        return false;
-        //TODO stop discovery
-    }
-    std::string characteristic = imuGattCharUUID;
-    dev.imuChar = dev.imuService->find(&characteristic);
-
-
-    std::cout<<_avalibleGRDevices[devId].name<<std::endl;
-    return true;
-    //if(this->btManager->get_discovering ())
-
-    // {
-
-    _stopDiscovery();
-    //}
-
+    return false;
 
 
 }
+
+void GRDevManager::batteryCallback(BluetoothGattCharacteristic &c, std::vector<unsigned char> &data, void *userdata)
+{
+    //PlaceHOLDER!!!
+    unsigned char* data_c;
+    unsigned int dataSize = data.size();
+    auto dev = static_cast<GRDevice*>(userdata);
+    if(dataSize > 0)
+    {
+        data_c = data.data();
+        int bp = (int)data[0];
+        dev->battPercents = bp;
+        std::cout<<bp<<"________IN CALLBACK BATT"<<std::endl;
+    }
+}
+
 void GRDevManager::dataCallback(BluetoothGattCharacteristic &c, std::vector<unsigned char> &data, void *userdata)
 {
     unsigned char* data_c;
     unsigned int dataSize = data.size();
     auto dev = static_cast<GRDevice*>(userdata);
-
-    //std::cout<<dev->name<<"  IN CALLBACK ---------------"<<std::endl;
-    /*
-       if(dataSize >0)
-       {
-       data_c = data.data();
-
-       std::cout<<" Raw data ---[";
-       for(unsigned i=0;i<dataSize; i++)
-       {
-    //  std::cout<<std::hex<<static_cast<int>(data_c[i])<<" - ";
-
-    }
-    std::cout<<"]"<<std::endl;
-
-
-    }
-    */
     if(dataSize > 0)
     {
 
@@ -204,23 +113,28 @@ void GRDevManager::dataCallback(BluetoothGattCharacteristic &c, std::vector<unsi
         {
             if(i==0)
             {
+                // msg.push_back(imuId);
                 i++;
+
             }
             else
             {
                 uint16_t dataPiece = (data_c[i] & 0xFF) << 8 | (data_c[i+1] & 0xFF);
                 // int16_t piece = (data_c[i] << 8) | (data_c[i+1]);
                 msg.push_back(dataPiece);
-        //        std::cout<<dataPiece<<"["<< i << i+1<<"]"<<" ";
+                //          std::cout<<dataPiece<<"["<< i << i+1<<"]"<<" ";
 
                 i+=2;
             }
         }
-//        std::cout<<std::endl;
-      //  std::cout<<msg.size()<<"MSG SIZE"<<std::endl;
+        //    std::cout<<std::endl;
+        //  std::cout<<msg.size()<<"MSG SIZE"<<std::endl;
 
         if(imuId == 0)
         {
+
+            dev->cumulativeMsg.clear();
+            dev->cumulativeMsg.id++;
             dev->cumulativeMsg.pinky.pushData(msg);
         }
         else if(imuId == 1)
@@ -242,15 +156,16 @@ void GRDevManager::dataCallback(BluetoothGattCharacteristic &c, std::vector<unsi
         }
         else if(imuId == 5)
         {
-           // std::cout<<"PALM INDEX"<<std::endl;
+            // std::cout<<"PALM INDEX"<<std::endl;
             dev->cumulativeMsg.palm.pushData(msg);
-            dev->data.push_back(dev->cumulativeMsg);
-            dev->cumulativeMsg.clear();
+            //  dev->data.push_back(dev->cumulativeMsg);
+            //  dev->cumulativeMsg.clear();
         }
 
 
     }
 }
+
 
 std::vector<int16_t> GRDevManager::convertFromBytes(unsigned char* bytes)
 {
@@ -268,23 +183,189 @@ std::vector<int16_t> GRDevManager::convertFromBytes(unsigned char* bytes)
     }
     return msg;
 }
-void GRDevManager::subscribe(int devId)
-{
-    //   auto& dev = _avalibleGRDevices[devId];
-    this->_avalibleGRDevices[devId].imuChar->enable_value_notifications(&GRDevManager::dataCallback, &(this->_avalibleGRDevices[devId]));
-//    std::mutex m;
-  //  std::unique_lock<std::mutex> lock(m);
 
-//    std::signal(SIGINT, signal_handler);
-//    conditionVar.wait(lock);
 
-  /*  if(this->_avalibleGRDevices[devId].btTag != nullptr)
-    {
-        this->_avalibleGRDevices[devId].btTag->disconnect();
-    }
-*/
+
+bool GRDevManager::_startDiscovery()
+{   
+    bool flag = this->btManager->start_discovery();
+    std::cout<<"Discovery of devices is "<<(flag ? "started":"not started" )<<std::endl;
+    return flag;
 }
 
+bool GRDevManager::_stopDiscovery()
+{
+
+    bool flag = this->btManager->stop_discovery();
+    std::cout<<"Discovery of devices is "<<(flag? "stoped": "not stoped")<<std::endl;
+    return flag;
+}
+
+bool GRDevManager::_getAvalibleiGRDevices()
+{
+    _startDiscovery();
+    usleep(5000000);
+    //    this->btManager->start_discovery();
+    //std::vector<std::unique_ptr<tinyb::BluetoothDevice> > allDevices = btManager->get_devices();
+    for(auto& btIter : this->btManager->get_devices())
+    {
+        if(btIter->get_name() == lName || btIter->get_name() == rName)
+        {
+            GRDevice grDev;
+            grDev.id = _grDevId;
+            grDev.name = btIter->get_name();
+            grDev.address = btIter->get_address();
+            //grDev.btTag = btManager->find<BluetoothDevice>(nullptr, &grDev.address, nullptr, std::chrono::seconds(2));
+            grDev.btTag = std::move(btIter);
+            //devVec.emplace_back(std::move(grDev));
+            if(!_deviceIsIn(&grDev))
+            {
+
+                this->_avalibleGRDevices[_grDevId] = std::move(grDev);
+
+                _grDevId ++;
+            }
+        }
+    }
+
+    for(auto& it: _avalibleGRDevices) 
+    {
+        // std::cout << typeid(it.btTag).name() << std::endl;
+        std::cout<<it.second.name<<std::endl;
+    }
+    // return _avalibleGRDevices;
+    //  if(this->btManager->get_discovering ())
+    // {
+
+    //    _stopDiscovery();
+    // }
+}
+
+bool GRDevManager::startTransmission(int devId)
+{
+    _avalibleGRDevices[devId].transmissionChar->write_value(start_transmission);
+
+}
+
+bool GRDevManager::endTransmission(int devId)
+{
+    this->_avalibleGRDevices[devId].transmissionChar->write_value(end_transmission);
+    //    this->_avalibleGRDevices[devId].transmissionChar->write_value(end_zerofy);
+}
+
+float GRDevManager::getBatteryState(int devId)
+{
+    std::vector<unsigned char> battVal;
+    this->_avalibleGRDevices[devId].transmissionChar->write_value(check_bat);
+    /*
+       battVal = this->_avalibleGRDevices[devId].battChar->get_value();
+       if(!battVal.empty())
+       {
+       std::cout<<battVal.size()<<"SIZEOF"<<std::endl;
+       printf("BATT %x \n", battVal[0]);
+       for(auto c : battVal)
+       {
+       std::cout<<static_cast<int>(battVal[0])<<"  Battery--------------------------------------------------------"<<std::endl;
+       }
+
+       }
+       */
+}
+
+bool GRDevManager::connect(int devId)
+{
+    auto& dev = _avalibleGRDevices[devId];
+    std::cout<<dev.address<<std::endl;
+    std::string addr = dev.name;
+    //auto grTag = btManager->find<BluetoothDevice>(nullptr, &addr, nullptr, std::chrono::seconds(2));
+    if(dev.btTag == nullptr)
+    {
+        std::cerr<<"ERROR: something go wrong so cannot emit device with ID: "<<devId<<std::endl;
+        return false;
+    }
+
+    dev.btTag->enable_connected_notifications([](BluetoothDevice &grDev, bool connected, void* userData)
+            {if(connected) std::cout<<"Device with name: "<<grDev.get_name()<<"and address: "<<grDev.get_address()<<" is connected"<<std::endl;},
+            NULL);
+
+    if(dev.btTag != nullptr)
+    {
+        dev.btTag->connect();
+        std::cout<<"Waiting for IMU service:  "<<imuServiceUUID<<"to be discovered"<<std::endl;
+
+        std::string imuService = imuServiceUUID;
+        dev.imuService = dev.btTag->find(&imuService, std::chrono::seconds(2));
+
+        std::cout<<"Waiting for Transmission service:  "<<transmissionServiceUUID<<"to be discovered"<<std::endl;
+        std::string transmissionService = transmissionServiceUUID;
+        dev.transmissionService = dev.btTag->find(&transmissionService, std::chrono::seconds(2));
+
+        std::cout<<"Waiting for Battery service:  "<<transmissionServiceUUID<<"to be discovered"<<std::endl;
+        std::string battService = battServiceUUID;
+        dev.battService = dev.btTag->find(&battService, std::chrono::seconds(2));
+        if(dev.battService == nullptr)
+        {
+            std::cout<<"BATT SERVICE IS NULL"<<std::endl;
+        }
+    }
+    else
+    {   std::cout<<"ERROR: something goes wrong with connecting to TAG"<<std::endl;
+        return false;
+        //TODO stop discovery
+    }
+    std::cout<<"Wainting for IMU characteristic"<<imuGattCharUUID<<std::endl;
+    std::string imuChar = imuGattCharUUID;
+    dev.imuChar = dev.imuService->find(&imuChar, std::chrono::seconds(2));
+
+    std::cout<<"Waiting form Transmission characteristic"<<transmissionCharUUID<<std::endl;
+    std::string transmissionChar = transmissionCharUUID;
+    dev.transmissionChar = dev.transmissionService->find(&transmissionChar, std::chrono::seconds(2));
+
+    std::cout<<"Waiting for Battery characteristic"<<battCharUUID<<std::endl;
+    std::string battChar = battCharUUID;
+    dev.battChar = dev.battService->find(&battChar, std::chrono::seconds(2));
+    if(dev.battChar == nullptr)
+    {
+        std::cout<<"BATT IS NULLPT"<<std::endl;
+    }
+
+    return true;
+
+}
+void GRDevManager::subscribe(int devId)
+{
+    this->startTransmission(devId);
+
+
+    //tmp_conf->write_value(config_on);
+    auto& dev = this->_avalibleGRDevices[devId];
+
+    dev.imuChar->enable_value_notifications(&GRDevManager::dataCallback, &(dev));
+
+    dev.battChar->enable_value_notifications(&GRDevManager::batteryCallback, &(dev));
+    this->getBatteryState(devId);
+    std::mutex m;
+    std::unique_lock<std::mutex> lock(m);
+
+    //  std::signal(SIGINT, signal_handler);
+    //conditionVar.wait(lock);
+
+    /*  if(this->_avalibleGRDevices[devId].btTag != nullptr)
+        {
+        this->_avalibleGRDevices[devId].btTag->disconnect();
+        }
+        */
+}
+void GRDevManager::unsubscribe(int devId)
+{
+    if(this->_avalibleGRDevices[devId].btTag != nullptr)
+    {
+        this->_avalibleGRDevices[devId].imuChar->disable_value_notifications();
+        this->_avalibleGRDevices[devId].btTag->disconnect();
+    }
+
+
+}
 
 // Check id device in avalible device /
 bool GRDevManager::_deviceIsIn(GRDevice* grDev)

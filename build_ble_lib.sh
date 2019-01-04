@@ -2,7 +2,8 @@
 
 BASEDIR=$(dirname $(realpath -s "$0"))
 EXTERNAL_DIR=${BASEDIR}/externAssets
-BUILD_DIR=${EXTERNAL_DIR}/sources/BLE_library_source
+BUILD_DIR=${EXTERNAL_DIR}/sources/tinyb-master
+#BLE_library_source
 TMP_DIR=${BUILD_DIR}/tmp
 PREFIX=${EXTERNAL_DIR}/ble_lib
 EXAMPLES=OFF
