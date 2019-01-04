@@ -291,6 +291,7 @@ bool GRDevManager::connect(int devId)
     if(dev.btTag != nullptr)
     {
         dev.btTag->connect();
+        //dev.btTag->pair();
         std::cout<<"Waiting for IMU service:  "<<imuServiceUUID<<"to be discovered"<<std::endl;
 
         std::string imuService = imuServiceUUID;
@@ -331,6 +332,11 @@ bool GRDevManager::connect(int devId)
 
     return true;
 
+}
+bool GRDevManager::disconnect(int devId)
+{
+    auto& dev = _avalibleGRDevices[devId];
+    dev.btTag->disconnect();
 }
 void GRDevManager::subscribe(int devId)
 {

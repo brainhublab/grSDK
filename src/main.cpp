@@ -17,6 +17,7 @@
 #include <unordered_map>
 #include <ncurses.h>
 
+#include "grSocket.h"
 //using namespace GRT;
 //using namespace std;
 
@@ -43,6 +44,18 @@ int main (int argc, const char * argv[])
             devToReadR = it->first;
         }
     }
+    GRSocket socketCtrl = GRSocket();
+
+	if (!socketCtrl.setUp())
+    {
+        exit(1);
+    }
+    if (!socketCtrl.startListening())
+    {
+        exit(1);
+    }
+    // end of socket set up
+
 
     devManager.connect(devToRead);
     devManager.subscribe(devToRead);
@@ -54,34 +67,33 @@ int main (int argc, const char * argv[])
     auto& dev1 = devs->at(devToRead);
     auto& dev2 = devs->at(devToReadR);
     GRMessage msg;
-    while(iter<100)
+    while(1)
     {
         if(devManager.getData(devToRead))
         {
-            std::cout<<dev1.cumulativeMsg.id<<"  DEVID  "<<dev1.id<<std::endl;   
+           /* std::cout<<dev1.cumulativeMsg.id<<"  DEVID  "<<dev1.id<<std::endl;   
             dev1.cumulativeMsg.print();
            if(iter%10 == 0) devManager.getBatteryState(devToRead);
            std::cout<<dev1.battPercents<<"PERCeNTS IN MAIN=========="<<std::endl;
            iter++;
-        }
-        /*    if(devManager.getData(devToReadR))
-              {
-              std::cout<<dev2.cumulativeMsg.id<<"DEVID"<<dev2.id<<std::endl;   
-              dev2.cumulativeMsg.print();
-              iter++;
-              }*/
+           */
 
+          //  dev1.cumulativeMsg.print();
+            for (auto const& x: dev1.cumulativeMsg.imus)
+            {
+                std::cout<<x.first<<" : "<<x.second->acc[0]<<std::endl;
+                socketCtrl.addRawData(x.first, x.second);
+            }
+
+        }
     }
     //  std::raise(SIGINT);
     devManager.endTransmission(devToRead);
-    // devManager.unsubscribe(devToRead);
+    devManager.unsubscribe(devToRead);
+    devManager.disconnect(devToRead);
 
 
-
-    while(1)
-    {
-   }
-    //devManager.stopDiscovery();
+   //devManager.stopDiscovery();
     /*
        int j=0;
 

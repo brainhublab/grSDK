@@ -87,6 +87,7 @@ class GRDevManager
         bool _stopDiscovery();
 
         bool connect(int);
+        bool disconnect(int);
         bool startTransmission(int);
         bool endTransmission(int);
 
