@@ -35,18 +35,19 @@ int main (int argc, const char * argv[])
 
     for(auto it=devs->begin(); it!=devs->end(); it++)
     {
+        /*   if(it->second.name == lName)
+             {
+             devToRead = it->first;
+             }*/
         if(it->second.name == lName)
         {
             devToRead = it->first;
         }
-        if(it->second.name == rName)
-        {
-            devToReadR = it->first;
-        }
     }
+
     GRSocket socketCtrl = GRSocket();
 
-	if (!socketCtrl.setUp())
+    if (!socketCtrl.setUp())
     {
         exit(1);
     }
@@ -57,43 +58,72 @@ int main (int argc, const char * argv[])
     // end of socket set up
 
 
+    GRMessage dataMsg;
     devManager.connect(devToRead);
-    devManager.subscribe(devToRead);
-    //    devManager.connect(devToReadR);
-    //  devManager.subscribe(devToReadR);
-    //devManager.getData(devToRead);
-    std::cout<<"NOTIFY STARTED"<<std::endl;
+
     int iter = 0;
     auto& dev1 = devs->at(devToRead);
     auto& dev2 = devs->at(devToReadR);
     GRMessage msg;
-    while(1)
-    {
-        if(devManager.getData(devToRead))
+    devManager.subscribe(devToRead, [&]() {
+        if(devManager.getData(&dataMsg, devToRead))
         {
-           /* std::cout<<dev1.cumulativeMsg.id<<"  DEVID  "<<dev1.id<<std::endl;   
-            dev1.cumulativeMsg.print();
-           if(iter%10 == 0) devManager.getBatteryState(devToRead);
-           std::cout<<dev1.battPercents<<"PERCeNTS IN MAIN=========="<<std::endl;
-           iter++;
-           */
-
-          //  dev1.cumulativeMsg.print();
-            for (auto const& x: dev1.cumulativeMsg.imus)
+            //dataMsg.print();
+            for (auto const& x: dataMsg.imus)
             {
-                std::cout<<x.first<<" : "<<x.second->acc[0]<<std::endl;
+              //  std::cout<<x.first<<" : "<<x.second->acc[0]<<std::endl;
+                //                if(x.second->is_complete())
                 socketCtrl.addRawData(x.first, x.second);
             }
 
+          //  std::cout<<std::endl;
         }
+        socketCtrl.pollConnections();
+    });
+    //    devManager.connect(devToReadR);
+    //  devManager.subscribe(devToReadR);
+    //devManager.getData(devToRead);
+    std::cout<<"NOTIFY STARTED"<<std::endl;
+
+    /*
+    while(1)
+    {
+        if(devManager.getData(&dataMsg, devToRead))
+        {
+            //dataMsg.print();
+            for (auto const& x: dataMsg.imus)
+            {
+              //  std::cout<<x.first<<" : "<<x.second->acc[0]<<std::endl;
+                //                if(x.second->is_complete())
+                socketCtrl.addRawData(x.first, x.second);
+            }
+
+          //  std::cout<<std::endl;
+        }
+        / std::cout<<dev1.cumulativeMsg.id<<"  DEVID  "<<dev1.id<<std::endl;   
+           dev1.cumulativeMsg.print();
+           if(iter%10 == 0) devManager.getBatteryState(devToRead);
+           std::cout<<dev1.battPercents<<"PERCeNTS IN MAIN=========="<<std::endl;
+           iter++;
+           /
+        // std::cout<<dev1.msgDeque.front().id<<"  THE ID--------------------"<<std::endl;
+        // dev1.msgDeque.front().print();
+
+        //        dev1.msgDeque.pop_front();
+
+        socketCtrl.pollConnections();
     }
+    */
+    // wait until user hit enter.
+    std::cin.ignore();
+
     //  std::raise(SIGINT);
     devManager.endTransmission(devToRead);
     devManager.unsubscribe(devToRead);
     devManager.disconnect(devToRead);
 
 
-   //devManager.stopDiscovery();
+    //devManager.stopDiscovery();
     /*
        int j=0;
 

@@ -333,7 +333,7 @@ bool GRSocket::handleCmd(pollfd *in, std::string cmd)
     return true;
 }
 
-template<typename T>
+    template<typename T>
 void GRSocket::splitCmd(std::string cmd, T out)
 {
     std::stringstream ss(cmd);
@@ -347,7 +347,7 @@ void GRSocket::splitCmd(std::string cmd, T out)
     }
 }
 
-template <typename T>
+    template <typename T>
 std::string numToString(T num)
 {
     std::ostringstream ss;
@@ -387,8 +387,8 @@ bool GRSocket::addDataToWrite(DataType type, std::vector<double> data)
     }
 
     // represent the data as a string
-	for (unsigned int i = 0; i < data.size(); i++)
-	{
+    for (unsigned int i = 0; i < data.size(); i++)
+    {
         std::ostringstream ss;
         ss << data[i];
         sData += ss.str();
@@ -400,7 +400,7 @@ bool GRSocket::addDataToWrite(DataType type, std::vector<double> data)
     // add data to socket's writing queue
     this->toWrite[socket].push(sData);
 
-	return true;
+    return true;
 }
 
 bool GRSocket::addRawData(std::string key, GRImu *imu)
@@ -433,8 +433,14 @@ bool GRSocket::addRawData(std::string key, GRImu *imu)
 
     sData += key;
     sData += ' ';
-
-    for (auto const& x: imu->acc) {
+ //   std::cout<<imu->acc[0]<<"  PRINT IN SOCK"<<std::endl;
+    for (auto& x: imu->acc) {
+        sData += numToString(x);
+        sData += ',';
+    }
+    sData.pop_back();
+    sData += ' ';
+    for (auto& x: imu->gyro) {
         sData += numToString(x);
         sData += ',';
     }
@@ -442,15 +448,7 @@ bool GRSocket::addRawData(std::string key, GRImu *imu)
     sData.pop_back();
     sData += ' ';
 
-    for (auto const& x: imu->gyro) {
-        sData += numToString(x);
-        sData += ',';
-    }
-
-    sData.pop_back();
-    sData += ' ';
-
-    for (auto const& x: imu->mag) {
+    for (auto& x: imu->mag) {
         sData += numToString(x);
         sData += ',';
     }
@@ -459,6 +457,6 @@ bool GRSocket::addRawData(std::string key, GRImu *imu)
 
     // add data to socket's writing queue
     this->toWrite[socket].push(sData);
-
+   // std::cout<<sData<<"SDATA===================="<<std::endl;
     return true;
 }

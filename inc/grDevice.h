@@ -10,6 +10,8 @@
 #include <unordered_map>
 #include <stdlib.h>
 
+#include <functional>
+
 #include "tinyb.hpp"
 #include <gio/gio.h>
 
@@ -27,6 +29,9 @@ const std::string dataGattCharPath = "/service002b/char002c";
 */
 const std::string lName = "GR[L]";
 const std::string rName = "GR[R]";
+
+//const std::string imuServiceUUID ="6e400001-b5a3-f393-e0a9-e50e24dcca9e";// "fced6408-c015-45ea-b50d-1de32a1c2f6d"; //TODO later change to const
+//const std::string imuGattCharUUID = "6e400003-b5a3-f393-e0a9-e50e24dcca9e";// "fced6409-c015-45ea-b50d-1de32a1c2f6d";
 
 const std::string imuServiceUUID = "fced6408-c015-45ea-b50d-1de32a1c2f6d"; //TODO later change to const
 const std::string imuGattCharUUID = "fced6409-c015-45ea-b50d-1de32a1c2f6d";
@@ -136,7 +141,7 @@ struct GRImu
     {
         this->gyro.clear();
         this->acc.clear();
-        this->mag.clear(); 
+        this->mag.clear();
         this->time_stamp = 0.0;
         this->is_connected = false;
         return true;
@@ -145,9 +150,9 @@ struct GRImu
     {
         for(int i=0; i<3; i++)
         {
-            gyro.push_back(inp[i]);
-            acc.push_back(inp[i+3]);
-            mag.push_back(inp[i+6]);
+            gyro.push_back(inp[i+1]);
+            acc.push_back(inp[i+4]);
+            mag.push_back(inp[i+7]);
         }
     }
     bool print()
@@ -200,10 +205,10 @@ struct GRMessage
 
         this->palm.is_connected = true;
     }
-    
+
     bool is_complete()
     {
-        return (pinky.is_complete() && ring.is_complete() && middle.is_complete() 
+        return (pinky.is_complete() && ring.is_complete() && middle.is_complete()
                 && index.is_complete() && thumb.is_complete() && palm.is_complete());
     }
     bool clear()
@@ -261,14 +266,25 @@ struct GRDevice
     std::unique_ptr<tinyb::BluetoothGattService> battService;
     std::unique_ptr<tinyb::BluetoothGattCharacteristic> battChar;
 
+    std::deque<GRMessage> msgDeque;
+
     GRMessage cumulativeMsg;
+
+    std::deque<std::vector<int16_t> > rawData;
+
+        bool msgStart = false ;
+
+    std::function<void ()> callback;
+    void setDataCallback(std::function<void()> cb) {
+      this->callback = cb;
+    }
     GRDevice()
     {
         this->id = 0;
 
     }
     GRDevice(GRDevice &&dev) : btTag(std::move(dev.btTag)), imuService(std::move(dev.imuService)),
-    imuChar(std::move(dev.imuChar)), transmissionService(std::move(dev.transmissionService)), 
+    imuChar(std::move(dev.imuChar)), transmissionService(std::move(dev.transmissionService)),
     transmissionChar(std::move(dev.transmissionChar)), battService(std::move(dev.battService)),
     battChar(std::move(dev.battChar))
     {
@@ -294,6 +310,7 @@ struct GRDevice
             this->transmissionChar = std::move(dev.transmissionChar);
             this->battService = std::move(dev.battService);
             this->battChar = std::move(dev.battChar);
+
         }
         return *this;
     }

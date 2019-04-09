@@ -14,7 +14,6 @@
 #include <chrono>
 
 
-
 #include <stdio.h>   /* Standard input/output definitions */
 #include <stdlib.h>
 #include <string>  /* String function definitions */
@@ -69,7 +68,7 @@ class GRDevManager
         
         GRDevice* getGRDeviceById(int);
 
-        bool getData( int);
+        bool getData(GRMessage*, int);
 
         static void dataCallback(BluetoothGattCharacteristic &c, std::vector<unsigned char> &data, void *userdata);
     
@@ -92,12 +91,13 @@ class GRDevManager
         bool endTransmission(int);
 
         float getBatteryState(int);
-        void subscribe(int);
+        void subscribe(int, std::function<void()>);
         void unsubscribe(int);
         tinyb::BluetoothManager* btManager;
         std::unordered_map<int, GRDevice> _avalibleGRDevices; 
 
         int msgId=0;        
+        int msgCount = 0;
 
     private:
 };

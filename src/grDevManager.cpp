@@ -1,6 +1,7 @@
 #include "grDevManager.h"
 #include <sys/socket.h>
 #include <gio/gio.h>
+#include <functional>
 //constructor
 GRDevManager::GRDevManager()
 {
@@ -14,7 +15,6 @@ GRDevManager::GRDevManager()
         std::cerr << "ERROR: initializing libtinyb BluetoothManager"<< err.what()<<std::endl;
         exit(1);
     }
-
 
     /*
        GError* _err = NULL;
@@ -62,18 +62,81 @@ GRDevice* GRDevManager::getGRDeviceById(int devId)
     return &(_avalibleGRDevices[devId]);
 }
 
-bool GRDevManager::getData(int devId)
+bool GRDevManager::getData(GRMessage* msg, int devId)
 {
-    // std::thread thr(&GRDevManager::subscribe, this,  devId);
-    // thr.detach();
     auto& dev = _avalibleGRDevices[devId];
-    if(dev.cumulativeMsg.is_complete() && dev.cumulativeMsg.id != dev.oldMsgId)
+
+    if(dev.rawData.size()>=6 && dev.rawData.front()[0] == 0)
     {
-        dev.oldMsgId = dev.cumulativeMsg.id;
-        // dev.cumulativeMsg.print();
-        //dev.cumulativeMsg;
+        msg->clear();
+        for(auto& imu : msg->imus)
+        {
+            imu.second->pushData(dev.rawData.front());
+            if(!dev.rawData.empty())
+            {
+
+                dev.rawData.pop_front();
+            }
+
+        } 
         return true;
     }
+    if(!dev.rawData.empty())
+    {
+        if(dev.rawData.front()[0] != 0)
+        {
+
+            dev.rawData.pop_front();
+        }
+    }
+    /*        if(imuId == 0)
+              {
+              dev->msgStart = true;
+
+    //    dev->cumulativeMsg.clear();
+    dev->cumulativeMsg.id++;
+    dev->cumulativeMsg.pinky.pushData(msg);
+    }
+    else if(imuId == 1)
+    {
+    dev->cumulativeMsg.ring.pushData(msg);
+    }
+    else if(imuId == 2)
+    {
+    dev->cumulativeMsg.middle.pushData(msg);
+    }
+    else if(imuId == 3)
+    {
+
+    dev->cumulativeMsg.index.pushData(msg);
+    }
+    else if(imuId == 4)
+    {
+    dev->cumulativeMsg.thumb.pushData(msg);
+    }
+    else if(imuId == 5)
+    {
+    // std::cout<<"PALM INDEX"<<std::endl;
+    dev->cumulativeMsg.palm.pushData(msg);
+
+
+    if(dev->msgStart)
+    {
+
+    dev->msgDeque.emplace_back(dev->cumulativeMsg);
+    dev->msgStart = false;
+    }
+
+    dev->cumulativeMsg.clear();
+    if(dev->msgDeque.size()>= 3)
+    {
+    dev->msgDeque.pop_front();
+    }
+
+    }
+    */
+
+
     return false;
 
 
@@ -96,72 +159,51 @@ void GRDevManager::batteryCallback(BluetoothGattCharacteristic &c, std::vector<u
 
 void GRDevManager::dataCallback(BluetoothGattCharacteristic &c, std::vector<unsigned char> &data, void *userdata)
 {
+   
     unsigned char* data_c;
     unsigned int dataSize = data.size();
-    auto dev = static_cast<GRDevice*>(userdata);
+    //auto rawData = static_cast<std::deque<std::vector<int16_t> >* >(userdata);
+    auto device = static_cast<GRDevice*>(userdata);
+    auto rawData = &device->rawData;
     if(dataSize > 0)
     {
-
         data_c = data.data();
-        //  uint8_t imuId = static_cast<uint8_t>(data_c[0]);
-        int imuId = (int)data_c[0];
+          int16_t imuId = (int16_t)(data_c[0]);
+           std::cout<<"ID["<<imuId<<"]";
 
-
-        std::vector<int16_t> msg;
+        std::vector<int16_t > msg; //TODO maybe need to use std::array;
         unsigned i=0;
         while(i<18)
         {
             if(i==0)
             {
-                // msg.push_back(imuId);
+                if((int16_t)data.data()[0] == 0)
+                //std::cout<<std::endl;
+                //msg.push_back(imuId);
+                msg.push_back((int16_t)data.data()[0]);
+               // std::cout<<"["<< (int16_t)data.data()[0]<<"] ";
                 i++;
 
             }
             else
             {
-                uint16_t dataPiece = (data_c[i] & 0xFF) << 8 | (data_c[i+1] & 0xFF);
-                // int16_t piece = (data_c[i] << 8) | (data_c[i+1]);
-                msg.push_back(dataPiece);
-                //          std::cout<<dataPiece<<"["<< i << i+1<<"]"<<" ";
+                  uint16_t dataPiece = (data_c[i] & 0xFF) << 8 | (data_c[i+1] & 0xFF);
+                 int16_t piece = (data_c[i] << 8) | (data_c[i+1]);
+                msg.push_back((data.data()[i] & 0xFF) << 8 | (data.data()[i+1] & 0xFF));
+                        std::cout<<dataPiece<<" ";
 
                 i+=2;
             }
         }
-        //    std::cout<<std::endl;
+          std::cout<<std::endl;
+        rawData->push_back(msg);
         //  std::cout<<msg.size()<<"MSG SIZE"<<std::endl;
 
-        if(imuId == 0)
-        {
-
-            dev->cumulativeMsg.clear();
-            dev->cumulativeMsg.id++;
-            dev->cumulativeMsg.pinky.pushData(msg);
+    /*    if(this->callbacks.contains(device->id)) {
+            this->callbacks[device->id](); // TODO: add here GR Msg
         }
-        else if(imuId == 1)
-        {
-            dev->cumulativeMsg.ring.pushData(msg);
-        }
-        else if(imuId == 2)
-        {
-            dev->cumulativeMsg.middle.pushData(msg);
-        }
-        else if(imuId == 3)
-        {
-
-            dev->cumulativeMsg.index.pushData(msg);
-        }
-        else if(imuId == 4)
-        {
-            dev->cumulativeMsg.thumb.pushData(msg);
-        }
-        else if(imuId == 5)
-        {
-            // std::cout<<"PALM INDEX"<<std::endl;
-            dev->cumulativeMsg.palm.pushData(msg);
-            //  dev->data.push_back(dev->cumulativeMsg);
-            //  dev->cumulativeMsg.clear();
-        }
-
+        */
+        device->callback();
 
     }
 }
@@ -338,20 +380,22 @@ bool GRDevManager::disconnect(int devId)
     auto& dev = _avalibleGRDevices[devId];
     dev.btTag->disconnect();
 }
-void GRDevManager::subscribe(int devId)
+void GRDevManager::subscribe(int devId, std::function<void ()> cb)
 {
     this->startTransmission(devId);
 
+    //this->callbacks[devId] = cb;
 
     //tmp_conf->write_value(config_on);
     auto& dev = this->_avalibleGRDevices[devId];
+    dev.setDataCallback(cb);
 
-    dev.imuChar->enable_value_notifications(&GRDevManager::dataCallback, &(dev));
+    dev.imuChar->enable_value_notifications(&GRDevManager::dataCallback, &(dev));//.rawData));
 
-    dev.battChar->enable_value_notifications(&GRDevManager::batteryCallback, &(dev));
-    this->getBatteryState(devId);
-    std::mutex m;
-    std::unique_lock<std::mutex> lock(m);
+    //  dev.battChar->enable_value_notifications(&GRDevManager::batteryCallback, &(dev));
+    //  this->getBatteryState(devId);
+    //  std::mutex m;
+    //  std::unique_lock<std::mutex> lock(m);
 
     //  std::signal(SIGINT, signal_handler);
     //conditionVar.wait(lock);
