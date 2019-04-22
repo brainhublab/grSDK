@@ -22,7 +22,7 @@ cd ${TMP_DIR} || exit
 cmake .. -DCMAKE_INSTALL_PREFIX=${PREFIX} -DBUILD_EXAMPLES=${EXAMPLES} -DBUILD_TOOLS=${TOOLS} -DBUILD_TESTS=${TESTS}
 
 if [ ! -z $1 ]; then
-    make -j${1} && make install
+    make -j${8} && make install
 else
     make && make install
 fi

@@ -1,0 +1,162 @@
+#!/bin/bash
+
+VERSION=0.1.0
+PROGNAME=extern_assets
+usage()
+{
+    echo "Usage "$PROGNAME" [option] [comand] <extern assets component>"
+    echo
+    echo "Options: "
+    echo "-h, --help                Show this help"
+    echo "-v, --version             Prints the version"
+    echo "-a, -all                  Executes the commend for all extern assets components"                 
+    echo "install                   Install (if supports) the specified component from extern assets"
+    echo "uninstall                 Uninstall (if supported) specified component"
+    echo "build                     Build  specified component as a lib in extern assets"
+    echo "check                     Chech for all missing dependencies"
+
+}
+
+BASEDIR=$(dirname $(realpath -s "$0"))
+EXTERNAL_DIR=${BASEDIR}/externAssets
+BUILD_DIR=${EXTERNAL_DIR}/sources/grt_source/build
+TMP_DIR=${BUILD_DIR}/tmp
+PREFIX=${EXTERNAL_DIR}/grt
+EXAMPLES=OFF
+TOOLS=OFF
+TESTS=OFF
+
+CREATE_AP_DIR=${EXTERNAL_DIR}/create_ap
+
+#cores for building operations
+NUM_CORES=$( nproc )
+NUM_ACTIVE_CORES=$(( ${NUM_CORES} / 2 ))
+
+CMD=
+ALL_FLAG=false
+
+if [[ $# -lt 1 ]]; then
+    echo
+    echo "ERROR: Illegal number of arguments"
+    echo
+    usage >&2
+    exit 1
+fi
+
+build_grt()
+{
+    if [ ! -d ${PREFIX} ]; then
+        mkdir ${PREFIX} || exit
+    fi
+
+    if [ ! -d ${TMP_DIR} ]; then
+        mkdir ${TMP_DIR} || exit
+    fi
+
+    cd ${TMP_DIR} || exit
+
+    cmake .. -DCMAKE_INSTALL_PREFIX=${PREFIX} -DBUILD_EXAMPLES=${EXAMPLES} -DBUILD_TOOLS=${TOOLS} -DBUILD_TESTS=${TESTS}
+
+    if [[ NUM_ACTIVE_CORES -gt 1 ]]; then
+        make -j${NUM_ACTIVE_CORES} && make install
+    else
+        make && make install
+    fi
+
+    cd -
+    rm -r ${TMP_DIR}
+}
+
+generate_ap_config()
+{
+    default_interface=$(iw dev | awk '$$1=="Interface"{print $$2}')
+    sudo ${PWD}/create_ap -n wlp2s0 gr-ap agbdlcid --mkconfig ${PWD}/create_ap.conf #need review and exec without sudo
+    #sudo rm /tmp/create_ap*
+    sleep 1s
+}
+
+install_ap()
+{
+    cd ${CREATE_AP_DIR} 
+    generate_ap_config
+
+    sudo make install
+
+    sudo systemctl enable create_ap.service
+    sudo systemctl start create_ap.service
+
+    cd - 
+    
+}
+uninstall_ap()
+{
+    cd ${CREATE_AP_DIR}
+    sudo make uninstall
+    cd -
+}
+while :; do
+    case "$1" in
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        -v|--version)
+            echo $VERSION
+            exit 0
+            ;;
+        -a|-all)
+            shift
+            ALL_FLAG=true
+            echo "in all"
+            ;;
+        install)
+          # shift
+            CMD=$1
+            shift
+            ;;
+        uninstall)
+            CMD=$1
+            shift
+            ;;
+        build)
+            CMD=$1
+            shift
+            ;;
+        check)
+            CMD=$1
+            shift
+            ;;
+        grt)
+            echo $CMD
+            if [[ $CMD != "build" ]]; then 
+                echo "ERROR: You can only build GRT lib not ${CMD}"
+                exit 0
+            else
+                build_grt
+            fi
+            shift
+            ;;
+         ap)
+             echo $CMD
+            if [[ $CMD == "install" ]]; then
+                echo "in install"
+                install_ap
+                exit 0
+            elif [[ $CMD == "uninstall" ]]; then
+                echo "in uninstall"
+                uninstall_ap
+                exit 0
+            else
+                echo "ERROR: the Access Point need to be only installed and not ${CMD}"
+            fi
+            shift
+            ;;
+        "")
+            shift
+            break
+            ;;
+    esac
+done
+
+echo $CMD
+
