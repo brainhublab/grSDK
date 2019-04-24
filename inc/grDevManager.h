@@ -14,6 +14,7 @@
 #include <chrono>
 
 #include <stdio.h>   /* Standard input/output definitions */
+
 #include <stdlib.h>
 #include <string>  /* String function definitions */
 #include <unistd.h>  /* UNIX standard function definitions */
@@ -21,13 +22,19 @@
 #include <errno.h>   /* Error number definitions */
 
 #include <sys/socket.h>
-#include <bluetooth/bluetooth.h>
-#include <bluetooth/hci.h>
-#include <bluetooth/hci_lib.h>
-#include <bluetooth/rfcomm.h>
+#include "grDataStructs.h"
 
-#include "grConnection.h"
-/**
+#include <memory>
+#include <stdexcept>
+#include <array>
+
+#include <regex>
+#include <algorithm>
+
+#include <fstream>
+#include "exception.hpp"
+#include "inetclientstream.hpp"
+/**i
  * GRDevManager - a class description
  */
 class GRDevManager
@@ -68,7 +75,7 @@ class GRDevManager
          * @see getDeviceId()
          * @see GRConnection
          */
-        GRConnection*  setActiveDevice(int);
+        //Connection*  setActiveDevice(int);
 
         /**
          * @brief returns id of device
@@ -77,9 +84,9 @@ class GRDevManager
          * @return id of device
          * @see GRDevice
          */
-        GRConnection* getActiveDeviceById(int);
+        //GRConnection* getActiveDeviceById(int);
 
-    private:
+        //    private:
         /**
          * @brief map of available devices
          */
@@ -87,12 +94,21 @@ class GRDevManager
         /**
          * @brief map of activated devices
          */
-        std::unordered_map<int, GRConnection> _activeDevices;
+       // std::unordered_map<int, GRConnection> _activeDevices;
         /**
          * @brief checks if device is active
          */
         bool _deviceIsIn(std::string);
 
-};
+        std::string _exec(const char*);
 
+        std::string _getApIface();
+
+        std::unordered_map<std::string, std::string> _getApClients();
+
+        bool _requestDevAttr(std::string);
+
+       static  void funca(std::string );
+
+};
 #endif

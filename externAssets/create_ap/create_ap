@@ -836,7 +836,7 @@ list_running() {
         if [[ $IFACE == $wifi_iface ]]; then
             echo $(cat $x/pid) $IFACE
         else
-            echo $(cat $x/pid) $IFACE '('$(cat $x/wifi_iface)')'
+            echo $(cat $x/pid) $IFACE '('$(cat $x/wifi_iface)')' #changed for GRSDK
         fi
     done
     mutex_unlock
@@ -906,7 +906,7 @@ list_clients() {
             return
         fi
 
-        printf "%-20s %-18s %s\n" "MAC" "IP" "Hostname"
+      #  printf "%-20s %-18s %s\n" "MAC" "IP" "Hostname" #changed for GRSDK
 
         local mac
         for mac in $client_list; do
@@ -1516,7 +1516,7 @@ if [[ $USE_IWCONFIG -eq 0 ]]; then
 fi
 
 if [[ $NO_VIRT -eq 0 ]]; then
-    VWIFI_IFACE=$(alloc_new_iface ap)
+    VWIFI_IFACE=$(alloc_new_iface gr-ap) #modified for GRSDK
 
     # in NetworkManager 0.9.9 and above we can set the interface as unmanaged without
     # the need of MAC address, so we set it before we create the virtual interface.

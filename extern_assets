@@ -9,7 +9,7 @@ usage()
     echo "Options: "
     echo "-h, --help                Show this help"
     echo "-v, --version             Prints the version"
-    echo "-a, -all                  Executes the commend for all extern assets components"                 
+    echo "-a, -all                  Executes the commend for all extern assets components"
     echo "install                   Install (if supports) the specified component from extern assets"
     echo "uninstall                 Uninstall (if supported) specified component"
     echo "build                     Build  specified component as a lib in extern assets"
@@ -20,8 +20,11 @@ usage()
 BASEDIR=$(dirname $(realpath -s "$0"))
 EXTERNAL_DIR=${BASEDIR}/externAssets
 BUILD_DIR=${EXTERNAL_DIR}/sources/grt_source/build
+BUILD_SOCKET_DIR=${EXTERNAL_DIR}/sources/libsocket-master
 TMP_DIR=${BUILD_DIR}/tmp
+TMP_SOCKET_DIR=${BUILD_SOCKET_DIR}/tmp
 PREFIX=${EXTERNAL_DIR}/grt
+SOCKET_PREFIX=${EXTERNAL_DIR}/libsocket
 EXAMPLES=OFF
 TOOLS=OFF
 TESTS=OFF
@@ -67,6 +70,33 @@ build_grt()
     rm -r ${TMP_DIR}
 }
 
+build_libsocket()
+{
+    if [ ! -d ${SOCKET_PREFIX} ]; then
+        mkdir ${SOCKET_PREFIX} || exit
+    fi
+    echo ${SOCKET_PREFIX} ----------
+
+    if [ ! -d ${TMP_SOCKET_DIR} ]; then
+        mkdir ${TMP_SOCKET_DIR} || exit
+    fi
+    echo ${SOCKET_PREFIX} ----------
+
+
+    cd ${TMP_SOCKET_DIR} || exit
+
+    cmake .. -DCMAKE_INSTALL_PREFIX=${SOCKET_PREFIX} -DBUILD_EXAMPLES=${EXAMPLES} -DBUILD_TOOLS=${TOOLS} -DBUILD_TESTS=${TESTS}
+
+    if [[ NUM_ACTIVE_CORES -gt 1 ]]; then
+        make -j${NUM_ACTIVE_CORES} && make install
+    else
+        make && make install
+    fi
+
+    cd -
+    rm -r ${TMP_SOCKET_DIR}
+}
+
 generate_ap_config()
 {
     default_interface=$(iw dev | awk '$$1=="Interface"{print $$2}')
@@ -77,7 +107,7 @@ generate_ap_config()
 
 install_ap()
 {
-    cd ${CREATE_AP_DIR} 
+    cd ${CREATE_AP_DIR}
     generate_ap_config
 
     sudo make install
@@ -85,8 +115,8 @@ install_ap()
     sudo systemctl enable create_ap.service
     sudo systemctl start create_ap.service
 
-    cd - 
-    
+    cd -
+
 }
 uninstall_ap()
 {
@@ -128,11 +158,21 @@ while :; do
             ;;
         grt)
             echo $CMD
-            if [[ $CMD != "build" ]]; then 
+            if [[ $CMD != "build" ]]; then
                 echo "ERROR: You can only build GRT lib not ${CMD}"
                 exit 0
             else
                 build_grt
+            fi
+            shift
+            ;;
+        socket)
+            echo $CMD
+            if [[ $CMD != "build" ]]; then
+                echo "ERROR: You can only build GRT lib not ${CMD}"
+                exit 0
+            else
+                build_libsocket
             fi
             shift
             ;;
@@ -159,4 +199,3 @@ while :; do
 done
 
 echo $CMD
-

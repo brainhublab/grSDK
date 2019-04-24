@@ -44,7 +44,7 @@ bool GRAlgorithm::madgwickUpdate(GRMessage* message, GRAlgMessage* result)
     // std::cout<<"\nbefore madgwickUpdate() Q :"<<q0<<" "<<q1<<" "<<q2<<" "<<q3<<std::endl;
 
     // get palm rotations
-    if(message->imus["palm"]->is_connected)
+    if(message->imus["palm"]->isConnected)
     {
         _madgwickObjects["palm"]->MadgwickAHRSupdate(
                 message->imus["palm"]->gyro[0],
@@ -63,7 +63,7 @@ bool GRAlgorithm::madgwickUpdate(GRMessage* message, GRAlgMessage* result)
 
     for(it=message->imus.begin(); it!=message->imus.end(); it++ )
     {
-        if(message->imus[it->first]->is_connected)
+        if(message->imus[it->first]->isConnected)
         {
             _madgwickObjects[it->first]->MadgwickAHRSupdate(
                     message->imus[it->first]->gyro[0],
@@ -202,7 +202,7 @@ double GRAlgorithm::_stdErr(std::vector<double>* input)
 
 Eigen::Quaterniond GRAlgorithm::getNodeRotation(GRAlgMessage &alg_msg, const std::string& nodeName) const
 {
-    const std::vector<double> rots = *alg_msg.get_node(nodeName);
+    const std::vector<double> rots = *alg_msg.nodes[nodeName];
     return Eigen::Quaterniond(
             rots[0], rots[1], rots[2], rots[3]
             );
