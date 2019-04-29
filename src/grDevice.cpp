@@ -46,12 +46,17 @@ return *this;
 /*Select device by ID and fill message with one peace of data
  * Need to be use in loop
  */
-void GRDevice::getData(GRMessage* msg) 
+void GRDevice::subscribe(GRMessage* msg, std::function<void(GRMessage* msg)> cb)
 {
-    std::string asd;
+    std::thread gd(&GRDevice::_getData, this, msg, cb );
+    gd.detach();
+}
+void GRDevice::_getData(GRMessage* msg, std::function<void(GRMessage* cmsg)> cb) 
+{
+    std::string raw;
     std::string cumulative;
-    asd.resize(1);
-    //asd.resize(121);
+    raw.resize(1);
+    //raw.resize(121);
     libsocket::inet_stream _deviceSocket(this->_host, "23", LIBSOCKET_IPv4);
     _deviceSocket<<"gd\n";
     int i=0;
@@ -59,27 +64,29 @@ void GRDevice::getData(GRMessage* msg)
     char* c;
 
 int count = 0;
-    //_deviceSocket>>asd;
-    while(asd.size()>0)
+    //_deviceSocket>>raw;
+    while(raw.size()>0)
     {
 
 
-        _deviceSocket>>asd;
-        if(asd == "\n" && cumulative.size() >= 120)
+        _deviceSocket>>raw;
+        if(raw == "\n" && cumulative.size() >= 120)
         {
             //std::cout<<_splitBySlash(&cumulative)[0]<<std::endl;
             _deserialize(_splitBySlash(&cumulative), msg);
           //  std::cout<<"message: "<<msg->pinky.acc[1]<<std::endl;//" "<<msg->palm.acc[0]<<std::endl;
-            msg->print();
-            std::cout<<"----------------------------------------------| frame "<<count<<std::endl;
+        //    msg->print();
+          //  std::cout<<"----------------------------------------------| frame "<<count<<std::endl;
+            cb(msg);
+            msg->clear();
             count++;
             cumulative.clear();
         }
-        //std::cout<<asd;
-        if((asd != "\0") && (!asd.empty()) && (asd !="\n"))
+        //std::cout<<raw;
+        if((raw != "\0") && (!raw.empty()) && (raw !="\n"))
         {
-            cumulative += asd;//.at(0);
-          // cumulative.push_back(asd.c_str()[0]);
+            cumulative += raw;//.at(0);
+          // cumulative.push_back(raw.c_str()[0]);
         }
 
     }
@@ -195,12 +202,6 @@ int16_t GRDevice::convertBytes(char hb, char lb)
 {
     return  (int16_t)((hb & 0xFF) << 8 | (lb & 0xFF)  );
 }
-/*Split raw device data in peaces and push them into imu structure vars
-*/
-bool GRDevice::_splitData(std::string data, GRImu* sensor)
-{
-}
-
 /* Return local time stamp which starts with starting of program
 */
 double GRDevice::_getTimeStamp()
@@ -208,17 +209,7 @@ double GRDevice::_getTimeStamp()
     return _timeStamp;
 }
 
-/* Asigning device with socke and redurn socket
-*/
-int GRDevice::_asignDeviceWithSocket()
-{
-}
 
-/* Assigning raw message with concret imu mofule by finger index and split data for it
-*/
-bool GRDevice::_asignMessageWithImu(std::string rawMessage, GRMessage* message)
-{
-}
 
 /* Iterate raw message and check which imu modules are connectd and write boolean flag of each imu in message
 */

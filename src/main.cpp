@@ -22,7 +22,11 @@
 //using namespace GRT;
 //using namespace std;
 
-
+void printData(GRMessage* msg)
+{
+    std::cout<<"IN CALLBACK"<<std::endl;
+    msg->print();
+}
 int main (int argc, const char * argv[])
 {
 
@@ -40,9 +44,13 @@ int main (int argc, const char * argv[])
    for(auto & dev : devManager._avalibleDevices)
    {
        std::cout<<"inMain"<<dev.second.name<<std::endl;
-       dev.second.getData(&msg);
+       dev.second.subscribe(&msg, printData);
 
-   } 
+   }
+  while(!msg.empty())
+  {
+    
+  } 
 /*    libsocket::inet_stream sock ("192.168.12.4", "23", LIBSOCKET_IPv4);
     libsocket::inet_stream  sock1(std::move(sock));
     

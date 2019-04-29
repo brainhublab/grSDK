@@ -54,7 +54,8 @@ class GRDevice
          * @param msg is a pointer to gr_message object defined previosly
          * @return true if got data
          */
-        void getData(GRMessage*);
+        void subscribe(GRMessage*,std::function<void(GRMessage*)>);
+        void _getData(GRMessage*, std::function<void(GRMessage*)>);
 
         /**
          * @brief gets device by id
@@ -77,39 +78,10 @@ class GRDevice
          * @brief timer
          */
         std::chrono::time_point<std::chrono::system_clock> _start, _end;
-
-        /**
-         * @brief splits raw data string for imu vars imu.gyro imu.acc imu.mag imu.time_stamp
-         * @return true if writing in imu* is succsessd
-         * @see imu
-         */
-        bool _splitData(std::string, GRImu*);
-
         /**
          * @brief returns local timestamp
          */
         double _getTimeStamp();
-
-        /**
-         * @brief assigns new socket to device with device id
-         * @return socket stored in _deviceSocket.sock
-         */
-        int _asignDeviceWithSocket();
-
-        /**
-         * @brief return device by device id
-         * @return GRDevice structure with stored config data
-         */
-
-        /**
-         * @brief assigns all imu vars in gr_message  pointer with concret imu data
-         *  call GRConnection::_splitData for each imu
-         * @param std::string input raw message
-         * @param gr_message* pointer to message structure for output
-         *
-         */
-        bool _asignMessageWithImu(std::string, GRMessage*);
-
         /**
          * @bref check which finger modules are connected and send data
          * write boolean imu.is_connected flags in gr_message parameter for each imu
