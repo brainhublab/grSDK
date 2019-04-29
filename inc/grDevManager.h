@@ -31,6 +31,7 @@
 #include <regex>
 #include <algorithm>
 
+#include "grDataStructs.h"
 #include <fstream>
 #include "exception.hpp"
 #include "inetclientstream.hpp"
@@ -65,7 +66,7 @@ class GRDevManager
          * @return map of id's and devices which are avalible for connection
          * @see GRDevice
          */
-        std::vector<GRDevice> getAvalibleDevices();
+        std::unordered_map<int, GRDevice>* getAvalibleDevices();
 
         /**
          * @brief activates device
@@ -90,15 +91,15 @@ class GRDevManager
         /**
          * @brief map of available devices
          */
-        std::vector<GRDevice> _avalibleDevices;
+        std::unordered_map<int, GRDevice> _avalibleDevices;
         /**
          * @brief map of activated devices
          */
-       // std::unordered_map<int, GRConnection> _activeDevices;
+        // std::unordered_map<int, GRConnection> _activeDevices;
         /**
          * @brief checks if device is active
          */
-        bool _deviceIsIn(std::string);
+        int _deviceIsIn(std::string);
 
         std::string _exec(const char*);
 
@@ -106,9 +107,10 @@ class GRDevManager
 
         std::unordered_map<std::string, std::string> _getApClients();
 
-        bool _requestDevAttr(std::string);
+        std::vector<std::string> _requestDevAttr(std::string* );
 
-       static  void funca(std::string );
+        static  void funca(std::string );
+        std::string _reqAttrStr;
 
 };
 #endif

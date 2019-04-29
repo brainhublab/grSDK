@@ -3,7 +3,6 @@
 
 
 
-#include "grDevice.h"
 #include "grDataStructs.h"
 #include <iostream>
 #include <string>
@@ -24,8 +23,9 @@
 
 #include "inetclientstream.hpp"
 #include "exception.hpp"
-#include "grDevice.h"
 
+
+#include <regex>
 class GRDevice
 {
     public:
@@ -33,8 +33,14 @@ class GRDevice
          * @brief default constructor
          **/
         GRDevice();
-        
-        GRDevice(std::string);
+
+        GRDevice(std::string, std::string, std::string, int);
+/*
+        GRDevice(GRDevice&&);
+
+        GRDevice& operator=(GRDevice&&);
+*/
+
 
         /**
          * @brief constructor with param
@@ -48,7 +54,7 @@ class GRDevice
          * @param msg is a pointer to gr_message object defined previosly
          * @return true if got data
          */
-        bool getData(GRMessage* msg);
+        void getData(GRMessage*);
 
         /**
          * @brief gets device by id
@@ -57,13 +63,6 @@ class GRDevice
          * @return pointer to GRDevice object by device id
          */
 
-        /**
-         * @brief connects socket for selected device and store params of created socket in _deviceSocket
-         * @return true if socket is assigned succssesfuly
-         */
-        bool connectSocket();
-
-    private:
         /**
          * @brief Buffer needed for reading from socket
          */
@@ -79,7 +78,7 @@ class GRDevice
          */
         std::chrono::time_point<std::chrono::system_clock> _start, _end;
 
-       /**
+        /**
          * @brief splits raw data string for imu vars imu.gyro imu.acc imu.mag imu.time_stamp
          * @return true if writing in imu* is succsessd
          * @see imu
@@ -132,7 +131,21 @@ class GRDevice
         /**
          * @bref socket information assignet with device
          **/
-        libsocket::inet_stream _deviceSocket;
+        std::string name;
+        std::string hwAddr;
+        std::string _host;
+        int id;
+        
+        std::vector<std::string> _splitBySlash(std::string*);
+        void _deserialize(std::vector<std::string>, GRMessage*);
+        void _extractImuDataFromString(std::string*, GRImu*);
+        int16_t convertBytes(char, char);
+        //        libsocket::inet_stream _deviceSocket;
+        //friend GRDevManager::getAvalibleDevices();
+    private:
+       //GRDevice(const GRDevice &);
+       // GRDevice& operator=(const GRDevice &);
+
 
 };
 

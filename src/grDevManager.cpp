@@ -2,6 +2,7 @@
 //constructor
 GRDevManager::GRDevManager()
 {
+    _reqAttrStr = "ga\n";
 }
 
 //destructor
@@ -20,43 +21,88 @@ GRDevManager& GRDevManager::operator=(const GRDevManager& t)
 }
 
 /* Return map of avalible for connecting GR devices */
-std::vector<GRDevice> GRDevManager::getAvalibleDevices()
+std::unordered_map<int, GRDevice>* GRDevManager::getAvalibleDevices()
 {
+    std::vector<std::string> attr;
+    std::string ans;
+    ans.resize(32);
+    for(auto const& client : this->_getApClients())
+    {
+        try{
+
+            libsocket::inet_stream sk(client.first, "23", LIBSOCKET_IPv4);
+            sk<<_reqAttrStr;
+            sk>>ans;
+            attr = _requestDevAttr(&ans);
+            if((attr[0]!="GR[L]") || (attr[0] != "GR[R]"))
+            {
+                std::cout<<attr[0];
+                std::cerr<<"ERROR: Name of the device is wrong"<<std::endl;
+                //TODO return something 
+            }
+            int devId=0;
+            if((devId=_deviceIsIn(client.second))!= -1)
+            {
+                std::cout<<attr[0]<<std::endl;
+               // GRDevice newDev(attr[0], client.second, client.first, devId);
+                this->_avalibleDevices[devId]= std::move(GRDevice(attr[0], client.second, client.first, devId));
+
+            }
+            sk.destroy();
+
+
+        }catch (const libsocket::socket_exception& exc)
+        {
+            std::cerr<<exc.mesg;
+        }
+    }
+    std::cout<<"DONEDONE"<<std::endl;
 
     std::string asd = _exec("create_ap --list-running");
     std::cout<<asd;
-    //return _avalibleDevices;
+    return &_avalibleDevices;
 }
 
 /* Set GR device from avalible to active and make it ready for connection */
 /*GRConnection* GRDevManager::setActiveDevice(int devId)
-{
-    return &this->_activeDevices[devId];
-}
-*/
+  {
+  return &this->_activeDevices[devId];
+  }
+  */
 //TODO needs to be implemented later
 /* Return device by ID */
 /*GRConnection* GRDevManager::getActiveDeviceById(int id)
-{
-}
-*/
+  {
+  }
+  */
 /* Check id device in avalible device */
-bool GRDevManager::_deviceIsIn(std::string addr)
+int GRDevManager::_deviceIsIn(std::string hwAddr)
 {
- /*   int i=1;
-
-    while(i <= _avalibleDevices.size())
+    for(auto const& dev : _avalibleDevices )
     {
-        if(addr != _avalibleDevices[i].hwAddress)
+        if(dev.second.hwAddr == hwAddr)
         {
-            i++;
+            return -1;
         }
-        else if(addr == _avalibleDevices[i].hwAddress)
+        else
         {
-            return true;
+            return this->_avalibleDevices.size() + 1;
         }
     }
-*/
+    /*   int i=1;
+
+         while(i <= _avalibleDevices.size())
+         {
+         if(addr != _avalibleDevices[i].hwAddress)
+         {
+         i++;
+         }
+         else if(addr == _avalibleDevices[i].hwAddress)
+         {
+         return true;
+         }
+         }
+         */
     return false;
 }
 
@@ -117,44 +163,19 @@ std::unordered_map<std::string, std::string> GRDevManager::_getApClients()
         clientsOut[*iter] = *iter++;
         std::advance(iter, 2);
     }
-
-    std::string host = "192.168.12.4";
-    std::string port = "23";
-    std::string answer;
-
-    answer.resize(20);
-    
-    std::stringstream ss;
-    char c;
-    char* buf = new char[20];
-    try
-    {
-        libsocket::inet_stream sock(host, port, LIBSOCKET_IPv4);
-        long int i=0;
-        while(answer.size() > 0)
-        {
-          sock>>answer;
-         std::cout<<answer; 
-           // std::cout<<answer<<"";
-        }
-        std::cout<<"afterqhile"<<std::endl;
-        //readInCallback(sock, funca);
-        
-    }
-    catch (const libsocket::socket_exception& exc)
-    {
-        std::cerr<<exc.mesg;
-    }
     return clientsOut;
 }
 
-void GRDevManager::funca(std::string s)
-{
-    std::cout<<s;
-}
-bool GRDevManager::_requestDevAttr(std::string)
-{
 
+std::vector<std::string> GRDevManager::_requestDevAttr(std::string* resp)
+{
+    const std::regex re("\\s+");
+    return std::vector<std::string> {
+        std::regex_token_iterator<std::string::iterator>(resp->begin(),
+                resp->end(),
+                re,
+                -1),{}
+    };
 }
 
 

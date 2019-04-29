@@ -228,7 +228,6 @@ std::unordered_map<std::string, std::vector<double>> GRAlgorithm::getEulerRotati
     }
     return result;
     // std::transform(result.begin(), result.end(), result.begin(), [&](auto& pair) -> auto {
-    //     
+    //
     //     })
 }
-

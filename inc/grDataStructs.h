@@ -10,6 +10,8 @@
 #include <unordered_map>
 #include <stdlib.h>
 #include <memory>
+#include <array>
+
 
 //#include "grConnection.h"
 /**
@@ -38,28 +40,29 @@ struct GRImu
     /**
      * @brief gyroscope data
      */
-    std::vector<double> gyro;
+    std::array<int16_t, 3> gyro;
 
     /**
      * @brief accelerometer data
      */
-    std::vector<double> acc;
+    std::array<int16_t, 3> acc;
 
     /**
      * @brief magnetometr data
      */
-    std::vector<double> mag;
+    std::array<int16_t, 3> mag;
 
     /**
      * @brief constructor
      */
     GRImu()
     {
-        this->gyro.clear();
-        this->acc.clear();
-        this->mag.clear();
+        this->gyro.fill(0);
+        this->acc.fill(0);
+        this->mag.fill(0);
         this->timeStamp = 0.0f;
         this->isConnected = false;
+
 
 
     }
@@ -88,10 +91,35 @@ struct GRImu
 
     bool clear()
     {
-        this->gyro.clear();
-        this->acc.clear();
-        this->mag.clear();
+        this->gyro.fill(0);
+        this->acc.fill(0);
+        this->mag.fill(0);
         this->timeStamp = 0.0f;
+    }
+    void print()
+    {
+      if(!this->empty())
+      {
+        std::cout<<"acc ";
+        for(const auto& val : acc)
+        {
+          std::cout<<val<<" - ";
+        }
+        
+        std::cout<<"|gyro  ";
+        for(const auto& val : gyro)
+        {
+          std::cout<<val<<" - ";
+        }
+
+        std::cout<<"|mag ";
+        for(const auto& val : mag)
+        {
+          std::cout<<val<<" - ";
+        }
+        std::cout<<std::endl;
+      }
+
     }
 
 
@@ -155,10 +183,21 @@ struct GRMessage
         }
     }
 
-    std::unordered_map<std::string, GRImu*> get_imus()
+    void print()
     {
-        return this->imus;
+      for(const auto& imu: imus)
+      {
+        imu.second->print();
+        std::cout<<std::endl;
+      }
     }
+
+
+
+    // std::map<std::string, GRImu*> get_imus()
+    // {
+    //     return this->imus;
+    // }
 };
 
 
@@ -220,6 +259,12 @@ struct GRAlgMessage
 
         return true;
     }
+};
+
+struct GRDevAttr
+{
+    std::string name;
+    std::string id;
 };
 
 #endif
