@@ -1,5 +1,5 @@
-#ifndef GR_CONNECTION
-#define GR_CONNECTION
+#ifndef GR_DEVICE
+#define GR_DEVICE
 
 
 
@@ -107,14 +107,17 @@ class GRDevice
         std::string hwAddr;
         std::string _host;
         int id;
+        int _batteryLevel;
         
         std::vector<std::string> _splitBySlash(std::string*);
+        std::vector<std::string> _splitMessage(std::string*);
         void _deserialize(std::vector<std::string>, GRMessage*);
         void _extractImuDataFromString(std::string*, GRImu*);
         int16_t convertBytes(char, char);
         //        libsocket::inet_stream _deviceSocket;
         //friend GRDevManager::getAvalibleDevices();
     private:
+
        //GRDevice(const GRDevice &);
        // GRDevice& operator=(const GRDevice &);
 

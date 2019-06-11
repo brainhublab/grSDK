@@ -26,6 +26,7 @@ void printData(GRMessage* msg)
 {
     std::cout<<"IN CALLBACK"<<std::endl;
     msg->print();
+  //  msg->clear();
 }
 int main (int argc, const char * argv[])
 {
@@ -45,6 +46,8 @@ int main (int argc, const char * argv[])
    {
        std::cout<<"inMain"<<dev.second.name<<std::endl;
        dev.second.subscribe(&msg, printData);
+     //  dev.second._getData(&msg);
+       std::cout<<"main_for"<<std::endl;
 
    }
   while(!msg.empty())

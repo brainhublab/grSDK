@@ -55,40 +55,52 @@ void GRDevice::_getData(GRMessage* msg, std::function<void(GRMessage* cmsg)> cb)
 {
     std::string raw;
     std::string cumulative;
+    std::string buf;
     raw.resize(1);
-    //raw.resize(121);
-    libsocket::inet_stream _deviceSocket(this->_host, "23", LIBSOCKET_IPv4);
-    _deviceSocket<<"gd\n";
+
+    // raw.resize(120);
+    libsocket::inet_stream _deviceSocket("192.168.12.196", "23", LIBSOCKET_IPv4);
+    _deviceSocket<<"gd\r\n";
     int i=0;
     int j=0;
     char* c;
 
-int count = 0;
-    //_deviceSocket>>raw;
+    int count = 0;
     while(raw.size()>0)
     {
 
-
+        //raw.clear();
         _deviceSocket>>raw;
-        if(raw == "\n" && cumulative.size() >= 120)
+        if(buf.size()== 2)
         {
-            //std::cout<<_splitBySlash(&cumulative)[0]<<std::endl;
-            _deserialize(_splitBySlash(&cumulative), msg);
-          //  std::cout<<"message: "<<msg->pinky.acc[1]<<std::endl;//" "<<msg->palm.acc[0]<<std::endl;
-        //    msg->print();
-          //  std::cout<<"----------------------------------------------| frame "<<count<<std::endl;
-            cb(msg);
-            msg->clear();
-            count++;
-            cumulative.clear();
-        }
-        //std::cout<<raw;
-        if((raw != "\0") && (!raw.empty()) && (raw !="\n"))
-        {
-            cumulative += raw;//.at(0);
-          // cumulative.push_back(raw.c_str()[0]);
-        }
+            buf.at(0) = buf.at(1);
+            buf.at(1) = raw.at(0);
 
+        }
+        else
+        {
+
+            buf.push_back(raw.at(0));
+        }
+        if(buf != "\r\n")
+        {
+            cumulative.push_back(raw.at(0));
+        }
+        else
+        {
+            //        std::cout<<cumulative<<std::endl;
+            std::cout<<cumulative.size()<<"-------------------------------"<<std::endl;
+            if(cumulative.size() == 116)
+            {
+
+                _deserialize(_splitMessage(&cumulative), msg);
+            } 
+            //msg->print();
+            cb(msg);
+            std::cout<<std::endl;
+            msg->clear();
+            cumulative.clear();
+        } 
     }
     _deviceSocket<<"sd";
     _deviceSocket.shutdown();
@@ -97,7 +109,7 @@ int count = 0;
 std::vector<std::string> GRDevice::_splitBySlash(std::string* inp)
 {
     //TODO need to fix vector size its put the terminating zero as an element of vector
-    std::regex reg("\\/");
+    std::regex reg("\\ /");
     return std::vector<std::string>{
         std::regex_token_iterator<std::string::iterator>(inp->begin(),
                 inp->end(),
@@ -105,63 +117,108 @@ std::vector<std::string> GRDevice::_splitBySlash(std::string* inp)
                 -1),{}
     };
 }
+std::vector<std::string> GRDevice::_splitMessage(std::string* inp)
+{
+    std::vector<std::string> result;
+    int s=0;
+    int e=19;
+    inp->pop_back();
+    this->_batteryLevel = inp->at(114);
+    inp->pop_back();
+    std::cout<<"----------------------------------------------"<<inp->size()<<std::endl;
+    for(int i=0; i<6; i++)
+    {
+        //    std::cout<<"IN SPLIT"<<inp->substr(s, 19);
+        result.push_back(inp->substr(s, 19));
+        //  s = e+1;
+        s+=19;
+    }
+    return result;
+}
 void GRDevice::_deserialize(std::vector<std::string> inp, GRMessage* msg)
 {
     std::string imuData;
-    //    std::vector<std::string>& inpRef;
-
-//    imuData = inp[0];
-/*
-    std::cout<<inp[0][0]<<"data"<<std::endl;
-   // inp.pop_back(); //TODO need to fix REGEX in vector splitting
-    std::cout<<inp.size()<<"<-----------------------vector size"<<std::endl;
-    for(int i=0; i< inp.size();i++)
-    {
-        std::cout<<inp[i]<<std::endl;
-    }
+    //std::cout<<inp.size()<<"<-----------------------vector size"<<std::endl;
+    /* 
+       for(int i=0; i< inp.size();i++)
+       {
+       std::cout<<inp[i].at(2)<<std::endl;
+       }
+       */  
+    //std::cout<<"INPSIZE   "<<inp.size();
     std::cout<<"-------------------EOF VEC"<<std::endl;
-*/
+
+
     for(int i=0; i< inp.size(); i++)
     {
         if(i == 0)
         {
-            if((msg->pinky.isConnected = (int)inp[i][0]-'0'))
+            if((msg->pinky.isConnected = (bool)inp[i].front()))
             {
                 _extractImuDataFromString(&inp[i], &msg->pinky) ;
 
             }
-        }else if(i ==1)
+            else
+            {
+                msg->pinky.isConnected = false;
+            }
+        }
+        else if(i ==1)
         {
-            if((msg->ring.isConnected = (int)inp[i][0] -'0'))
+            if((msg->ring.isConnected = (bool)inp[i].front()))
             {
                 _extractImuDataFromString(&inp[i], &msg->ring);
             }
-        }else if(i == 2)
+            else
+            {
+                msg->ring.isConnected = false;
+            }
+        }
+        else if(i == 2)
         {
-            if((msg->middle.isConnected = (int)inp[i][0] -'0'))
+            if((msg->middle.isConnected = (bool)inp[i].front()))
             {
                 _extractImuDataFromString(&inp[i], &msg->middle);
             }
+            else
+            {
+                msg->middle.isConnected = false;
+            }
 
-        } else if(i == 3)
+        }
+        else if(i == 3)
         {
-            if((msg->index.isConnected = (int)inp[i][0] -'0'))
+            if((msg->index.isConnected = (bool)inp[i].front()))
             {
                 _extractImuDataFromString(&inp[i], &msg->index);
             }
+            else
+            {
+                msg->index.isConnected = false;
+            }
 
-        } else if(i == 4)
+        }
+        else if(i == 4)
         {
-            if((msg->thumb.isConnected = (int)inp[i][0] -'0'))
+            if((msg->thumb.isConnected =(bool)inp[i].front()))
             {
                 _extractImuDataFromString(&inp[i], &msg->thumb);
             }
+            else
+            {
+                msg->thumb.isConnected = false;
+            }
 
-        } else if(i == 5)
+        }
+        else if(i == 5)
         {
-            if((msg->palm.isConnected = (int)inp[i][0] -'0'))
+            if((msg->palm.isConnected = (bool)inp[i].front()))
             {
                 _extractImuDataFromString(&inp[i], &msg->palm);
+            }
+            else
+            {
+                msg->palm.isConnected = false;
             }
 
         }
@@ -171,20 +228,20 @@ void GRDevice::_deserialize(std::vector<std::string> inp, GRMessage* msg)
 void GRDevice::_extractImuDataFromString(std::string* imuData, GRImu* imu )
 {
 
-  //  std::cout<<"IMUDATASIZE"<<imuData->size()<<std::endl;
+    // std::cout<<"IMUDATASIZE"<<imuData->size()<<std::endl;
     int j=0;
-    for(int i = 1; i<imuData->size(); i+=2)
+    for(int i = 1; i<imuData->size() -1; i+=2)
     {
         if(j==3)
         {
             j=0;
         }
-        if(i<7)
+        if(i<6)
         {
             imu->acc[j] = convertBytes(imuData->at(i), imuData->at(i+1));
             j++;
-         //   std::cout<<"inExtraction:  "<<*imuData<<convertBytes(imuData->at(i), imuData->at(i+1))<<std::endl;
-        }else if(i<13 && i>6)
+            //   std::cout<<"inExtraction:  "<<*imuData<<convertBytes(imuData->at(i), imuData->at(i+1))<<std::endl;
+        }else if(i<12 && i>6)
         {
             imu->gyro[j] = convertBytes(imuData->at(i), imuData->at(i+1));
             j++;
@@ -193,6 +250,10 @@ void GRDevice::_extractImuDataFromString(std::string* imuData, GRImu* imu )
         {
             imu->mag[j] = convertBytes(imuData->at(i), imuData->at(i+1));
             j++;
+        }
+        else 
+        {
+            std::cout<<(int)imuData->at(i)<<"<<<<<<---------------"<<std::endl;
         }
     }
     // std::cout<<"bytes  "<<convertBytes(imuData->at(1), imuData->at(2))<<std::endl;

@@ -2,7 +2,7 @@
 //constructor
 GRDevManager::GRDevManager()
 {
-    _reqAttrStr = "ga\n";
+    _reqAttrStr = "ga\r\n";
 }
 
 //destructor

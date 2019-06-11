@@ -1,5 +1,5 @@
-#ifndef GR_DEVICE
-#define GR_DEVICE
+#ifndef GR_DATA_STRUCTS
+#define GR_DATA_STRUCTS
 
 #include <iostream>
 #include <deque>
@@ -61,7 +61,7 @@ struct GRImu
         this->acc.fill(0);
         this->mag.fill(0);
         this->timeStamp = 0.0f;
-        this->isConnected = false;
+        this->isConnected = true;
 
 
 
@@ -98,27 +98,27 @@ struct GRImu
     }
     void print()
     {
-      if(!this->empty())
-      {
-        std::cout<<"acc ";
-        for(const auto& val : acc)
+        if(!this->empty())
         {
-          std::cout<<val<<" - ";
-        }
-        
-        std::cout<<"|gyro  ";
-        for(const auto& val : gyro)
-        {
-          std::cout<<val<<" - ";
-        }
+            std::cout<<"acc ";
+            for(const auto& val : acc)
+            {
+                std::cout<<val<<" - ";
+            }
 
-        std::cout<<"|mag ";
-        for(const auto& val : mag)
-        {
-          std::cout<<val<<" - ";
+            std::cout<<"|gyro  ";
+            for(const auto& val : gyro)
+            {
+                std::cout<<val<<" - ";
+            }
+
+            std::cout<<"|mag ";
+            for(const auto& val : mag)
+            {
+                std::cout<<val<<" - ";
+            }
+            std::cout<<std::endl;
         }
-        std::cout<<std::endl;
-      }
 
     }
 
@@ -185,11 +185,12 @@ struct GRMessage
 
     void print()
     {
-      for(const auto& imu: imus)
-      {
-        imu.second->print();
-        std::cout<<std::endl;
-      }
+        for(const auto& imu: imus)
+        {
+            std::cout<<imu.first<<" ";
+            imu.second->print();
+            std::cout<<std::endl;
+        }
     }
 
 
