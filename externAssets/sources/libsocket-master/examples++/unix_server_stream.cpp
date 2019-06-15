@@ -20,7 +20,7 @@ int main(void)
     char* answer = new char[128];
 
     memset(answer,0,128);
-
+    std::cout<<"working on it"<<std::endl;
     try {
 	unix_stream_server srv(bindpath);
 

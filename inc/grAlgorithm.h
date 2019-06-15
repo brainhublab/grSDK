@@ -23,38 +23,6 @@
 #include "Eigen/Geometry"
 using namespace std;
 
-struct k_filter_vars // variables needet from simplified kalman
-{
-    double volt;
-    double proccess;
-    double pc;
-    double g;
-    double p;
-    double xp;
-    double zp;
-    double xe;
-
-    std::vector<double> accumulated;
-    k_filter_vars()
-    {
-        volt = 0.0;
-        proccess = 0.05;
-        pc = 0.0;
-        g = 0.0;
-        p = 1.0;
-        xp = 0.0;
-        zp = 0.0;
-        xe = 0.0;
-    }
-};
-
-struct acc_k_vars // arbitary accelerometer vars for kalman
-{
-    k_filter_vars acc_k_x;
-    k_filter_vars acc_k_y;
-    k_filter_vars acc_k_z;
-};
-
 /**
  * GRAlgorithm class - short descr.
  */
@@ -153,7 +121,7 @@ class GRAlgorithm :public GRGrt
         Eigen::Quaterniond quat;
         Eigen::Quaterniond palmQuat;
         Eigen::Quaterniond relativeQuat;
-        std::vector<double> rotations;
+        std::array<double, 4> _rotations;
 
         /**
          * @brief map for easier access of objects

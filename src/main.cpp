@@ -4,6 +4,8 @@
 #include "grDataStructs.h"
 #include "grDevice.h"
 #include "grTrajectory.h"
+#include "grUiSrv.h"
+
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -26,7 +28,10 @@ void printData(GRMessage* msg)
 {
     std::cout<<"IN CALLBACK"<<std::endl;
     msg->print();
-  //  msg->clear();
+    std::string gyr = "ring";
+    std::cout<<msg->getAsStr()<<"------------------------------------asStr";
+
+    //  msg->clear();
 }
 int main (int argc, const char * argv[])
 {
@@ -36,41 +41,48 @@ int main (int argc, const char * argv[])
     GRMessage msg;
     GRAlgMessage alg_msg;
 
+    GRUiSrv uisrv;
+    uisrv.run();
+    //    while(1);
+
     std::unordered_map<int, GRDevice>* devices;
     int devId=-1;
     int i = 0;
 
     devManager._getApClients();
     devices = devManager.getAvalibleDevices();
-   for(auto & dev : devManager._avalibleDevices)
-   {
-       std::cout<<"inMain"<<dev.second.name<<std::endl;
-       dev.second.subscribe(&msg, printData);
-     //  dev.second._getData(&msg);
-       std::cout<<"main_for"<<std::endl;
+    //    std::function<void(GRMessage*)> fnc = std::bind(&GRUiSrv::writeData, this)
+    std::function<void(GRMessage*)> fnc = std::bind(&GRUiSrv::writeData, &uisrv, &msg); 
+        for(auto & dev : devManager._avalibleDevices)
+        {
+            std::cout<<"inMain"<<dev.second.name<<std::endl;
+            dev.second.subscribe(&msg, fnc);
 
-   }
-  while(!msg.empty())
-  {
-    
-  } 
-/*    libsocket::inet_stream sock ("192.168.12.4", "23", LIBSOCKET_IPv4);
-    libsocket::inet_stream  sock1(std::move(sock));
-    
-    std::string res;
-    res.resize(20);
+            //  dev.second._getData(&msg);
+            std::cout<<"main_for"<<std::endl;
 
-  */  
-    /*
-    while(res.size()>0)
+        }
+    while(!msg.empty())
     {
-        *sock1>>res;
-        std::cout<<res;
-    }
-    for(std::vector<GRDevice>::iterator it=devices.begin(); it!=devices.end(); i++, it++)
-      {
-      if(it->name == "GR[R]")
-      {
+
+    } 
+    /*    libsocket::inet_stream sock ("192.168.12.4", "23", LIBSOCKET_IPv4);
+          libsocket::inet_stream  sock1(std::move(sock));
+
+          std::string res;
+          res.resize(20);
+
+*/  
+    /*
+       while(res.size()>0)
+       {
+     *sock1>>res;
+     std::cout<<res;
+     }
+     for(std::vector<GRDevice>::iterator it=devices.begin(); it!=devices.end(); i++, it++)
+     {
+     if(it->name == "GR[R]")
+     {
     //    std::cout<<it->first<<" in iteration---------------------------------------------"<<std::endl;
     devId = i;
     }

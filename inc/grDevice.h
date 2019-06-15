@@ -107,7 +107,7 @@ class GRDevice
         std::string hwAddr;
         std::string _host;
         int id;
-        int _batteryLevel;
+        uint16_t _batteryLevel;
         
         std::vector<std::string> _splitBySlash(std::string*);
         std::vector<std::string> _splitMessage(std::string*);

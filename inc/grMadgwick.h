@@ -6,9 +6,10 @@
 #include <deque>
 #include <vector>
 #include <math.h>
+#include <array>
 
 /**
- * GR Madgwick class 
+ * GR Madgwick class
  */
 class GRMadgwick
 {
@@ -31,23 +32,23 @@ public:
 	 */
 	GRMadgwick& operator=(const GRMadgwick&);
 
-	
+
 	/**
 	 * @brief
 	 */
-    	void MadgwickAHRSupdate(double gx, double gy, double gz, double ax, double ay, double az, 
-	/**
-	 * @brief main step update of Madgwick
-	 */
-        double mx, double my, double mz, std::vector<double>*);
+	 /**
+		* @brief main step update of Madgwick
+		*/
+  void MadgwickAHRSupdate(double gx, double gy, double gz, double ax, double ay, double az,
+        double mx, double my, double mz, std::array<double, 4>*);
 	/**
 	 * @brief
 	 */
-        void MadgwickAHRSupdateIMU(double gx, double gy, double gz, double ax, double ay, double az, 
-	/**
-	 * @brief update AHRS without magnetometer
-	 */
-        std::vector<double>*);
+	 /**
+ 	 * @brief update AHRS without magnetometer
+ 	 */
+  void MadgwickAHRSupdateIMU(double gx, double gy, double gz, double ax, double ay, double az,
+        std::array<double, 4>*);
 	/**
 	 * @brief set arbitary frequency calibration variable
 	 */
@@ -61,12 +62,12 @@ private:
 	 * @brief defining of gravity
 	 */
         double gravity = 256;
-	
+
         //madgwick algorithm vars and methods
 	/**
 	 * @brief quaternion of sensor frame relative to auxiliary frame
 	 */
-        double q0 , q1, q2, q3; 
+        double q0 , q1, q2, q3;
 	/**
 	 * @brief variable
 	 */

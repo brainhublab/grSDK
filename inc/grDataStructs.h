@@ -11,8 +11,9 @@
 #include <stdlib.h>
 #include <memory>
 #include <array>
-
-
+#include <sstream>
+#include <algorithm>
+#include <iterator>
 //#include "grConnection.h"
 /**
  * gr devices names needed for easier findign of avalible devices
@@ -55,6 +56,7 @@ struct GRImu
     /**
      * @brief constructor
      */
+    std::string imuByteData;
     GRImu()
     {
         this->gyro.fill(0);
@@ -62,9 +64,7 @@ struct GRImu
         this->mag.fill(0);
         this->timeStamp = 0.0f;
         this->isConnected = true;
-
-
-
+        this->imuByteData.resize(117);
     }
 
     /**
@@ -123,6 +123,21 @@ struct GRImu
     }
 
 
+    std::string getAsStr()
+    {
+        std::stringstream res;
+        std::copy(acc.begin(), acc.end(), 
+                std::ostream_iterator<int16_t>(res, ","));
+        res<<" ";
+        std::copy(gyro.begin(), gyro.end(),
+                std::ostream_iterator<int16_t>(res, ","));
+        res<<" ";
+        std::copy(mag.begin(), mag.end(),
+                std::ostream_iterator<int16_t>(res, ","));
+        return res.str();
+    }
+
+
 };
 
 struct GRMessage
@@ -135,6 +150,7 @@ struct GRMessage
     GRImu thumb;
     GRImu palm;
 
+    uint16_t batteryLevel;
     std::unordered_map<std::string, GRImu*> imus;
 
     GRMessage()
@@ -148,6 +164,7 @@ struct GRMessage
         this->imus["palm"] = &(this->palm);
 
         this->palm.isConnected = true;
+        this->batteryLevel = 0;
     }
 
     bool clear()
@@ -193,7 +210,23 @@ struct GRMessage
         }
     }
 
-
+    std::string getAsStr()
+    {
+        return this->pinky.getAsStr() + "," + 
+            this->ring.getAsStr() + "," +
+            this->middle.getAsStr() + "," +
+            this->index.getAsStr() + "," +
+            this->thumb.getAsStr() + "," +
+            this->palm.getAsStr(); 
+    }
+    std::string getImuAsStr(std::string *imuKey)
+    {
+        if(!imus.count(*imuKey))
+        {
+            return "ERRO: There is no imu";
+        }
+        return imus[*imuKey]->getAsStr();       
+    }
 
     // std::map<std::string, GRImu*> get_imus()
     // {
@@ -207,31 +240,31 @@ struct GRAlgMessage
     /**
      * @brief quaternion for pinky
      */
-    std::vector<double>  pinky;
+    std::array<double, 4>  pinky;
     /**
      * @brief quaternion for ring
      */
-    std::vector<double>  ring;
+    std::array<double, 4>  ring;
     /**
      * @brief quaternion for middle
      */
-    std::vector<double>  middle;
+    std::array<double, 4>  middle;
     /**
      * @brief quaternion for index
      */
-    std::vector<double>  index;
+    std::array<double, 4>  index;
     /**
      * @brief quaternion for thumb
      */
-    std::vector<double>  thumb;
+    std::array<double, 4>  thumb;
     /**
      * @brief quaternion for palm
      */
-    std::vector<double>  palm;
+    std::array<double, 4>  palm;
     /**
      * @brief map for iterating through quaternions
      */
-    std::unordered_map<std::string, std::vector<double>*> nodes;
+    std::unordered_map<std::string, std::array<double, 4>*> nodes;
 
     /**
      * @brief constructor
@@ -251,12 +284,12 @@ struct GRAlgMessage
      */
     bool clear()
     {
-        this->pinky.clear();
-        this->ring.clear();
-        this->middle.clear();
-        this->index.clear();
-        this->thumb.clear();
-        this->palm.clear();
+        this->pinky.fill(0.0F);
+        this->ring.fill(0.0f);
+        this->middle.fill(0.0f);
+        this->index.fill(0.0f);
+        this->thumb.fill(0.0f);
+        this->palm.fill(0.0f);
 
         return true;
     }

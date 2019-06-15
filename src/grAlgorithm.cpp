@@ -56,8 +56,8 @@ bool GRAlgorithm::madgwickUpdate(GRMessage* message, GRAlgMessage* result)
                 message->imus["palm"]->mag[0],
                 message->imus["palm"]->mag[1],
                 message->imus["palm"]->mag[2],
-                &rotations);
-        result->palm = rotations;
+                &_rotations);
+        result->palm = _rotations;
         palmQuat = Eigen::Quaterniond(result->palm[0], result->palm[1], result->palm[2], result->palm[3]);
     }
 
@@ -75,37 +75,37 @@ bool GRAlgorithm::madgwickUpdate(GRMessage* message, GRAlgMessage* result)
                     message->imus[it->first]->mag[0],
                     message->imus[it->first]->mag[1],
                     message->imus[it->first]->mag[2],
-                    &rotations);
+                    &_rotations);
 
             // get relative rotation
-            quat = Eigen::Quaterniond(rotations[0], rotations[1], rotations[2], rotations[3]);
+            quat = Eigen::Quaterniond(_rotations[0], _rotations[1], _rotations[2], _rotations[3]);
 
             relativeQuat = quat.inverse() * palmQuat;
             // relativeQuat = palmQuat.inverse() * quat;
-            rotations[0] = -relativeQuat.w(); // inverse rotation back
-            rotations[1] = 0*relativeQuat.x();
-            rotations[2] = 0*relativeQuat.y();
-            rotations[3] = relativeQuat.z();
+            _rotations[0] = -relativeQuat.w(); // inverse rotation back
+            _rotations[1] = 0*relativeQuat.x();
+            _rotations[2] = 0*relativeQuat.y();
+            _rotations[3] = relativeQuat.z();
 
             if(it->first == "pinky")
             {
-                result->pinky = rotations;
+                result->pinky = _rotations;
             }
             else if(it->first == "ring")
             {
-                result->ring = rotations;
+                result->ring = _rotations;
             }
             else if(it->first == "middle")
             {
-                result->middle = rotations;
+                result->middle = _rotations;
             }
             else if(it->first == "index")
             {
-                result->index = rotations;
+                result->index = _rotations;
             }
             else if(it->first == "thumb")
             {
-                result->thumb = rotations;
+                result->thumb = _rotations;
             }
             else if(it->first == "palm")
             {
@@ -118,7 +118,7 @@ bool GRAlgorithm::madgwickUpdate(GRMessage* message, GRAlgMessage* result)
             }
         }
     }
-    rotations.clear();
+    _rotations.fill(0);
 
     return true;
 }
@@ -202,7 +202,7 @@ double GRAlgorithm::_stdErr(std::vector<double>* input)
 
 Eigen::Quaterniond GRAlgorithm::getNodeRotation(GRAlgMessage &alg_msg, const std::string& nodeName) const
 {
-    const std::vector<double> rots = *alg_msg.nodes[nodeName];
+    const std::array<double, 4> rots = *alg_msg.nodes[nodeName];
     return Eigen::Quaterniond(
             rots[0], rots[1], rots[2], rots[3]
             );

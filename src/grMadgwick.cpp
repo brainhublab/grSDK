@@ -26,8 +26,8 @@ GRMadgwick& GRMadgwick::operator=(const GRMadgwick& t)
 {
 
 }
-void GRMadgwick::MadgwickAHRSupdate(double gx, double gy, double gz, double ax, double ay, double az, 
-        double mx, double my, double mz, std::vector<double>* results)
+void GRMadgwick::MadgwickAHRSupdate(double gx, double gy, double gz, double ax, double ay, double az,
+        double mx, double my, double mz, std::array<double, 4>* results)
 {
     double recipNorm;
     double s0, s1, s2, s3;
@@ -128,14 +128,18 @@ void GRMadgwick::MadgwickAHRSupdate(double gx, double gy, double gz, double ax, 
     q2 *= recipNorm;
     q3 *= recipNorm;
 
-    std::vector<double> new_result = {q0, q1, q2, q3};
+    //std::vector<double> new_result = {q0, q1, q2, q3};
 
-    results->assign(new_result.begin(), new_result.end());
+    //results->assign(new_result.begin(), new_result.end());
+    results->at(0) = q0;
+    results->at(1) = q1;
+    results->at(2) = q2;
+    results->at(3) = q3;
 
 
 }
-void GRMadgwick::MadgwickAHRSupdateIMU(double gx, double gy, double gz, double ax, double ay, double az, 
-        std::vector<double>* results) 
+void GRMadgwick::MadgwickAHRSupdateIMU(double gx, double gy, double gz, double ax, double ay, double az,
+        std::array<double,4>* results)
 {
     double recipNorm;
     double s0, s1, s2, s3;
@@ -205,8 +209,12 @@ void GRMadgwick::MadgwickAHRSupdateIMU(double gx, double gy, double gz, double a
 
     //    std::cout<<"Q :"<<q0<<q1<<q2<<q3<<std::endl;
 
-    std::vector<double> new_result = {q0, q1, q2, q3};
-    results->assign(new_result.begin(), new_result.end());
+    //std::vector<double> new_result = {q0, q1, q2, q3};
+    //results->assign(new_result.begin(), new_result.end());
+    results->at(0) = q0;
+    results->at(1) = q1;
+    results->at(2) = q2;
+    results->at(3) = q3;
 
 }
 bool GRMadgwick::setFreqCalibration(int callibration)
@@ -217,7 +225,7 @@ bool GRMadgwick::setFreqCalibration(int callibration)
 // Fast inverse square-root
 
 double GRMadgwick::invSqrt(double xd) {
-    
+
     float x = (float)xd;
    float halfx = 0.5f * x;
     float y = x;
@@ -226,7 +234,7 @@ double GRMadgwick::invSqrt(double xd) {
     y = *(float*)&i;
     y = y * (1.5f - (halfx * y * y));
     y = y * (1.5f - (halfx * y * y));
-    return (double)y; 
+    return (double)y;
 }
 
 // helper private methods
@@ -243,4 +251,3 @@ double GRMadgwick::constrain(double x, double a, double b)
     else
         return x;
 }
-
