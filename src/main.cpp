@@ -43,6 +43,7 @@ int main (int argc, const char * argv[])
 
     GRUiSrv uisrv;
     uisrv.run();
+//       uisrv._runInThread();
     //    while(1);
 
     std::unordered_map<int, GRDevice>* devices;
@@ -53,15 +54,16 @@ int main (int argc, const char * argv[])
     devices = devManager.getAvalibleDevices();
     //    std::function<void(GRMessage*)> fnc = std::bind(&GRUiSrv::writeData, this)
     std::function<void(GRMessage*)> fnc = std::bind(&GRUiSrv::writeData, &uisrv, &msg); 
-        for(auto & dev : devManager._avalibleDevices)
-        {
-            std::cout<<"inMain"<<dev.second.name<<std::endl;
-            dev.second.subscribe(&msg, fnc);
 
-            //  dev.second._getData(&msg);
-            std::cout<<"main_for"<<std::endl;
+    for(auto & dev : devManager._avalibleDevices)
+    {
+        std::cout<<"inMain"<<dev.second.name<<std::endl;
+        dev.second.subscribe(&msg, fnc);
 
-        }
+        //  dev.second._getData(&msg);
+        std::cout<<"main_for"<<std::endl;
+
+    }
     while(!msg.empty())
     {
 

@@ -20,9 +20,7 @@
 #include <thread>
 #define DEFAULT_PATH "/tmp/grsock"
 
-enum DataType { NOTYPE, RAW_PALM, RAW_THUMB, RAW_INDEX, RAW_MIDDLE, RAW_RING, RAW_PINKY};
-enum Command { NOCMD, CMD1, STREAM_DATA };
-
+//enum class DataType { NOTYPE, RAW_PALM, RAW_THUMB, RAW_INDEX, RAW_MIDDLE, RAW_RING, RAW_PINKY};
 
 class GRUiSrv
 {
@@ -48,6 +46,7 @@ class GRUiSrv
         std::unique_ptr<libsocket::unix_stream_client> cli;
         std::vector<std::string> _splitBySpace(std::string* );
        std::unordered_map<std::string, std::unique_ptr<libsocket::unix_stream_client>> _clients;
+       std::unordered_map<std::string, uint8_t> _dataType;
 
 
 };

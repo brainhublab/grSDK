@@ -92,11 +92,11 @@ void GRDevice::_getData(GRMessage* msg, std::function<void(GRMessage* cmsg)> cb)
             std::cout<<cumulative.size()<<"-------------------------------"<<std::endl;
             if(cumulative.size() == 116)
             {
-               // msg->imuByteData = cumulative;
+                // msg->imuByteData = cumulative;
                 _deserialize(_splitMessage(&cumulative), msg);
                 msg->batteryLevel = this->_batteryLevel;
             } 
-            //msg->print();
+            msg->print();
             cb(msg);
             std::cout<<std::endl;
             msg->clear();
@@ -158,6 +158,14 @@ void GRDevice::_deserialize(std::vector<std::string> inp, GRMessage* msg)
             if((msg->pinky.isConnected = (bool)inp[i].front()))
             {
                 _extractImuDataFromString(&inp[i], &msg->pinky);
+                inp[i].erase(0, 1);
+                /* for(int j=1; j<18; j+=2)
+                   {
+                // if(j!=17)
+
+                inp[i].insert(j, ",");
+                }*/
+                std::cout<<inp[i]<<"INPSIZEE ------------------------"<<std::endl;
                 msg->pinky.imuByteData = inp[i];
 
             }
@@ -171,12 +179,15 @@ void GRDevice::_deserialize(std::vector<std::string> inp, GRMessage* msg)
             if((msg->ring.isConnected = (bool)inp[i].front()))
             {
                 _extractImuDataFromString(&inp[i], &msg->ring);
+                inp[i].erase(0, 1);
+                std::cout<<"BEFOREDASHES "<<inp[i].size()<<" ";
+                std::cout<<"DASHESSS "<<inp[i].size()<<inp[i]<<std::endl;
                 msg->ring.imuByteData = inp[i];
             }
             else
             {
                 msg->ring.isConnected = false;
-          
+
             }
         }
         else if(i == 2)
@@ -184,6 +195,7 @@ void GRDevice::_deserialize(std::vector<std::string> inp, GRMessage* msg)
             if((msg->middle.isConnected = (bool)inp[i].front()))
             {
                 _extractImuDataFromString(&inp[i], &msg->middle);
+                inp[i].erase(0, 1);
                 msg->middle.imuByteData = inp[i];
             }
             else
@@ -197,6 +209,7 @@ void GRDevice::_deserialize(std::vector<std::string> inp, GRMessage* msg)
             if((msg->index.isConnected = (bool)inp[i].front()))
             {
                 _extractImuDataFromString(&inp[i], &msg->index);
+                inp[i].erase(0, 1);
                 msg->index.imuByteData = inp[i];
             }
             else
@@ -210,6 +223,7 @@ void GRDevice::_deserialize(std::vector<std::string> inp, GRMessage* msg)
             if((msg->thumb.isConnected =(bool)inp[i].front()))
             {
                 _extractImuDataFromString(&inp[i], &msg->thumb);
+                inp[i].erase(0, 1);
                 msg->thumb.imuByteData = inp[i];
             }
             else
@@ -223,6 +237,7 @@ void GRDevice::_deserialize(std::vector<std::string> inp, GRMessage* msg)
             if((msg->palm.isConnected = (bool)inp[i].front()))
             {
                 _extractImuDataFromString(&inp[i], &msg->palm);
+                inp[i].erase(0, 1);
                 msg->palm.imuByteData = inp[i];
             }
             else

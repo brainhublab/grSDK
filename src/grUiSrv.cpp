@@ -16,6 +16,14 @@ GRUiSrv::GRUiSrv()
     this->_clients["thumb"] = nullptr;
     this->_clients["palm"] = nullptr;
     this->_clients["rotations"] = nullptr;
+
+    this->_dataType["pinky"] = 0;// DataType::PINKY;
+    this->_dataType["ring"] = 1;//DataType::RING;
+    this->_dataType["middle"] = 2;//DataType::MIDDLE;
+    this->_dataType["index"] = 3;//DataType::INDEX;
+    this->_dataType["thumb"] = 4;//DataType::THUMB;
+    this->_dataType["palm"] = 5;//DataType::PALM;
+
 }
 
 GRUiSrv::GRUiSrv(const std::string sockPath)
@@ -26,7 +34,13 @@ GRUiSrv::GRUiSrv(const std::string sockPath)
 
 GRUiSrv::~GRUiSrv()
 {
-
+    for(auto& client: _clients)
+    {
+        if(client.second != nullptr) 
+        {
+            client.second->destroy();
+        }
+    }
 }
 
 bool GRUiSrv::run()
@@ -49,15 +63,12 @@ bool GRUiSrv::_runInThread()
         // cli = srv.accept2();
         while(srv.getfd() > 0)
         {
-            //            std::string asd;
-            //            asd.resize(128);
             try{
                 std::unique_ptr<libsocket::unix_stream_client> tmpCli;
                 tmpCli = srv.accept2();
                 *tmpCli>>res;
-                std::cout<<res<<std::endl;
+                //std::cout<<res<<std::endl;
                 std::vector<std::string> cmd= _splitBySpace(&res);
-              //  std::cout<<cmd[1]<<" "<<cmd[0]<<std::endl;
                 if(cmd.size() == 2)
                 {
                     if(!_clients.count(cmd[1]))
@@ -70,26 +81,33 @@ bool GRUiSrv::_runInThread()
                     }
                     else
                     {
-                        res.resize(5);
-                        res = "OK";
+                        res.resize(6);
+                       res = "OK";
+                        std::cout<<"ON NEW CLIENT"<<cmd[1]<<std::endl;
                         *tmpCli<<res;
+               //         _clients[cmd[1]] = nullptr;
                         _clients[cmd[1]] = std::move(tmpCli);
                     }
                 }
-                // if()
                 res.resize(128);
-
-            }catch (const libsocket::socket_exception& inexc)
+            }
+            catch (const libsocket::socket_exception& inexc)
             {
                 std::cerr<<inexc.mesg;
                 return false;
             }
+
+            std::cout<<"iteration --------"<<std::endl;
         }
 
         std::cout<<"afterWhile"<<std::endl;
-    }catch (const libsocket::socket_exception& exc)
+         if(srv.getfd() > 0)
+           {
+           srv.destroy();
+           }
+    }
+    catch (const libsocket::socket_exception& exc)
     {
-        std::cerr <<exc.mesg;
         return false;
     }
     return true;
@@ -97,24 +115,22 @@ bool GRUiSrv::_runInThread()
     void GRUiSrv::writeData(GRMessage* msg)
     {
         std::cout<<"IN CALLBACK UI"<<std::endl;
-        // if(key=="palm")
-        // {
-        std::string asd = "palm 123,1234,12356 432,53424,3434 8484,233,3435";
-        // *_cli<<asd;
         for(auto& client : this->_clients)
         {
-            if(client.second != nullptr)
+            if(client.second != nullptr && client.second->getfd()>0)
             {
-                *client.second<<client.first + " " + msg->imus[client.first]->getAsStr();
+                try{
+                    int asd = (_dataType[client.first]);
+                    std::string asdasd  = std::to_string(asd);//= reinterpret_cast<std::string>(asd);
+                     *client.second<<std::to_string(_dataType[client.first]) + 
+                         msg->imus[client.first]->imuByteData;//getAsStr();
+
+                }catch(const libsocket::socket_exception& exc)
+                {
+                    std::cerr<<exc.mesg;
+                }
             }
         }
-        /*
-        if(this->_clients["palm"] != nullptr)
-        {
-            *this->_clients["palm"]<<"palm " + msg->imus["palm"]->getAsStr();//imuByteData;
-        }
-        */
-        //  }
     }
     std::vector<std::string> GRUiSrv::_splitBySpace(std::string* inp)
     {
