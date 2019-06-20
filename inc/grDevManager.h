@@ -87,7 +87,7 @@ class GRDevManager
          */
         //GRConnection* getActiveDeviceById(int);
 
-        //    private:
+    private:
         /**
          * @brief map of available devices
          */
@@ -109,7 +109,6 @@ class GRDevManager
 
         std::vector<std::string> _requestDevAttr(std::string* );
 
-        static  void funca(std::string );
         std::string _reqAttrStr;
 
 };

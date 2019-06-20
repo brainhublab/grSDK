@@ -34,41 +34,33 @@ std::unordered_map<int, GRDevice>* GRDevManager::getAvalibleDevices()
             sk<<_reqAttrStr;
             sk>>ans;
             attr = _requestDevAttr(&ans);
-            if((attr[0]!="GR[L]") || (attr[0] != "GR[R]"))
+            if((!attr[0].compare(0, 4, "GR[L]")) || (!attr[0].compare(0, 4, "GR[R]")))
             {
                 std::cout<<attr[0];
                 std::cerr<<"ERROR: Name of the device is wrong"<<std::endl;
                 //TODO return something 
             }
+            //std::cout<<attr[1]<<"verification key"<<std::endl;
             int devId=0;
             if((devId=_deviceIsIn(client.second))!= -1)
             {
-                std::cout<<attr[0]<<std::endl;
-               // GRDevice newDev(attr[0], client.second, client.first, devId);
+                std::cout<<client.first<<"CLIENTFIRST"<<client.second<<"CLIENTSECOND"<<std::endl;
                 this->_avalibleDevices[devId]= std::move(GRDevice(attr[0], client.second, client.first, devId));
 
             }
             sk.destroy();
 
-
-        }catch (const libsocket::socket_exception& exc)
+        }
+        catch (const libsocket::socket_exception& exc)
         {
             std::cerr<<exc.mesg;
         }
     }
-    std::cout<<"DONEDONE"<<std::endl;
-
-    std::string asd = _exec("create_ap --list-running");
-    std::cout<<asd;
+    //std::string asd = _exec("create_ap --list-running");
+    //while(1);
     return &_avalibleDevices;
 }
 
-/* Set GR device from avalible to active and make it ready for connection */
-/*GRConnection* GRDevManager::setActiveDevice(int devId)
-  {
-  return &this->_activeDevices[devId];
-  }
-  */
 //TODO needs to be implemented later
 /* Return device by ID */
 /*GRConnection* GRDevManager::getActiveDeviceById(int id)
@@ -80,7 +72,7 @@ int GRDevManager::_deviceIsIn(std::string hwAddr)
 {
     for(auto const& dev : _avalibleDevices )
     {
-        if(dev.second.hwAddr == hwAddr)
+        if(dev.second.getHwAddr() == hwAddr)
         {
             return -1;
         }
@@ -126,7 +118,6 @@ std::string GRDevManager::_exec(const char* cmd)
 
 std::string GRDevManager::_getApIface()
 {
-
     std::string apIface;
     std::string cmdOut = _exec("create_ap --list-running");
     const std::regex re("\\(gr-ap[^]+\\)"); //TODO make regex with iface recognition \(id[^]+\)
@@ -142,14 +133,15 @@ std::string GRDevManager::_getApIface()
                 apIface.end() );
     }
     else
+    {
         apIface = "-1";
+    }
     return apIface;
 
 }
 
 std::unordered_map<std::string, std::string> GRDevManager::_getApClients()
 {
-
     std::unordered_map<std::string, std::string> clientsOut;
     std::string clients = this->_exec(("create_ap --list-clients " + this->_getApIface()).c_str());
     std::regex re("\\s+");
@@ -163,6 +155,7 @@ std::unordered_map<std::string, std::string> GRDevManager::_getApClients()
         clientsOut[*iter] = *iter++;
         std::advance(iter, 2);
     }
+   
     return clientsOut;
 }
 

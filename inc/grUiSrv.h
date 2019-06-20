@@ -18,25 +18,33 @@
 #include <array>
 #include <unordered_map>
 #include <thread>
+
+#include "Eigen/Dense"
+#include "Eigen/Geometry"
+
+#include "grAlgorithm.h"
+#include "grDataStructs.h"
 #define DEFAULT_PATH "/tmp/grsock"
 
-//enum class DataType { NOTYPE, RAW_PALM, RAW_THUMB, RAW_INDEX, RAW_MIDDLE, RAW_RING, RAW_PINKY};
-
-class GRUiSrv
+enum class DataType {BYTE, DIGIT, STRING};
+//enum class 
+class GRUiSrv: public GRAlgorithm
 {
     public:
         GRUiSrv();
         GRUiSrv(const std::string);
         ~GRUiSrv();
 
+
         bool SetUp();
         bool startListening();
         bool pollConnections();
         bool run();
         bool _runInThread();
-       
+
+        void writeByteData(GRMessage*);
         void writeData(GRMessage*);
-//    private:
+        //    private:
         char _ans[128];
         int _serverFd;
         int _clientFd;
@@ -45,8 +53,17 @@ class GRUiSrv
         std::string _defaultSockPath;
         std::unique_ptr<libsocket::unix_stream_client> cli;
         std::vector<std::string> _splitBySpace(std::string* );
-       std::unordered_map<std::string, std::unique_ptr<libsocket::unix_stream_client>> _clients;
-       std::unordered_map<std::string, uint8_t> _dataType;
+        std::unordered_map<std::string, std::unique_ptr<libsocket::unix_stream_client>> _clients;
+        std::unordered_map<std::string, uint8_t> _dataType;
+        GRAlgMessage _algMsg;
+
+        std::string eulerRotationsToStr(std::unordered_map<std::string, std::vector<double>>);
+        std::string quaternionToStr(std::unordered_map<std::string, Eigen::Quaterniond>);
+        std::string vectorDoubleToStr(std::vector<double>);
+
+        std::unordered_map<std::string, 
+            std::unordered_map<std::string, 
+            std::unique_ptr<libsocket::unix_stream_client>>> _avalibeClients;
 
 
 };

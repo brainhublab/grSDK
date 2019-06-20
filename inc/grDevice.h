@@ -20,7 +20,7 @@
 #include <unistd.h>  /* UNIX standard function definitions */
 #include <fcntl.h>   /* File control definitions */
 #include <errno.h>   /* Error number definitions */
-
+#include <queue>
 #include "inetclientstream.hpp"
 #include "exception.hpp"
 
@@ -35,12 +35,11 @@ class GRDevice
         GRDevice();
 
         GRDevice(std::string, std::string, std::string, int);
-/*
-        GRDevice(GRDevice&&);
+/*        GRDevice(const GRDevice&);
+        GRDevice& operator=(const GRDevice&);
 
-        GRDevice& operator=(GRDevice&&);
+        ~GRDevice();
 */
-
 
         /**
          * @brief constructor with param
@@ -55,21 +54,16 @@ class GRDevice
          * @return true if got data
          */
         void subscribe(GRMessage*,std::function<void(GRMessage*)>);
+        int getBatteryLevel();        
+        std::string getHwAddr() const;
+        std::string getName() const;
+        void setHwAddr(std::string);
+        void setName(std::string);
+
+ //  private:
         void _getData(GRMessage*, std::function<void(GRMessage*)>);
-
         /**
-         * @brief gets device by id
-         *   getter
-         * @param id is device id
-         * @return pointer to GRDevice object by device id
-         */
-
-        /**
-         * @brief Buffer needed for reading from socket
-         */
-        char _buf[256];
-
-        /**
+          void _getData(GRMessage*, std::function<void(GRMessage*)>);
          * @brief timestamp local, not from device
          */
         double _timeStamp;
@@ -103,23 +97,27 @@ class GRDevice
         /**
          * @bref socket information assignet with device
          **/
-        std::string name;
-        std::string hwAddr;
+        std::string _name;
+        std::string _hwAddr;
         std::string _host;
+        std::string _defaultPort;
         int id;
         uint16_t _batteryLevel;
-        
+
         std::vector<std::string> _splitBySlash(std::string*);
         std::vector<std::string> _splitMessage(std::string*);
         void _deserialize(std::vector<std::string>, GRMessage*);
         void _extractImuDataFromString(std::string*, GRImu*);
-        int16_t convertBytes(char, char);
-        //        libsocket::inet_stream _deviceSocket;
-        //friend GRDevManager::getAvalibleDevices();
-    private:
+        int16_t _convertBytes(char, char);
 
-       //GRDevice(const GRDevice &);
-       // GRDevice& operator=(const GRDevice &);
+        std::unordered_map<std::string, std::string> _deviceCmd;
+        bool _sendCmd(std::string);
+        bool pendingCmd = false;
+        std::queue<std::string> _cmdQueue;
+        //friend GRDevManager::getAvalibleDevices();
+
+        //GRDevice(const GRDevice &);
+        // GRDevice& operator=(const GRDevice &);
 
 
 };

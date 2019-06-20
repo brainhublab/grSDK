@@ -293,6 +293,21 @@ struct GRAlgMessage
 
         return true;
     }
+/*
+    std::string getAsStr()
+    {
+        std::stringstream res;
+        std::copy(acc.begin(), acc.end(), 
+                std::ostream_iterator<int16_t>(res, ","));
+        res<<" ";
+        std::copy(gyro.begin(), gyro.end(),
+                std::ostream_iterator<int16_t>(res, ","));
+        res<<" ";
+        std::copy(mag.begin(), mag.end(),
+                std::ostream_iterator<int16_t>(res, ","));
+        return res.str();
+    }
+*/
 };
 
 struct GRDevAttr

@@ -4,23 +4,59 @@
 
 GRDevice::GRDevice()
 {
+    this->_defaultPort.resize(2);
+    this->_defaultPort = "23";
 }
 GRDevice::GRDevice(std::string n, std::string hw, std::string h, int id)
 {
-    this->name = n;
-    this->hwAddr = hw;
+    this->_defaultPort.resize(2);
+    this->_defaultPort = "23";
+    this->_name = n;
+    this->_hwAddr = hw;
     this->_host = h;
-    /*    try{
-          std::cout<<"IN CONSTRUCTOR"<<std::endl;
-          _deviceSocket.connect(h, "23", LIBSOCKET_IPv4);
 
+    this->_deviceCmd["callibrate"] = "calib\r\n";
+    this->_deviceCmd["suspend"] = "susp\r\n";
 
-          }catch(const libsocket::socket_exception& exc)
-          {
-          std::cerr<<exc.mesg<<std::endl;
-          }
-          */
 }
+/*GRDevice::GRDevice(const GRDevice& cDevice)
+  {
+
+  }
+  GRDevice& GRDevice::operator=(const GRDevice& neDev)
+  {
+
+  }
+
+  GRDevice::~GRDevice()
+  {
+
+  }
+  */
+int GRDevice::getBatteryLevel()
+{
+    return this->_batteryLevel;
+}
+std::string GRDevice::getHwAddr() const
+{
+    return this->_hwAddr;
+}
+
+std::string GRDevice::getName() const
+{
+    return this->_name;
+}
+
+void GRDevice::setHwAddr(std::string newHwAddr)
+{
+    this->_hwAddr = newHwAddr;
+}
+
+void GRDevice::setName(std::string newName)
+{
+    this->_name = newName;
+}
+
 /*
    GRDevice::GRDevice(GRDevice &&dev): _deviceSocket(std::move(dev._deviceSocket))
    {
@@ -59,18 +95,16 @@ void GRDevice::_getData(GRMessage* msg, std::function<void(GRMessage* cmsg)> cb)
     raw.resize(1);
 
     // raw.resize(120);
-    libsocket::inet_stream _deviceSocket("192.168.12.196", "23", LIBSOCKET_IPv4);
-    _deviceSocket<<"gd\r\n";
-    int i=0;
-    int j=0;
-    char* c;
-
+    libsocket::inet_stream deviceSocket(this->_host, _defaultPort, LIBSOCKET_IPv4);
+    //std::cout<<this->_host<<_hwAddr<<"---"<<_defaultPort<<std::endl;
+    //  this->deviceSocket.connect(this->_host.c_str(), _defaultPort.c_str(), LIBSOCKET_IPv4);
+    deviceSocket<<"gd\r\n";
     int count = 0;
     while(raw.size()>0)
     {
 
         //raw.clear();
-        _deviceSocket>>raw;
+        deviceSocket>>raw;
         if(buf.size()== 2)
         {
             buf.at(0) = buf.at(1);
@@ -89,24 +123,42 @@ void GRDevice::_getData(GRMessage* msg, std::function<void(GRMessage* cmsg)> cb)
         else
         {
             //        std::cout<<cumulative<<std::endl;
-            std::cout<<cumulative.size()<<"-------------------------------"<<std::endl;
+            //        std::cout<<cumulative.size()<<"-------------------------------"<<std::endl;
             if(cumulative.size() == 116)
             {
                 // msg->imuByteData = cumulative;
-                _deserialize(_splitMessage(&cumulative), msg);
+                this->_deserialize(_splitMessage(&cumulative), msg);
                 msg->batteryLevel = this->_batteryLevel;
             } 
-            msg->print();
+    //        msg->print();
             cb(msg);
-            std::cout<<std::endl;
+            //std::cout<<std::endl;
             msg->clear();
             cumulative.clear();
+        }
+        if(pendingCmd)
+        {
+            for(int i=0; i<this->_cmdQueue.size(); i++)
+            {
+
+                deviceSocket<<this->_cmdQueue.front();
+                this->_cmdQueue.pop();
+            }
+            pendingCmd = false;
         } 
     }
-    _deviceSocket<<"sd";
-    _deviceSocket.shutdown();
+    deviceSocket<<"sd";
+    deviceSocket.shutdown();
 
 }
+
+bool GRDevice::_sendCmd(std::string cmd)
+{
+
+    this->_cmdQueue.push(this->_deviceCmd[cmd]);//"calib\r\n";//_deviceCmd[cmd];
+    pendingCmd = true;
+}
+
 std::vector<std::string> GRDevice::_splitBySlash(std::string* inp)
 {
     //TODO need to fix vector size its put the terminating zero as an element of vector
@@ -125,14 +177,12 @@ std::vector<std::string> GRDevice::_splitMessage(std::string* inp)
     int e=19;
     inp->pop_back();
     this->_batteryLevel = static_cast<uint16_t>(inp->at(114));
-    std::cout<<_batteryLevel<<" battery "<<std::endl;
+//    std::cout<<_batteryLevel<<" battery "<<std::endl;
     inp->pop_back();
-    std::cout<<"----------------------------------------------"<<inp->size()<<std::endl;
+    //  std::cout<<"----------------------------------------------"<<inp->size()<<std::endl;
     for(int i=0; i<6; i++)
     {
-        //    std::cout<<"IN SPLIT"<<inp->substr(s, 19);
         result.push_back(inp->substr(s, 19));
-        //  s = e+1;
         s+=19;
     }
     return result;
@@ -148,7 +198,7 @@ void GRDevice::_deserialize(std::vector<std::string> inp, GRMessage* msg)
        }
        */  
     //std::cout<<"INPSIZE   "<<inp.size();
-    std::cout<<"-------------------EOF VEC"<<std::endl;
+    //    std::cout<<"-------------------EOF VEC"<<std::endl;
 
 
     for(int i=0; i< inp.size(); i++)
@@ -157,7 +207,7 @@ void GRDevice::_deserialize(std::vector<std::string> inp, GRMessage* msg)
         {
             if((msg->pinky.isConnected = (bool)inp[i].front()))
             {
-                _extractImuDataFromString(&inp[i], &msg->pinky);
+                this->_extractImuDataFromString(&inp[i], &msg->pinky);
                 inp[i].erase(0, 1);
                 /* for(int j=1; j<18; j+=2)
                    {
@@ -165,7 +215,6 @@ void GRDevice::_deserialize(std::vector<std::string> inp, GRMessage* msg)
 
                 inp[i].insert(j, ",");
                 }*/
-                std::cout<<inp[i]<<"INPSIZEE ------------------------"<<std::endl;
                 msg->pinky.imuByteData = inp[i];
 
             }
@@ -178,10 +227,8 @@ void GRDevice::_deserialize(std::vector<std::string> inp, GRMessage* msg)
         {
             if((msg->ring.isConnected = (bool)inp[i].front()))
             {
-                _extractImuDataFromString(&inp[i], &msg->ring);
+                this->_extractImuDataFromString(&inp[i], &msg->ring);
                 inp[i].erase(0, 1);
-                std::cout<<"BEFOREDASHES "<<inp[i].size()<<" ";
-                std::cout<<"DASHESSS "<<inp[i].size()<<inp[i]<<std::endl;
                 msg->ring.imuByteData = inp[i];
             }
             else
@@ -194,7 +241,7 @@ void GRDevice::_deserialize(std::vector<std::string> inp, GRMessage* msg)
         {
             if((msg->middle.isConnected = (bool)inp[i].front()))
             {
-                _extractImuDataFromString(&inp[i], &msg->middle);
+                this->_extractImuDataFromString(&inp[i], &msg->middle);
                 inp[i].erase(0, 1);
                 msg->middle.imuByteData = inp[i];
             }
@@ -208,7 +255,7 @@ void GRDevice::_deserialize(std::vector<std::string> inp, GRMessage* msg)
         {
             if((msg->index.isConnected = (bool)inp[i].front()))
             {
-                _extractImuDataFromString(&inp[i], &msg->index);
+                this->_extractImuDataFromString(&inp[i], &msg->index);
                 inp[i].erase(0, 1);
                 msg->index.imuByteData = inp[i];
             }
@@ -222,7 +269,7 @@ void GRDevice::_deserialize(std::vector<std::string> inp, GRMessage* msg)
         {
             if((msg->thumb.isConnected =(bool)inp[i].front()))
             {
-                _extractImuDataFromString(&inp[i], &msg->thumb);
+                this->_extractImuDataFromString(&inp[i], &msg->thumb);
                 inp[i].erase(0, 1);
                 msg->thumb.imuByteData = inp[i];
             }
@@ -236,7 +283,7 @@ void GRDevice::_deserialize(std::vector<std::string> inp, GRMessage* msg)
         {
             if((msg->palm.isConnected = (bool)inp[i].front()))
             {
-                _extractImuDataFromString(&inp[i], &msg->palm);
+                this->_extractImuDataFromString(&inp[i], &msg->palm);
                 inp[i].erase(0, 1);
                 msg->palm.imuByteData = inp[i];
             }
@@ -262,17 +309,17 @@ void GRDevice::_extractImuDataFromString(std::string* imuData, GRImu* imu )
         }
         if(i<6)
         {
-            imu->acc[j] = convertBytes(imuData->at(i), imuData->at(i+1));
+            imu->acc[j] = this->_convertBytes(imuData->at(i), imuData->at(i+1));
             j++;
             //   std::cout<<"inExtraction:  "<<*imuData<<convertBytes(imuData->at(i), imuData->at(i+1))<<std::endl;
         }else if(i<12 && i>6)
         {
-            imu->gyro[j] = convertBytes(imuData->at(i), imuData->at(i+1));
+            imu->gyro[j] = this->_convertBytes(imuData->at(i), imuData->at(i+1));
             j++;
         }
         else if(i>12 && i<19)//TODO have something on the end 
         {
-            imu->mag[j] = convertBytes(imuData->at(i), imuData->at(i+1));
+            imu->mag[j] = this->_convertBytes(imuData->at(i), imuData->at(i+1));
             j++;
         }
         else 
@@ -280,10 +327,9 @@ void GRDevice::_extractImuDataFromString(std::string* imuData, GRImu* imu )
             std::cout<<(int)imuData->at(i)<<"<<<<<<---------------"<<std::endl;
         }
     }
-    // std::cout<<"bytes  "<<convertBytes(imuData->at(1), imuData->at(2))<<std::endl;
 }
 
-int16_t GRDevice::convertBytes(char hb, char lb)
+int16_t GRDevice::_convertBytes(char hb, char lb)
 {
     return  (int16_t)((hb & 0xFF) << 8 | (lb & 0xFF)  );
 }
@@ -291,7 +337,7 @@ int16_t GRDevice::convertBytes(char hb, char lb)
 */
 double GRDevice::_getTimeStamp()
 {
-    return _timeStamp;
+    return this->_timeStamp;
 }
 
 
@@ -300,7 +346,5 @@ double GRDevice::_getTimeStamp()
 */
 bool GRDevice::_checkConnectedImus(std::string rawMessage, GRMessage* msg)
 {
-
 }
-
 

@@ -9,13 +9,21 @@ GRUiSrv::GRUiSrv()
     this->_ret = 0;
     this->_defaultSockPath = DEFAULT_PATH;
 
-    this->_clients["pinky"] = nullptr;
-    this->_clients["ring"] = nullptr;
-    this->_clients["middle"]= nullptr;
-    this->_clients["index"] = nullptr;
-    this->_clients["thumb"] = nullptr;
-    this->_clients["palm"] = nullptr;
-    this->_clients["rotations"] = nullptr;
+    this->_clients["uipinky"] = nullptr;
+    this->_clients["uiring"] = nullptr;
+    this->_clients["uimiddle"]= nullptr;
+    this->_clients["uiindex"] = nullptr;
+    this->_clients["uithumb"] = nullptr;
+    this->_clients["uipalm"] = nullptr;
+    this->_clients["uirotations"] = nullptr;
+
+    this->_clients["iopinky"] = nullptr;
+    this->_clients["ioring"] = nullptr;
+    this->_clients["iomiddle"] = nullptr;
+    this->_clients["ioindex"] = nullptr;
+    this->_clients["iodatathumb"] = nullptr;
+    this->_clients["iodatapalm"] = nullptr;
+    this->_clients["iorotations"] = nullptr;
 
     this->_dataType["pinky"] = 0;// DataType::PINKY;
     this->_dataType["ring"] = 1;//DataType::RING;
@@ -24,6 +32,7 @@ GRUiSrv::GRUiSrv()
     this->_dataType["thumb"] = 4;//DataType::THUMB;
     this->_dataType["palm"] = 5;//DataType::PALM;
 
+    GRAlgorithm::setupMadgwick(140, 140, 140, 140, 140, 220);
 }
 
 GRUiSrv::GRUiSrv(const std::string sockPath)
@@ -82,10 +91,10 @@ bool GRUiSrv::_runInThread()
                     else
                     {
                         res.resize(6);
-                       res = "OK";
+                        res = "OK";
                         std::cout<<"ON NEW CLIENT"<<cmd[1]<<std::endl;
                         *tmpCli<<res;
-               //         _clients[cmd[1]] = nullptr;
+                        //         _clients[cmd[1]] = nullptr;
                         _clients[cmd[1]] = std::move(tmpCli);
                     }
                 }
@@ -101,10 +110,10 @@ bool GRUiSrv::_runInThread()
         }
 
         std::cout<<"afterWhile"<<std::endl;
-         if(srv.getfd() > 0)
-           {
-           srv.destroy();
-           }
+        if(srv.getfd() > 0)
+        {
+            srv.destroy();
+        }
     }
     catch (const libsocket::socket_exception& exc)
     {
@@ -114,21 +123,68 @@ bool GRUiSrv::_runInThread()
     }
     void GRUiSrv::writeData(GRMessage* msg)
     {
-        std::cout<<"IN CALLBACK UI"<<std::endl;
+        //        std::cout<<"IN CALLBACK UI"<<std::endl;
+        GRAlgorithm::madgwickUpdate(msg, &this->_algMsg);
         for(auto& client : this->_clients)
         {
             if(client.second != nullptr && client.second->getfd()>0)
             {
-                try{
-                    int asd = (_dataType[client.first]);
-                    std::string asdasd  = std::to_string(asd);//= reinterpret_cast<std::string>(asd);
-                     *client.second<<std::to_string(_dataType[client.first]) + 
-                         msg->imus[client.first]->imuByteData;//getAsStr();
-
-                }catch(const libsocket::socket_exception& exc)
+                if(client.first.compare(0, 2, "ui")==0)
                 {
-                    std::cerr<<exc.mesg;
+                    if(client.first != "uirotations")
+                    {
+                        try
+                        {
+                            std::cout<<this->eulerRotationsToStr(GRAlgorithm::getEulerRotations(this->_algMsg));
+                            //std::string key = client.first.substr(2, client.first.size());
+                            //std::cout<<std::to_string(this->_dataType[key])<<"=============="<<std::endl;
+                            *client.second<<msg->imus[client.first
+                                .substr(2, client.first.size())]->imuByteData;//getAsStr();
+                        }
+                        catch(const libsocket::socket_exception& exc)
+                        {
+                            std::cerr<<exc.mesg;
+                        }
+                    }
+                    else 
+                    {   
+                        try
+                        {
+                        //    *client.second<<this->//_algiMsg
+
+                        *client.second<<this->eulerRotationsToStr(GRAlgorithm::getEulerRotations(this->_algMsg));
+                        }
+                        catch(const libsocket::socket_exception& exc)
+                        {
+                            cerr<<exc.mesg;
+                        }
+
+
+                    }
                 }
+                else if(client.first.compare(0, 2, "io")==0)
+                {
+                    if(client.first != "iorotations")
+                    {
+                        try
+                        {
+                            *client.second<<msg->imus[client.first.substr(2, client.first.size())]
+                                ->getAsStr();
+                        }
+                        catch(const libsocket::socket_exception& exc)
+                        {
+                            std::cerr<<exc.mesg;
+                        }
+                    }
+                    else
+                    {
+
+                    }
+                }
+                /*  else
+                    {
+
+                    }*/   
             }
         }
     }
@@ -142,5 +198,36 @@ bool GRUiSrv::_runInThread()
                     reg,
                     -1),{}
         };
+    }
+    std::string GRUiSrv::eulerRotationsToStr(unordered_map<std::string, std::vector<double>> inpRotations)
+    {
+        std::vector<std::string> tmpV;
+        tmpV.resize(6);
+        std::string out;
+        for(auto& imuAngles: inpRotations)
+        { 
+            tmpV.at((int)this->_dataType[imuAngles.first]) = vectorDoubleToStr(imuAngles.second);
+        }
+        for(auto& s: tmpV)
+        {
+            out += s;
+        }
+        return out;
+    }
+    std::string GRUiSrv::quaternionToStr(std::unordered_map<std::string, Eigen::Quaterniond> inRot)
+    {
+        std::vector<std::string> tmpV;
+        tmpV.resize(6);
+        std::string out;
+//TODO funalize and make it unified;
+
+    }
+    std::string GRUiSrv::vectorDoubleToStr(std::vector<double> v)
+    {
+        std::stringstream res;
+        std::copy(v.begin(), v.end(), 
+                std::ostream_iterator<int16_t>(res, ","));
+        return res.str();
+
     }
 

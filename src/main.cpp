@@ -50,21 +50,22 @@ int main (int argc, const char * argv[])
     int devId=-1;
     int i = 0;
 
-    devManager._getApClients();
+   // devManager._getApClients();
     devices = devManager.getAvalibleDevices();
     //    std::function<void(GRMessage*)> fnc = std::bind(&GRUiSrv::writeData, this)
     std::function<void(GRMessage*)> fnc = std::bind(&GRUiSrv::writeData, &uisrv, &msg); 
 
-    for(auto & dev : devManager._avalibleDevices)
+    for(auto& grdev : *devices)// devManager._avalibleDevices)
     {
-        std::cout<<"inMain"<<dev.second.name<<std::endl;
-        dev.second.subscribe(&msg, fnc);
+        std::cout<<"inMain"<<grdev.second.getName()<<std::endl;
+//        grdev.second.subscribe(&msg, fnc);
 
-        //  dev.second._getData(&msg);
+          grdev.second._getData(&msg, fnc);
         std::cout<<"main_for"<<std::endl;
-
+//        grdev.second._sendCmd("callibrate");
     }
-    while(!msg.empty())
+
+    while(1)
     {
 
     } 
