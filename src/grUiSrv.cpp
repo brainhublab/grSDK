@@ -9,28 +9,42 @@ GRUiSrv::GRUiSrv()
     this->_ret = 0;
     this->_defaultSockPath = DEFAULT_PATH;
 
-    this->_clients["uipinky"] = nullptr;
-    this->_clients["uiring"] = nullptr;
-    this->_clients["uimiddle"]= nullptr;
-    this->_clients["uiindex"] = nullptr;
-    this->_clients["uithumb"] = nullptr;
-    this->_clients["uipalm"] = nullptr;
-    this->_clients["uirotations"] = nullptr;
+    /*    this->_clients["uipinky"] = nullptr;
+          this->_clients["uiring"] = nullptr;
+          this->_clients["uimiddle"]= nullptr;
+          this->_clients["uiindex"] = nullptr;
+          this->_clients["uithumb"] = nullptr;
+          this->_clients["uipalm"] = nullptr;
+          this->_clients["uirotations"] = nullptr;
 
-    this->_clients["iopinky"] = nullptr;
-    this->_clients["ioring"] = nullptr;
-    this->_clients["iomiddle"] = nullptr;
-    this->_clients["ioindex"] = nullptr;
-    this->_clients["iodatathumb"] = nullptr;
-    this->_clients["iodatapalm"] = nullptr;
-    this->_clients["iorotations"] = nullptr;
+          this->_clients["iopinky"] = nullptr;
+          this->_clients["ioring"] = nullptr;
+          this->_clients["iomiddle"] = nullptr;
+          this->_clients["ioindex"] = nullptr;
+          this->_clients["iodatathumb"] = nullptr;
+          this->_clients["iodatapalm"] = nullptr;
+          this->_clients["iorotations"] = nullptr;
 
-    this->_dataType["pinky"] = 0;// DataType::PINKY;
-    this->_dataType["ring"] = 1;//DataType::RING;
-    this->_dataType["middle"] = 2;//DataType::MIDDLE;
-    this->_dataType["index"] = 3;//DataType::INDEX;
-    this->_dataType["thumb"] = 4;//DataType::THUMB;
-    this->_dataType["palm"] = 5;//DataType::PALM;
+          this->_dataType["pinky"] = 0;// DataType::PINKY;
+          this->_dataType["ring"] = 1;//DataType::RING;
+          this->_dataType["middle"] = 2;//DataType::MIDDLE;
+          this->_dataType["index"] = 3;//DataType::INDEX;
+          this->_dataType["thumb"] = 4;//DataType::THUMB;
+          this->_dataType["palm"] = 5;//DataType::PALM;
+
+          this->_dataTypeParam.push_back("bytearray");
+          this->_dataTypeParam.push_back("string");
+          this->_dataTypeParam.push_back("digit");
+          */
+    this->_dataType[DataType::BYTE] = "byte";
+    this->_dataType[DataType::DIGIT] = "digit";
+    this->_dataType[DataType::STRING] = "string";
+
+    this->_dataCmd[DataCmd::STREAM_DATA] = "STREAM_DATA";
+    this->_dataCmd[DataCmd::STREAM_ROTATIONS] = "STREAM_ROTATIONS";
+    this->_dataCmd[DataCmd::START_STREAM] = "START_STREAM";
+    this->_dataCmd[DataCmd::PAUSE_STREAM] = "PAUSE_STREAM";
+    this->_dataCmd[DataCmd::STOP_STREAM] = "STOP_STREAM";
 
     GRAlgorithm::setupMadgwick(140, 140, 140, 140, 140, 220);
 }
@@ -73,30 +87,48 @@ bool GRUiSrv::_runInThread()
         while(srv.getfd() > 0)
         {
             try{
-                std::unique_ptr<libsocket::unix_stream_client> tmpCli;
-                tmpCli = srv.accept2();
-                *tmpCli>>res;
+               // std::unique_ptr<libsocket::unix_stream_client> tmpStreamCli;
+               // tmpStreamCli = srv.accept2();
+               // *tmpStreamCli>>res;
+                dataClient tmpDataCli;
+                tmpDataCli.streamClient = srv.accept2(); 
+                *tmpDataCli.streamClient>>res;
+
                 //std::cout<<res<<std::endl;
-                std::vector<std::string> cmd= _splitBySpace(&res);
-                if(cmd.size() == 2)
+                std::vector<std::string> params = _splitBySpace(&res);
+                if(params.size() == 3)
                 {
-                    if(!_clients.count(cmd[1]))
+                    //TODO need to veriify all params
+                    if(!_clients.count(params[1]))
                     {
 
                         res.resize(5);
                         res = "KO";
-                        *tmpCli<<res;
-                        std::cout<<"there is no sensor with name: "<<cmd[1]<<std::endl;
+                        *tmpDataCli.streamClient<<res;
+                        std::cout<<"there is no sensor with name: "<<params[1]<<std::endl;
                     }
                     else
                     {
+
+                        tmpDataCli.dataCmd = params[0];
+                        tmpDataCli.imuId = params[1];
+                        tmpDataCli.dataType = params[2];
+                        //tmpDataCli.
                         res.resize(6);
                         res = "OK";
-                        std::cout<<"ON NEW CLIENT"<<cmd[1]<<std::endl;
-                        *tmpCli<<res;
+                        std::cout<<"ON NEW CLIENT"<<params[1]<<std::endl;
+                        *tmpDataCli.streamClient<<res;
                         //         _clients[cmd[1]] = nullptr;
-                        _clients[cmd[1]] = std::move(tmpCli);
+                        
+                       // _clients[params[1]] = std::move(tmpCli);
+                        this->_dataClients.push_back(std::move(tmpDataCli));
                     }
+                }
+                else
+                {
+                    std::cout<<"ERROR: To much data parameters recieved :"<<
+                        res<< 
+                        "need to be: STREAM_DATA [SENSOR_NAME] [DATA_FORMAT]"<<std::endl;
                 }
                 res.resize(128);
             }
@@ -150,9 +182,9 @@ bool GRUiSrv::_runInThread()
                     {   
                         try
                         {
-                        //    *client.second<<this->//_algiMsg
+                            //    *client.second<<this->//_algiMsg
 
-                        *client.second<<this->eulerRotationsToStr(GRAlgorithm::getEulerRotations(this->_algMsg));
+                            *client.second<<this->eulerRotationsToStr(GRAlgorithm::getEulerRotations(this->_algMsg));
                         }
                         catch(const libsocket::socket_exception& exc)
                         {
@@ -206,7 +238,7 @@ bool GRUiSrv::_runInThread()
         std::string out;
         for(auto& imuAngles: inpRotations)
         { 
-            tmpV.at((int)this->_dataType[imuAngles.first]) = vectorDoubleToStr(imuAngles.second);
+            tmpV.at((int)this->_imuNameToInt8[imuAngles.first]) = vectorDoubleToStr(imuAngles.second);
         }
         for(auto& s: tmpV)
         {
@@ -219,7 +251,7 @@ bool GRUiSrv::_runInThread()
         std::vector<std::string> tmpV;
         tmpV.resize(6);
         std::string out;
-//TODO funalize and make it unified;
+        //TODO funalize and make it unified;
 
     }
     std::string GRUiSrv::vectorDoubleToStr(std::vector<double> v)

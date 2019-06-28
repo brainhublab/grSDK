@@ -26,7 +26,21 @@
 #include "grDataStructs.h"
 #define DEFAULT_PATH "/tmp/grsock"
 
+//enum class DataType {BYTE, DIGIT, STRING};
+//struct DataType{
+//        std::vector<std::string>i 
+//}
+//
 enum class DataType {BYTE, DIGIT, STRING};
+enum class DataCmd { STREAM_DATA, STREAM_ROTATIONS, START_STREAM, PAUSE_STREAM, STOP_STREAM };
+struct dataClient
+{
+
+    std::string dataCmd; 
+    std::string imuId;
+    std::string dataType;
+    std::unique_ptr<libsocket::unix_stream_client> streamClient;
+};
 //enum class 
 class GRUiSrv: public GRAlgorithm
 {
@@ -54,16 +68,18 @@ class GRUiSrv: public GRAlgorithm
         std::unique_ptr<libsocket::unix_stream_client> cli;
         std::vector<std::string> _splitBySpace(std::string* );
         std::unordered_map<std::string, std::unique_ptr<libsocket::unix_stream_client>> _clients;
-        std::unordered_map<std::string, uint8_t> _dataType;
+        std::unordered_map<std::string, uint8_t> _imuNameToInt8;
         GRAlgMessage _algMsg;
 
         std::string eulerRotationsToStr(std::unordered_map<std::string, std::vector<double>>);
         std::string quaternionToStr(std::unordered_map<std::string, Eigen::Quaterniond>);
         std::string vectorDoubleToStr(std::vector<double>);
 
-        std::unordered_map<std::string, 
-            std::unordered_map<std::string, 
-            std::unique_ptr<libsocket::unix_stream_client>>> _avalibeClients;
+        //std::unordered_map<std::string*, dataClient> _dataClients;
+        std::vector<dataClient> _dataClients;
+        std::unordered_map<DataCmd, std::string> _dataCmd;
+        std::unordered_map<DataType, std::string> _dataType;
+
 
 
 };
