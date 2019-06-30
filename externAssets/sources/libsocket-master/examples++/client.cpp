@@ -32,7 +32,8 @@ int main(void)
 
 	std::cout << answer;
 
-	sock << "Hello back!\n";
+	//sock << "Hello back!\n";
+
 
         // sock is closed here automatically!
     } catch (const libsocket::socket_exception& exc)

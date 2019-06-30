@@ -58,9 +58,9 @@ int main (int argc, const char * argv[])
     for(auto& grdev : *devices)// devManager._avalibleDevices)
     {
         std::cout<<"inMain"<<grdev.second.getName()<<std::endl;
-//        grdev.second.subscribe(&msg, fnc);
+        grdev.second.subscribe(&msg, fnc);
 
-          grdev.second._getData(&msg, fnc);
+//          grdev.second._getData(&msg, fnc);
         std::cout<<"main_for"<<std::endl;
 //        grdev.second._sendCmd("callibrate");
     }

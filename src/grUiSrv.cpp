@@ -9,42 +9,11 @@ GRUiSrv::GRUiSrv()
     this->_ret = 0;
     this->_defaultSockPath = DEFAULT_PATH;
 
-    /*    this->_clients["uipinky"] = nullptr;
-          this->_clients["uiring"] = nullptr;
-          this->_clients["uimiddle"]= nullptr;
-          this->_clients["uiindex"] = nullptr;
-          this->_clients["uithumb"] = nullptr;
-          this->_clients["uipalm"] = nullptr;
-          this->_clients["uirotations"] = nullptr;
+    this->_dataType["bitearray"] = DataType::BYTE;
+    this->_dataType["string"] = DataType::STRING;
 
-          this->_clients["iopinky"] = nullptr;
-          this->_clients["ioring"] = nullptr;
-          this->_clients["iomiddle"] = nullptr;
-          this->_clients["ioindex"] = nullptr;
-          this->_clients["iodatathumb"] = nullptr;
-          this->_clients["iodatapalm"] = nullptr;
-          this->_clients["iorotations"] = nullptr;
-
-          this->_dataType["pinky"] = 0;// DataType::PINKY;
-          this->_dataType["ring"] = 1;//DataType::RING;
-          this->_dataType["middle"] = 2;//DataType::MIDDLE;
-          this->_dataType["index"] = 3;//DataType::INDEX;
-          this->_dataType["thumb"] = 4;//DataType::THUMB;
-          this->_dataType["palm"] = 5;//DataType::PALM;
-
-          this->_dataTypeParam.push_back("bytearray");
-          this->_dataTypeParam.push_back("string");
-          this->_dataTypeParam.push_back("digit");
-          */
-    this->_dataType[DataType::BYTE] = "byte";
-    this->_dataType[DataType::DIGIT] = "digit";
-    this->_dataType[DataType::STRING] = "string";
-
-    this->_dataCmd[DataCmd::STREAM_DATA] = "STREAM_DATA";
-    this->_dataCmd[DataCmd::STREAM_ROTATIONS] = "STREAM_ROTATIONS";
-    this->_dataCmd[DataCmd::START_STREAM] = "START_STREAM";
-    this->_dataCmd[DataCmd::PAUSE_STREAM] = "PAUSE_STREAM";
-    this->_dataCmd[DataCmd::STOP_STREAM] = "STOP_STREAM";
+    this->_dataCmd["STREAM_DATA"] = DataCmd::STREAM_DATA;
+    this->_dataCmd["STREAM_ROTATIONS_DATA"] = DataCmd::STREAM_ROTATIONS;
 
     GRAlgorithm::setupMadgwick(140, 140, 140, 140, 140, 220);
 }
@@ -73,68 +42,93 @@ bool GRUiSrv::run()
 }
 bool GRUiSrv::_runInThread()
 {
-    try{
+    try
+    {
+        //create a server socket
         libsocket::unix_stream_server srv(this->_defaultSockPath);
+
+        //create selectset for server
+        libsocket::selectset<libsocket::unix_stream_server> srvSet;
+        srvSet.add_fd(srv, LIBSOCKET_READ);
 
         std::cout<<"beforeWHile"<<std::endl;
         std::string res;
         res.resize(128);
-        //        srv.destroy();
         std::cout<<"THE FDD"<<srv.getfd()<<std::endl;
-        //   while(true)
-        // {
-        // cli = srv.accept2();
         while(srv.getfd() > 0)
         {
-            try{
-               // std::unique_ptr<libsocket::unix_stream_client> tmpStreamCli;
-               // tmpStreamCli = srv.accept2();
-               // *tmpStreamCli>>res;
+            try
+            {
+                std::cout<<"CALLED SELECT"<<std::endl;
+                libsocket::selectset<libsocket::unix_stream_server>::ready_socks readyPair;
+                readyPair = srvSet.wait();
+
+                libsocket::unix_stream_server* readySrv = dynamic_cast<libsocket::unix_stream_server*>(
+                        readyPair.first.back());
+
+                readyPair.first.pop_back();
+
                 dataClient tmpDataCli;
-                tmpDataCli.streamClient = srv.accept2(); 
+                tmpDataCli.streamClient = readySrv->accept2(); 
                 *tmpDataCli.streamClient>>res;
-
-                //std::cout<<res<<std::endl;
                 std::vector<std::string> params = _splitBySpace(&res);
-                if(params.size() == 3)
+
+                if(this->_checkParams(&params))
                 {
-                    //TODO need to veriify all params
-                    if(!_clients.count(params[1]))
+                    switch(int paramLen = params.size())
                     {
-
-                        res.resize(5);
-                        res = "KO";
-                        *tmpDataCli.streamClient<<res;
-                        std::cout<<"there is no sensor with name: "<<params[1]<<std::endl;
+                        case 0:
+                            break;
+                        case 1:
+                            std::cout<<"ROTATION CLIENT"<<std::endl;
+                            break;
+                        case 2:
+                            break;
+                        case 3:
+                            tmpDataCli.dataCmd = params[0];
+                            tmpDataCli.imuId = params[1];
+                            tmpDataCli.dataType = params[2];
+                            res.resize(127);
+                            res = "OK " + this->_generateUUID(tmpDataCli.streamClient.get());
+                            *tmpDataCli.streamClient<<res;
+                            std::cout<<"ON NEW CLIENT "<<params[0]<<" "
+                                << params[1]<<" "
+                                << params[2]<<"---------------"<<this->_dataClients.size()<<std::endl;
+                            this->_dataClients.push_back(std::move(tmpDataCli));
+                            break;
+                        case 4:
+                            auto it = std::begin(this->_dataClients);
+                            if(this->_checkIfClientExist(&params[3]))
+                            {
+                                while(it != std::end(this->_dataClients))
+                                {
+                                    if((*it).UUID == params[3])
+                                    {
+                                        res.resize(5);
+                                        res = "OK";
+                                        *tmpDataCli.streamClient<<res;
+                                        (*it) = std::move(tmpDataCli);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                std::cout<<"strange UUI"<<std::endl;
+                            }
+                            break;
                     }
-                    else
-                    {
 
-                        tmpDataCli.dataCmd = params[0];
-                        tmpDataCli.imuId = params[1];
-                        tmpDataCli.dataType = params[2];
-                        //tmpDataCli.
-                        res.resize(6);
-                        res = "OK";
-                        std::cout<<"ON NEW CLIENT"<<params[1]<<std::endl;
-                        *tmpDataCli.streamClient<<res;
-                        //         _clients[cmd[1]] = nullptr;
-                        
-                       // _clients[params[1]] = std::move(tmpCli);
-                        this->_dataClients.push_back(std::move(tmpDataCli));
-                    }
                 }
                 else
                 {
-                    std::cout<<"ERROR: To much data parameters recieved :"<<
-                        res<< 
-                        "need to be: STREAM_DATA [SENSOR_NAME] [DATA_FORMAT]"<<std::endl;
+                    std::cout<<"ERROR: Wrong arguments"<<std::endl;
                 }
+
                 res.resize(128);
             }
             catch (const libsocket::socket_exception& inexc)
             {
-                std::cerr<<inexc.mesg;
+                std::cout<<inexc.mesg;
                 return false;
             }
 
@@ -152,114 +146,204 @@ bool GRUiSrv::_runInThread()
         return false;
     }
     return true;
-    }
-    void GRUiSrv::writeData(GRMessage* msg)
+}
+void GRUiSrv::writeData(GRMessage* msg)
+{
+    //        std::cout<<"IN CALLBACK UI"<<std::endl;
+    //   GRAlgorithm::madgwickUpdate(msg, &this->_algMsg);
+    auto it = std::begin(this->_dataClients);
+    while(it != std::end(this->_dataClients))
     {
-        //        std::cout<<"IN CALLBACK UI"<<std::endl;
-        GRAlgorithm::madgwickUpdate(msg, &this->_algMsg);
-        for(auto& client : this->_clients)
+        if((*it).streamClient->getfd() < 0)
         {
-            if(client.second != nullptr && client.second->getfd()>0)
+            it = this->_dataClients.erase(it);
+            std::cout<<"Erase element from Clients|||||||||||||||||||||||||----------------"<<std::endl;
+        } 
+
+        switch(DataCmd c=this->_dataCmd[(*it).dataCmd])
+        {
+            case DataCmd::STREAM_DATA:
+                // std::cout<<"STREAM BYTE DATA SWITCH "<< (*it).imuId<<std::endl;
+                _writeRawDataToCli(&(*it), msg);
+                break;
+            case DataCmd::STREAM_ROTATIONS:
+                // std::cout<<"STREAM ROTATION BYTE SWITCH"<<std::endl;
+                //_writeRotationsDataToCli(&client, msg);
+                break;
+            case DataCmd::START_STREAM:
+                // std::cout<<"START_STREAM BYTE SWITCH";
+                _writeRawDataToCli(&(*it), msg);
+                break;
+            case DataCmd::PAUSE_STREAM:
+                //  std::cout<<"PAUSE STREAM BYTE SWITCH";
+                break;
+            case DataCmd::STOP_STREAM:
+                // std::cout<<"STOP STREAM BYTE SWITCH";
+                break;
+        }
+        it++;
+    }
+}
+void GRUiSrv::_writeRawDataToCli(dataClient* cli, GRMessage* msg)
+{
+    switch(DataType dt = this->_dataType[cli->dataType])
+    {
+        case DataType::BYTE:
+            // std::cout<<"BYTE DATA IN SWITCH"<<std::endl;
+            try
             {
-                if(client.first.compare(0, 2, "ui")==0)
-                {
-                    if(client.first != "uirotations")
-                    {
-                        try
-                        {
-                            std::cout<<this->eulerRotationsToStr(GRAlgorithm::getEulerRotations(this->_algMsg));
-                            //std::string key = client.first.substr(2, client.first.size());
-                            //std::cout<<std::to_string(this->_dataType[key])<<"=============="<<std::endl;
-                            *client.second<<msg->imus[client.first
-                                .substr(2, client.first.size())]->imuByteData;//getAsStr();
-                        }
-                        catch(const libsocket::socket_exception& exc)
-                        {
-                            std::cerr<<exc.mesg;
-                        }
-                    }
-                    else 
-                    {   
-                        try
-                        {
-                            //    *client.second<<this->//_algiMsg
-
-                            *client.second<<this->eulerRotationsToStr(GRAlgorithm::getEulerRotations(this->_algMsg));
-                        }
-                        catch(const libsocket::socket_exception& exc)
-                        {
-                            cerr<<exc.mesg;
-                        }
-
-
-                    }
-                }
-                else if(client.first.compare(0, 2, "io")==0)
-                {
-                    if(client.first != "iorotations")
-                    {
-                        try
-                        {
-                            *client.second<<msg->imus[client.first.substr(2, client.first.size())]
-                                ->getAsStr();
-                        }
-                        catch(const libsocket::socket_exception& exc)
-                        {
-                            std::cerr<<exc.mesg;
-                        }
-                    }
-                    else
-                    {
-
-                    }
-                }
-                /*  else
-                    {
-
-                    }*/   
+                std::cout<<"||_"<<  cli->streamClient->snd(msg->imus[cli->imuId]->imuByteData.c_str(),
+                            18, MSG_NOSIGNAL | MSG_DONTWAIT); 
+               
+                
+            //    *cli->streamClient<<msg->imus[cli->imuId]->imuByteData;
             }
-        }
+            catch(const libsocket::socket_exception& exc)
+            {
+                std::cout<<exc.err<<" <-ERR";
+                if(exc.err == 32)
+                {
+                    cli->streamClient->destroy();     
+                }
+            }
+            break;
+        case DataType::STRING:
+            // std::cout<<"STRING DATATA IN SWITCH"<<std::endl;
+            try
+            {
+                *cli->streamClient<<msg->imus[cli->imuId]->getAsStr();
+            }
+            catch(const libsocket::socket_exception& exc)
+            {
+                std::cout<<exc.mesg;
+            }
+            break;
     }
-    std::vector<std::string> GRUiSrv::_splitBySpace(std::string* inp)
+}
+void GRUiSrv::_writeRotationsDataToCli(dataClient* cli, GRMessage* msg)
+{
+    GRAlgorithm::madgwickUpdate(msg, &this->_algMsg);
+    try
     {
-        //TODO need to fix vector size its put the terminating zero as an element of vector
-        std::regex reg("\\s+");
-        return std::vector<std::string>{
-            std::regex_token_iterator<std::string::iterator>(inp->begin(),
-                    inp->end(),
-                    reg,
-                    -1),{}
-        };
+
+        *cli->streamClient<<this->eulerRotationsToStr(GRAlgorithm::getEulerRotations(this->_algMsg));
     }
-    std::string GRUiSrv::eulerRotationsToStr(unordered_map<std::string, std::vector<double>> inpRotations)
+    catch(const libsocket::socket_exception& exc)
     {
-        std::vector<std::string> tmpV;
-        tmpV.resize(6);
-        std::string out;
-        for(auto& imuAngles: inpRotations)
-        { 
-            tmpV.at((int)this->_imuNameToInt8[imuAngles.first]) = vectorDoubleToStr(imuAngles.second);
-        }
-        for(auto& s: tmpV)
-        {
-            out += s;
-        }
-        return out;
+        std::cout<<exc.mesg;
     }
-    std::string GRUiSrv::quaternionToStr(std::unordered_map<std::string, Eigen::Quaterniond> inRot)
+
+}
+
+std::string GRUiSrv::_generateUUID(std::unique_ptr<libsocket::unix_stream_client>::pointer cliAddr)
+{
+    std::stringstream ss;
+    ss << cliAddr;
+    return ss.str();
+}
+bool GRUiSrv::_checkIfClientExist(std::string* uuid)
+{
+    auto it = std::begin(this->_dataClients);
+    while(it != std::end(this->_dataClients))
     {
-        std::vector<std::string> tmpV;
-        tmpV.resize(6);
-        std::string out;
-        //TODO funalize and make it unified;
+        if((*it).UUID == *uuid){
+            return true;
+        }
+        it++;
+    }
+    return false;
+
+}
+bool GRUiSrv::_checkParams(std::vector<std::string>* params)
+{
+    int paramsLen = params->size();
+    if(paramsLen > 4)
+    {
+        return false;
+    }
+    switch(paramsLen)
+    {
+        case 0:
+            std::cout<<"ERROR: few params"<<std::endl;
+            return false;
+            break;
+        case 1:
+            if(!this->_dataCmd.count(params->at(0)))
+            {
+                std::cout<<"ERROR: there is no data command: "<<params->at(0)<<std::endl;
+                return false;
+            }
+            return true;
+            break; 
+        case 2:
+            std::cout<<"ERROR: to few params"<<std::endl;
+            return false;
+            break;
+        case 3:
+            if(!this->_dataCmd.count(params->at(0)))
+            {
+                std::cout<<"ERROR: there is no data command: "<<params->at(0)<<std::endl;
+                return false;
+
+            }
+            if(auto it = std::find(this->_imuIds.begin(),
+                        this->_imuIds.end(), params->at(1)) == this->_imuIds.end())
+            {
+                std::cout<<"ERROR: There is no imu with id: "<<params->at(1)<<std::endl;
+                return false; 
+            }
+            if(!this->_dataType.count(params->at(2)))
+            {
+                std::cout<<"ERROR: There is no dataType: "<<params->at(2);
+                return false;
+            }
+            return true;
+            break;
+        case 4:
+            break;
 
     }
-    std::string GRUiSrv::vectorDoubleToStr(std::vector<double> v)
-    {
-        std::stringstream res;
-        std::copy(v.begin(), v.end(), 
-                std::ostream_iterator<int16_t>(res, ","));
-        return res.str();
-
+    return true;
+}
+std::vector<std::string> GRUiSrv::_splitBySpace(std::string* inp)
+{
+    //TODO need to fix vector size its put the terminating zero as an element of vector
+    std::regex reg("\\s+");
+    return std::vector<std::string>{
+        std::regex_token_iterator<std::string::iterator>(inp->begin(),
+                inp->end(),
+                reg,
+                -1),{}
+    };
+}
+std::string GRUiSrv::eulerRotationsToStr(unordered_map<std::string, std::vector<double>> inpRotations)
+{
+    std::vector<std::string> tmpV;
+    tmpV.resize(6);
+    std::string out;
+    for(auto& imuAngles: inpRotations)
+    { 
+        tmpV.at((int)this->_imuNameToInt8[imuAngles.first]) = vectorDoubleToStr(imuAngles.second);
     }
+    for(auto& s: tmpV)
+    {
+        out += s;
+    }
+    return out;
+}
+std::string GRUiSrv::quaternionToStr(std::unordered_map<std::string, Eigen::Quaterniond> inRot)
+{
+    std::vector<std::string> tmpV;
+    tmpV.resize(6);
+    std::string out;
+    //TODO funalize and make it unified;
+
+}
+std::string GRUiSrv::vectorDoubleToStr(std::vector<double> v)
+{
+    std::stringstream res;
+    std::copy(v.begin(), v.end(), 
+            std::ostream_iterator<int16_t>(res, ","));
+    return res.str();
+}
 

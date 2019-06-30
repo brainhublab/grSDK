@@ -8,16 +8,22 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <csignal>
+
 //socket headers
 #include <exception.hpp>
 #include <unixclientstream.hpp>
 #include <unixserverstream.hpp>
 #include <libunixsocket.h>
+#include <select.hpp>
+#include <socket.hpp>
+
 #include <grDataStructs.h>
 #include <regex>
 #include <array>
 #include <unordered_map>
 #include <thread>
+#include <algorithm>
 
 #include "Eigen/Dense"
 #include "Eigen/Geometry"
@@ -31,7 +37,7 @@
 //        std::vector<std::string>i 
 //}
 //
-enum class DataType {BYTE, DIGIT, STRING};
+enum class DataType {BYTE, STRING};
 enum class DataCmd { STREAM_DATA, STREAM_ROTATIONS, START_STREAM, PAUSE_STREAM, STOP_STREAM };
 struct dataClient
 {
@@ -39,6 +45,7 @@ struct dataClient
     std::string dataCmd; 
     std::string imuId;
     std::string dataType;
+    std::string UUID;
     std::unique_ptr<libsocket::unix_stream_client> streamClient;
 };
 //enum class 
@@ -65,7 +72,7 @@ class GRUiSrv: public GRAlgorithm
         int _bytesRecieved;
         int _ret;
         std::string _defaultSockPath;
-        std::unique_ptr<libsocket::unix_stream_client> cli;
+//        std::unique_ptr<libsocket::unix_stream_client> cli;
         std::vector<std::string> _splitBySpace(std::string* );
         std::unordered_map<std::string, std::unique_ptr<libsocket::unix_stream_client>> _clients;
         std::unordered_map<std::string, uint8_t> _imuNameToInt8;
@@ -77,10 +84,15 @@ class GRUiSrv: public GRAlgorithm
 
         //std::unordered_map<std::string*, dataClient> _dataClients;
         std::vector<dataClient> _dataClients;
-        std::unordered_map<DataCmd, std::string> _dataCmd;
-        std::unordered_map<DataType, std::string> _dataType;
+        std::unordered_map<std::string, DataCmd> _dataCmd;
+        std::unordered_map<std::string, DataType> _dataType;
 
-
+        void _writeRawDataToCli(dataClient*, GRMessage*);
+        void _writeRotationsDataToCli(dataClient*, GRMessage*);
+        std::vector<std::string> _imuIds = {"pinky", "ring", "middle", "index", "thumb", "palm", "none"}; 
+        std::string _generateUUID(std::unique_ptr<libsocket::unix_stream_client>::pointer);
+        bool _checkIfClientExist(std::string*);
+        bool _checkParams(std::vector<std::string>*);
 
 };
 #endif
