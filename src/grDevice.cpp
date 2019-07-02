@@ -130,7 +130,7 @@ void GRDevice::_getData(GRMessage* msg, std::function<void(GRMessage* cmsg)> cb)
                 this->_deserialize(_splitMessage(&cumulative), msg);
                 msg->batteryLevel = this->_batteryLevel;
             } 
-//            msg->print();
+            //msg->print();
             cb(msg);
             //std::cout<<std::endl;
             msg->clear();

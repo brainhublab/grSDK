@@ -77,17 +77,56 @@ bool GRUiSrv::_runInThread()
                 {
                     switch(int paramLen = params.size())
                     {
+                        std::cout<<paramLen<<"----------------------------------PARAM LEN"<<std::endl;
                         case 0:
-                            break;
+                        break;
                         case 1:
-                            std::cout<<"ROTATION CLIENT"<<std::endl;
-                            break;
+                        std::cout<<"ROTATION CLIENT"<<std::endl;
+                        break;
                         case 2:
-                            break;
+                        break;
                         case 3:
+                        tmpDataCli.dataCmd = params[0];
+                        tmpDataCli.imuId = params[1];
+                        tmpDataCli.dataType = params[2];
+                        tmpDataCli.UUID = this->_generateUUID(tmpDataCli.streamClient.get());
+                        res.resize(127);
+                        res = "OK " + this->_generateUUID(tmpDataCli.streamClient.get());
+                        *tmpDataCli.streamClient<<res;
+                        std::cout<<"ON NEW CLIENT "<<params[0]<<" "
+                            << params[1]<<" "
+                            << params[2]<<"---------------"<<this->_dataClients.size()<<std::endl;
+                        this->_dataClients.push_back(std::move(tmpDataCli));
+                        break;
+                        case 4:
+
+                        if(this->_checkIfClientExist(&params[3]))
+                        {
+                            auto it = std::begin(this->_dataClients);
+                            while(it != std::end(this->_dataClients))
+                            {
+                                if((*it).UUID == params[3])
+                                {
+                                    std::cout<<params[3]<<"-----------------UUID"<<std::endl;
+                                    res.resize(5);
+                                    res = "OK";
+                                    tmpDataCli.dataCmd = params[0];
+                                    tmpDataCli.imuId = params[1];
+                                    tmpDataCli.dataType = params[2];
+                                    tmpDataCli.UUID = params[3];
+                                    *tmpDataCli.streamClient<<res;
+                                    (*it) = std::move(tmpDataCli);
+                                }
+                                it++;
+                            }
+                            std::cout<<this->_dataClients.size()<<"-------------------------------SIZECLI"<<std::endl;
+                        }
+                        else
+                        {
                             tmpDataCli.dataCmd = params[0];
                             tmpDataCli.imuId = params[1];
                             tmpDataCli.dataType = params[2];
+                            tmpDataCli.UUID = this->_generateUUID(tmpDataCli.streamClient.get());
                             res.resize(127);
                             res = "OK " + this->_generateUUID(tmpDataCli.streamClient.get());
                             *tmpDataCli.streamClient<<res;
@@ -95,27 +134,9 @@ bool GRUiSrv::_runInThread()
                                 << params[1]<<" "
                                 << params[2]<<"---------------"<<this->_dataClients.size()<<std::endl;
                             this->_dataClients.push_back(std::move(tmpDataCli));
-                            break;
-                        case 4:
-                            auto it = std::begin(this->_dataClients);
-                            if(this->_checkIfClientExist(&params[3]))
-                            {
-                                while(it != std::end(this->_dataClients))
-                                {
-                                    if((*it).UUID == params[3])
-                                    {
-                                        res.resize(5);
-                                        res = "OK";
-                                        *tmpDataCli.streamClient<<res;
-                                        (*it) = std::move(tmpDataCli);
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                std::cout<<"strange UUI"<<std::endl;
-                            }
-                            break;
+                            std::cout<<"strange UUI"<<std::endl;
+                        }
+                        break;
                     }
 
                 }
@@ -158,7 +179,8 @@ void GRUiSrv::writeData(GRMessage* msg)
         {
             it = this->_dataClients.erase(it);
             std::cout<<"Erase element from Clients|||||||||||||||||||||||||----------------"<<std::endl;
-        } 
+            //continue;
+        }
 
         switch(DataCmd c=this->_dataCmd[(*it).dataCmd])
         {
@@ -192,11 +214,11 @@ void GRUiSrv::_writeRawDataToCli(dataClient* cli, GRMessage* msg)
             // std::cout<<"BYTE DATA IN SWITCH"<<std::endl;
             try
             {
-                std::cout<<"||_"<<  cli->streamClient->snd(msg->imus[cli->imuId]->imuByteData.c_str(),
-                            18, MSG_NOSIGNAL | MSG_DONTWAIT); 
-               
-                
-            //    *cli->streamClient<<msg->imus[cli->imuId]->imuByteData;
+                if(cli != nullptr)
+                {
+                    cli->streamClient->snd(msg->imus[cli->imuId]->imuByteData.c_str(), 18, MSG_NOSIGNAL); 
+                }
+                //    *cli->streamClient<<msg->imus[cli->imuId]->imuByteData;
             }
             catch(const libsocket::socket_exception& exc)
             {
@@ -246,8 +268,10 @@ bool GRUiSrv::_checkIfClientExist(std::string* uuid)
     auto it = std::begin(this->_dataClients);
     while(it != std::end(this->_dataClients))
     {
+        std::cout<<" IT: "<<(*it).UUID<<"----"<<*uuid<<std::endl;
         if((*it).UUID == *uuid){
             return true;
+
         }
         it++;
     }
