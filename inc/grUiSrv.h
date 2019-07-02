@@ -93,6 +93,7 @@ class GRUiSrv: public GRAlgorithm
         std::string _generateUUID(std::unique_ptr<libsocket::unix_stream_client>::pointer);
         bool _checkIfClientExist(std::string*);
         bool _checkParams(std::vector<std::string>*);
+        void _asignClient(dataClient*, std::vector<std::string>*, bool);
 
 };
 #endif

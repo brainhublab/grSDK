@@ -86,65 +86,25 @@ bool GRUiSrv::_runInThread()
                         case 2:
                         break;
                         case 3:
-                        tmpDataCli.dataCmd = params[0];
-                        tmpDataCli.imuId = params[1];
-                        tmpDataCli.dataType = params[2];
-                        tmpDataCli.UUID = this->_generateUUID(tmpDataCli.streamClient.get());
-                        res.resize(127);
-                        res = "OK " + this->_generateUUID(tmpDataCli.streamClient.get());
-                        *tmpDataCli.streamClient<<res;
-                        std::cout<<"ON NEW CLIENT "<<params[0]<<" "
-                            << params[1]<<" "
-                            << params[2]<<"---------------"<<this->_dataClients.size()<<std::endl;
-                        this->_dataClients.push_back(std::move(tmpDataCli));
+                        this->_asignClient(&tmpDataCli, &params, true);
                         break;
                         case 4:
-
                         if(this->_checkIfClientExist(&params[3]))
                         {
-                            auto it = std::begin(this->_dataClients);
-                            while(it != std::end(this->_dataClients))
-                            {
-                                if((*it).UUID == params[3])
-                                {
-                                    std::cout<<params[3]<<"-----------------UUID"<<std::endl;
-                                    res.resize(5);
-                                    res = "OK";
-                                    tmpDataCli.dataCmd = params[0];
-                                    tmpDataCli.imuId = params[1];
-                                    tmpDataCli.dataType = params[2];
-                                    tmpDataCli.UUID = params[3];
-                                    *tmpDataCli.streamClient<<res;
-                                    (*it) = std::move(tmpDataCli);
-                                }
-                                it++;
-                            }
-                            std::cout<<this->_dataClients.size()<<"-------------------------------SIZECLI"<<std::endl;
+
+                            this->_asignClient(&tmpDataCli, &params, false);
                         }
                         else
                         {
-                            tmpDataCli.dataCmd = params[0];
-                            tmpDataCli.imuId = params[1];
-                            tmpDataCli.dataType = params[2];
-                            tmpDataCli.UUID = this->_generateUUID(tmpDataCli.streamClient.get());
-                            res.resize(127);
-                            res = "OK " + this->_generateUUID(tmpDataCli.streamClient.get());
-                            *tmpDataCli.streamClient<<res;
-                            std::cout<<"ON NEW CLIENT "<<params[0]<<" "
-                                << params[1]<<" "
-                                << params[2]<<"---------------"<<this->_dataClients.size()<<std::endl;
-                            this->_dataClients.push_back(std::move(tmpDataCli));
-                            std::cout<<"strange UUI"<<std::endl;
+                            this->_asignClient(&tmpDataCli, &params, true);
                         }
                         break;
                     }
-
                 }
                 else
                 {
                     std::cout<<"ERROR: Wrong arguments"<<std::endl;
                 }
-
                 res.resize(128);
             }
             catch (const libsocket::socket_exception& inexc)
@@ -152,11 +112,7 @@ bool GRUiSrv::_runInThread()
                 std::cout<<inexc.mesg;
                 return false;
             }
-
-            std::cout<<"iteration --------"<<std::endl;
         }
-
-        std::cout<<"afterWhile"<<std::endl;
         if(srv.getfd() > 0)
         {
             srv.destroy();
@@ -168,6 +124,41 @@ bool GRUiSrv::_runInThread()
     }
     return true;
 }
+void GRUiSrv::_asignClient(dataClient* dataCli, std::vector<std::string>* params, bool isNew)
+{
+    std::string res;
+    if(isNew)
+    {
+        dataCli->dataCmd = params->at(0);
+        dataCli->imuId = params->at(1);
+        dataCli->dataType = params->at(2);
+        dataCli->UUID = this->_generateUUID(dataCli->streamClient.get());
+        res.resize(127);
+        res = "OK " + this->_generateUUID(dataCli->streamClient.get());
+        *dataCli->streamClient<<res;
+        this->_dataClients.push_back(std::move(*dataCli));
+
+    }
+    else
+    {
+        auto it = std::begin(this->_dataClients);
+        while(it != std::end(this->_dataClients))
+        {
+            if((*it).UUID == params->at(3))
+            {
+                res.resize(5);
+                res = "OK";
+                dataCli->dataCmd = params->at(0);
+                dataCli->imuId = params->at(1);
+                dataCli->dataType = params->at(2);
+                dataCli->UUID = params->at(3);
+                *dataCli->streamClient<<res;
+                (*it) = std::move(*dataCli);
+            }
+            it++;
+        }
+    }
+}
 void GRUiSrv::writeData(GRMessage* msg)
 {
     //        std::cout<<"IN CALLBACK UI"<<std::endl;
@@ -178,7 +169,7 @@ void GRUiSrv::writeData(GRMessage* msg)
         if((*it).streamClient->getfd() < 0)
         {
             it = this->_dataClients.erase(it);
-            std::cout<<"Erase element from Clients|||||||||||||||||||||||||----------------"<<std::endl;
+            std::cout<<"Erase element from Clients"<<std::endl;
             //continue;
         }
 
@@ -223,14 +214,13 @@ void GRUiSrv::_writeRawDataToCli(dataClient* cli, GRMessage* msg)
             catch(const libsocket::socket_exception& exc)
             {
                 std::cout<<exc.err<<" <-ERR";
-                if(exc.err == 32)
-                {
+                //if(exc.err == 32)
+               // {
                     cli->streamClient->destroy();     
-                }
+               // }
             }
             break;
         case DataType::STRING:
-            // std::cout<<"STRING DATATA IN SWITCH"<<std::endl;
             try
             {
                 *cli->streamClient<<msg->imus[cli->imuId]->getAsStr();
@@ -247,8 +237,8 @@ void GRUiSrv::_writeRotationsDataToCli(dataClient* cli, GRMessage* msg)
     GRAlgorithm::madgwickUpdate(msg, &this->_algMsg);
     try
     {
-
-        *cli->streamClient<<this->eulerRotationsToStr(GRAlgorithm::getEulerRotations(this->_algMsg));
+        *cli->streamClient<<
+            this->eulerRotationsToStr(GRAlgorithm::getEulerRotations(this->_algMsg));
     }
     catch(const libsocket::socket_exception& exc)
     {
@@ -268,15 +258,12 @@ bool GRUiSrv::_checkIfClientExist(std::string* uuid)
     auto it = std::begin(this->_dataClients);
     while(it != std::end(this->_dataClients))
     {
-        std::cout<<" IT: "<<(*it).UUID<<"----"<<*uuid<<std::endl;
         if((*it).UUID == *uuid){
             return true;
-
         }
         it++;
     }
     return false;
-
 }
 bool GRUiSrv::_checkParams(std::vector<std::string>* params)
 {
