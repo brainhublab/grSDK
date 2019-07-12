@@ -81,6 +81,7 @@ bool GRUiSrv::_runInThread()
                         case 0:
                         break;
                         case 1:
+                        //TODO need to implement 
                         std::cout<<"ROTATION CLIENT"<<std::endl;
                         break;
                         case 2:
