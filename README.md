@@ -1,9 +1,8 @@
-
-<p align="center">
-  <a>
-    <img width="300" src="./docs/images/wearable.jpg">
-  </a>
-</p>
+<div align="center">
+ <a>
+    <img align="center" width="300" src="./docs/images/wearable.jpg">
+ </a>
+</div>
 <div align="center">
   <h1>GR SDK</h1>
   <p>GR is a precise gesture recognition and tracking wearable technology that allows digitalization of hand motions and emotions.</p>
